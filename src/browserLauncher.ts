@@ -43,10 +43,11 @@ export class BrowserProcess {
   }
 }
 
-export async function launchBrowser(): Promise<BrowserProcess> {
+export async function launchBrowser(
+  browserExecutablePath,
+  headless
+): Promise<BrowserProcess> {
   const tempDir = await _getTempDir();
-  const browserExecutablePath = process.env.BROWSER_PATH;
-  const headless = process.env.HEADLESS !== 'false';
 
   const processFlags = [
     '--disable-background-networking',
@@ -81,7 +82,9 @@ export async function launchBrowser(): Promise<BrowserProcess> {
   if (headless) processFlags.push('--headless');
 
   const proc = childProcess.spawn(browserExecutablePath, processFlags);
-  return new BrowserProcess(await _waitForWSEndpoint(proc), () => {
+  const wsEndpoint = await _waitForWSEndpoint(proc);
+
+  return new BrowserProcess(wsEndpoint, () => {
     proc.kill();
   });
 }
@@ -97,9 +100,16 @@ async function _waitForWSEndpoint(browserProcess): Promise<string> {
     _addEventListener(rl, 'line', onLine);
 
     function onLine(line) {
+      const errorMatch = line.match(/Unable to open X display/);
+      if (errorMatch) {
+        reject('Cannot run headful Chrome.');
+        return;
+      }
+
       const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
-      if (!match) return;
-      resolve(match[1]);
+      if (match) {
+        resolve(match[1]);
+      }
     }
   });
 }

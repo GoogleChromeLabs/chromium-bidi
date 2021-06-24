@@ -20,11 +20,55 @@ import mapperReader from './mapperReader.js';
 import { MapperServer } from './mapperServer.js';
 import { BidiServerRunner } from './bidiServerRunner.js';
 import { IServer } from './iServer.js';
+import argparse from 'argparse';
+
+function parseArguments() {
+  var parser = new argparse.ArgumentParser({
+    add_help: true,
+    exit_on_error: false,
+  });
+
+  parser.add_argument('-p', '--port', {
+    help: 'Port, BiDi server should listen to. Default is 8080.',
+    default: 8080,
+  });
+
+  parser.add_argument('-hl', '--headless', {
+    help: 'Sets if browser should run in headless or headful mode. Default is `--headless=true`.',
+    default: true,
+  });
+
+  parser.add_argument('-b', '--browser', {
+    help: 'Path to browser executable.',
+    required: true,
+  });
+
+  // `parse_known_args` puts known args in the first element of the result.
+  const args = parser.parse_known_args();
+  return args[0];
+}
 
 (async () => {
   try {
     console.log('Launching BiDi server.');
-    BidiServerRunner.run(_onNewBidiConnectionOpen, _onBidiConnectionClosed);
+
+    const args = parseArguments();
+    const _bidiPort = parseInt(args.port);
+
+    const _browserExecutablePath = args.browser || process.env.BROWSER_PATH;
+    const _headless = args.headless !== 'false';
+
+    BidiServerRunner.run(
+      _bidiPort,
+      (bidiServer: IServer) => {
+        return _onNewBidiConnectionOpen(
+          _browserExecutablePath,
+          _headless,
+          bidiServer
+        );
+      },
+      _onBidiConnectionClosed
+    );
     console.log('BiDi server launched.');
   } catch (e) {
     console.log('Error', e);
@@ -32,10 +76,12 @@ import { IServer } from './iServer.js';
 })();
 
 async function _onNewBidiConnectionOpen(
+  browserExecutablePath: string,
+  headless: boolean,
   bidiServer: IServer
 ): Promise<BrowserProcess> {
   // Launch browser.
-  const browserProcess = await launchBrowser();
+  const browserProcess = await launchBrowser(browserExecutablePath, headless);
   // Get BiDi Mapper script.
   const bidiMapperScript = await mapperReader();
 

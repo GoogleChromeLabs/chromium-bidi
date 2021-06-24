@@ -27,19 +27,31 @@ export class BidiServerRunner {
   // Once run, waits for connection. For each connection, calls `onOpen` and stores the returned `stateObject`.
   // `stateObject` passed to `onClose` afterwards.
   static run(
+    bidiPort: number,
     onNewBidiConnectionOpen: (bidiServer: IServer) => Promise<BrowserProcess>,
     onBidiConnectionClosed: (browserProcess: BrowserProcess) => void
   ) {
     const self = this;
-    const bidiPort = parseInt(process.env.PORT) || 8080;
 
     const server = http.createServer(function (request, response) {
       debugInternal(new Date() + ' Received request for ' + request.url);
-      response.writeHead(404);
+
+      // Needed for WPT compatibility.
+      response.writeHead(200, { 'Content-Type': 'text/plain' });
+      response.write(
+        JSON.stringify({
+          value: {
+            sessionId: 1,
+            capabilities: {
+              webSocketUrl: 'ws://localhost:' + bidiPort,
+            },
+          },
+        })
+      );
       response.end();
     });
     server.listen(bidiPort, function () {
-      debugInternal(`${new Date()} Server is listening on port ${bidiPort}`);
+      console.log(`Server is listening on port ${bidiPort}`);
     });
 
     const wsServer = new websocket.server({
