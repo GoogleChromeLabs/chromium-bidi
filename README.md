@@ -35,7 +35,7 @@ Use the `DEBUG` environment variable to see debug info:
 
     DEBUG=* npm run bidi-server
 
-Use the argument `--headless=false` environment variable to run browser in headful mode:
+Use the CLI argument `--headless=false` to run browser in headful mode:
 
     npm run bidi-server -- --headless=false
 
