@@ -37,7 +37,7 @@ export class BidiServerRunner {
       debugInternal(new Date() + ' Received request for ' + request.url);
 
       // Needed for WPT compatibility.
-      response.writeHead(200, { 'Content-Type': 'text/plain' });
+      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' });
       response.write(
         JSON.stringify({
           value: {
