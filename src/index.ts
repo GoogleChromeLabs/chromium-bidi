@@ -54,13 +54,13 @@ function parseArguments() {
     console.log('Launching BiDi server.');
 
     const args = parseArguments();
-    const _bidiPort = parseInt(args.port);
+    const _bidiPort = args.port;
 
     const _browserExecutablePath = args.browser || process.env.BROWSER_PATH;
     const _headless = args.headless !== 'false';
 
     BidiServerRunner.run(
-      _bidiPort,
+      args.port,
       (bidiServer: IServer) => {
         return _onNewBidiConnectionOpen(
           _browserExecutablePath,
