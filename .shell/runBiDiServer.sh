@@ -1,10 +1,7 @@
 #!/bin/sh
 
-# Get location of the script.
-SCRIPT=$(readlink -f $0)
-SCRIPTPATH=`dirname $SCRIPT`
-
-cd $SCRIPTPATH/..
+# Go to the project root folder.
+cd "$(dirname $0)/.."
 
 NODE_OPTIONS="--unhandled-rejections=strict" \
 DEBUG=* \
