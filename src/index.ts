@@ -60,7 +60,7 @@ function parseArguments() {
     const _headless = args.headless !== 'false';
 
     BidiServerRunner.run(
-      args.port,
+      _bidiPort,
       (bidiServer: IServer) => {
         return _onNewBidiConnectionOpen(
           _browserExecutablePath,
