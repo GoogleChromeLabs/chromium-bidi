@@ -29,7 +29,7 @@ function parseArguments() {
   });
 
   parser.add_argument('-p', '--port', {
-    help: 'Port, BiDi server should listen to. Default is 8080.',
+    help: 'Port that BiDi server should listen to. Default is 8080.',
     default: 8080,
   });
 
