@@ -30,7 +30,8 @@ function parseArguments() {
 
   parser.add_argument('-p', '--port', {
     help: 'Port that BiDi server should listen to. Default is 8080.',
-    default: 8080,
+    type: 'int',
+    default: 8080,    
   });
 
   parser.add_argument('-hl', '--headless', {
