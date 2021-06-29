@@ -45,7 +45,7 @@ export class BrowserProcess {
 
 export async function launchBrowser(
   browserExecutablePath,
-  headless
+  headless: boolean
 ): Promise<BrowserProcess> {
   const tempDir = await _getTempDir();
 
