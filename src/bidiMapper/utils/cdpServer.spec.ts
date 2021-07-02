@@ -1,11 +1,22 @@
-import { expect } from 'chai';
-import { CdpServer } from './cdpServer'
+import { CdpServer } from './cdpServer';
 import { ServerBinding } from './iServer';
-// import { mock, stub, fake } from 'sinon';
+import { mock, instance, verify } from 'ts-mockito';
 
-it('example test, should be removed later', () => {
-  expect(true).to.equal(true);
+describe('CdpServer tests.', async () => {
+  it('given CdpServer, when `sendMessage` is called, then cdpBindings should be called with proper values', async () => {
+    const someMessage = {
+      someAttribute: 'someValue',
+    };
+    const expectedMessageStr = JSON.stringify({
+      ...someMessage,
+      id: 0,
+    });
+
+    const mockBinding = mock(ServerBinding);
+    const cdpServer = new CdpServer(instance(mockBinding));
+
+    cdpServer.sendMessage(someMessage);
+
+    verify(mockBinding.sendMessage(expectedMessageStr)).called();
+  });
 });
-// it('given CdpServer, when `sendMessage` is called, then cdpBindings should be called', () => {
-//   ...
-// });
