@@ -1,3 +1,5 @@
+import { TargetInfo } from './targetInfo';
+
 export class Context {
   _targetInfo: TargetInfo;
   _contextId: string;

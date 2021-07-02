@@ -16,6 +16,7 @@
 import { log } from '../../utils/log';
 import { IServer } from '../../utils/iServer';
 import { Context } from './context';
+import { TargetInfo } from './targetInfo';
 const logContext = log('context');
 
 export class BrowsingContextProcessor {

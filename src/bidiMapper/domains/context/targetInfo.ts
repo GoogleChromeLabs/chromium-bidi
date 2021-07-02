@@ -1,4 +1,4 @@
-class TargetInfo {
+export class TargetInfo {
   targetId: string;
   openerId: string | null;
   url: string | null;
