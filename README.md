@@ -39,11 +39,13 @@ Use the CLI argument `--headless=false` to run browser in headful mode:
 
     npm run bidi-server -- --headless=false
 
-### Starting on Linux
+### Starting on Linux and Mac
 
-You can alson run the Server by using the shell script `.shell/runBiDiServer.sh`. It will write output to the file `log.txt`:
+TODO: verify if it works on Windows.
 
-    .shell/runBiDiServer.sh --port=8081 --browser="example/path/to/browser" --headless=false
+You can alson run the Server by using script `./runBiDiServer.sh`. It will write output to the file `log.txt`:
+
+    ./runBiDiServer.sh --port=8081 --browser="example/path/to/browser" --headless=false
 
 ## Running the Tests
 
