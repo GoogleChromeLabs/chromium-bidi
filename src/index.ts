@@ -31,7 +31,7 @@ function parseArguments() {
   parser.add_argument('-p', '--port', {
     help: 'Port that BiDi server should listen to. Default is 8080.',
     type: 'int',
-    default: 8080,
+    default: process.env.PORT || 8080,
   });
 
   parser.add_argument('-hl', '--headless', {
@@ -40,8 +40,9 @@ function parseArguments() {
   });
 
   parser.add_argument('-b', '--browser', {
-    help: 'Path to browser executable.',
-    required: true,
+    help: `Path to browser executable. Required, unless the \`BROWSER_PATH\` \
+      environment variable is set.`,
+    required: !process.env.BROWSER_PATH,
   });
 
   // `parse_known_args` puts known args in the first element of the result.
