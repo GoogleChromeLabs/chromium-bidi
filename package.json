@@ -15,7 +15,6 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/rollup": "^0.54.0",
     "@types/websocket": "^1.0.2",
     "argparse": "^2.0.1",
     "debug": "^4.3.1",
@@ -29,6 +28,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/ws": "^7.4.4",
+    "devtools-protocol": "^0.0.900357",
     "prettier": "2.3.0",
     "rimraf": "^3.0.2"
   }
