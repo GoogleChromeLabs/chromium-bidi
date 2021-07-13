@@ -15,7 +15,7 @@
  */
 export function log(type: string): (...message: any[]) => void {
   return (...messages: any[]) => {
-    console.log.apply(null, [type].concat(messages));
+    console.log(type, ...messages);
 
     // If run in browser, add debug message to the page.
     if (typeof window !== 'undefined' && window?.document?.documentElement) {
