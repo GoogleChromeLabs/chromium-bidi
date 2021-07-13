@@ -17,10 +17,6 @@ import { ServerBinding, AbstractServer } from './iServer';
 import { log } from './log';
 const logCdp = log('cdp');
 
-// TODO: Remove. This is a quick test to verify we can import a node module.
-import { version } from 'devtools-protocol/json/browser_protocol.json';
-logCdp(`Using CDP version: ${version}`);
-
 export class CdpClient extends AbstractServer {
   private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
 
