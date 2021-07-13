@@ -17,7 +17,7 @@ import { ServerBinding, AbstractServer } from './iServer';
 import { log } from './log';
 const logCdp = log('cdp');
 
-export class CdpServer extends AbstractServer {
+export class CdpClient extends AbstractServer {
   private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
 
   constructor(cdpBinding: ServerBinding) {
