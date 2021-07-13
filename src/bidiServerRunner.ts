@@ -37,20 +37,24 @@ export class BidiServerRunner {
       debugInternal(new Date() + ' Received request for ' + request.url);
 
       // Needed for WPT compatibility.
-      response.writeHead(200, {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'no-cache',
-      });
-      response.write(
-        JSON.stringify({
-          value: {
-            sessionId: 1,
-            capabilities: {
-              webSocketUrl: 'ws://localhost:' + bidiPort,
+      if (request.url.startsWith('/session')) {
+        response.writeHead(200, {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-cache',
+        });
+        response.write(
+          JSON.stringify({
+            value: {
+              sessionId: 1,
+              capabilities: {
+                webSocketUrl: 'ws://localhost:' + bidiPort,
+              },
             },
-          },
-        })
-      );
+          })
+        );
+      } else {
+        response.writeHead(404);
+      }
       response.end();
     });
     server.listen(bidiPort, function () {
