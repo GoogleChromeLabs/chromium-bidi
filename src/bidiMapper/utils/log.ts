@@ -15,10 +15,10 @@
  */
 export function log(type: string): (...message: any[]) => void {
   return (...messages: any[]) => {
-    console.log(type, ...messages);
-
     // If run in browser, add debug message to the page.
     if (typeof window !== 'undefined' && window?.document?.documentElement) {
+      console.log(type, ...messages);
+
       const elementId = type + '_log';
 
       if (!window.document.getElementById(elementId)) {
