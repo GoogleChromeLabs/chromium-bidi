@@ -18,14 +18,14 @@ import { BrowsingContextProcessor } from './domains/context/browsingContextProce
 import { Context } from './domains/context/context';
 
 export class CommandProcessor {
-  private _cdpServer: IServer;
+  private _cdpClient: IServer;
   private _bidiServer: IServer;
   private _selfTargetId: string;
   private _contextProcessor: BrowsingContextProcessor;
 
-  static run(cdpServer: IServer, bidiServer: IServer, selfTargetId: string) {
+  static run(cdpClient: IServer, bidiServer: IServer, selfTargetId: string) {
     const commandProcessor = new CommandProcessor(
-      cdpServer,
+      cdpClient,
       bidiServer,
       selfTargetId
     );
@@ -34,18 +34,18 @@ export class CommandProcessor {
   }
 
   private constructor(
-    cdpServer: IServer,
+    cdpClient: IServer,
     bidiServer: IServer,
     selfTargetId: string
   ) {
     this._bidiServer = bidiServer;
-    this._cdpServer = cdpServer;
+    this._cdpClient = cdpClient;
     this._selfTargetId = selfTargetId;
   }
 
   private run() {
     this._contextProcessor = new BrowsingContextProcessor(
-      this._cdpServer,
+      this._cdpClient,
       this._selfTargetId,
       (t: Context) => {
         return this._onContextCreated(t);
@@ -55,7 +55,7 @@ export class CommandProcessor {
       }
     );
 
-    this._cdpServer.setOnMessage((messageObj) => {
+    this._cdpClient.setOnMessage((messageObj) => {
       return this._onCdpMessage(messageObj);
     });
     this._bidiServer.setOnMessage((messageObj) => {
@@ -101,7 +101,7 @@ export class CommandProcessor {
   });
 
   private _process_browsingContext_getTree = async function (params) {
-    const cdpTargets = await this._cdpServer.sendMessage({
+    const cdpTargets = await this._cdpClient.sendMessage({
       method: 'Target.getTargets',
     });
     const contexts = cdpTargets.targetInfos
@@ -112,7 +112,7 @@ export class CommandProcessor {
   };
 
   private async _process_DEBUG_Page_close(params) {
-    await this._cdpServer.sendMessage({
+    await this._cdpClient.sendMessage({
       method: 'Target.closeTarget',
       params: { targetId: params.context },
     });

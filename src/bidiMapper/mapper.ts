@@ -53,23 +53,23 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
   window.document.title = 'BiDi Mapper';
 
-  const cdpServer = _createCdpServer();
+  const cdpClient = _createCdpClient();
   const bidiServer = _createBidiServer();
 
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await _waitSelfTargetIdPromise;
 
   // Needed to get events about new targets.
-  await _prepareCdp(cdpServer);
+  await _prepareCdp(cdpClient);
 
-  CommandProcessor.run(cdpServer, bidiServer, selfTargetId);
+  CommandProcessor.run(cdpClient, bidiServer, selfTargetId);
 
   logSystem('launched');
 
   bidiServer.sendMessage('launched');
 })();
 
-function _createCdpServer() {
+function _createCdpClient() {
   const cdpBinding = new ServerBinding(
     (message) => {
       globalObj.cdp.send(message);
@@ -103,15 +103,15 @@ async function _waitSelfTargetId(): Promise<string> {
   });
 }
 
-async function _prepareCdp(cdpServer) {
+async function _prepareCdp(cdpClient) {
   // Needed to get events about new targets.
-  await cdpServer.sendMessage({
+  await cdpClient.sendMessage({
     method: 'Target.setDiscoverTargets',
     params: { discover: true },
   });
 
   // Needed to automatically attach to new targets.
-  await cdpServer.sendMessage({
+  await cdpClient.sendMessage({
     method: 'Target.setAutoAttach',
     params: {
       autoAttach: true,

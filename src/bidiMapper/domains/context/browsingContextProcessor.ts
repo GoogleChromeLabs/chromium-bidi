@@ -23,19 +23,19 @@ export class BrowsingContextProcessor {
   private _sessionToTargets: Map<string, Context> = new Map();
 
   // Set from outside.
-  private _cdpServer: IServer;
+  private _cdpClient: IServer;
   private _selfTargetId: string;
 
   private _onContextCreated: (t: Context) => Promise<void>;
   private _onContextDestroyed: (t: Context) => Promise<void>;
 
   constructor(
-    cdpServer: IServer,
+    cdpClient: IServer,
     selfTargetId: string,
     onContextCreated: (t: Context) => Promise<void>,
     onContextDestroyed: (t: Context) => Promise<void>
   ) {
-    this._cdpServer = cdpServer;
+    this._cdpClient = cdpClient;
     this._selfTargetId = selfTargetId;
     this._onContextCreated = onContextCreated;
     this._onContextDestroyed = onContextDestroyed;
@@ -102,7 +102,7 @@ export class BrowsingContextProcessor {
   }
 
   async process_createContext(params: any): Promise<any> {
-    const { targetId } = await this._cdpServer.sendMessage({
+    const { targetId } = await this._cdpClient.sendMessage({
       method: 'Target.createTarget',
       params: { url: params.url },
     });
