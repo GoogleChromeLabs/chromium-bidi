@@ -30,4 +30,4 @@ jobs:
     - name: Build
       run: npm run build
     - name: Run unit tests
-      run: npm unit
+      run: npm run unit
