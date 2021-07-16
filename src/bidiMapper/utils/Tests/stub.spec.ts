@@ -16,9 +16,25 @@
 import { assert, createStubInstance, SinonStubbedInstance } from 'sinon';
 
 export class Stub {
+  // Returns mock object of a given type.
   static stub<T>(constructor: new (...args) => T): StubbedClass<T> {
     return createStubInstance(constructor) as any as StubbedClass<T>;
   }
+
+  // Returns a handler was assigned to mock by calling `setOnMessage`.
+  static getOnMessage<
+    T extends {
+      setOnMessage(messageHandler: (string) => void): void;
+    }
+  >(mock: StubbedClass<T>): (string) => void {
+    Stub.assert.calledOnce(mock.setOnMessage);
+    const onMessage = mock.setOnMessage.getCall(0).args[0] as any as (
+      string
+    ) => void;
+    return onMessage;
+  }
+
+  // Export `assert` to simplify imports.
   static assert = assert;
 }
 type StubbedClass<T> = SinonStubbedInstance<T> & T;

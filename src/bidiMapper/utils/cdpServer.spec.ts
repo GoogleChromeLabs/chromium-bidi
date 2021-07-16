@@ -27,14 +27,37 @@ describe('CdpClient tests.', async () => {
       id: 0,
     });
 
-    const mockServerBinding = Stub.stub(ServerBinding);
+    const mockCdpBinding = Stub.stub(ServerBinding);
 
-    const cdpClient = new CdpClient(mockServerBinding);
+    const cdpClient = new CdpClient(mockCdpBinding);
     cdpClient.sendMessage(someMessage);
 
     Stub.assert.calledOnceWithExactly(
-      mockServerBinding.sendMessage,
+      mockCdpBinding.sendMessage,
       expectedMessageStr
     );
+  });
+
+  it('given `sendMessage` is called, when CDP comand is done, then `sendMessage` promise is resolved', async () => {
+    const someMessage = {
+      someAttribute: 'someValue',
+    };
+
+    const mockCdpBinding = Stub.stub(ServerBinding);
+    const cdpClient = new CdpClient(mockCdpBinding);
+
+    // Get handler `onMessage` to notify `cdpClient` about new CDP messages.
+    const onMessage = Stub.getOnMessage(mockCdpBinding);
+
+    // Send CDP command and store result promise.
+    const commandPromise = cdpClient.sendMessage(someMessage);
+    // Verify CDP command was sent.
+    Stub.assert.calledOnce(mockCdpBinding.sendMessage);
+
+    // Notify `cdpClient` the CDP comand is finished.
+    onMessage(JSON.stringify({ id: 0 }));
+
+    // Assert `cdpClient` resolved message promise.
+    await commandPromise;
   });
 });
