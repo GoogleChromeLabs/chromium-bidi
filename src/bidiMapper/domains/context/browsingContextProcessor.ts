@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { log } from '../../utils/log';
-import { IServer } from '../../utils/iServer';
+import { IServer } from '../../utils/Server/iServer';
 import { Context } from './context';
 import { TargetInfo } from './targetInfo';
 const logContext = log('context');

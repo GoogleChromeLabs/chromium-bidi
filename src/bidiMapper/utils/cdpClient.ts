@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ServerBinding, AbstractServer } from './iServer';
+import { ServerBinding } from './Server/ServerBinding';
+import { AbstractServer } from './Server/AbstractServer';
 import { log } from './log';
 const logCdp = log('cdp');
-
-// TODO: Remove. This is a quick test to verify we can import a node module.
-import { version } from 'devtools-protocol/json/browser_protocol.json';
-logCdp(`Using CDP version: ${version}`);
 
 export class CdpClient extends AbstractServer {
   private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
@@ -27,9 +24,9 @@ export class CdpClient extends AbstractServer {
   constructor(cdpBinding: ServerBinding) {
     super(cdpBinding);
 
-    this._binding.onmessage = (messageStr: string) => {
+    this._binding.setOnMessage((messageStr: string) => {
       this._onCdpMessage(messageStr);
-    };
+    });
   }
 
   /**

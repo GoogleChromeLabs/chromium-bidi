@@ -16,8 +16,8 @@
 import { CommandProcessor } from './commandProcessor';
 
 import { CdpClient } from './utils/cdpClient';
-import { BidiServer } from './utils/bidiServer';
-import { ServerBinding } from './utils/iServer';
+import { BidiServer } from './utils/Server/bidiServer';
+import { ServerBinding } from './utils/Server/ServerBinding';
 
 import { log } from './utils/log';
 const logSystem = log('system');

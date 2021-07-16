@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ServerBinding, AbstractServer } from './iServer';
-import { log } from './log';
+import { ServerBinding } from './ServerBinding';
+import { AbstractServer } from './AbstractServer';
+import { log } from '../log';
 const logBidi = log('bidi');
 
 export class BidiServer extends AbstractServer {
@@ -24,9 +25,9 @@ export class BidiServer extends AbstractServer {
   constructor(bidiBindings: ServerBinding) {
     super(bidiBindings);
     this._bidiBindings = bidiBindings;
-    this._bidiBindings.onmessage = (messageStr: string) => {
+    this._bidiBindings.setOnMessage((messageStr: string) => {
       this._onBidiMessage(messageStr);
-    };
+    });
   }
 
   /**
