@@ -1,9 +1,9 @@
-import { CdpServer } from './cdpServer';
+import { CdpClient } from './cdpClient';
 import { ServerBinding } from './iServer';
 import { mock, instance, verify } from 'ts-mockito';
 
-describe('CdpServer tests.', async () => {
-  it('given CdpServer, when `sendMessage` is called, then cdpBindings should be called with proper values', async () => {
+describe('CdpClient tests.', async () => {
+  it('given CdpClient, when `sendMessage` is called, then cdpBindings should be called with proper values', async () => {
     const someMessage = {
       someAttribute: 'someValue',
     };
@@ -13,9 +13,9 @@ describe('CdpServer tests.', async () => {
     });
 
     const mockBinding = mock(ServerBinding);
-    const cdpServer = new CdpServer(instance(mockBinding));
+    const cdpClient = new CdpClient(instance(mockBinding));
 
-    cdpServer.sendMessage(someMessage);
+    cdpClient.sendMessage(someMessage);
 
     verify(mockBinding.sendMessage(expectedMessageStr)).called();
   });
