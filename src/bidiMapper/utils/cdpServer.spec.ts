@@ -47,7 +47,7 @@ describe('CdpClient tests.', async () => {
     const cdpClient = connectCdp(mockCdpServer);
 
     // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
-    const onMessage = mockCdpServer.getOnMessage(mockCdpServer);
+    const onMessage = mockCdpServer.getOnMessage();
 
     // Send CDP command and store result promise.
     const commandPromise = cdpClient.Target.activateTarget({
@@ -78,7 +78,7 @@ describe('CdpClient tests.', async () => {
     const commandResult2 = { id: 1, result: expectedResult2 };
 
     // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
-    const onMessage = mockCdpServer.getOnMessage(mockCdpServer);
+    const onMessage = mockCdpServer.getOnMessage();
 
     // Send 2 CDP commands and store result promise.
     const commandPromise1 = cdpClient.Target.attachToTarget({
