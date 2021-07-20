@@ -15,16 +15,18 @@
  */
 export function log(type: string): (...message: any[]) => void {
   return (...messages: any[]) => {
-    const elementId = type + '_log';
+    // If run in browser, add debug message to the page.
+    if (typeof window !== 'undefined' && window?.document?.documentElement) {
+      console.log(type, ...messages);
 
-    if (!window.document.getElementById(elementId)) {
-      window.document.documentElement.innerHTML += `<h3>${type}:</h3><pre id='${elementId}'></pre>`;
-      window.document.getElementById(elementId);
+      const elementId = type + '_log';
+
+      if (!window.document.getElementById(elementId)) {
+        window.document.documentElement.innerHTML += `<h3>${type}:</h3><pre id='${elementId}'></pre>`;
+      }
+
+      const element = window.document.getElementById(elementId);
+      element.innerText += messages.join(', ') + '\n';
     }
-
-    const element = window.document.getElementById(elementId);
-
-    console.log.apply(null, [type].concat(messages));
-    element.innerText += messages.join(', ') + '\n';
   };
 }
