@@ -80,7 +80,7 @@ describe('CdpClient tests.', () => {
     // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
     const onMessage = mockCdpServer.getOnMessage();
 
-    // Send 2 CDP commands and store result promise.
+    // Send 2 CDP commands and store returned promises.
     const commandPromise1 = cdpClient.Target.attachToTarget({
       targetId: 'Target_1',
     });
