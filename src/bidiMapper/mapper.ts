@@ -79,9 +79,7 @@ function _createCdpClient() {
       };
     }
 
-    async setOnMessage(
-      onMessage: (messageObj: any) => Promise<void>
-    ): Promise<void> {
+    setOnMessage(onMessage: (messageObj: any) => Promise<void>): void {
       this._onMessage = onMessage;
     }
 
