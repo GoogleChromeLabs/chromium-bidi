@@ -19,14 +19,24 @@ export function log(type: string): (...message: any[]) => void {
     if (globalThis?.document?.documentElement) {
       console.log(type, ...messages);
 
-      const elementId = type + '_log';
+      const typeLogContainer = findOrCreateTypeLogContainer(type);
 
-      if (!window.document.getElementById(elementId)) {
-        window.document.documentElement.innerHTML += `<h3>${type}:</h3><pre id='${elementId}'></pre>`;
-      }
-
-      const element = window.document.getElementById(elementId);
-      element.innerText += messages.join(', ') + '\n';
+      const pre = document.createElement('pre');
+      pre.innerText = messages.join(', ');
+      typeLogContainer.appendChild(pre);
     }
   };
+}
+
+function findOrCreateTypeLogContainer(type: string) {
+  const elementId = type + '_log';
+  if (!document.getElementById(elementId)) {
+    const typeLogContainer = document.createElement('div');
+    typeLogContainer.id = elementId;
+    typeLogContainer.innerHTML = `<h3>${type}:</h3>`;
+    document.body.appendChild(typeLogContainer);
+    return typeLogContainer;
+  }
+
+  return document.getElementById(elementId);
 }
