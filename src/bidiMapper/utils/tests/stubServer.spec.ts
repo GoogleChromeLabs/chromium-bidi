@@ -21,7 +21,7 @@ export class StubServer implements IServer {
   sendMessage: ((messageObj: any) => Promise<void>) & SinonSpy<any[], any>;
 
   getOnMessage(mock: StubServer): (string: string) => void {
-    assert.calledOnce(mock.setOnMessage);
+    assert.called(mock.setOnMessage);
     const onMessage = mock.setOnMessage.getCall(0).args[0] as any as (
       string: string
     ) => void;
