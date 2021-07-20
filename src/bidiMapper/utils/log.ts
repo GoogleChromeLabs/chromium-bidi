@@ -16,7 +16,7 @@
 export function log(type: string): (...message: any[]) => void {
   return (...messages: any[]) => {
     // If run in browser, add debug message to the page.
-    if (typeof window !== 'undefined' && window?.document?.documentElement) {
+    if (globalThis?.document?.documentElement) {
       console.log(type, ...messages);
 
       const elementId = type + '_log';
