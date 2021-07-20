@@ -19,7 +19,7 @@ import { assert as chai_assert } from 'chai';
 import { assert as sinon_assert } from 'sinon';
 import { Protocol } from 'devtools-protocol';
 
-describe('CdpClient tests.', async () => {
+describe('CdpClient tests.', () => {
   it(`given CdpClient, when some command is called, then cdpBindings should be
       called with proper values`, async () => {
     const expectedMessageStr = JSON.stringify({
