@@ -68,7 +68,7 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 function _createCdpClient() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
-  class WindowGlobalCdpTransport implements CdpTransport {
+  class WindowCdpTransport implements CdpTransport {
     onmessage?: (message: string) => void;
 
     constructor() {
@@ -84,7 +84,7 @@ function _createCdpClient() {
     }
   }
 
-  return connectCdp(new WindowGlobalCdpTransport());
+  return connectCdp(new WindowCdpTransport());
 }
 
 function _createBidiServer() {
