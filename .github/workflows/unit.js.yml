@@ -5,13 +5,12 @@ name: Unit tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  build:
-
+  unit_test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,14 +19,16 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node }}
-    - name: Install dependencies
-      run: npm install
-    - name: Build
-      run: npm run build
-    - name: Run unit tests
-      run: npm run unit
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Run unit tests
+        run: npm run unit
+env:
+  FORCE_COLOR: 3
