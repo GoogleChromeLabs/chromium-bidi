@@ -30,13 +30,13 @@ export function log(type: string): (...message: any[]) => void {
 
 function findOrCreateTypeLogContainer(type: string) {
   const elementId = type + '_log';
-  if (!document.getElementById(elementId)) {
-    const typeLogContainer = document.createElement('div');
-    typeLogContainer.id = elementId;
-    typeLogContainer.innerHTML = `<h3>${type}:</h3>`;
-    document.body.appendChild(typeLogContainer);
-    return typeLogContainer;
-  }
 
-  return document.getElementById(elementId);
+  const existingContainer = document.getElementById(elementId);
+  if (existingContainer) return existingContainer;
+
+  const newContainer = document.createElement('div');
+  newContainer.id = elementId;
+  newContainer.innerHTML = `<h3>${type}:</h3>`;
+  document.body.appendChild(newContainer);
+  return newContainer;
 }
