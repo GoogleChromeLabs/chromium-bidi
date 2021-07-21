@@ -22,7 +22,7 @@ export function log(type: string): (...message: any[]) => void {
       const typeLogContainer = findOrCreateTypeLogContainer(type);
 
       const pre = document.createElement('pre');
-      pre.innerText = messages.join(', ');
+      pre.textContent = messages.join(', ');
       typeLogContainer.appendChild(pre);
     }
   };
