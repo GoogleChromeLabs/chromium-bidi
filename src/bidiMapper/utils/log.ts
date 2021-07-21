@@ -16,7 +16,7 @@
 export function log(type: string): (...message: any[]) => void {
   return (...messages: any[]) => {
     // If run in browser, add debug message to the page.
-    if (globalThis?.document?.documentElement) {
+    if (globalThis.document?.documentElement) {
       console.log(type, ...messages);
 
       const typeLogContainer = findOrCreateTypeLogContainer(type);
