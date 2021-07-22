@@ -2,7 +2,7 @@
   "extends": "./configs/tsconfig.common.json",
   "compilerOptions": {
     "outDir": "./.build",
-    "module": "ESNext",
+    "module": "ESNext"
   },
-  "files": ["index.ts"]
+  "exclude": ["bidiMapper"]
 }
