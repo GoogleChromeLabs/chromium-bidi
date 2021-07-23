@@ -22,6 +22,7 @@ import { MessageRouter } from './router';
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
 import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
 import ProtocolProxyApi from 'devtools-protocol/types/protocol-proxy-api';
+import ProtocolMapping from 'devtools-protocol/types/protocol-mapping';
 
 // Publicly visible type. Has all of the methods of CdpClientImpl, and a property
 // getter for each CDP Domain (provided by ProtocolApiExt).
@@ -159,6 +160,11 @@ class CdpClientImpl extends EventEmitter {
       this._domains.get(domainName).emit(eventName, messageObj.params);
     }
   };
+
+  public on<K extends keyof ProtocolMapping.Events>(event: 'event', listener: (message: { method: K, params: {} }) => void): this;
+  public on(event: string | symbol, listener: (...args: any[]) => void): this {
+    return super.on(event, listener);
+  }
 }
 
 /**

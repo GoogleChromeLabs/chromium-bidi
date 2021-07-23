@@ -20,7 +20,8 @@ import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
-import { assert as sinon_assert } from 'sinon';
+import * as sinon from 'sinon';
+
 import { Protocol } from 'devtools-protocol';
 
 describe('CdpClient tests.', function () {
@@ -39,7 +40,7 @@ describe('CdpClient tests.', function () {
     const cdpClient = connectCdp(mockCdpServer);
     cdpClient.Target.activateTarget({ targetId: 'TargetID' });
 
-    sinon_assert.calledOnceWithExactly(
+    sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
       expectedMessageStr
     );
@@ -59,7 +60,7 @@ describe('CdpClient tests.', function () {
     });
 
     // Verify CDP command was sent.
-    sinon_assert.calledOnce(mockCdpServer.sendMessage);
+    sinon.assert.calledOnce(mockCdpServer.sendMessage);
 
     // Notify 'cdpClient' the CDP command is finished.
     onMessage(JSON.stringify({ id: 0, result: {} }));
@@ -93,7 +94,7 @@ describe('CdpClient tests.', function () {
     });
 
     // Verify CDP command was sent.
-    sinon_assert.calledTwice(mockCdpServer.sendMessage);
+    sinon.assert.calledTwice(mockCdpServer.sendMessage);
 
     // Notify 'cdpClient' the command2 is finished.
     onMessage(JSON.stringify(commandResult2));
@@ -107,6 +108,41 @@ describe('CdpClient tests.', function () {
 
     chai.assert.deepEqual(actualResult1, expectedResult1);
     chai.assert.deepEqual(actualResult2, expectedResult2);
+  });
+
+  it('gets event callbacks when events are received from CDP', async function() {
+    const mockCdpServer = new StubServer();
+    const cdpClient = connectCdp(mockCdpServer);
+
+    // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
+    const onMessage = mockCdpServer.getOnMessage();
+
+    // Register event callbacks.
+    const genericCallback = sinon.fake();
+    cdpClient.on('event', genericCallback);
+
+    const typedCallback = sinon.fake();
+    cdpClient.Target.on('attachedToTarget', typedCallback);
+
+    // Send a CDP event.
+    onMessage(JSON.stringify({ method: 'Target.attachedToTarget', params: { targetId: "A" } }));
+
+    // Verify that callbacks are called.
+    sinon.assert.calledOnceWithExactly(genericCallback, 'Target.attachedToTarget', { targetId: 'A' });
+    genericCallback.resetHistory();
+
+    sinon.assert.calledOnceWithExactly(typedCallback, { targetId: 'A' });
+    typedCallback.resetHistory();
+
+    // Unregister callbacks.
+    cdpClient.off('event', genericCallback);
+    cdpClient.Target.off('Target.attachedToTarget', typedCallback);
+
+    // Send another CDP event.
+    onMessage(JSON.stringify({ params: { targetId: "A" } }));
+
+    sinon.assert.notCalled(genericCallback);
+    sinon.assert.notCalled(typedCallback);
   });
 
   describe('sendCommand()', function () {
@@ -123,7 +159,7 @@ describe('CdpClient tests.', function () {
       });
 
       // Verify CDP command was sent.
-      sinon_assert.calledOnce(mockCdpServer.sendMessage);
+      sinon.assert.calledOnce(mockCdpServer.sendMessage);
 
       // Notify 'cdpClient' the CDP command is finished.
       onMessage(JSON.stringify({ id: 0, result: { targetId: 'TargetID' } }));
@@ -151,7 +187,7 @@ describe('CdpClient tests.', function () {
       });
 
       // Verify CDP command was sent.
-      sinon_assert.calledOnce(mockCdpServer.sendMessage);
+      sinon.assert.calledOnce(mockCdpServer.sendMessage);
 
       // Notify 'cdpClient' the CDP command is finished.
       onMessage(JSON.stringify({ id: 0, error: expectedError }));
