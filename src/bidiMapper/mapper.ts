@@ -16,7 +16,7 @@
 import { CommandProcessor } from './commandProcessor';
 
 import { CdpClient, connectCdp } from '../cdp';
-import { BidiServer } from '../utils/bidiServer';
+import { BidiServer } from './utils/bidiServer';
 import { ServerBinding, IServer } from '../utils/iServer';
 
 import { log } from '../utils/log';
