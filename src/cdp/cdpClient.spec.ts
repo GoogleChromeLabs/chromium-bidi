@@ -110,7 +110,7 @@ describe('CdpClient tests.', function () {
     chai.assert.deepEqual(actualResult2, expectedResult2);
   });
 
-  it('gets event callbacks when events are received from CDP', async function() {
+  it('gets event callbacks when events are received from CDP', async function () {
     const mockCdpServer = new StubServer();
     const cdpClient = connectCdp(mockCdpServer);
 
@@ -125,10 +125,19 @@ describe('CdpClient tests.', function () {
     cdpClient.Target.on('attachedToTarget', typedCallback);
 
     // Send a CDP event.
-    onMessage(JSON.stringify({ method: 'Target.attachedToTarget', params: { targetId: "A" } }));
+    onMessage(
+      JSON.stringify({
+        method: 'Target.attachedToTarget',
+        params: { targetId: 'A' },
+      })
+    );
 
     // Verify that callbacks are called.
-    sinon.assert.calledOnceWithExactly(genericCallback, 'Target.attachedToTarget', { targetId: 'A' });
+    sinon.assert.calledOnceWithExactly(
+      genericCallback,
+      'Target.attachedToTarget',
+      { targetId: 'A' }
+    );
     genericCallback.resetHistory();
 
     sinon.assert.calledOnceWithExactly(typedCallback, { targetId: 'A' });
@@ -139,7 +148,7 @@ describe('CdpClient tests.', function () {
     cdpClient.Target.off('Target.attachedToTarget', typedCallback);
 
     // Send another CDP event.
-    onMessage(JSON.stringify({ params: { targetId: "A" } }));
+    onMessage(JSON.stringify({ params: { targetId: 'A' } }));
 
     sinon.assert.notCalled(genericCallback);
     sinon.assert.notCalled(typedCallback);
@@ -194,6 +203,21 @@ describe('CdpClient tests.', function () {
 
       // Assert sendCommand rejects with error.
       chai.assert.isRejected(commandPromise, expectedError);
+    });
+  });
+
+  describe('close()', function () {
+    it('closes the connection and stops receiving messages', async function () {
+      const mockCdpServer = new StubServer();
+      const cdpClient = connectCdp(mockCdpServer);
+      cdpClient.close();
+      sinon.assert.calledOnce(mockCdpServer.close);
+    });
+  });
+
+  describe('attachToSession()', function () {
+    it('creates a new CdpClient attached to the given session', async function () {
+
     });
   });
 });

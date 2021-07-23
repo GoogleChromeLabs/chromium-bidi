@@ -161,7 +161,10 @@ class CdpClientImpl extends EventEmitter {
     }
   };
 
-  public on<K extends keyof ProtocolMapping.Events>(event: 'event', listener: (message: { method: K, params: {} }) => void): this;
+  public on<K extends keyof ProtocolMapping.Events>(
+    event: 'event',
+    listener: (message: { method: K; params: {} }) => void
+  ): this;
   public on(event: string | symbol, listener: (...args: any[]) => void): this {
     return super.on(event, listener);
   }

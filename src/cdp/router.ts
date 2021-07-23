@@ -32,6 +32,15 @@ export class MessageRouter {
     if (sessionClients) {
       sessionClients.delete(handler);
     }
+
+    if (sessionClients.size === 0) {
+      this._clients.delete(sessionId);
+    }
+
+    // If this was the last listening client, close the connection now.
+    if (this._clients.size === 0) {
+      this.close();
+    }
   }
 
   public sendMessage(message: string) {
