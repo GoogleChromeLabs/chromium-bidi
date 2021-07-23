@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { log } from '../utils/log';
-const logCdp = log('cdp');
 
 import { EventEmitter } from 'events';
 import { IServer } from '../utils/iServer';
+import { CdpMessage } from './message';
+import { MessageRouter } from './router';
 
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
 import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
@@ -33,19 +33,6 @@ type ProtocolApiExt = {
   [Domain in keyof ProtocolProxyApi.ProtocolApi]: DomainImpl &
     ProtocolProxyApi.ProtocolApi[Domain];
 };
-
-export interface CdpError {
-  code: number;
-  message: string;
-}
-
-interface CdpMessage {
-  id?: number;
-  result?: {};
-  error?: {};
-  method?: string;
-  params?: {};
-}
 
 interface CdpCallbacks {
   resolve: (messageObj: {}) => void;
@@ -96,12 +83,15 @@ class CdpClientImpl extends EventEmitter {
   private _domains: Map<string, DomainImpl>;
   private _nextId: number;
 
-  constructor(private _transport: IServer) {
+  constructor(
+    private _router: MessageRouter,
+    private _sessionId: string | null
+  ) {
     super();
 
     this._commandCallbacks = new Map();
     this._nextId = 0;
-    this._transport.setOnMessage(this._onCdpMessage.bind(this));
+    this._router.addClient(this._sessionId, this._onCdpMessage);
 
     this._domains = new Map();
     for (const [domainName, ctor] of domainConstructorMap.entries()) {
@@ -123,18 +113,33 @@ class CdpClientImpl extends EventEmitter {
     return new Promise((resolve, reject) => {
       const id = this._nextId++;
       this._commandCallbacks.set(id, { resolve, reject });
-      const messageObj = { id, method, params };
-      const messageStr = JSON.stringify(messageObj);
+      let messageObj: CdpMessage = { id, method, params };
+      if (this._sessionId) messageObj.sessionId = this._sessionId;
 
-      logCdp('sent > ' + messageStr);
-      this._transport.sendMessage(messageStr);
+      const messageStr = JSON.stringify(messageObj);
+      this._router.sendMessage(messageStr);
     });
   }
 
-  private _onCdpMessage(messageStr: string): void {
-    logCdp('received < ' + messageStr);
+  /**
+   *
+   * Returns a new CdpClient object attached to the given sessionId. The new CdpClient shares the same
+   * underlying transport as this CdpClient.
+   * @param sessionId The sessionId to attach the new client to. Use Target.attachToTarget to obtain a sessionId.
+   */
+  attachToSession(sessionId: string): CdpClient {
+    return new CdpClientImpl(this._router, sessionId) as unknown as CdpClient;
+  }
 
-    const messageObj: CdpMessage = JSON.parse(messageStr);
+  /**
+   * Close this CdpClient's connection to the browser.
+   */
+  close() {
+    this._router.removeClient(this._sessionId, this._onCdpMessage);
+    this.removeAllListeners();
+  }
+
+  private _onCdpMessage = async (messageObj: CdpMessage) => {
     if (messageObj.id !== undefined) {
       // Handle command response.
       const callbacks = this._commandCallbacks.get(messageObj.id);
@@ -153,7 +158,7 @@ class CdpClientImpl extends EventEmitter {
       const [domainName, eventName] = messageObj.method.split('.');
       this._domains.get(domainName).emit(eventName, messageObj.params);
     }
-  }
+  };
 }
 
 /**
@@ -163,5 +168,6 @@ class CdpClientImpl extends EventEmitter {
  * @returns A connected CDP client object.
  */
 export function connectCdp(transport: IServer) {
-  return new CdpClientImpl(transport) as unknown as CdpClient;
+  const router = new MessageRouter(transport);
+  return new CdpClientImpl(router, null) as unknown as CdpClient;
 }
