@@ -217,7 +217,65 @@ describe('CdpClient tests.', function () {
 
   describe('attachToSession()', function () {
     it('creates a new CdpClient attached to the given session', async function () {
+      const mockCdpServer = new StubServer();
+      const cdpClient = connectCdp(mockCdpServer);
+      const sessionClient = cdpClient.attachToSession('A');
 
+      // Verify that both clients can send messages through the same transport.
+      // Each client has its own sequence of command IDs, so both should use 0.
+      cdpClient.Browser.getVersion();
+      sinon.assert.calledOnceWithExactly(
+        mockCdpServer.sendMessage,
+        JSON.stringify({ id: 0, method: 'Browser.getVersion' })
+      );
+      mockCdpServer.sendMessage.resetHistory();
+
+      // Verify that the second CdpClient includes the sessionId property in sent messages.
+      sessionClient.Runtime.enable();
+      sinon.assert.calledOnceWithExactly(
+        mockCdpServer.sendMessage,
+        JSON.stringify({ id: 0, method: 'Runtime.enable', sessionId: 'A' })
+      );
+
+      // Verify that events are routed to the correct client based on sessionId.
+
+      const onMessage = mockCdpServer.getOnMessage();
+
+      // Register event callbacks for both clients.
+      const browserCallback = sinon.fake();
+      cdpClient.on('event', browserCallback);
+      const sessionCallback = sinon.fake();
+      sessionClient.on('event', sessionCallback);
+
+      // Verify an event sent to the browser client is not seen by the session client.
+      onMessage(
+        JSON.stringify({
+          method: 'Target.attachedToTarget',
+          params: { targetId: 'B' },
+        })
+      );
+      sinon.assert.calledOnceWithExactly(
+        browserCallback,
+        'Target.attachedToTarget',
+        { targetId: 'B' }
+      );
+      sinon.assert.notCalled(sessionCallback);
+      browserCallback.resetHistory();
+
+      // Verify an event sent to the session client is not seen by the browser client.
+      onMessage(
+        JSON.stringify({
+          sessionId: 'A',
+          method: 'Page.frameNavigated',
+          params: { frameId: 'C' },
+        })
+      );
+      sinon.assert.notCalled(browserCallback);
+      sinon.assert.calledOnceWithExactly(
+        sessionCallback,
+        'Page.frameNavigated',
+        { frameId: 'C' }
+      );
     });
   });
 });
