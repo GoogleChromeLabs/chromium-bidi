@@ -41,6 +41,8 @@ export class BidiServer extends AbstractServer {
     return Promise.resolve();
   }
 
+  close(): void {}
+
   private _onBidiMessage(messageStr: string): void {
     logBidi('received < ' + messageStr);
 

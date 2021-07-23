@@ -86,6 +86,11 @@ function _createCdpClient() {
     async sendMessage(message: string): Promise<void> {
       window.cdp.send(message);
     }
+
+    close() {
+      this._onMessage = null;
+      window.cdp.onmessage = null;
+    }
   }
 
   return connectCdp(new WindowCdpTransport());

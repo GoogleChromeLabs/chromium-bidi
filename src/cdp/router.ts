@@ -40,7 +40,7 @@ export class MessageRouter {
   }
 
   public close() {
-    this._transport.setOnMessage(null);
+    this._transport.close();
     this._clients.clear();
   }
 
