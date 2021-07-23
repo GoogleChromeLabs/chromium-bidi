@@ -23,7 +23,7 @@ chai.use(chaiAsPromised);
 import { assert as sinon_assert } from 'sinon';
 import { Protocol } from 'devtools-protocol';
 
-describe('CdpClient tests.', function() {
+describe('CdpClient tests.', function () {
   it(`given CdpClient, when some command is called, then cdpBindings should be
       called with proper values`, async function () {
     const expectedMessageStr = JSON.stringify({
@@ -109,48 +109,53 @@ describe('CdpClient tests.', function() {
     chai.assert.deepEqual(actualResult2, expectedResult2);
   });
 
-  describe('sendCommand()', function() {
+  describe('sendCommand()', function () {
     it('sends a raw CDP messages and returns a promise that will be resolved with the result', async function () {
       const mockCdpServer = new StubServer();
       const cdpClient = connectCdp(mockCdpServer);
-  
+
       // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
       const onMessage = mockCdpServer.getOnMessage();
-  
+
       // Send CDP command and store returned promise.
       const commandPromise = cdpClient.sendCommand('Target.attachToTarget', {
         targetId: 'TargetID',
       });
-  
+
       // Verify CDP command was sent.
       sinon_assert.calledOnce(mockCdpServer.sendMessage);
-  
+
       // Notify 'cdpClient' the CDP command is finished.
       onMessage(JSON.stringify({ id: 0, result: { targetId: 'TargetID' } }));
-  
+
       // Assert sendCommand resolved message promise.
-      chai.assert.eventually.deepEqual(commandPromise, { targetId: 'TargetID' });
+      chai.assert.eventually.deepEqual(commandPromise, {
+        targetId: 'TargetID',
+      });
     });
 
     it('sends a raw CDP messages and returns a promise that will reject on error', async function () {
       const mockCdpServer = new StubServer();
       const cdpClient = connectCdp(mockCdpServer);
-      const expectedError = { code: "some error", message: "something happened" };
+      const expectedError = {
+        code: 'some error',
+        message: 'something happened',
+      };
 
       // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
       const onMessage = mockCdpServer.getOnMessage();
-  
+
       // Send CDP command and store returned promise.
       const commandPromise = cdpClient.sendCommand('Target.attachToTarget', {
         targetId: 'TargetID',
       });
-  
+
       // Verify CDP command was sent.
       sinon_assert.calledOnce(mockCdpServer.sendMessage);
-  
+
       // Notify 'cdpClient' the CDP command is finished.
       onMessage(JSON.stringify({ id: 0, error: expectedError }));
-  
+
       // Assert sendCommand rejects with error.
       chai.assert.isRejected(commandPromise, expectedError);
     });
