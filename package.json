@@ -2,7 +2,6 @@
   "name": "bidi",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.ts",
   "scripts": {
     "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
