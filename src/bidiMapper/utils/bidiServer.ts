@@ -78,7 +78,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
    * Sends BiDi message. Returns resolved promise.
    * @param messageObj Message object to be sent. Will be automatically enriched with `id`.
    */
-  async sendMessage(messageObj: {}): Promise<void> {
+  async sendMessage(messageObj: object): Promise<void> {
     const messageStr = JSON.stringify(messageObj);
     logBidi('sent > ' + messageStr);
     this._transport.sendMessage(messageStr);
