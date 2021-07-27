@@ -21,11 +21,10 @@ const debugLog = debug('bidiMapper:log');
 import WebSocket from 'ws';
 import Protocol from 'devtools-protocol';
 
-import { IServer } from './utils/iServer';
 import { CdpClient, Connection, WebSocketTransport } from './cdp';
 
-export class MapperServer implements IServer {
-  private _handlers: ((messageObj: any) => void)[] = new Array();
+export class MapperServer {
+  private _handlers: ((message: string) => void)[] = new Array();
 
   static async create(
     cdpUrl: string,
@@ -55,11 +54,11 @@ export class MapperServer implements IServer {
     );
   }
 
-  setOnMessage(handler: (messageObj: any) => void): void {
+  setOnMessage(handler: (message: string) => void): void {
     this._handlers.push(handler);
   }
-  sendMessage(messageObj: string): Promise<void> {
-    return this._sendBidiMessage(messageObj);
+  sendMessage(messageJson: string): Promise<void> {
+    return this._sendBidiMessage(messageJson);
   }
   close() {
     this._cdpConnection.close();
@@ -85,14 +84,14 @@ export class MapperServer implements IServer {
     });
   }
 
-  private async _sendBidiMessage(bidiMessageObj: any): Promise<void> {
+  private async _sendBidiMessage(bidiMessageJson: string): Promise<void> {
     await this._mapperCdpClient.Runtime.evaluate({
-      expression: 'onBidiMessage(' + JSON.stringify(bidiMessageObj) + ')',
+      expression: 'onBidiMessage(' + JSON.stringify(bidiMessageJson) + ')',
     });
   }
 
-  private _onBidiMessage(bidiMessageObj: any): void {
-    for (let handler of this._handlers) handler(bidiMessageObj);
+  private _onBidiMessage(bidiMessage: string): void {
+    for (let handler of this._handlers) handler(bidiMessage);
   }
 
   private _onBindingCalled = async (
