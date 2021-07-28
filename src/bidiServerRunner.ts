@@ -93,7 +93,7 @@ export class BidiServerRunner {
           return;
         }
 
-        const plainCommandData = message.utf8Data!;
+        const plainCommandData = message.utf8Data;
 
         debugRecv(plainCommandData);
         bidiServer.onMessage(plainCommandData);
