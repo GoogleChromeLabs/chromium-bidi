@@ -72,6 +72,7 @@ describe('MessageRouter', function () {
     router.addClient(SOME_SESSION_ID, sessionCallback);
 
     // Send another message for the browser and verify that only the browser callback receives it.
+    // Verifies that adding another client doesn't affect routing for existing clients.
     onMessage(JSON.stringify(browserMessage));
     sinon.assert.notCalled(sessionCallback);
     sinon.assert.calledOnceWithExactly(browserCallback, browserMessage);
@@ -87,6 +88,7 @@ describe('MessageRouter', function () {
     router.addClient(ANOTHER_SESSION_ID, otherSessionCallback);
 
     // Send a message for session B and verify that only the session B callback receives it.
+    // Verifies that a message is sent only to the session client it is intended for.
     onMessage(JSON.stringify(othersessionMessage));
     sinon.assert.notCalled(browserCallback);
     sinon.assert.notCalled(sessionCallback);
