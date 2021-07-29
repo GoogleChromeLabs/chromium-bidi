@@ -58,7 +58,7 @@ export abstract class AbstractServer implements IServer {
   }
 
   abstract sendMessage(messageObj: any): Promise<any>;
-  abstract close(): void;
+  close(): void {}
 
   /**
    * Sets handler, which will be called for each CDP message, except commands.
