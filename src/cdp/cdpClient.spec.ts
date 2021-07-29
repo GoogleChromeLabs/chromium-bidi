@@ -24,6 +24,11 @@ import * as sinon from 'sinon';
 
 import { Protocol } from 'devtools-protocol';
 
+const TEST_SESSION_ID = 'ABCD';
+
+const TEST_TARGET_ID = 'TargetA';
+const ANOTHER_TARGET_ID = 'TargetB';
+
 describe('CdpClient tests.', function () {
   it(`given CdpClient, when some command is called, then cdpBindings should be
       called with proper values`, async function () {
@@ -31,14 +36,14 @@ describe('CdpClient tests.', function () {
       id: 0,
       method: 'Target.activateTarget',
       params: {
-        targetId: 'TargetID',
+        targetId: TEST_TARGET_ID,
       },
     });
 
     const mockCdpServer = new StubServer();
 
     const cdpClient = connectCdp(mockCdpServer);
-    cdpClient.Target.activateTarget({ targetId: 'TargetID' });
+    cdpClient.Target.activateTarget({ targetId: TEST_TARGET_ID });
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
@@ -56,7 +61,7 @@ describe('CdpClient tests.', function () {
 
     // Send CDP command and store returned promise.
     const commandPromise = cdpClient.Target.activateTarget({
-      targetId: 'TargetID',
+      targetId: TEST_TARGET_ID,
     });
 
     // Verify CDP command was sent.
@@ -87,10 +92,10 @@ describe('CdpClient tests.', function () {
 
     // Send 2 CDP commands and store returned promises.
     const commandPromise1 = cdpClient.Target.attachToTarget({
-      targetId: 'Target_1',
+      targetId: TEST_TARGET_ID,
     });
     const commandPromise2 = cdpClient.Target.attachToTarget({
-      targetId: 'Target_2',
+      targetId: ANOTHER_TARGET_ID,
     });
 
     // Verify CDP command was sent.
@@ -128,7 +133,7 @@ describe('CdpClient tests.', function () {
     onMessage(
       JSON.stringify({
         method: 'Target.attachedToTarget',
-        params: { targetId: 'A' },
+        params: { targetId: TEST_TARGET_ID },
       })
     );
 
@@ -136,11 +141,13 @@ describe('CdpClient tests.', function () {
     sinon.assert.calledOnceWithExactly(
       genericCallback,
       'Target.attachedToTarget',
-      { targetId: 'A' }
+      { targetId: TEST_TARGET_ID }
     );
     genericCallback.resetHistory();
 
-    sinon.assert.calledOnceWithExactly(typedCallback, { targetId: 'A' });
+    sinon.assert.calledOnceWithExactly(typedCallback, {
+      targetId: TEST_TARGET_ID,
+    });
     typedCallback.resetHistory();
 
     // Unregister callbacks.
@@ -148,7 +155,7 @@ describe('CdpClient tests.', function () {
     cdpClient.Target.off('Target.attachedToTarget', typedCallback);
 
     // Send another CDP event.
-    onMessage(JSON.stringify({ params: { targetId: 'A' } }));
+    onMessage(JSON.stringify({ params: { targetId: TEST_TARGET_ID } }));
 
     sinon.assert.notCalled(genericCallback);
     sinon.assert.notCalled(typedCallback);
@@ -164,18 +171,20 @@ describe('CdpClient tests.', function () {
 
       // Send CDP command and store returned promise.
       const commandPromise = cdpClient.sendCommand('Target.attachToTarget', {
-        targetId: 'TargetID',
+        targetId: TEST_TARGET_ID,
       });
 
       // Verify CDP command was sent.
       sinon.assert.calledOnce(mockCdpServer.sendMessage);
 
       // Notify 'cdpClient' the CDP command is finished.
-      onMessage(JSON.stringify({ id: 0, result: { targetId: 'TargetID' } }));
+      onMessage(
+        JSON.stringify({ id: 0, result: { targetId: TEST_TARGET_ID } })
+      );
 
       // Assert sendCommand resolved message promise.
       chai.assert.eventually.deepEqual(commandPromise, {
-        targetId: 'TargetID',
+        targetId: TEST_TARGET_ID,
       });
     });
 
@@ -192,7 +201,7 @@ describe('CdpClient tests.', function () {
 
       // Send CDP command and store returned promise.
       const commandPromise = cdpClient.sendCommand('Target.attachToTarget', {
-        targetId: 'TargetID',
+        targetId: TEST_TARGET_ID,
       });
 
       // Verify CDP command was sent.
@@ -219,7 +228,7 @@ describe('CdpClient tests.', function () {
     it('creates a new CdpClient attached to the given session', async function () {
       const mockCdpServer = new StubServer();
       const cdpClient = connectCdp(mockCdpServer);
-      const sessionClient = cdpClient.attachToSession('A');
+      const sessionClient = cdpClient.attachToSession(TEST_SESSION_ID);
 
       // Verify that both clients can send messages through the same transport.
       // Each client has its own sequence of command IDs, so both should use 0.
@@ -234,7 +243,11 @@ describe('CdpClient tests.', function () {
       sessionClient.Runtime.enable();
       sinon.assert.calledOnceWithExactly(
         mockCdpServer.sendMessage,
-        JSON.stringify({ id: 0, method: 'Runtime.enable', sessionId: 'A' })
+        JSON.stringify({
+          id: 0,
+          method: 'Runtime.enable',
+          sessionId: TEST_SESSION_ID,
+        })
       );
 
       // Verify that events are routed to the correct client based on sessionId.
@@ -251,13 +264,13 @@ describe('CdpClient tests.', function () {
       onMessage(
         JSON.stringify({
           method: 'Target.attachedToTarget',
-          params: { targetId: 'B' },
+          params: { targetId: ANOTHER_TARGET_ID },
         })
       );
       sinon.assert.calledOnceWithExactly(
         browserCallback,
         'Target.attachedToTarget',
-        { targetId: 'B' }
+        { targetId: ANOTHER_TARGET_ID }
       );
       sinon.assert.notCalled(sessionCallback);
       browserCallback.resetHistory();
@@ -265,7 +278,7 @@ describe('CdpClient tests.', function () {
       // Verify an event sent to the session client is not seen by the browser client.
       onMessage(
         JSON.stringify({
-          sessionId: 'A',
+          sessionId: TEST_SESSION_ID,
           method: 'Page.frameNavigated',
           params: { frameId: 'C' },
         })

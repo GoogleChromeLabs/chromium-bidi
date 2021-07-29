@@ -115,7 +115,9 @@ class CdpClientImpl extends EventEmitter {
       const id = this._nextId++;
       this._commandCallbacks.set(id, { resolve, reject });
       let messageObj: CdpMessage = { id, method, params };
-      if (this._sessionId) messageObj.sessionId = this._sessionId;
+      if (this._sessionId) {
+        messageObj.sessionId = this._sessionId;
+      }
 
       const messageStr = JSON.stringify(messageObj);
       this._router.sendMessage(messageStr);
