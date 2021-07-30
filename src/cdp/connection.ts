@@ -16,7 +16,7 @@ interface CdpCallbacks {
  */
 export class Connection {
   private _browserClient: CdpClient;
-  private _clients: Map<string, CdpClient> = new Map();
+  private _sessionClients: Map<string, CdpClient> = new Map();
   private _commandCallbacks: Map<number, CdpCallbacks> = new Map();
   private _nextId: number;
 
@@ -35,7 +35,7 @@ export class Connection {
       reject(new Error('Disconnected'));
     }
     this._commandCallbacks.clear();
-    this._clients.clear();
+    this._sessionClients.clear();
   }
 
   /**
@@ -51,7 +51,7 @@ export class Connection {
    * @returns The CdpClient object attached to the given session, or null if the session is not attached.
    */
   sessionClient(sessionId: string): CdpClient | null {
-    return this._clients.get(sessionId) || null;
+    return this._sessionClients.get(sessionId) || null;
   }
 
   /**
@@ -85,12 +85,12 @@ export class Connection {
     // Listen for these events on every session.
     if (parsed.method === 'Target.attachedToTarget') {
       const { sessionId } = parsed.params;
-      this._clients.set(sessionId, createClient(this, sessionId));
+      this._sessionClients.set(sessionId, createClient(this, sessionId));
     } else if (parsed.method === 'Target.detachedFromTarget') {
       const { sessionId } = parsed.params;
-      const client = this._clients.get(sessionId);
+      const client = this._sessionClients.get(sessionId);
       if (client) {
-        this._clients.delete(sessionId);
+        this._sessionClients.delete(sessionId);
       }
     }
 
@@ -106,7 +106,7 @@ export class Connection {
       }
     } else if (parsed.method) {
       const client = parsed.sessionId
-        ? this._clients.get(parsed.sessionId)
+        ? this._sessionClients.get(parsed.sessionId)
         : this._browserClient;
       if (client) {
         client._onCdpEvent(parsed.method, parsed.params || {});
