@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { connectCdp } from './cdpClient';
+import { Connection } from './connection';
 import { StubServer } from '../tests/stubServer.spec';
 
 import * as chai from 'chai';
@@ -41,8 +41,9 @@ describe('CdpClient tests.', function () {
     });
 
     const mockCdpServer = new StubServer();
+    const conn = new Connection(mockCdpServer);
 
-    const cdpClient = connectCdp(mockCdpServer);
+    const cdpClient = conn.browserClient();
     cdpClient.Target.activateTarget({ targetId: TEST_TARGET_ID });
 
     sinon.assert.calledOnceWithExactly(
@@ -54,7 +55,9 @@ describe('CdpClient tests.', function () {
   it(`given some command is called, when CDP command is done, then
         'sendMessage' promise is resolved`, async function () {
     const mockCdpServer = new StubServer();
-    const cdpClient = connectCdp(mockCdpServer);
+    const conn = new Connection(mockCdpServer);
+
+    const cdpClient = conn.browserClient();
 
     // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
     const onMessage = mockCdpServer.getOnMessage();
@@ -77,7 +80,9 @@ describe('CdpClient tests.', function () {
   it(`given some command is called 2 times, when CDP commands are done, then
         each command promise is resolved with proper results`, async function () {
     const mockCdpServer = new StubServer();
-    const cdpClient = connectCdp(mockCdpServer);
+    const conn = new Connection(mockCdpServer);
+    const cdpClient = conn.browserClient();
+
     const expectedResult1 = {
       someResult: 1,
     } as any as Protocol.Target.AttachToTargetResponse;
@@ -117,7 +122,8 @@ describe('CdpClient tests.', function () {
 
   it('gets event callbacks when events are received from CDP', async function () {
     const mockCdpServer = new StubServer();
-    const cdpClient = connectCdp(mockCdpServer);
+    const conn = new Connection(mockCdpServer);
+    const cdpClient = conn.browserClient();
 
     // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
     const onMessage = mockCdpServer.getOnMessage();
@@ -164,7 +170,8 @@ describe('CdpClient tests.', function () {
   describe('sendCommand()', function () {
     it('sends a raw CDP messages and returns a promise that will be resolved with the result', async function () {
       const mockCdpServer = new StubServer();
-      const cdpClient = connectCdp(mockCdpServer);
+      const conn = new Connection(mockCdpServer);
+      const cdpClient = conn.browserClient();
 
       // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
       const onMessage = mockCdpServer.getOnMessage();
@@ -190,7 +197,9 @@ describe('CdpClient tests.', function () {
 
     it('sends a raw CDP messages and returns a promise that will reject on error', async function () {
       const mockCdpServer = new StubServer();
-      const cdpClient = connectCdp(mockCdpServer);
+      const conn = new Connection(mockCdpServer);
+      const cdpClient = conn.browserClient();
+
       const expectedError = {
         code: 'some error',
         message: 'something happened',
@@ -212,83 +221,6 @@ describe('CdpClient tests.', function () {
 
       // Assert sendCommand rejects with error.
       chai.assert.isRejected(commandPromise, expectedError);
-    });
-  });
-
-  describe('close()', function () {
-    it('closes the connection and stops receiving messages', async function () {
-      const mockCdpServer = new StubServer();
-      const cdpClient = connectCdp(mockCdpServer);
-      cdpClient.close();
-      sinon.assert.calledOnce(mockCdpServer.close);
-    });
-  });
-
-  describe('attachToSession()', function () {
-    it('creates a new CdpClient attached to the given session', async function () {
-      const mockCdpServer = new StubServer();
-      const cdpClient = connectCdp(mockCdpServer);
-      const sessionClient = cdpClient.attachToSession(TEST_SESSION_ID);
-
-      // Verify that both clients can send messages through the same transport.
-      // Each client has its own sequence of command IDs, so both should use 0.
-      cdpClient.Browser.getVersion();
-      sinon.assert.calledOnceWithExactly(
-        mockCdpServer.sendMessage,
-        JSON.stringify({ id: 0, method: 'Browser.getVersion' })
-      );
-      mockCdpServer.sendMessage.resetHistory();
-
-      // Verify that the second CdpClient includes the sessionId property in sent messages.
-      sessionClient.Runtime.enable();
-      sinon.assert.calledOnceWithExactly(
-        mockCdpServer.sendMessage,
-        JSON.stringify({
-          id: 0,
-          method: 'Runtime.enable',
-          sessionId: TEST_SESSION_ID,
-        })
-      );
-
-      // Verify that events are routed to the correct client based on sessionId.
-
-      const onMessage = mockCdpServer.getOnMessage();
-
-      // Register event callbacks for both clients.
-      const browserCallback = sinon.fake();
-      cdpClient.on('event', browserCallback);
-      const sessionCallback = sinon.fake();
-      sessionClient.on('event', sessionCallback);
-
-      // Verify an event sent to the browser client is not seen by the session client.
-      onMessage(
-        JSON.stringify({
-          method: 'Target.attachedToTarget',
-          params: { targetId: ANOTHER_TARGET_ID },
-        })
-      );
-      sinon.assert.calledOnceWithExactly(
-        browserCallback,
-        'Target.attachedToTarget',
-        { targetId: ANOTHER_TARGET_ID }
-      );
-      sinon.assert.notCalled(sessionCallback);
-      browserCallback.resetHistory();
-
-      // Verify an event sent to the session client is not seen by the browser client.
-      onMessage(
-        JSON.stringify({
-          sessionId: TEST_SESSION_ID,
-          method: 'Page.frameNavigated',
-          params: { frameId: 'C' },
-        })
-      );
-      sinon.assert.notCalled(browserCallback);
-      sinon.assert.calledOnceWithExactly(
-        sessionCallback,
-        'Page.frameNavigated',
-        { frameId: 'C' }
-      );
     });
   });
 });

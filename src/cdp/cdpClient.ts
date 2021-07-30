@@ -15,9 +15,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { IServer } from '../utils/iServer';
-import { CdpMessage } from './message';
-import { MessageRouter } from './router';
+import { Connection } from './connection';
 
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
 import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
@@ -34,11 +32,6 @@ type ProtocolApiExt = {
   [Domain in keyof ProtocolProxyApi.ProtocolApi]: DomainImpl &
     ProtocolProxyApi.ProtocolApi[Domain];
 };
-
-interface CdpCallbacks {
-  resolve: (messageObj: {}) => void;
-  reject: (errorObj: {}) => void;
-}
 
 const mergedProtocol = [...browserProtocol.domains, ...jsProtocol.domains];
 
@@ -80,19 +73,13 @@ for (let domainInfo of mergedProtocol) {
 }
 
 class CdpClientImpl extends EventEmitter {
-  private _commandCallbacks: Map<number, CdpCallbacks>;
   private _domains: Map<string, DomainImpl>;
-  private _nextId: number;
 
   constructor(
-    private _router: MessageRouter,
+    private _connection: Connection,
     private _sessionId: string | null
   ) {
     super();
-
-    this._commandCallbacks = new Map();
-    this._nextId = 0;
-    this._router.addClient(this._sessionId, this._onCdpMessage);
 
     this._domains = new Map();
     for (const [domainName, ctor] of domainConstructorMap.entries()) {
@@ -111,57 +98,17 @@ class CdpClientImpl extends EventEmitter {
    * @param params Parameters to pass to the CDP command.
    */
   sendCommand(method: string, params: {}): Promise<{}> {
-    return new Promise((resolve, reject) => {
-      const id = this._nextId++;
-      this._commandCallbacks.set(id, { resolve, reject });
-      let messageObj: CdpMessage = { id, method, params };
-      if (this._sessionId) {
-        messageObj.sessionId = this._sessionId;
-      }
-
-      const messageStr = JSON.stringify(messageObj);
-      this._router.sendMessage(messageStr);
-    });
+    return this._connection._sendCommand(method, params, this._sessionId);
   }
 
-  /**
-   *
-   * Returns a new CdpClient object attached to the given sessionId. The new CdpClient shares the same
-   * underlying transport as this CdpClient.
-   * @param sessionId The sessionId to attach the new client to. Use Target.attachToTarget to obtain a sessionId.
-   */
-  attachToSession(sessionId: string): CdpClient {
-    return new CdpClientImpl(this._router, sessionId) as unknown as CdpClient;
+  _onCdpEvent(method: string, params: {}) {
+    // Emit a generic "event" event from here that includes the method name. Useful as a catch-all.
+    this.emit('event', method, params);
+
+    // Next, get the correct domain instance and tell it to emit the strongly typed event.
+    const [domainName, eventName] = method.split('.');
+    this._domains.get(domainName).emit(eventName, params);
   }
-
-  /**
-   * Close this CdpClient's connection to the browser.
-   */
-  close() {
-    this._router.removeClient(this._sessionId, this._onCdpMessage);
-    this.removeAllListeners();
-  }
-
-  private _onCdpMessage = async (messageObj: CdpMessage) => {
-    if (messageObj.id !== undefined) {
-      // Handle command response.
-      const callbacks = this._commandCallbacks.get(messageObj.id);
-      if (callbacks) {
-        if (messageObj.result) {
-          callbacks.resolve(messageObj.result);
-        } else if (messageObj.error) {
-          callbacks.reject(messageObj.error);
-        }
-      }
-    } else if (messageObj.method) {
-      // Emit a generic "event" event from here that includes the method name. Useful as a catch-all.
-      this.emit('event', messageObj.method, messageObj.params);
-
-      // Next, get the correct domain instance and tell it to emit the strongly typed event.
-      const [domainName, eventName] = messageObj.method.split('.');
-      this._domains.get(domainName).emit(eventName, messageObj.params);
-    }
-  };
 
   public on<K extends keyof ProtocolMapping.Events>(
     event: 'event',
@@ -178,7 +125,6 @@ class CdpClientImpl extends EventEmitter {
  * @param transport A transport object that will be used to send and receive raw CDP messages.
  * @returns A connected CDP client object.
  */
-export function connectCdp(transport: IServer) {
-  const router = new MessageRouter(transport);
-  return new CdpClientImpl(router, null) as unknown as CdpClient;
+export function createClient(connection: Connection, sessionId: string | null) {
+  return new CdpClientImpl(connection, sessionId) as unknown as CdpClient;
 }
