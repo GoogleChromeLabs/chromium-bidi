@@ -15,15 +15,15 @@ interface CdpCallbacks {
  * Manages a CdpClient instance for each active CDP session.
  */
 export class Connection {
-  private _browserClient: CdpClient;
-  private _sessionClients: Map<string, CdpClient> = new Map();
+  private _browserCdpClient: CdpClient;
+  private _sessionCdpClients: Map<string, CdpClient> = new Map();
   private _commandCallbacks: Map<number, CdpCallbacks> = new Map();
   private _nextId: number;
 
   constructor(private _transport: IServer) {
     this._nextId = 0;
     this._transport.setOnMessage(this._onMessage);
-    this._browserClient = createClient(this, null);
+    this._browserCdpClient = createClient(this, null);
   }
 
   /**
@@ -35,14 +35,14 @@ export class Connection {
       reject(new Error('Disconnected'));
     }
     this._commandCallbacks.clear();
-    this._sessionClients.clear();
+    this._sessionCdpClients.clear();
   }
 
   /**
    * @returns The CdpClient object attached to the root browser session.
    */
   browserClient(): CdpClient {
-    return this._browserClient;
+    return this._browserCdpClient;
   }
 
   /**
@@ -51,7 +51,7 @@ export class Connection {
    * @returns The CdpClient object attached to the given session, or null if the session is not attached.
    */
   sessionClient(sessionId: string): CdpClient | null {
-    return this._sessionClients.get(sessionId) || null;
+    return this._sessionCdpClients.get(sessionId) || null;
   }
 
   /**
@@ -85,12 +85,12 @@ export class Connection {
     // Listen for these events on every session.
     if (parsed.method === 'Target.attachedToTarget') {
       const { sessionId } = parsed.params;
-      this._sessionClients.set(sessionId, createClient(this, sessionId));
+      this._sessionCdpClients.set(sessionId, createClient(this, sessionId));
     } else if (parsed.method === 'Target.detachedFromTarget') {
       const { sessionId } = parsed.params;
-      const client = this._sessionClients.get(sessionId);
+      const client = this._sessionCdpClients.get(sessionId);
       if (client) {
-        this._sessionClients.delete(sessionId);
+        this._sessionCdpClients.delete(sessionId);
       }
     }
 
@@ -106,8 +106,8 @@ export class Connection {
       }
     } else if (parsed.method) {
       const client = parsed.sessionId
-        ? this._sessionClients.get(parsed.sessionId)
-        : this._browserClient;
+        ? this._sessionCdpClients.get(parsed.sessionId)
+        : this._browserCdpClient;
       if (client) {
         client._onCdpEvent(parsed.method, parsed.params || {});
       }
