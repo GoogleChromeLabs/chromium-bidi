@@ -39,11 +39,15 @@ export class MapperServer implements IServer {
       );
       return new MapperServer(cdpConnection, mapperCdpClient);
     } catch (e) {
-      browserCdpClient.close();
+      cdpConnection.close();
+      throw e;
     }
   }
 
-  private constructor(private _cdpConnection: Connection, private _mapperCdpClient: CdpClient) {
+  private constructor(
+    private _cdpConnection: Connection,
+    private _mapperCdpClient: CdpClient
+  ) {
     this._mapperCdpClient.Runtime.on('bindingCalled', this._onBindingCalled);
     this._mapperCdpClient.Runtime.on(
       'consoleAPICalled',
@@ -64,7 +68,6 @@ export class MapperServer implements IServer {
   private static async _establishCdpConnection(
     cdpUrl: string
   ): Promise<Connection> {
-
     return new Promise((resolve, reject) => {
       debugInternal('Establishing session with cdpUrl: ', cdpUrl);
 
@@ -127,6 +130,9 @@ export class MapperServer implements IServer {
       await browserClient.Target.attachToTarget({ targetId, flatten: true });
 
     const mapperCdpClient = cdpConnection.sessionClient(mapperSessionId);
+    if (!mapperCdpClient) {
+      throw new Error('Unable to connect to mapper CDP target');
+    }
 
     await mapperCdpClient.Runtime.enable();
 

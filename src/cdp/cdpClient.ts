@@ -109,7 +109,7 @@ class CdpClientImpl extends EventEmitter {
     const [domainName, eventName] = method.split('.');
     const domain = this._domains.get(domainName);
     if (domain) {
-      this._domains.get(domainName).emit(eventName, params);
+      domain.emit(eventName, params);
     }
   }
 
