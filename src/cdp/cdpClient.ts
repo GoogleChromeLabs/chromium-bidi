@@ -109,7 +109,7 @@ class CdpClientImpl extends EventEmitter {
     return this._connection._sendCommand(method, params, this._sessionId);
   }
 
-  _onCdpEvent(method: string, params: {}) {
+  _onCdpEvent(method: string, params: object) {
     // Emit a generic "event" event from here that includes the method name. Useful as a catch-all.
     this.emit('event', method, params);
 

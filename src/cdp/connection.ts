@@ -6,8 +6,8 @@ import { log } from '../utils/log';
 const logCdp = log('cdp');
 
 interface CdpCallbacks {
-  resolve: (messageObj: {}) => void;
-  reject: (errorObj: {}) => void;
+  resolve: (messageObj: object) => void;
+  reject: (errorObj: object) => void;
 }
 
 /**
@@ -59,9 +59,9 @@ export class Connection {
    */
   _sendCommand(
     method: string,
-    params: {},
+    params: object,
     sessionId: string | null
-  ): Promise<{}> {
+  ): Promise<object> {
     return new Promise((resolve, reject) => {
       const id = this._nextId++;
       this._commandCallbacks.set(id, { resolve, reject });
