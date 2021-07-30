@@ -73,7 +73,7 @@ function parseArguments() {
  */
 async function _onNewBidiConnectionOpen(
   headless: boolean,
-  bidiConnection: ITransport
+  bidiTransport: ITransport
 ): Promise<() => void> {
   // 1. Launch Chromium (using Puppeteer for now).
   // Puppeteer should have downloaded Chromium during the installation.
@@ -94,11 +94,11 @@ async function _onNewBidiConnectionOpen(
   // 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
   // Forward messages from BiDi Mapper to the client.
   mapperServer.setOnMessage(async (message) => {
-    await bidiConnection.sendMessage(message);
+    await bidiTransport.sendMessage(message);
   });
 
   // Forward messages from the client to BiDi Mapper.
-  bidiConnection.setOnMessage(async (message) => {
+  bidiTransport.setOnMessage(async (message) => {
     await mapperServer.sendMessage(message);
   });
 
