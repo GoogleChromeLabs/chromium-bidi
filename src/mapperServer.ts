@@ -22,7 +22,7 @@ import WebSocket from 'ws';
 import Protocol from 'devtools-protocol';
 
 import { IServer } from './utils/iServer';
-import { CdpClient, connectCdp } from './cdp';
+import { CdpClient, Connection } from './cdp';
 import { WebSocketCdpTransport } from './cdp/transport';
 
 export class MapperServer implements IServer {
@@ -38,8 +38,8 @@ export class MapperServer implements IServer {
     mapperContent: string
   ): Promise<MapperServer> {
     const mapper = new MapperServer();
-    const browserClient = await this._establishCdpSession(cdpUrl);
-    await mapper._initMapper(browserClient, mapperContent);
+    const cdpConnection = await this._establishCdpConnection(cdpUrl);
+    await mapper._initMapper(cdpConnection, mapperContent);
     return mapper;
   }
 
@@ -51,9 +51,9 @@ export class MapperServer implements IServer {
   }
   close() {}
 
-  private static async _establishCdpSession(
+  private static async _establishCdpConnection(
     cdpUrl: string
-  ): Promise<CdpClient> {
+  ): Promise<Connection> {
     return new Promise((resolve, reject) => {
       debugInternal('Establishing session with cdpUrl: ', cdpUrl);
 
@@ -65,8 +65,8 @@ export class MapperServer implements IServer {
         debugInternal('Session established.');
 
         const transport = new WebSocketCdpTransport(ws);
-        const client = connectCdp(transport);
-        resolve(client);
+        const connection = new Connection(transport);
+        resolve(connection);
       });
     });
   }
@@ -105,12 +105,14 @@ export class MapperServer implements IServer {
   };
 
   private async _initMapper(
-    browserClient: CdpClient,
+    cdpConnection: Connection,
     mapperContent: string
   ): Promise<void> {
     debugInternal('Connection opened.');
 
     // await browserClient.Log.enable();
+
+    const browserClient = cdpConnection.browserClient();
 
     const { targetId } = await browserClient.Target.createTarget({
       url: 'about:blank',
@@ -118,7 +120,7 @@ export class MapperServer implements IServer {
     const { sessionId: mapperSessionId } =
       await browserClient.Target.attachToTarget({ targetId, flatten: true });
 
-    this._mapperCdpClient = browserClient.attachToSession(mapperSessionId);
+    this._mapperCdpClient = cdpConnection.sessionClient(mapperSessionId);
     this._mapperCdpClient.Runtime.on('bindingCalled', this._onBindingCalled);
     this._mapperCdpClient.Runtime.on(
       'consoleAPICalled',
