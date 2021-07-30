@@ -1,7 +1,7 @@
 import { IServer } from '../utils/iServer';
 import WebSocket from 'ws';
 
-export class WebSocketCdpTransport implements IServer {
+export class WebSocketTransport implements IServer {
   private _onMessage?: (message: string) => void;
 
   constructor(private _ws: WebSocket) {

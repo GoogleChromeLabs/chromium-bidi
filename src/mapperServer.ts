@@ -22,8 +22,7 @@ import WebSocket from 'ws';
 import Protocol from 'devtools-protocol';
 
 import { IServer } from './utils/iServer';
-import { CdpClient, Connection } from './cdp';
-import { WebSocketCdpTransport } from './cdp/transport';
+import { CdpClient, Connection, WebSocketTransport } from './cdp';
 
 export class MapperServer implements IServer {
   private _handlers: ((messageObj: any) => void)[] = new Array();
@@ -64,7 +63,7 @@ export class MapperServer implements IServer {
       ws.on('open', () => {
         debugInternal('Session established.');
 
-        const transport = new WebSocketCdpTransport(ws);
+        const transport = new WebSocketTransport(ws);
         const connection = new Connection(transport);
         resolve(connection);
       });
