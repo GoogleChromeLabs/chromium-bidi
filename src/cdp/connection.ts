@@ -1,4 +1,4 @@
-import { IServer } from '../utils/iServer';
+import { ITransport } from '../utils/transport';
 import { CdpMessage } from './message';
 import { CdpClient, createClient } from './cdpClient';
 
@@ -20,7 +20,7 @@ export class Connection {
   private _commandCallbacks: Map<number, CdpCallbacks> = new Map();
   private _nextId: number;
 
-  constructor(private _transport: IServer) {
+  constructor(private _transport: ITransport) {
     this._nextId = 0;
     this._transport.setOnMessage(this._onMessage);
     this._browserCdpClient = createClient(this, null);
