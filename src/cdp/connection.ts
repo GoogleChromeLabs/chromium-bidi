@@ -31,6 +31,11 @@ export class Connection {
    */
   close() {
     this._transport.close();
+    for (const [_id, { reject }] of this._commandCallbacks) {
+      reject(new Error('Disconnected'));
+    }
+    this._commandCallbacks.clear();
+    this._clients.clear();
   }
 
   /**
