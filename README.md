@@ -10,34 +10,36 @@ This is a Node.js project, so install dependencies as usual:
 
     npm install
 
-Then set the `BROWSER_PATH` environment variable or use `--browser` argument to a Chrome, Edge or Chromium binary to launch. For example, on macOS:
+The script downloads Chromium locally and use it later to run tests.
+
+## Starting the Server
+
+    npm run server
+
+This will run the server on port 8080. Use the `PORT` environment variable or `--port=...` argument to run it on another port:
+
+    PORT=8081 npm run server
+    npm run server -- --port=8081
+
+Use the `DEBUG` environment variable to see debug info:
+
+    DEBUG=* npm run server
+
+Use the `--headless=false` CLI argument to run browser in headful mode:
+
+    npm run server -- --headless=false
+
+Use the `--browser` CLI argument or `BROWSER_PATH` environment variable to run on the custom browser:
 
     export BROWSER_PATH="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
     export BROWSER_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
     export BROWSER_PATH="example/path/to/Chromium.app/Contents/MacOS/Chromium"
 
-    npm run bidi-server -- --browser="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
-    npm run bidi-server -- --browser="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
-    npm run bidi-server -- --browser="example/path/to/Chromium.app/Contents/MacOS/Chromium"
+    npm run server -- --browser="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
+    npm run server -- --browser="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
+    npm run server -- --browser="example/path/to/Chromium.app/Contents/MacOS/Chromium"
 
 If it's a newly downloaded binary, first run it manually once to ensure the operating system trusts it.
-
-## Starting the Server
-
-    npm run bidi-server
-
-This will run the server on port 8080. Use the `PORT` environment variable or `--port=...` argument to run it on another port:
-
-    PORT=8081 npm run bidi-server
-    npm run bidi-server -- --port=8081
-
-Use the `DEBUG` environment variable to see debug info:
-
-    DEBUG=* npm run bidi-server
-
-Use the CLI argument `--headless=false` to run browser in headful mode:
-
-    npm run bidi-server -- --headless=false
 
 ### Starting on Linux and Mac
 

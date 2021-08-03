@@ -15,12 +15,16 @@
  */
 `use strict`;
 
-import { launchBrowser, BrowserProcess } from './browserLauncher.js';
-import mapperReader from './mapperReader.js';
-import { MapperServer } from './mapperServer.js';
-import { BidiServerRunner } from './bidiServerRunner.js';
-import { IServer } from './utils/iServer.js';
 import argparse from 'argparse';
+
+import { launchBrowser, BrowserProcess } from './browserLauncher';
+import mapperReader from './mapperReader';
+import { MapperServer } from './mapperServer';
+import { BidiServerRunner } from './bidiServerRunner';
+import { IServer } from './utils/iServer';
+import { BrowserFetcher } from './node/browserFetcher';
+
+const browserInfo = new BrowserFetcher().revisionInfo();
 
 function parseArguments() {
   var parser = new argparse.ArgumentParser({
@@ -40,9 +44,8 @@ function parseArguments() {
   });
 
   parser.add_argument('-b', '--browser', {
-    help: `Path to browser executable. Required, unless the \`BROWSER_PATH\` \
-      environment variable is set.`,
-    required: !process.env.BROWSER_PATH,
+    help: `Optional path to custom browser executable.`,
+    default: process.env.BROWSER_PATH,
   });
 
   // `parse_known_args` puts known args in the first element of the result.
@@ -56,8 +59,11 @@ function parseArguments() {
 
     const args = parseArguments();
 
+    if (!args.browser && !browserInfo.local)
+      throw 'No locally downloaded browser available. Either download one locally by running `npm i` or specify browser binary path in paramter `--browser`';
+    const browserExecutablePath = args.browser || browserInfo.executablePath;
+
     const bidiPort = args.port;
-    const browserExecutablePath = args.browser || process.env.BROWSER_PATH;
     const headless = args.headless !== 'false';
 
     BidiServerRunner.run(
