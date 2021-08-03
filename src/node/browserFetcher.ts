@@ -129,7 +129,11 @@ export class BrowserFetcher {
     revision: string,
     progressCallback: (x: number, y: number) => void = (): void => {}
   ): Promise<BrowserFetcherRevisionInfo> {
-    const url = this.getDownloadURL(this._platform, this._downloadHost, revision);
+    const url = this.getDownloadURL(
+      this._platform,
+      this._downloadHost,
+      revision
+    );
     const fileName = url.split('/').pop();
     const archivePath = path.join(this._downloadsFolder, fileName);
     const outputPath = this.getFolderPath(revision);
@@ -147,7 +151,8 @@ export class BrowserFetcher {
       await this.downloadFile(url, archivePath, progressCallback);
       await this.install(archivePath, outputPath);
     } finally {
-      if (await this.isFileExistsAsync(archivePath)) await unlinkAsync(archivePath);
+      if (await this.isFileExistsAsync(archivePath))
+        await unlinkAsync(archivePath);
     }
 
     const revisionInfo = this.revisionInfo();
