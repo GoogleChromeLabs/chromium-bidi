@@ -5,7 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
-    "e2e": "python3 -m pytest --rootdir=tests",
+    "e2e": "npm run server-no-build & npm run e2e-only",
+    "e2e-only": "python3 -m pytest --rootdir=tests",
     "server": "npm run build && npm run server-no-build --",
     "server-no-build": "node ./src/.build/index.js",
     "build": "npm run prettier && npm run clean && rollup --config src/bidiMapper/rollup.config.js && tsc -b src/tsconfig.json",
