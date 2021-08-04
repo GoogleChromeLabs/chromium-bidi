@@ -59,6 +59,7 @@ function parseArguments() {
 
     const args = parseArguments();
 
+    // `browserInfo.local` means the version is loaded locally.
     if (!args.browser && !browserInfo.local)
       throw 'No locally downloaded browser available. Either download one locally by running `npm i` or specify browser binary path in paramter `--browser`';
     const browserExecutablePath = args.browser || browserInfo.executablePath;
