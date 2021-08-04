@@ -21,7 +21,7 @@
  * process unless one of the env flags is provided.
  */
 
-// Copied form Puppeteer
+// Copied from Puppeteer
 
 const compileTypeScriptIfRequired = require('./typescript-if-required');
 

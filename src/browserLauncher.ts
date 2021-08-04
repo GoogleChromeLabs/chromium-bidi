@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// Copied form Puppeteer
+// Copied from Puppeteer
+
 `use strict`;
 import childProcess from 'child_process';
 import readline from 'readline';

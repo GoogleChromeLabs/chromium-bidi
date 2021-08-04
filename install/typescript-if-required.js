@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Copied form Puppeteer
+// Copied from Puppeteer
 
 const child_process = require('child_process');
 const path = require('path');
