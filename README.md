@@ -31,7 +31,7 @@ Use the CLI argument `--headless=false` to run browser in headful mode:
 
 TODO: verify if it works on Windows.
 
-You can alson run the server by using script `./runBiDiServer.sh`. It will write output to the file `log.txt`:
+You can also run the server by using script `./runBiDiServer.sh`. It will write output to the file `log.txt`:
 
     ./runBiDiServer.sh --port=8081 --headless=false
 
