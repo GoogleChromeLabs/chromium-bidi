@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-"use strict";
+'use strict';
 
 import argparse from 'argparse';
 import puppeteer, { PuppeteerNode } from 'puppeteer';
@@ -77,7 +77,7 @@ async function _onNewBidiConnectionOpen(
 ): Promise<() => void> {
   // 1. Launch Chromium (using Puppeteer for now).
   // Puppeteer should have downloaded Chromium during the installation.
-  // Use Puppetter's logic of launching browser as well.
+  // Use Puppeteer's logic of launching browser as well.
   const browser = await (puppeteer as any as PuppeteerNode).launch({
     headless,
   });
