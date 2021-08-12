@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-`use strict`;
+"use strict";
 
 import argparse from 'argparse';
 import puppeteer, { PuppeteerNode } from 'puppeteer';
@@ -63,26 +63,35 @@ function parseArguments() {
 })();
 
 /**
+ * On each new BiDi connection:
+ * 1. Launch Chromium (using Puppeteer for now).
+ * 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
+ * 3. Run `BiDi-CDP` mapper in launched browser.
+ * 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
+ *
  * @returns delegate to be called when the connection is closed
  */
 async function _onNewBidiConnectionOpen(
   headless: boolean,
   bidiServer: IServer
 ): Promise<() => void> {
-  // Hijack Puppeteer's implementation of fetching and launching browser.
+  // 1. Launch Chromium (using Puppeteer for now).
+  // Puppeteer should have downloaded Chromium during the installation.
+  // Use Puppetter's logic of launching browser as well.
   const browser = await (puppeteer as any as PuppeteerNode).launch({
     headless,
   });
 
-  // Get BiDi Mapper script.
+  // 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
   const bidiMapperScript = await mapperReader();
 
-  // Run BiDi Mapper script on the browser.
+  // 3. Run `BiDi-CDP` mapper in launched browser.
   const mapperServer = await MapperServer.create(
     browser.wsEndpoint(),
     bidiMapperScript
   );
 
+  // 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
   // Forward messages from BiDi Mapper to the client.
   mapperServer.setOnMessage(async (message) => {
     await bidiServer.sendMessage(message);
