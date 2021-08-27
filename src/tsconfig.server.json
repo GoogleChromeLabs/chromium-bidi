@@ -1,6 +1,7 @@
 {
   "extends": "./configs/tsconfig.common.json",
+  "exclude": ["src/bidiMapper/**/*.ts"],
   "compilerOptions": {
-    "outDir": "./.build"
+    "outDir": "./.build/bidiServer"
   }
 }
