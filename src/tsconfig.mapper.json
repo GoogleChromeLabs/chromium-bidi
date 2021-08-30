@@ -1,7 +1,0 @@
-{
-  "extends": "./configs/tsconfig.common.json",
-  "exclude": ["src/bidiMapper/scripts"],
-  "compilerOptions": {
-    "outDir": "./.build/bidiMapper"
-  }
-}

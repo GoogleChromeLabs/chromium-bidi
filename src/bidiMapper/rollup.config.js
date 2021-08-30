@@ -34,7 +34,7 @@ export default {
       include: '**/*.txt',
     }),
     typescript({
-      tsconfig: 'src/tsconfig.mapper.json',
+      tsconfig: 'src/bidiMapper/tsconfig.json',
     }),
   ],
 };

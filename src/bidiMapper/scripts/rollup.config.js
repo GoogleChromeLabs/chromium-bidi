@@ -12,7 +12,7 @@ export default [
     plugins: [
       nodeResolve({ browser: true }),
       typescript({
-        tsconfig: 'src/bidiMapper/scripts/tsconfig.scripts.json',
+        tsconfig: 'src/bidiMapper/scripts/tsconfig.json',
       }),
     ],
   },

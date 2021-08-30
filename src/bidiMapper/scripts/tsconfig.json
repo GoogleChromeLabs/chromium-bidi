@@ -2,6 +2,6 @@
   "extends": "../../configs/tsconfig.common.json",
   "include": ["./**/*.ts"],
   "compilerOptions": {
-    "outDir": "./.build/scripts"
+    "lib": ["DOM", "ESNext"]
   }
 }
