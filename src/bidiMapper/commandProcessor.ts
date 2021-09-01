@@ -166,7 +166,7 @@ export class CommandProcessor {
           commandData.params
         );
 
-        case 'PROTO.page.evaluate':
+      case 'PROTO.page.evaluate':
         return await this._contextProcessor.process_PROTO_page_evaluate(
           commandData.params
         );
