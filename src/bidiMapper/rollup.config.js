@@ -31,7 +31,7 @@ export default {
     json(),
     nodePolyfills(),
     string({
-      include: '**/*.txt',
+      include: 'src/bidiMapper/scripts/*.es',
     }),
     typescript({
       tsconfig: 'src/bidiMapper/tsconfig.json',

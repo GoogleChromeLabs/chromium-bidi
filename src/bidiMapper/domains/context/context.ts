@@ -18,7 +18,7 @@
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
 
-import EVALUATOR_SCRIPT from '../../scripts/eval.txt';
+import EVALUATOR_SCRIPT from '../../scripts/eval.es';
 
 export class Context {
   _targetInfo?: Protocol.Target.TargetInfo;

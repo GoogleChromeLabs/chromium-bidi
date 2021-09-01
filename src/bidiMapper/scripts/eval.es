@@ -2,9 +2,9 @@
   class Serializer {
     _idToObject = new Map();
     _objectToId = new WeakMap();
-  
+
     constructor() {}
-  
+
     serialize(value) {
       if (value === undefined) {
         return { type: 'undefined' };
@@ -41,7 +41,7 @@
       }
       return { type: 'object', objectId: uuid() };
     }
-  
+
     deserialize(value) {
       switch (value.type) {
         case 'undefined': {
@@ -74,12 +74,12 @@
           if (!weakRef) {
             throw new Error('unknown object reference');
           }
-  
+
           const obj = weakRef.deref();
           if (!obj) {
             throw new Error('stable object reference');
           }
-  
+
           return obj;
         }
         default:
@@ -89,14 +89,14 @@
   }
 
   function uuid() {
-    return "";
+    return '';
   }
-  
+
   return function evaluate(script, args) {
     if (window.__webdriver_js_serializer === undefined) {
       window.__webdriver_js_serializer = new Serializer();
     }
-  
+
     const serializer = window.__webdriver_js_serializer;
     try {
       const deserializedArgs = args.map((arg) => serializer.deserialize(arg));
@@ -110,5 +110,5 @@
       }
       // TODO
     }
-  }
-})()
+  };
+})();
