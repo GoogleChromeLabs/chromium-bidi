@@ -89,6 +89,7 @@
   }
 
   function uuid() {
+    // TODO: Generate UUIDs.
     return '';
   }
 
