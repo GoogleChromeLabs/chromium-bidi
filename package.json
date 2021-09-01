@@ -10,8 +10,7 @@
     "server": "npm run build && npm run server-no-build --",
     "server-no-build": "node ./src/.build/index.js",
     "build": "npm run prettier && npm run clean && npm run build-mapper && npm run build-server",
-    "build-mapper": "npm run build-mapper-scripts && rollup --config src/bidiMapper/rollup.config.js",
-    "build-mapper-scripts": "rollup --config src/bidiMapper/scripts/rollup.config.js",
+    "build-mapper": "rollup --config src/bidiMapper/rollup.config.js",
     "build-server": "tsc -b src/tsconfig.json",
     "clean": "rimraf ./src/.build",
     "prettier": "npx prettier --write . "

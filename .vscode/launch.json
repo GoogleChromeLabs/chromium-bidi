@@ -13,6 +13,7 @@
       "console": "externalTerminal",
       "program": "${workspaceFolder}/src/.build/bidiServer/index.js",
       "outFiles": ["${workspaceFolder}/src/.build/bidiServer/**/*.js"],
+      "args": ["--headless=false"],
       "env": {
         "DEBUG": "*",
         "PORT": "8080"
