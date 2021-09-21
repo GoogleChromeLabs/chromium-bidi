@@ -47,16 +47,16 @@
         return { type: 'boolean', value };
       } else if (value instanceof Object) {
         // TODO: Recursive serialize.
-        let id = this._objectToId.get(value);
-        if (!id) {
-          id = uuid();
-          this._objectToId.set(value, id);
-          this._idToObject.set(id, new WeakRef(value));
+        let objectId = this._objectToId.get(value);
+        if (!objectId) {
+          objectId = uuid();
+          this._objectToId.set(value, objectId);
+          this._idToObject.set(objectId, new WeakRef(value));
         }
+        return { type: 'object', objectId };
       } else {
         throw new Error('not yet implemented');
       }
-      return { type: 'object', objectId: uuid() };
     }
 
     deserialize(value) {
