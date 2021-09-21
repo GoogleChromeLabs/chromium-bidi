@@ -89,8 +89,7 @@
   }
 
   function uuid() {
-    // TODO: Generate UUIDs.
-    return '';
+    return crypto.randomUUID();
   }
 
   return function evaluate(script, args) {
