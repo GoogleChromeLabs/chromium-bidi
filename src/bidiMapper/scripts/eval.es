@@ -123,9 +123,10 @@
       return { result: serializedResult };
     } catch (e) {
       if (e instanceof Error) {
-        return { error: { message: e.message, stacktrace: e.stack } };
+        return { exceptionDetails: { message: e.message, stacktrace: e.stack } };
+      } else {
+        return { exceptionDetails: { value: serializer.serialize(e) } };
       }
-      // TODO
     }
   };
 })()

@@ -762,7 +762,7 @@ async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     assert resp["id"] == 9997
 
     # Compare ignoring `objectId`.
-    recursiveCompare(expectedSerialisedObject, resp["result"], ["objectId"])
+    recursiveCompare(expectedSerialisedObject, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
 # Not implemented yet.

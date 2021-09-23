@@ -70,7 +70,7 @@ export class Context {
     // which will be returned by value and may be either:
     //   { result: <value returned from user script> }
     // or,
-    //   { error: { message: '<error message from user script>', stacktrace? } }
+    //   { exceptionDetails: { message: '<error message from user script>', stacktrace? } }
 
     const expression = `(${EVALUATOR_SCRIPT}).apply(null, [${JSON.stringify(
       script
@@ -82,25 +82,22 @@ export class Context {
       }
     );
 
-    // TODO: Should we let exceptions thrown from the user script bubble up to here,
-    // or catch them and send an { error: .. } value?
+    // Exceptions thrown from the user script are caught and stored in the result
+    // returned from Runtime.evaluate. If Runtime.evaluate returned exceptionDetails
+    // instead, then this indicates an internal error or bug.
     if (exceptionDetails) {
       throw new Error(exceptionDetails.text);
     }
 
     // Runtime.evaluate did not return a result for some reason. Could be an
     // internal error, or a failure to parse the user's script.
-    const value = result.value;
-    if (!value) {
+    if (!result.value) {
       throw new Error('unable to parse result from evaluateScript');
     }
 
-    // Evaluator script ran but returned an error.
-    if (value.error) {
-      throw new Error(value.error);
-    }
-
-    // Evaluator returned a valid result object. Return to caller.
-    return value.result;
+    // Evaluator script ran and either returned a value or threw an error. Return a
+    // successful response with the value which will have either a result or
+    // exceptionDetails property.
+    return result.value;
   }
 }
