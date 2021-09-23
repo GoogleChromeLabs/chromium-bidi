@@ -16,6 +16,7 @@
  */
 
 import { Protocol } from 'devtools-protocol';
+import { CommonDataTypes, Script } from '../../bibiProtocolTypes';
 import { CdpClient } from '../../../cdp';
 
 import EVALUATOR_SCRIPT from '../../scripts/eval.es';
@@ -63,7 +64,10 @@ export class Context {
     };
   }
 
-  public async evaluateScript(script: string, args: any[]) {
+  public async evaluateScript(
+    script: string,
+    args: any[]
+  ): Promise<Script.ScriptEvaluateResult> {
     // Construct a javascript string that will call the evaluator function
     // with the user script (embedded as a string), and the user arguments
     // (embedded as BiDi RemoteValue objects). The result is a JSON object
@@ -82,11 +86,18 @@ export class Context {
       }
     );
 
-    // Exceptions thrown from the user script are caught and stored in the result
-    // returned from Runtime.evaluate. If Runtime.evaluate returned exceptionDetails
-    // instead, then this indicates an internal error or bug.
     if (exceptionDetails) {
-      throw new Error(exceptionDetails.text);
+      return {
+        exceptionDetails: {
+          columnNumber: exceptionDetails.columnNumber,
+          // TODO sadym: verify the exception object is serialized.
+          exception: exceptionDetails.exception,
+          lineNumber: exceptionDetails.lineNumber,
+          // TODO sadym: map `stackTrace`.
+          // stackTrace?: StackTrace,
+          text: exceptionDetails.text,
+        } as CommonDataTypes.ExceptionDetails,
+      } as Script.ScriptEvaluateExceptionResult;
     }
 
     // Runtime.evaluate did not return a result for some reason. Could be an
@@ -98,6 +109,6 @@ export class Context {
     // Evaluator script ran and either returned a value or threw an error. Return a
     // successful response with the value which will have either a result or
     // exceptionDetails property.
-    return result.value;
+    return result.value as Script.ScriptEvaluateSuccessResult;
   }
 }

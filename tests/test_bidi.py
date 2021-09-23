@@ -312,7 +312,7 @@ async def _ignore_test_waitForSelector_success_slow(websocket):
 # 3. Add element to the page.
     await send_JSON_command(websocket, {
         "id": 19,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": "document.documentElement.innerHTML='<h2 />'",
             "context": contextID}})
@@ -504,7 +504,7 @@ async def _ignore_test_selectElementMissingElement_missingElement(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_pageEvaluateWithElement_resultReceived(websocket):
+async def _ignore_test_scriptEvaluateWithElement_resultReceived(websocket):
 # 1. Get element.
 # 2. Evaluate script on it.
     contextID = await get_open_context_id(websocket)
@@ -529,7 +529,7 @@ async def _ignore_test_pageEvaluateWithElement_resultReceived(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 31,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": "element => '!!@@##, ' + element.innerHTML",
     # TODO: send properly serialised element according to
@@ -548,13 +548,13 @@ async def _ignore_test_pageEvaluateWithElement_resultReceived(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_pageEvaluateWithoutArgs_resultReceived(websocket):
+async def _ignore_test_scriptEvaluateWithoutArgs_resultReceived(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 32,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": "'!!@@##, ' + window.location.href",
             "context": contextID}})
@@ -569,13 +569,13 @@ async def _ignore_test_pageEvaluateWithoutArgs_resultReceived(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_pageEvaluateWithScalarArgs_resultReceived(websocket):
+async def _ignore_test_scriptEvaluateWithScalarArgs_resultReceived(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 45,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
     # TODO: send properly serialised scalars according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
@@ -599,7 +599,7 @@ async def _ignore_test_consoleLog_logEntryAddedEventEmmited(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 33,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": "console.log('some log message')",
             "context": contextID}})
@@ -678,7 +678,7 @@ async def _ignore_test_browsingContextType_textTyped(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 36,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": "element => element.value",
     # TODO: send properly serialised element according to
@@ -703,7 +703,7 @@ async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmmited(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 43,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": "console.info('some log message')",
             "context": contextID}})
@@ -728,7 +728,7 @@ async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 44,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": "console.error('some log message')",
             "context": contextID}})
@@ -745,6 +745,32 @@ async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
         "id":44,
         "result":{"type":"undefined"}}
 
+
+@pytest.mark.asyncio
+# Not implemented yet.
+async def _ignore_script_evaluate_exception_exceptionReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 45,
+        "method": "script.evaluate",
+        "params": {
+            "function": "throw({'a': 1})",
+            "context": contextID}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id":45,
+        "result": {
+            "exceptionDetails": {
+                "columnNumber": "1",
+                "exception": "2",
+                "lineNumber": "3",
+                "stackTrace": "4",
+                "text": "5"}}}
+
 # Testing serialisation.
 async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     contextID = await get_open_context_id(websocket)
@@ -752,7 +778,7 @@ async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 9997,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": f"({jsStrObject})",
             "context": contextID}})
@@ -998,7 +1024,7 @@ async def _ignore_test_serialisation_node(websocket):
 
     await send_JSON_command(websocket, {
         "id": 48,
-        "method": "PROTO.page.evaluate",
+        "method": "script.evaluate",
         "params": {
             "function": "element => element",
     # TODO: send properly serialised element according to

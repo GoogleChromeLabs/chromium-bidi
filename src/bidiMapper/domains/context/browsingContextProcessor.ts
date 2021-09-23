@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { Script } from '../../bibiProtocolTypes';
 import { log } from '../../../utils/log';
 import { CdpConnection } from '../../../cdp';
 import { Context } from './context';
@@ -146,9 +147,16 @@ export class BrowsingContextProcessor {
     });
   }
 
-  async process_PROTO_page_evaluate(params: any) {
+  async process_script_evaluate(
+    params: any
+  ): Promise<Script.ScriptEvaluateResult> {
+    if (!params.context && !params.realm)
+      throw new Error('no context provided');
+    if (params.realm)
+      throw new Error('evaluate in realm not implemented yet');
+
     const context = this._getKnownContext(params.context);
-    return context.evaluateScript(params.function, params.args || []);
+    return await context.evaluateScript(params.function, params.args || []);
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {

@@ -160,14 +160,13 @@ export class CommandProcessor {
         return await this._process_session_status(commandData.params);
       case 'browsingContext.getTree':
         return await this._process_browsingContext_getTree(commandData.params);
-
-      case 'PROTO.browsingContext.createContext':
-        return await this._contextProcessor.process_createContext(
+      case 'script.evaluate':
+        return await this._contextProcessor.process_script_evaluate(
           commandData.params
         );
 
-      case 'PROTO.page.evaluate':
-        return await this._contextProcessor.process_PROTO_page_evaluate(
+      case 'PROTO.browsingContext.createContext':
+        return await this._contextProcessor.process_createContext(
           commandData.params
         );
 
