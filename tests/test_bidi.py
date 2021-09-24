@@ -747,8 +747,7 @@ async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_script_evaluate_exception_exceptionReturned(websocket):
+async def test_script_evaluate_exception_exceptionReturned(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -761,15 +760,18 @@ async def _ignore_script_evaluate_exception_exceptionReturned(websocket):
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id":45,
-        "result": {
-            "exceptionDetails": {
-                "columnNumber": "1",
-                "exception": "2",
-                "lineNumber": "3",
-                "stackTrace": "4",
-                "text": "5"}}}
+    assert resp["id"] == 45
+
+    # Compare ignoring `objectId`.
+    recursiveCompare(
+        {"exceptionDetails": {
+            "columnNumber": 0,
+            "exception": {
+                "type": "object",
+                "objectId": "__any_value__"},
+            "lineNumber": 0,
+            "text": "Uncaught"}},
+        resp["result"], ["objectId"])
 
 # Testing serialisation.
 async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
@@ -876,6 +878,18 @@ async def test_serialisation_bool(websocket):
         {
             "type":"boolean",
             "value":False},
+        websocket)
+
+# TODO: implement after serialisation MaxDepth logic specified:
+# https://github.com/w3c/webdriver-bidi/issues/86
+@pytest.mark.asyncio
+# Not implemented yet.
+async def test_serialisation_object(websocket):
+    await assertSerialisation(
+        "{'foo': {'bar': 'baz'}, 'qux': 'quux'}",
+        {
+            "type":"object",
+            "objectId":"__any_value__"},
         websocket)
 
 @pytest.mark.asyncio
@@ -985,7 +999,7 @@ async def _ignore_test_serialisation_array(websocket):
 # https://github.com/w3c/webdriver-bidi/issues/86
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_object(websocket):
+async def _ignore_test_serialisation_objectInDepth(websocket):
     await assertSerialisation(
         "{'foo': {'bar': 'baz'}, 'qux': 'quux'}",
         {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Script } from '../../bibiProtocolTypes';
+import { Script } from '../../bidiProtocolTypes';
 import { log } from '../../../utils/log';
 import { CdpConnection } from '../../../cdp';
 import { Context } from './context';
@@ -152,8 +152,7 @@ export class BrowsingContextProcessor {
   ): Promise<Script.ScriptEvaluateResult> {
     if (!params.context && !params.realm)
       throw new Error('no context provided');
-    if (params.realm)
-      throw new Error('evaluate in realm not implemented yet');
+    if (params.realm) throw new Error('evaluate in realm not implemented yet');
 
     const context = this._getKnownContext(params.context);
     return await context.evaluateScript(params.function, params.args || []);

@@ -22,7 +22,7 @@
 
     constructor() {}
 
-    serialize(value) {
+    _serialize(value) {
       if (value === undefined) {
         return { type: 'undefined' };
       } else if (value === null) {
@@ -53,7 +53,12 @@
           this._objectToId.set(value, objectId);
           this._idToObject.set(objectId, new WeakRef(value));
         }
-        return { type: 'object', objectId };
+        let type = 'object';
+        if (typeof value === 'function')
+          type = 'function'
+        // TODO sadym: implement `value?: MappingValue`.
+        // https://w3c.github.io/webdriver-bidi/#type-common-RemoteValue
+        return { type, objectId };
       } else {
         throw new Error('not yet implemented');
       }
@@ -106,10 +111,14 @@
   }
 
   function uuid() {
-    return crypto.randomUUID();
+    // TODO sadym: `crypto.randomUUID()` works only in secure context.
+    // Find out a way to use`crypto.randomUUID`.
+    return (Math.random() + "").substr(2)
+      + "." + (Math.random() + "").substr(2)
+      + "." + (Math.random() + "").substr(2);
   }
 
-  return function evaluate(script, args) {
+  function evaluate(script, args) {
     if (window.__webdriver_js_serializer === undefined) {
       window.__webdriver_js_serializer = new Serializer();
     }
@@ -129,4 +138,15 @@
       }
     }
   };
+
+  function serialize(cdpValue) {
+    if (window.__webdriver_js_serializer === undefined) {
+      window.__webdriver_js_serializer = new Serializer();
+    }
+
+    const serializer = window.__webdriver_js_serializer;
+    return serializer._serialize(cdpValue);
+  }
+
+  return { evaluate, serialize };
 })()
