@@ -67,7 +67,16 @@
         serializationMapper._objectToId.set(value, objectId);
         serializationMapper._idToObject.set(objectId, new WeakRef(value));
       }
-      return { type: 'object', objectId };
+
+      const result = { objectId };
+
+      if (typeof value === 'function') {
+        result.type = 'function';
+        return result;
+      }
+
+      result.type = 'object';
+      return result;
     } else {
       throw new Error('not yet implemented');
     }
@@ -100,7 +109,9 @@
       case 'boolean': {
         return value.value;
       }
-      case 'object': {
+      case 'function':
+      case 'object':
+        {
         const weakRef = serializationMapper._idToObject.get(value.objectId);
         if (!weakRef) {
           throw new Error('unknown object reference');

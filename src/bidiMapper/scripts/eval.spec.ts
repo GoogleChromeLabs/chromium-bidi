@@ -1,6 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 import * as chai from 'chai';
+import chaiExclude from 'chai-exclude';
+
+chai.use(chaiExclude);
 
 describe('Evaluator', function () {
     let EVALUATOR: any;
@@ -15,14 +18,25 @@ describe('Evaluator', function () {
         EVALUATOR = eval(eval_text);
     });
 
-    function checkSerializeAndDeserialize(originalObject: any, serializedObj: any) {
-        // Check serialise.
+    function checkSerializeAndDeserialize(originalObject: any, expectedSerializedObj: any, excluding: string[] = []) {
+        // Check serialize.
+        const serializedOrigianlObj = EVALUATOR.serialize(originalObject);
+        if (excluding.length > 0) {
+            chai.assert.deepEqualExcluding(
+                serializedOrigianlObj,
+                expectedSerializedObj,
+                excluding);
+
+        } else {
+            chai.assert.deepEqual(
+                serializedOrigianlObj,
+                expectedSerializedObj);
+        }
+
+        // Check deserialize.
+        const deserializedSerializedOrigianlObj = EVALUATOR.deserialize(serializedOrigianlObj)
         chai.assert.deepEqual(
-            EVALUATOR.serialize(originalObject),
-            serializedObj);
-        // Check deserialise.
-        chai.assert.deepEqual(
-            EVALUATOR.deserialize(serializedObj),
+            deserializedSerializedOrigianlObj,
             originalObject);
     }
 
@@ -123,20 +137,26 @@ describe('Evaluator', function () {
     });
     describe('object', function () {
         it('normal obejct', function () {
-            const obj = {
-                SOME_PROPERTY: 'SOME_VALUE'
-            };
-
-            const serialisedObj = EVALUATOR.serialize(obj);
-
-            // Assert only expected properties.
-            chai.assert.deepEqual(Object.keys(serialisedObj), ['type', 'objectId']);
-            // Assert type.
-            chai.assert.equal(serialisedObj.type, 'object');
-
-            const deserialisedObj = EVALUATOR.deserialize(serialisedObj);
-            chai.assert.strictEqual(deserialisedObj, obj);
-
+            checkSerializeAndDeserialize(
+                {
+                    SOME_PROPERTY: 'SOME_VALUE'
+                },
+                {
+                    type: 'object',
+                    objectId: '__IGNORED_OBJECT_ID'
+                },
+                ["objectId"]
+            );
         });
+    });
+    it('function', function () {
+        checkSerializeAndDeserialize(
+            function () { },
+            {
+                type: 'function',
+                objectId: '__IGNORED_OBJECT_ID'
+            },
+            ["objectId"]
+        );
     });
 });
