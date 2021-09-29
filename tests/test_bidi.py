@@ -745,6 +745,59 @@ async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
         "id":44,
         "result":{"type":"undefined"}}
 
+@pytest.mark.asyncio
+async def test_scriptEvaluateThrowing1_exceptionReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 45,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 45
+
+    # Compare ignoring `objectId`.
+    recursiveCompare({
+        "exceptionDetails":{
+            "text":"Uncaught",
+            "columnNumber":19,
+            "lineNumber":0,
+            "exception":{
+                "type":"number",
+                "value":1},
+            "stackTrace":{
+                "callFrames":[{
+                    "url":"",
+                    "functionName":"a",
+                    "lineNumber":0,
+                    "columnNumber":19
+                },{
+                    "url":"",
+                    "functionName":"b",
+                    "lineNumber":0,
+                    "columnNumber":43
+                },{
+                    "url":"",
+                    "functionName":"c",
+                    "lineNumber":1,
+                    "columnNumber":13
+                },{
+                    "url":"",
+                    "functionName":"",
+                    "lineNumber":1,
+                    "columnNumber":19
+                },{
+                    "url":"",
+                    "functionName":"",
+                    "lineNumber":1,
+                    "columnNumber":25}]}}},
+        resp["result"], ["objectId"])
+
 # Testing serialisation.
 async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     contextID = await get_open_context_id(websocket)

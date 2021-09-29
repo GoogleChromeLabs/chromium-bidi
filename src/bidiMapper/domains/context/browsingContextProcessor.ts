@@ -148,7 +148,9 @@ export class BrowsingContextProcessor {
     });
   }
 
-  async process_script_evaluate(params: Script.ScriptEvaluateParameters): Promise<Script.ScriptEvaluateResult> {
+  async process_script_evaluate(
+    params: Script.ScriptEvaluateParameters
+  ): Promise<Script.ScriptEvaluateResult> {
     const context = this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );

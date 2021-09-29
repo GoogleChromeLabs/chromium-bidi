@@ -11,7 +11,7 @@ export namespace CommonDataTypes {
     text: string;
   }
   export interface StackTrace {
-    callFrames: [StackFrame];
+    callFrames: StackFrame[];
   }
   export interface StackFrame {
     url: string;
