@@ -16,7 +16,7 @@
  */
 
 (() => {
-  class SerializationMapper {
+  class ObjectCache {
     _idToObject = new Map();
     _objectToId = new WeakMap();
   }
