@@ -148,13 +148,13 @@ export class BrowsingContextProcessor {
     });
   }
 
-  async process_script_evaluate(params: Script.ScriptEvaluateParameters) {
+  async process_script_evaluate(params: Script.ScriptEvaluateParameters): Promise<Script.ScriptEvaluateResult> {
     const context = this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
     // TODO sadym: add arguments params after they are specified.
     // https://github.com/w3c/webdriver-bidi/pull/136#issuecomment-926700556
-    return context.evaluateScript(params.expression);
+    return await context.evaluateScript(params.expression);
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {

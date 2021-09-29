@@ -189,7 +189,7 @@ export class CommandProcessor {
       };
 
       this._bidiServer.sendMessage(response);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       this._respondWithError(message, 'unknown error', e.message);
     }

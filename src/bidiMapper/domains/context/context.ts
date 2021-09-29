@@ -17,6 +17,7 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
+import { Script } from '../../bidiProtocolTypes';
 
 import EVALUATOR_SCRIPT from '../../scripts/eval.es';
 
@@ -63,7 +64,7 @@ export class Context {
     };
   }
 
-  public async evaluateScript(script: string) {
+  public async evaluateScript(script: string): Promise<Script.ScriptEvaluateResult>  {
     // Construct a javascript string that will call the evaluator function
     // with the user script (embedded as a string), and the user arguments
     // (embedded as BiDi RemoteValue objects). The result is a JSON object
