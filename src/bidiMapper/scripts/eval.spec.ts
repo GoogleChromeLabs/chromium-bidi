@@ -57,7 +57,7 @@ describe('Evaluator', function () {
 
             // Check deserialize.
             const deserializedSerializedOrigianlObj = EVALUATOR.deserialize(serializedOrigianlObj)
-            chai.assert.deepEqual(
+            chai.assert.strictEqual(
                 deserializedSerializedOrigianlObj,
                 originalObject);
         }
