@@ -21,20 +21,20 @@
     _objectToId = new WeakMap();
   }
 
-  function getSerializationMapper() {
+  function getObjectCache() {
     // No `window` can be in case of unit tests.
     if (typeof window === 'undefined') {
       global.window = {};
     }
 
     if (window.__webdriver_js_serializer === undefined) {
-      window.__webdriver_js_serializer = new SerializationMapper();
+      window.__webdriver_js_serializer = new ObjectCache();
     }
 
     return window.__webdriver_js_serializer;
   }
 
-  const serializationMapper = getSerializationMapper();
+  const objectCache = getObjectCache();
 
   function serialize(value, maxDepth = 1) {
     if (value === undefined) {
@@ -61,11 +61,11 @@
       return { type: 'boolean', value };
     } else if (value instanceof Object) {
       // TODO: Recursive serialize.
-      let objectId = serializationMapper._objectToId.get(value);
+      let objectId = objectCache._objectToId.get(value);
       if (!objectId) {
         objectId = uuid();
-        serializationMapper._objectToId.set(value, objectId);
-        serializationMapper._idToObject.set(objectId, new WeakRef(value));
+        objectCache._objectToId.set(value, objectId);
+        objectCache._idToObject.set(objectId, new WeakRef(value));
       }
 
       const result = { objectId };
@@ -131,7 +131,7 @@
       case 'array':
       case 'function':
       case 'object': {
-        const weakRef = serializationMapper._idToObject.get(value.objectId);
+        const weakRef = objectCache._idToObject.get(value.objectId);
         if (!weakRef) {
           throw new Error('unknown object reference');
         }
@@ -151,7 +151,7 @@
 
   function uuid() {
     // TODO sadym: `crypto.randomUUID()` works only in secure context.
-    // Find out a way to use`crypto.randomUUID`
+    // Find out a way to use`crypto.randomUUID`.
     return (Math.random() + '').substr(2)
       + '.' + (Math.random() + '').substr(2)
       + '.' + (Math.random() + '').substr(2);
