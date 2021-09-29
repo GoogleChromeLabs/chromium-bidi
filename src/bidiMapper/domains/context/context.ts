@@ -63,7 +63,7 @@ export class Context {
     };
   }
 
-  public async evaluateScript(script: string, args: any[]) {
+  public async evaluateScript(script: string) {
     // Construct a javascript string that will call the evaluator function
     // with the user script (embedded as a string), and the user arguments
     // (embedded as BiDi RemoteValue objects). The result is a JSON object
@@ -74,7 +74,7 @@ export class Context {
 
     const expression = `(${EVALUATOR_SCRIPT}).evaluate.apply(null, [${JSON.stringify(
       script
-    )}, ${JSON.stringify(args)}])`;
+    )}, []])`;
     const { result, exceptionDetails } = await this._cdpClient.Runtime.evaluate(
       {
         expression,
