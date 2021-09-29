@@ -36,7 +36,7 @@
 
   const serializationMapper = getSerializationMapper();
 
-  function serialize(value) {
+  function serialize(value, maxDepth = 1) {
     if (value === undefined) {
       return { type: 'undefined' };
     } else if (value === null) {
@@ -75,7 +75,26 @@
         return result;
       }
 
-      result.type = 'object';
+      if (Array.isArray(value)) {
+        result.type = "array";
+      } else {
+        result.type = 'object';
+      }
+
+      if (maxDepth > 0) {
+        result.value = [];
+        for (let key of Object.keys(value)) {
+          const serializedProperty = serialize(value[key], maxDepth - 1);
+
+          if (Array.isArray(value)) {
+            result.value.push(serializedProperty);
+          } else {
+            // TODO sadym: implement key serialisation.
+            result.value.push([key, serialize(value[key], maxDepth - 1)]);
+          }
+        }
+      }
+
       return result;
     } else {
       throw new Error('not yet implemented');
@@ -109,9 +128,9 @@
       case 'boolean': {
         return value.value;
       }
+      case 'array':
       case 'function':
-      case 'object':
-        {
+      case 'object': {
         const weakRef = serializationMapper._idToObject.get(value.objectId);
         if (!weakRef) {
           throw new Error('unknown object reference');
