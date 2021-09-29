@@ -22,16 +22,11 @@
   }
 
   function getObjectCache() {
-    // No `window` can be in case of unit tests.
-    if (typeof window === 'undefined') {
-      global.window = {};
+    if (globalThis.__webdriver_objectCache === undefined) {
+      globalThis.__webdriver_objectCache = new ObjectCache();
     }
 
-    if (window.__webdriver_js_serializer === undefined) {
-      window.__webdriver_js_serializer = new ObjectCache();
-    }
-
-    return window.__webdriver_js_serializer;
+    return globalThis.__webdriver_objectCache;
   }
 
   const objectCache = getObjectCache();
