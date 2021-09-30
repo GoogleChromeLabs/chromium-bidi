@@ -30,14 +30,16 @@ export class Context {
     private _cdpClient: CdpClient
   ) {}
 
-  public static create(contextId: string, cdpClient: CdpClient) {
+  public static async create(contextId: string, cdpClient: CdpClient) {
     const context = new Context(contextId, cdpClient);
-    context._initialize();
+    await context._initialize();
     return context;
   }
 
-  private _initialize() {
-    // TODO: Subscribe to Runtime and Page events to track executionContexts and frames.
+  private async _initialize() {
+    // Enabling Runtime doamin needed to have an exception stacktrace in
+    // `evaluateScript`.
+    await this._cdpClient.Runtime.enable();
   }
 
   _setSessionId(sessionId: string): void {
@@ -101,23 +103,12 @@ export class Context {
     // 1. Evaluates the script;
     // 2. serializes the result or exception.
     // This needed to provide a detailed stacktrace in case of not `Error` but
-    // anything else wihtout`stacktrace` is thrown. To provide the stacktrace,
-    // CDP domains `Debugger` and`Runtime` should be enabled.
-    await this._cdpClient.Debugger.enable({});
-    await this._cdpClient.Runtime.enable();
-
+    // anything else wihtout`stacktrace` is thrown.
     const expression = script;
     const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
       expression,
       returnByValue: false,
     });
-    // const { result, exceptionDetails } = await this._cdpClient.Runtime.evaluate(
-    //   {
-    //     expression,
-    //     returnByValue: false,
-    //   }
-    // );
-
     // Serialize exception details.
     if (cdpEvaluateResult.exceptionDetails) {
       const callFrames =

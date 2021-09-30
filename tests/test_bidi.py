@@ -26,6 +26,12 @@ async def websocket():
     async with websockets.connect(url) as connection:
         yield connection
 
+@pytest.fixture(autouse=True)
+async def before_each_test(websocket):
+    # Read initial event `browsingContext.contextCreated`
+    resp = await read_JSON_message(websocket)
+    assert resp['method'] == 'browsingContext.contextCreated'
+
 # Compares 2 objects recursively ignoring values of specific attributes.
 def recursiveCompare(expected, actual, ignoreAttributes):
     assert type(expected) == type(actual)
