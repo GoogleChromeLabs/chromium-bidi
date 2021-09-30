@@ -161,7 +161,10 @@ export class BrowsingContextProcessor {
     );
     // TODO sadym: add arguments params after they are specified.
     // https://github.com/w3c/webdriver-bidi/pull/136#issuecomment-926700556
-    return await context.evaluateScript(params.expression);
+    return await context.evaluateScript(
+      params.expression,
+      params.awaitPromise !== false // `awaitPromise` by default is `true`.
+    );
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {

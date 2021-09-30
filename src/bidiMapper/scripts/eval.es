@@ -70,6 +70,11 @@
         return result;
       }
 
+      if (value instanceof Promise) {
+        result.type = 'promise';
+        return result;
+      }
+
       if (Array.isArray(value)) {
         result.type = "array";
       } else {
@@ -123,6 +128,7 @@
       case 'boolean': {
         return value.value;
       }
+      case 'promise':
       case 'array':
       case 'function':
       case 'object': {

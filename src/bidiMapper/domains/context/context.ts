@@ -96,8 +96,38 @@ export class Context {
     return response.result.value;
   }
 
+  private async _serializeCdpExceptionDetails(
+    cdpExceptionDetails: Protocol.Runtime.ExceptionDetails
+  ) {
+    const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
+      (frame) => ({
+        url: frame.url,
+        functionName: frame.functionName,
+        lineNumber: frame.lineNumber,
+        columnNumber: frame.columnNumber,
+      })
+    );
+    const exception = await this._serializeCdpObject(
+      // Exception should always be there.
+      cdpExceptionDetails.exception!
+    );
+
+    return {
+      exceptionDetails: {
+        exception,
+        columnNumber: cdpExceptionDetails.columnNumber,
+        lineNumber: cdpExceptionDetails.lineNumber,
+        stackTrace: {
+          callFrames: callFrames || [],
+        },
+        text: cdpExceptionDetails.text,
+      },
+    };
+  }
+
   public async evaluateScript(
-    script: string
+    script: string,
+    awaitPromise: boolean
   ): Promise<Script.ScriptEvaluateResult> {
     // Evaluate works with 2 DP calls:
     // 1. Evaluates the script;
@@ -107,35 +137,14 @@ export class Context {
     const expression = script;
     const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
       expression,
+      awaitPromise,
       returnByValue: false,
     });
-    // Serialize exception details.
     if (cdpEvaluateResult.exceptionDetails) {
-      const callFrames =
-        cdpEvaluateResult.exceptionDetails.stackTrace?.callFrames.map(
-          (frame) => ({
-            url: frame.url,
-            functionName: frame.functionName,
-            lineNumber: frame.lineNumber,
-            columnNumber: frame.columnNumber,
-          })
-        );
-      const exception = await this._serializeCdpObject(
-        // Exception should always be there.
-        cdpEvaluateResult.exceptionDetails.exception!
+      // Serialize exception details.
+      return await this._serializeCdpExceptionDetails(
+        cdpEvaluateResult.exceptionDetails
       );
-
-      return {
-        exceptionDetails: {
-          exception,
-          columnNumber: cdpEvaluateResult.exceptionDetails.columnNumber,
-          lineNumber: cdpEvaluateResult.exceptionDetails.lineNumber,
-          stackTrace: {
-            callFrames: callFrames || [],
-          },
-          text: cdpEvaluateResult.exceptionDetails.text,
-        },
-      };
     }
 
     return {

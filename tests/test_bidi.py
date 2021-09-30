@@ -804,6 +804,52 @@ async def test_scriptEvaluateThrowing1_exceptionReturned(websocket):
                     "columnNumber":25}]}}},
         resp["result"], ["objectId"])
 
+@pytest.mark.asyncio
+async def test_scriptEvaluateDontWaitPromise_promiseReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 46,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "Promise.resolve('SOME_RESULT')",
+            "awaitPromise": False,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 46
+
+    # Compare ignoring `objectId`.
+    recursiveCompare({
+            "type":"promise",
+            "objectId": "__any_value__"
+        }, resp["result"]["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_scriptEvaluateWaitPromise_resultReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 46,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "Promise.resolve('SOME_RESULT')",
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 46
+
+    # Compare ignoring `objectId`.
+    recursiveCompare({
+        "type":"string",
+        "value":"SOME_RESULT"
+        }, resp["result"]["result"], ["objectId"])
+
 # Testing serialisation.
 async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     contextID = await get_open_context_id(websocket)
