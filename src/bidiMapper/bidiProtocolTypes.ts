@@ -5,9 +5,9 @@ export namespace CommonDataTypes {
 
   export interface ExceptionDetails {
     columnNumber: number;
-    exception?: CommonDataTypes.RemoteValue;
+    exception: CommonDataTypes.RemoteValue;
     lineNumber: number;
-    stackTrace?: StackTrace;
+    stackTrace: StackTrace;
     text: string;
   }
   export interface StackTrace {
