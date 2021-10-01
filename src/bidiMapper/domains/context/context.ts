@@ -150,16 +150,20 @@ export class Context {
     // those 2 CDP calls.
 
     // The call puts the expression first to keep the stacktrace not dependent
-    // on the`EVALUATOR_SCRIPT` length in case of exception.
+    // on the`EVALUATOR_SCRIPT` length in case of exception. Based on
+    // `awaitPromise`, `_serialize` function will wait for the result, or
+    // serialize promise as-is.
     const evalAndSerialiseScript = `_serialize(\n${expression}\n);
-      function _serialize(expression){
+      async function _serialize(value){
         return (${EVALUATOR_SCRIPT})
-          .serialize.apply(null, [expression])
+          .serialize.apply(null, [${awaitPromise ? 'await' : ''} value])
       }`;
 
     const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
       expression: evalAndSerialiseScript,
-      awaitPromise,
+      // Always wait for the result of `_serialize`. Wait or not for the user's
+      // expression is handled in the`_serialize` function.
+      awaitPromise: true,
       returnByValue: false,
     });
     if (cdpEvaluateResult.exceptionDetails) {
