@@ -850,6 +850,34 @@ async def test_scriptEvaluateWaitPromise_resultReturned(websocket):
         "value":"SOME_RESULT"
         }, resp["result"]["result"], ["objectId"])
 
+@pytest.mark.asyncio
+async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 47,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "(()=>{const a={i:0};const f=()=>{ setTimeout(()=>{ a.i++; f(); }, 0); };f();return a;})()",
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 47
+
+    # Verify the object wasn't changed.
+    recursiveCompare({
+        "type": "object",
+        "value": [[
+            "i", {
+            "type": "number",
+            "value": 0
+            }]],
+        "objectId": "__any_value__"
+        }, resp["result"]["result"], ["objectId"])
+
 # Testing serialisation.
 async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     contextID = await get_open_context_id(websocket)
