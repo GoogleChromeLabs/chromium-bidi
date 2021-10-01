@@ -26,6 +26,9 @@ export class Context {
   _sessionId?: string;
 
   private _dummyContextObjectId: string = '';
+  // As `script.evaluate` wraps call into serialisation script, `lineNumber`
+  // should be adjusted.
+  private _evaluateStacktraceLineOffset = 1;
 
   private constructor(
     private _contextId: string,
@@ -107,7 +110,9 @@ export class Context {
       (frame) => ({
         url: frame.url,
         functionName: frame.functionName,
-        lineNumber: frame.lineNumber,
+        // As `script.evaluate` wraps call into serialisation script, so
+        // `lineNumber` should be adjusted.
+        lineNumber: frame.lineNumber - this._evaluateStacktraceLineOffset,
         columnNumber: frame.columnNumber,
       })
     );
@@ -120,7 +125,10 @@ export class Context {
       exceptionDetails: {
         exception,
         columnNumber: cdpExceptionDetails.columnNumber,
-        lineNumber: cdpExceptionDetails.lineNumber,
+        // As `script.evaluate` wraps call into serialisation script, so
+        // `lineNumber` should be adjusted.
+        lineNumber:
+          cdpExceptionDetails.lineNumber - this._evaluateStacktraceLineOffset,
         stackTrace: {
           callFrames: callFrames || [],
         },
@@ -133,13 +141,24 @@ export class Context {
     expression: string,
     awaitPromise: boolean
   ): Promise<Script.ScriptEvaluateResult> {
-    // Evaluate works with 2 DP calls:
-    // 1. Evaluates the `script`;
-    // 2. serializes the result or exception.
+    // Evaluate works with 2 CDP calls:
+    // 1. Evaluates the `script` + serializes the result into CDP object.
+    // 2. Retrieves the serialization result.
     // This needed to provide a detailed stacktrace in case of not `Error` but
-    // anything else wihtout`stacktrace` is thrown.
+    // anything else wihtout a `stacktrace` is thrown. And in the same time to
+    // avoid a race condition in case of the result object is changed between
+    // those 2 CDP calls.
+
+    // The call puts the expression first to keep the stacktrace not dependent
+    // on the`EVALUATOR_SCRIPT` length in case of exception.
+    const evalAndSerialiseScript = `_serialize(\n${expression}\n);
+      function _serialize(expression){
+        return (${EVALUATOR_SCRIPT})
+          .serialize.apply(null, [expression])
+      }`;
+
     const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
-      expression,
+      expression: evalAndSerialiseScript,
       awaitPromise,
       returnByValue: false,
     });
@@ -150,8 +169,21 @@ export class Context {
       );
     }
 
+    const cdpValueResult = await this._cdpClient.Runtime.callFunctionOn({
+      functionDeclaration: `(a)=>{return a;}`,
+      objectId: this._dummyContextObjectId,
+      arguments: [cdpEvaluateResult.result],
+      returnByValue: true,
+    });
+
+    if (cdpValueResult.exceptionDetails) {
+      throw new Error(
+        'Cannot get result value: ' + cdpEvaluateResult.exceptionDetails!.text
+      );
+    }
+
     return {
-      result: await this._serializeCdpObject(cdpEvaluateResult.result),
+      result: cdpValueResult.result.value,
     };
   }
 }
