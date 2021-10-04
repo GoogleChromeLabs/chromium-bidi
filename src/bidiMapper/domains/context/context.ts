@@ -102,6 +102,28 @@ export class Context {
 
     return response.result.value;
   }
+  /**
+   * Get value of CDP object.
+   * @param cdpObject CDP remote object to be returned.
+   */
+  private async _getCdpObjectValue(
+    cdpObject: Protocol.Runtime.RemoteObject
+  ): Promise<CommonDataTypes.RemoteValue> {
+    const cdpValueResult = await this._cdpClient.Runtime.callFunctionOn({
+      functionDeclaration: `(a)=>{return a;}`,
+      objectId: this._dummyContextObjectId,
+      arguments: [cdpObject],
+      returnByValue: true,
+    });
+
+    if (cdpValueResult.exceptionDetails) {
+      throw new Error(
+        'Cannot get CDP value: ' + cdpValueResult.exceptionDetails!.text
+      );
+    }
+
+    return cdpValueResult.result.value;
+  }
 
   private async _serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails
@@ -173,21 +195,8 @@ export class Context {
       );
     }
 
-    const cdpValueResult = await this._cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: `(a)=>{return a;}`,
-      objectId: this._dummyContextObjectId,
-      arguments: [cdpEvaluateResult.result],
-      returnByValue: true,
-    });
-
-    if (cdpValueResult.exceptionDetails) {
-      throw new Error(
-        'Cannot get result value: ' + cdpEvaluateResult.exceptionDetails!.text
-      );
-    }
-
     return {
-      result: cdpValueResult.result.value,
+      result: await this._getCdpObjectValue(cdpEvaluateResult.result),
     };
   }
 }
