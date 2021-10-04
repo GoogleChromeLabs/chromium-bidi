@@ -923,6 +923,35 @@ async def test_scriptInvokeWithArgs_invokeResultReturn(websocket):
         "objectId": "__any_value__"
         }, resp["result"]["result"], ["objectId"])
 
+@pytest.mark.asyncio
+async def test_scriptInvokeWithArgsAndDoNotAwaitPromise_invokeResultReturn(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 49,
+        "method": "script.invoke",
+        "params": {
+            "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
+            "args": [{
+                "type": "string",
+                "value": "ARGUMENT_STRING_VALUE"
+            },{
+                "type": "number",
+                "value": 42
+            }],
+            "awaitPromise": False,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 49
+
+    recursiveCompare({
+            "type":"promise",
+            "objectId": "__any_value__"
+        }, resp["result"]["result"], ["objectId"])
+
 # Testing serialization.
 async def assertSerialization(jsStrObject, expectedSerializedObject, websocket):
     contextID = await get_open_context_id(websocket)

@@ -174,16 +174,16 @@ export class Context {
 
   public async scriptInvoke(
     functionDeclaration: string,
-    args: string[]
+    args: Script.InvokeArgument[],
+    awaitPromise: boolean
   ): Promise<Script.ScriptInvokeResult> {
     const invokeAndSerializeScript = `async (...args)=>{ return _invoke(\n${functionDeclaration}\n, args);
       async function _invoke(f, sArgs) {
         const evaluator = (${EVALUATOR_SCRIPT});
         const dArgs = sArgs.map(evaluator.deserialize);
-        const resultValue = await f.apply(this, dArgs);
+        const resultValue = ${awaitPromise ? 'await' : ''} f.apply(this, dArgs);
         return evaluator.serialize(resultValue);
-      }
-    }`;
+      }}`;
 
     const cdpInvokeResult = await this._cdpClient.Runtime.callFunctionOn({
       functionDeclaration: invokeAndSerializeScript,

@@ -49,7 +49,8 @@ export namespace Script {
 
   export interface ScriptInvokeParameters {
     functionDeclaration: string;
-    args: string[];
+    args: InvokeArgument[];
+    awaitPromise?: boolean;
     target: Target;
   }
 
@@ -59,6 +60,17 @@ export namespace Script {
 
   export interface ScriptInvokeSuccessResult {
     result: CommonDataTypes.RemoteValue;
+  }
+
+  export type InvokeArgument = RemoteValueArgument | LocalValueArgument;
+
+  export interface RemoteValueArgument {
+    objectId: string;
+  }
+
+  export interface LocalValueArgument {
+    type: string;
+    value: any;
   }
 }
 

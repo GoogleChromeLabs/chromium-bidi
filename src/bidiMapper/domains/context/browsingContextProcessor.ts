@@ -171,7 +171,11 @@ export class BrowsingContextProcessor {
     const context = this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
-    return await context.scriptInvoke(params.functionDeclaration, params.args);
+    return await context.scriptInvoke(
+      params.functionDeclaration,
+      params.args,
+      params.awaitPromise !== false // `awaitPromise` by default is `true`.
+    );
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {
