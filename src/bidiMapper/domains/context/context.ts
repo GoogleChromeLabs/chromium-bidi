@@ -29,6 +29,7 @@ export class Context {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
   private _evaluateStacktraceLineOffset = 1;
+  private _invokeStacktraceLineOffset = 1;
 
   private constructor(
     private _contextId: string,
@@ -104,7 +105,8 @@ export class Context {
   }
 
   private async _serializeCdpExceptionDetails(
-    cdpExceptionDetails: Protocol.Runtime.ExceptionDetails
+    cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
+    lineOffset: number
   ) {
     const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
       (frame) => ({
@@ -112,7 +114,7 @@ export class Context {
         functionName: frame.functionName,
         // As `script.evaluate` wraps call into serialization script, so
         // `lineNumber` should be adjusted.
-        lineNumber: frame.lineNumber - this._evaluateStacktraceLineOffset,
+        lineNumber: frame.lineNumber - lineOffset,
         columnNumber: frame.columnNumber,
       })
     );
@@ -127,8 +129,7 @@ export class Context {
         columnNumber: cdpExceptionDetails.columnNumber,
         // As `script.evaluate` wraps call into serialization script, so
         // `lineNumber` should be adjusted.
-        lineNumber:
-          cdpExceptionDetails.lineNumber - this._evaluateStacktraceLineOffset,
+        lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
         stackTrace: {
           callFrames: callFrames || [],
         },
@@ -161,7 +162,8 @@ export class Context {
     if (cdpEvaluateResult.exceptionDetails) {
       // Serialize exception details.
       return await this._serializeCdpExceptionDetails(
-        cdpEvaluateResult.exceptionDetails
+        cdpEvaluateResult.exceptionDetails,
+        this._evaluateStacktraceLineOffset
       );
     }
 
@@ -174,14 +176,33 @@ export class Context {
     functionDeclaration: string,
     args: string[]
   ): Promise<Script.ScriptInvokeResult> {
+    const invokeAndSerializeScript = `async (...args)=>{ return _invoke(\n${functionDeclaration}\n, args);
+      async function _invoke(f, sArgs) {
+        const evaluator = (${EVALUATOR_SCRIPT});
+        const dArgs = sArgs.map(evaluator.deserialize);
+        const resultValue = await f.apply(this, dArgs);
+        return evaluator.serialize(resultValue);
+      }
+    }`;
+
+    const cdpInvokeResult = await this._cdpClient.Runtime.callFunctionOn({
+      functionDeclaration: invokeAndSerializeScript,
+      arguments: args.map((a) => ({ value: a })),
+      awaitPromise: true,
+      returnByValue: false,
+      objectId: this._dummyContextObjectId,
+    });
+
+    if (cdpInvokeResult.exceptionDetails) {
+      // Serialize exception details.
+      return await this._serializeCdpExceptionDetails(
+        cdpInvokeResult.exceptionDetails,
+        this._invokeStacktraceLineOffset
+      );
+    }
+
     return {
-      exceptionDetails: {
-        columnNumber: 0,
-        exception: {},
-        lineNumber: 0,
-        stackTrace: { callFrames: [] },
-        text: 'Not implemented',
-      },
+      result: await this._getCdpObjectValue(cdpInvokeResult.result),
     };
   }
 }

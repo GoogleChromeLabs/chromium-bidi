@@ -29,16 +29,16 @@ export namespace Script {
   }
   export type Target = ContextTarget | RealTarget;
 
+  export interface ScriptExceptionResult {
+    exceptionDetails: CommonDataTypes.ExceptionDetails;
+  }
+
   export type ScriptEvaluateResult =
     | ScriptEvaluateSuccessResult
-    | ScriptEvaluateExceptionResult;
+    | ScriptExceptionResult;
 
   export interface ScriptEvaluateSuccessResult {
     result: CommonDataTypes.RemoteValue;
-  }
-
-  export interface ScriptEvaluateExceptionResult {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
   }
 
   export interface ScriptEvaluateParameters {
@@ -55,14 +55,10 @@ export namespace Script {
 
   export type ScriptInvokeResult =
     | ScriptInvokeSuccessResult
-    | ScriptInvokeExceptionResult;
+    | ScriptExceptionResult;
 
   export interface ScriptInvokeSuccessResult {
     result: CommonDataTypes.RemoteValue;
-  }
-
-  export interface ScriptInvokeExceptionResult {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
   }
 }
 
