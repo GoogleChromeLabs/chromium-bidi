@@ -169,4 +169,19 @@ export class Context {
       result: cdpEvaluateResult.result.value!,
     };
   }
+
+  public async scriptInvoke(
+    functionDeclaration: string,
+    args: string[]
+  ): Promise<Script.ScriptInvokeResult> {
+    return {
+      exceptionDetails: {
+        columnNumber: 0,
+        exception: {},
+        lineNumber: 0,
+        stackTrace: { callFrames: [] },
+        text: 'Not implemented',
+      },
+    };
+  }
 }

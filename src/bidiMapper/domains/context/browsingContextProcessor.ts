@@ -159,12 +159,19 @@ export class BrowsingContextProcessor {
     const context = this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
-    // TODO sadym: add arguments params after they are specified.
-    // https://github.com/w3c/webdriver-bidi/pull/136#issuecomment-926700556
     return await context.scriptEvaluate(
       params.expression,
       params.awaitPromise !== false // `awaitPromise` by default is `true`.
     );
+  }
+
+  async process_script_invoke(
+    params: Script.ScriptInvokeParameters
+  ): Promise<Script.ScriptInvokeResult> {
+    const context = this._getKnownContext(
+      (params.target as Script.ContextTarget).context
+    );
+    return await context.scriptInvoke(params.functionDeclaration, params.args);
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {

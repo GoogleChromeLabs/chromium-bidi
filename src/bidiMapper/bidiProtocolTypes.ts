@@ -36,6 +36,7 @@ export namespace Script {
   export interface ScriptEvaluateSuccessResult {
     result: CommonDataTypes.RemoteValue;
   }
+
   export interface ScriptEvaluateExceptionResult {
     exceptionDetails: CommonDataTypes.ExceptionDetails;
   }
@@ -44,6 +45,24 @@ export namespace Script {
     expression: string;
     awaitPromise?: boolean;
     target: Target;
+  }
+
+  export interface ScriptInvokeParameters {
+    functionDeclaration: string;
+    args: string[];
+    target: Target;
+  }
+
+  export type ScriptInvokeResult =
+    | ScriptInvokeSuccessResult
+    | ScriptInvokeExceptionResult;
+
+  export interface ScriptInvokeSuccessResult {
+    result: CommonDataTypes.RemoteValue;
+  }
+
+  export interface ScriptInvokeExceptionResult {
+    exceptionDetails: CommonDataTypes.ExceptionDetails;
   }
 }
 
