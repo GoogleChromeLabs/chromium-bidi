@@ -924,7 +924,7 @@ async def test_scriptInvokeWithArgs_invokeResultReturn(websocket):
         }, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_scriptInvokeWithArgsAndDoNotAwaitPromise_invokeResultReturn(websocket):
+async def test_scriptInvokeWithArgsAndDoNotAwaitPromise_promiseReturn(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -951,6 +951,44 @@ async def test_scriptInvokeWithArgsAndDoNotAwaitPromise_invokeResultReturn(webso
             "type":"promise",
             "objectId": "__any_value__"
         }, resp["result"]["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_scriptInvokeWithRemoteValueArgument_resultReturn(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 50,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "{SOME_PROPERTY:'SOME_VALUE'}",
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 50
+
+    objectId = resp["result"]["result"]["objectId"]
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 51,
+        "method": "script.invoke",
+        "params": {
+            "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
+            "args": [{
+                "objectId": objectId
+            }],
+            "target": {"context": contextID}}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 51,
+        "result": {
+            "result": {
+                "type": "string",
+                "value": "SOME_VALUE"}}}
 
 # Testing serialization.
 async def assertSerialization(jsStrObject, expectedSerializedObject, websocket):
