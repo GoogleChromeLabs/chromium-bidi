@@ -146,6 +146,8 @@ export class Context {
     // on the`EVALUATOR_SCRIPT` length in case of exception. Based on
     // `awaitPromise`, `_serialize` function will wait for the result, or
     // serialize promise as-is.
+    // TODO sadym: add error handling for serialization errors.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
     const evalAndSerializeScript = `_serialize(\n${expression}\n);
       async function _serialize(value){
         return (${EVALUATOR_SCRIPT})
@@ -177,11 +179,14 @@ export class Context {
     args: Script.InvokeArgument[],
     awaitPromise: boolean
   ): Promise<Script.ScriptInvokeResult> {
-    const invokeAndSerializeScript = `async (...args)=>{ return _invoke(\n${functionDeclaration}\n, args);
-      async function _invoke(f, sArgs) {
+    // TODO sadym: add error handling for serialization/deserialization errors.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
+    const invokeAndSerializeScript = `async (...serializedArgs)=>{ return _invoke(\n${functionDeclaration}\n, serializedArgs);
+      async function _invoke(f, serializedArgs) {
         const evaluator = (${EVALUATOR_SCRIPT});
-        const dArgs = sArgs.map(evaluator.deserialize);
-        const resultValue = ${awaitPromise ? 'await' : ''} f.apply(this, dArgs);
+        const deserializedArgs = serializedArgs.map(evaluator.deserialize);
+        const resultValue =
+          ${awaitPromise ? 'await' : ''} f.apply(this, deserializedArgs);
         return evaluator.serialize(resultValue);
       }}`;
 
