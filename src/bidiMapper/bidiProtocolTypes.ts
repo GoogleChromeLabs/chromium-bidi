@@ -3,80 +3,80 @@ export namespace CommonDataTypes {
   // https://w3c.github.io/webdriver-bidi/#type-common-RemoteValue.
   export type RemoteValue = any;
 
-  export interface ExceptionDetails {
+  export type ExceptionDetails = {
     columnNumber: number;
     exception: CommonDataTypes.RemoteValue;
     lineNumber: number;
     stackTrace: StackTrace;
     text: string;
-  }
-  export interface StackTrace {
+  };
+  export type StackTrace = {
     callFrames: StackFrame[];
-  }
-  export interface StackFrame {
+  };
+  export type StackFrame = {
     url: string;
     functionName: string;
     lineNumber: number;
     columnNumber: number;
-  }
+  };
 }
 export namespace Script {
-  export interface RealTarget {
+  export type RealTarget = {
     // TODO sadym: implement.
-  }
-  export interface ContextTarget {
+  };
+  export type ContextTarget = {
     context: BrowsingContext.BrowsingContext;
-  }
+  };
   export type Target = ContextTarget | RealTarget;
 
-  export interface ScriptExceptionResult {
+  export type ScriptExceptionResult = {
     exceptionDetails: CommonDataTypes.ExceptionDetails;
-  }
+  };
 
   export type ScriptEvaluateResult =
     | ScriptEvaluateSuccessResult
     | ScriptExceptionResult;
 
-  export interface ScriptEvaluateSuccessResult {
+  export type ScriptEvaluateSuccessResult = {
     result: CommonDataTypes.RemoteValue;
-  }
+  };
 
-  export interface ScriptEvaluateParameters {
+  export type ScriptEvaluateParameters = {
     expression: string;
     awaitPromise?: boolean;
     target: Target;
-  }
+  };
 
   export namespace PROTO {
-    export interface ScriptInvokeParameters {
+    export type ScriptInvokeParameters = {
       functionDeclaration: string;
       args: InvokeArgument[];
       awaitPromise?: boolean;
       target: Target;
-    }
+    };
 
     export type ScriptInvokeResult =
       | ScriptInvokeSuccessResult
       | ScriptExceptionResult;
 
-    export interface ScriptInvokeSuccessResult {
+    export type ScriptInvokeSuccessResult = {
       result: CommonDataTypes.RemoteValue;
-    }
+    };
 
     export type InvokeArgument = RemoteValueArgument | LocalValueArgument;
 
-    export interface RemoteValueArgument {
+    export type RemoteValueArgument = {
       objectId: string;
-    }
+    };
 
-    export interface LocalValueArgument {
+    export type LocalValueArgument = {
       type: string;
       value: any;
-    }
+    };
   }
-}
 
-// https://w3c.github.io/webdriver-bidi/#module-browsingContext
-export namespace BrowsingContext {
-  export type BrowsingContext = string;
+  // https://w3c.github.io/webdriver-bidi/#module-browsingContext
+  export namespace BrowsingContext {
+    export type BrowsingContext = string;
+  }
 }
