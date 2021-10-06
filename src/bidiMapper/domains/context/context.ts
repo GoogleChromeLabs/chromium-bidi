@@ -102,28 +102,6 @@ export class Context {
 
     return response.result.value;
   }
-  /**
-   * Get value of CDP object.
-   * @param cdpObject CDP remote object to be returned.
-   */
-  private async _getCdpObjectValue(
-    cdpObject: Protocol.Runtime.RemoteObject
-  ): Promise<CommonDataTypes.RemoteValue> {
-    const cdpValueResult = await this._cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: `(a)=>{return a;}`,
-      objectId: this._dummyContextObjectId,
-      arguments: [cdpObject],
-      returnByValue: true,
-    });
-
-    if (cdpValueResult.exceptionDetails) {
-      throw new Error(
-        'Cannot get CDP value: ' + cdpValueResult.exceptionDetails!.text
-      );
-    }
-
-    return cdpValueResult.result.value;
-  }
 
   private async _serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails
@@ -163,14 +141,6 @@ export class Context {
     expression: string,
     awaitPromise: boolean
   ): Promise<Script.ScriptEvaluateResult> {
-    // Evaluate works with 2 CDP calls:
-    // 1. Evaluates the `script` + serializes the result into CDP object.
-    // 2. Retrieves the serialization result.
-    // This needed to provide a detailed stacktrace in case of not `Error` but
-    // anything else wihtout a `stacktrace` is thrown. And in the same time to
-    // avoid a race condition in case of the result object is changed between
-    // those 2 CDP calls.
-
     // The call puts the expression first to keep the stacktrace not dependent
     // on the`EVALUATOR_SCRIPT` length in case of exception. Based on
     // `awaitPromise`, `_serialize` function will wait for the result, or
@@ -184,9 +154,9 @@ export class Context {
     const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
       expression: evalAndSerialiseScript,
       // Always wait for the result of `_serialize`. Wait or not for the user's
-      // expression is handled in the`_serialize` function.
+      // expression is handled in the `_serialize` function.
       awaitPromise: true,
-      returnByValue: false,
+      returnByValue: true,
     });
     if (cdpEvaluateResult.exceptionDetails) {
       // Serialize exception details.
@@ -196,7 +166,7 @@ export class Context {
     }
 
     return {
-      result: await this._getCdpObjectValue(cdpEvaluateResult.result),
+      result: cdpEvaluateResult.result.value!,
     };
   }
 }
