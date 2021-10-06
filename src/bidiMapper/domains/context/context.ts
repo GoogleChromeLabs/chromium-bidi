@@ -189,7 +189,7 @@ export class Context {
       functionDeclaration: invokeAndSerializeScript,
       arguments: args.map((a) => ({ value: a })),
       awaitPromise: true,
-      returnByValue: false,
+      returnByValue: true,
       objectId: this._dummyContextObjectId,
     });
 
@@ -202,7 +202,7 @@ export class Context {
     }
 
     return {
-      result: await this._getCdpObjectValue(cdpInvokeResult.result),
+      result: cdpInvokeResult.result.value,
     };
   }
 }
