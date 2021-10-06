@@ -859,7 +859,18 @@ async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
         "id": 47,
         "method": "script.evaluate",
         "params": {
-            "expression": "(()=>{const a={i:0};const f=()=>{ setTimeout(()=>{ a.i++; f(); }, 0); };f();return a;})()",
+            # Create an object and schedule its property to be changed by
+            # `setTimeout(..., 0)`. This allows to verify if the object was
+            # serialized at the moment of the call or later.
+            "expression": """(() => {
+                const someObject = { i: 0 };
+                const changeObjectAfterCurrentJsThread = () => {
+                    setTimeout(() => {
+                            someObject.i++;
+                            changeObjectAfterCurrentJsThread(); },
+                        0); };
+                changeObjectAfterCurrentJsThread();
+                return someObject; })()""",
             "awaitPromise": True,
             "target": {"context": contextID}}})
 
