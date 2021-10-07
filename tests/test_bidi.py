@@ -169,9 +169,9 @@ async def ignore_test_getTreeWithNestedContexts_contextReturned(websocket):
     # TODO sadym: implement
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated(websocket):
-    # Send command.
+async def test_createContext_eventContextCreatedEmittedAndContextCreated(websocket):
+    initialContextID = await get_open_context_id(websocket)
+
     command = {
         "id": 9,
         "method": "browsingContext.create",
@@ -180,11 +180,11 @@ async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated
 
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
-    contextID = resp['params']['context']
+    newContextID = resp['params']['context']
     assert resp == {
         "method": "browsingContext.contextCreated",
         "params": {
-            "context":contextID,
+            "context": newContextID,
             "parent": None,
             "url": ""}}
 
@@ -193,9 +193,28 @@ async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated
     assert resp == {
         "id": 9,
         "result": {
-            "context": contextID,
+            "context": newContextID,
             "parent": None,
             "url": ""}}
+
+    # Get all contexts and assert new context is created.
+    command = {"id": 10, "method": "browsingContext.getTree", "params": {}}
+    await send_JSON_command(websocket, command)
+
+    # Assert "browsingContext.getTree" command done.
+    # TODO sadym: make order-agnostic. Maybe order by `context`?
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 10,
+        "result": {
+            "contexts": [{
+                "context": newContextID,
+                "url": "about:blank",
+                "children": []
+            }, {
+                "context": initialContextID,
+                "url": "about:blank",
+                "children": [] }]}}
 
 @pytest.mark.asyncio
 # Not implemented yet.

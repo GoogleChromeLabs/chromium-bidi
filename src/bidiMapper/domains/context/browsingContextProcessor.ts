@@ -16,7 +16,7 @@
  */
 
 import { log } from '../../../utils/log';
-import { CdpConnection } from '../../../cdp';
+import { CdpConnection, CdpClient } from '../../../cdp';
 import { Context } from './context';
 import { BrowsingContext, Script } from '../../bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
@@ -24,7 +24,7 @@ import Protocol from 'devtools-protocol';
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  private _contexts: Map<string, Context> = new Map();
+  private _contexts: Map<string, Promise<Context>> = new Map();
   private _sessionToTargets: Map<string, Context> = new Map();
 
   // Set from outside.
@@ -45,36 +45,56 @@ export class BrowsingContextProcessor {
     this._selfTargetId = selfTargetId;
     this._onContextCreated = onContextCreated;
     this._onContextDestroyed = onContextDestroyed;
+
+    this._setCdpEventListeners(this._cdpConnection.browserClient());
   }
 
+  private _setCdpEventListeners(browserCdpClient: CdpClient) {
+    browserCdpClient.Target.on('attachedToTarget', async (params) => {
+      await this._handleAttachedToTargetEvent(params);
+    });
+    browserCdpClient.Target.on('targetInfoChanged', (params) => {
+      this._handleInfoChangedEvent(params);
+    });
+    browserCdpClient.Target.on('detachedFromTarget', (params) => {
+      this._handleDetachedFromTargetEvent(params);
+    });
+  }
+
+  // Creation of `Context` can take quite a while. To avoid race condition, in
+  // the map kept Pmomise, eventualy resolved with the`Context`.
   private async _getOrCreateContext(
     contextId: string,
     cdpSessionId: string
   ): Promise<Context> {
-    let context = this._contexts.get(contextId);
-    if (!context) {
-      const sessionCdpClient = this._cdpConnection.sessionClient(cdpSessionId);
-      context = await Context.create(
+    let contextPromise = this._contexts.get(contextId);
+    if (!contextPromise) {
+      const sessionCdpClient = this._cdpConnection.getCdpClient(cdpSessionId);
+
+      // Don't wait for actual creation. Just put the Promise into map.
+      contextPromise = Context.create(
         contextId,
         sessionCdpClient,
         this.EVALUATOR_SCRIPT
       );
-      this._contexts.set(contextId, context);
+      this._contexts.set(contextId, contextPromise);
     }
-    return context;
+    return contextPromise;
   }
 
-  private _tryGetContext(contextId: string): Context | undefined {
-    return this._contexts.get(contextId);
+  private async _tryGetContext(
+    contextId: string
+  ): Promise<Context | undefined> {
+    return await this._contexts.get(contextId);
   }
 
-  private _getKnownContext(contextId: string): Context {
-    const context = this._contexts.get(contextId);
+  private async _getKnownContext(contextId: string): Promise<Context> {
+    const context = await this._contexts.get(contextId);
     if (!context) throw new Error('context not found');
     return context;
   }
 
-  async handleAttachedToTargetEvent(
+  private async _handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent
   ) {
     logContext('AttachedToTarget event received', params);
@@ -87,37 +107,40 @@ export class BrowsingContextProcessor {
       sessionId
     );
     context._updateTargetInfo(targetInfo);
-
     this._sessionToTargets.delete(sessionId);
-
     this._sessionToTargets.set(sessionId, context);
-
-    // context._setSessionId(eventData.params.sessionId);
+    context._setSessionId(sessionId);
 
     this._onContextCreated(context);
   }
 
-  handleInfoChangedEvent(params: Protocol.Target.TargetInfoChangedEvent) {
+  private async _handleInfoChangedEvent(
+    params: Protocol.Target.TargetInfoChangedEvent
+  ) {
     logContext('infoChangedEvent event received', params);
 
     const targetInfo = params.targetInfo;
     if (!this._isValidTarget(targetInfo)) return;
 
-    const context = this._tryGetContext(targetInfo.targetId);
+    const context = await this._tryGetContext(targetInfo.targetId);
     if (context) {
       context._onInfoChangedEvent(targetInfo);
     }
   }
 
-  // { "method": "Target.detachedFromTarget", "params": { "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9", "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  handleDetachedFromTargetEvent(
+  // { "method": "Target.detachedFromTarget",
+  //   "params": {
+  //     "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9",
+  //     "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
+  private async _handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
     logContext('detachedFromTarget event received', params);
 
-    // TODO: params.targetId is deprecated. Update this class to track using params.sessionId instead.
+    // TODO: params.targetId is deprecated. Update this class to track using
+    // params.sessionId instead.
     const targetId = params.targetId!;
-    const context = this._tryGetContext(targetId);
+    const context = await this._tryGetContext(targetId);
     if (context) {
       this._onContextDestroyed(context);
 
@@ -127,13 +150,26 @@ export class BrowsingContextProcessor {
     }
   }
 
-  async process_createContext(
+  async process_browsingContext_create(
     commandData: BrowsingContext.BrowsingContextCreateCommand
   ): Promise<BrowsingContext.BrowsingContextCreateResult> {
     const params = commandData.params;
 
     return new Promise(async (resolve) => {
-      let targetId: string;
+      const browserCdpClient = this._cdpConnection.browserClient();
+
+      const result = await browserCdpClient.Target.createTarget({
+        url: 'about:blank',
+        newWindow: params.type === 'window',
+      });
+
+      const targetId = result.targetId;
+
+      const existingContext = await this._tryGetContext(targetId);
+      if (existingContext) {
+        resolve(existingContext.toBidi());
+        return;
+      }
 
       const onAttachedToTarget = async (
         attachToTargetEventParams: Protocol.Target.AttachedToTargetEvent
@@ -152,22 +188,15 @@ export class BrowsingContextProcessor {
         }
       };
 
-      const browserCdpClient = this._cdpConnection.browserClient();
       browserCdpClient.Target.on('attachedToTarget', onAttachedToTarget);
-
-      const result = await browserCdpClient.Target.createTarget({
-        url: 'about:blank',
-        newWindow: params.type === 'window',
-      });
-      targetId = result.targetId;
     });
   }
 
-  async process_navigate(
+  async process_browsingContext_navigate(
     commandData: BrowsingContext.BrowsingContextNavigateCommand
   ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
     const params = commandData.params;
-    const context = this._getKnownContext(params.context);
+    const context = await this._getKnownContext(params.context);
 
     return await context.navigate(params.url, params.wait);
   }
@@ -176,7 +205,7 @@ export class BrowsingContextProcessor {
     commandData: Script.ScriptEvaluateCommand
   ): Promise<Script.ScriptEvaluateResult> {
     const params = commandData.params;
-    const context = this._getKnownContext(
+    const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
     return await context.scriptEvaluate(
@@ -189,7 +218,7 @@ export class BrowsingContextProcessor {
     commandData: Script.PROTO.ScriptInvokeCommand
   ): Promise<Script.PROTO.ScriptInvokeResult> {
     const params = commandData.params;
-    const context = this._getKnownContext(
+    const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
     return await context.PROTO_scriptInvoke(

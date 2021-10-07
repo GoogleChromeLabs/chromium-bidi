@@ -64,16 +64,6 @@ export class CommandProcessor {
   }
 
   private run() {
-    this._browserCdpClient.Target.on('attachedToTarget', async (params) => {
-      await this._contextProcessor.handleAttachedToTargetEvent(params);
-    });
-    this._browserCdpClient.Target.on('targetInfoChanged', (params) => {
-      this._contextProcessor.handleInfoChangedEvent(params);
-    });
-    this._browserCdpClient.Target.on('detachedFromTarget', (params) => {
-      this._contextProcessor.handleDetachedFromTargetEvent(params);
-    });
-
     this._bidiServer.on('message', (messageObj) => {
       return this._onBidiMessage(messageObj);
     });
@@ -186,11 +176,11 @@ export class CommandProcessor {
           commandData as Script.ScriptEvaluateCommand
         );
       case 'browsingContext.create':
-        return await this._contextProcessor.process_createContext(
+        return await this._contextProcessor.process_browsingContext_create(
           commandData as BrowsingContext.BrowsingContextCreateCommand
         );
       case 'browsingContext.navigate':
-        return await this._contextProcessor.process_navigate(
+        return await this._contextProcessor.process_browsingContext_navigate(
           commandData as BrowsingContext.BrowsingContextNavigateCommand
         );
 
