@@ -29,12 +29,14 @@ export class CommandProcessor {
   static run(
     cdpConnection: CdpConnection,
     bidiServer: IBidiServer,
-    selfTargetId: string
+    selfTargetId: string,
+    EVALUATOR_SCRIPT: string
   ) {
     const commandProcessor = new CommandProcessor(
       cdpConnection,
       bidiServer,
-      selfTargetId
+      selfTargetId,
+      EVALUATOR_SCRIPT
     );
 
     commandProcessor.run();
@@ -43,7 +45,8 @@ export class CommandProcessor {
   private constructor(
     private _cdpConnection: CdpConnection,
     private _bidiServer: IBidiServer,
-    private _selfTargetId: string
+    private _selfTargetId: string,
+    EVALUATOR_SCRIPT: string
   ) {
     this._browserCdpClient = this._cdpConnection.browserClient();
 
@@ -55,7 +58,8 @@ export class CommandProcessor {
       },
       (t: Context) => {
         return this._onContextDestroyed(t);
-      }
+      },
+      EVALUATOR_SCRIPT
     );
   }
 

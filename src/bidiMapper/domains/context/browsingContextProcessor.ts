@@ -38,7 +38,8 @@ export class BrowsingContextProcessor {
     cdpConnection: CdpConnection,
     selfTargetId: string,
     onContextCreated: (t: Context) => Promise<void>,
-    onContextDestroyed: (t: Context) => Promise<void>
+    onContextDestroyed: (t: Context) => Promise<void>,
+    private EVALUATOR_SCRIPT: string
   ) {
     this._cdpConnection = cdpConnection;
     this._selfTargetId = selfTargetId;
@@ -53,7 +54,11 @@ export class BrowsingContextProcessor {
     let context = this._contexts.get(contextId);
     if (!context) {
       const sessionCdpClient = this._cdpConnection.sessionClient(cdpSessionId);
-      context = await Context.create(contextId, sessionCdpClient);
+      context = await Context.create(
+        contextId,
+        sessionCdpClient,
+        this.EVALUATOR_SCRIPT
+      );
       this._contexts.set(contextId, context);
     }
     return context;

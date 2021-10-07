@@ -23,8 +23,6 @@ import {
   Script,
 } from '../../bidiProtocolTypes';
 
-import EVALUATOR_SCRIPT from '../../scripts/eval.es';
-
 export class Context {
   _targetInfo?: Protocol.Target.TargetInfo;
   _sessionId?: string;
@@ -37,11 +35,16 @@ export class Context {
 
   private constructor(
     private _contextId: string,
-    private _cdpClient: CdpClient
+    private _cdpClient: CdpClient,
+    private EVALUATOR_SCRIPT: string
   ) {}
 
-  public static async create(contextId: string, cdpClient: CdpClient) {
-    const context = new Context(contextId, cdpClient);
+  public static async create(
+    contextId: string,
+    cdpClient: CdpClient,
+    EVALUATOR_SCRIPT: string
+  ) {
+    const context = new Context(contextId, cdpClient, EVALUATOR_SCRIPT);
     await context._initialize();
     return context;
   }
@@ -110,7 +113,7 @@ export class Context {
     cdpObject: Protocol.Runtime.RemoteObject
   ): Promise<CommonDataTypes.RemoteValue> {
     const response = await this._cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: `${EVALUATOR_SCRIPT}.serialize`,
+      functionDeclaration: `${this.EVALUATOR_SCRIPT}.serialize`,
       objectId: this._dummyContextObjectId,
       arguments: [cdpObject],
       returnByValue: true,
@@ -175,7 +178,7 @@ export class Context {
             && value instanceof Promise) {
           value = await value;
         }
-        return (${EVALUATOR_SCRIPT})
+        return (${this.EVALUATOR_SCRIPT})
           .serialize.apply(null, [value])
       }`;
 
@@ -208,7 +211,7 @@ export class Context {
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
     const invokeAndSerializeScript = `async (...serializedArgs)=>{ return _invoke(\n${functionDeclaration}\n, serializedArgs);
       async function _invoke(f, serializedArgs) {
-        const evaluator = (${EVALUATOR_SCRIPT});
+        const evaluator = (${this.EVALUATOR_SCRIPT});
         const deserializedArgs = serializedArgs.map(evaluator.deserialize);
         let resultValue = f.apply(this, deserializedArgs);
         if(${awaitPromise ? 'true' : 'false'}
