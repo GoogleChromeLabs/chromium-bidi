@@ -220,30 +220,39 @@ async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(websocke
             "url": "about:blank"}}
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_navigate_eventPageLoadEmittedAndNavigated(websocket):
+async def test_navigateWaitNone_navigated(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     command = {
         "id": 15,
-        "method": "PROTO.browsingContext.navigate",
+        "method": "browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
-            "waitUntil": ["load", "domcontentloaded", "networkidle0", "networkidle2"],
+            "wait": "none",
             "context": contextID}}
     await send_JSON_command(websocket, command)
 
-    # Assert "DEBUG.Page.load" event emitted.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "method": "DEBUG.Page.load",
-        "params": {
-            "context": contextID}}
-
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    assert resp == {"id": 15, "result": {}}
+    recursiveCompare(
+        resp,
+        {
+            "id": 15,
+            "result": {
+                "navigation": "F595626837D41F9A72482D53B0C22F25",
+                "url": "data:text/html,<h2>test</h2>"}},
+        ["navigation"])
+
+@pytest.mark.asyncio
+# Not implemented yet.
+async def _ignore_test_navigateWaitInteractive_navigated(websocket):
+    ignore = True
+
+@pytest.mark.asyncio
+# Not implemented yet.
+async def _ignore_test_navigateWaitComplete_navigated(websocket):
+    ignore = True
 
 @pytest.mark.asyncio
 # Not implemented yet.

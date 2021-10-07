@@ -126,13 +126,14 @@ export class BrowsingContextProcessor {
     commandData: BrowsingContext.BrowsingContextCreateCommand
   ): Promise<BrowsingContext.BrowsingContextCreateResult> {
     const params = commandData.params;
+
     return new Promise(async (resolve) => {
       let targetId: string;
 
       const onAttachedToTarget = async (
-        params: Protocol.Target.AttachedToTargetEvent
+        attachToTargetEventParams: Protocol.Target.AttachedToTargetEvent
       ) => {
-        if (params.targetInfo.targetId === targetId) {
+        if (attachToTargetEventParams.targetInfo.targetId === targetId) {
           browserCdpClient.Target.removeListener(
             'attachedToTarget',
             onAttachedToTarget
@@ -140,7 +141,7 @@ export class BrowsingContextProcessor {
 
           const context = await this._getOrCreateContext(
             targetId,
-            params.sessionId
+            attachToTargetEventParams.sessionId
           );
           resolve(context.toBidi());
         }
@@ -151,9 +152,19 @@ export class BrowsingContextProcessor {
 
       const result = await browserCdpClient.Target.createTarget({
         url: 'about:blank',
+        newWindow: params.type === 'window',
       });
       targetId = result.targetId;
     });
+  }
+
+  async process_navigate(
+    commandData: BrowsingContext.BrowsingContextNavigateCommand
+  ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
+    const params = commandData.params;
+    const context = this._getKnownContext(params.context);
+
+    return await context.navigate(params.url, params.wait);
   }
 
   async process_script_evaluate(

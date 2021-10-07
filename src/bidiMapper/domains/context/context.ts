@@ -17,7 +17,11 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import { Script, CommonDataTypes } from '../../bidiProtocolTypes';
+import {
+  BrowsingContext,
+  CommonDataTypes,
+  Script,
+} from '../../bidiProtocolTypes';
 
 import EVALUATOR_SCRIPT from '../../scripts/eval.es';
 
@@ -77,6 +81,23 @@ export class Context {
       context: this._targetInfo!.targetId,
       parent: this._targetInfo!.openerId ? this._targetInfo!.openerId : null,
       url: this._targetInfo!.url,
+    };
+  }
+
+  public async navigate(
+    url: string,
+    wait: BrowsingContext.ReadinessState = 'none'
+  ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
+    // TODO sadym: implement.
+    if (wait !== 'none') {
+      throw new Error(`Not implenented wait '${wait}'`);
+    }
+
+    const cdpNavigateResult = await this._cdpClient.Page.navigate({ url });
+
+    return {
+      navigation: cdpNavigateResult.loaderId,
+      url: url,
     };
   }
 

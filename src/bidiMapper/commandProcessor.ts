@@ -185,6 +185,10 @@ export class CommandProcessor {
         return await this._contextProcessor.process_createContext(
           commandData as BrowsingContext.BrowsingContextCreateCommand
         );
+      case 'browsingContext.navigate':
+        return await this._contextProcessor.process_navigate(
+          commandData as BrowsingContext.BrowsingContextNavigateCommand
+        );
 
       case 'PROTO.script.invoke':
         return await this._contextProcessor.process_PROTO_script_invoke(

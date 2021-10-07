@@ -95,6 +95,7 @@ export namespace Script {
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext
 export namespace BrowsingContext {
   export type BrowsingContext = string;
+  export type Navigation = string;
 
   export type BrowsingContextGetTreeCommand = {
     method: 'browsingContext.getTree';
@@ -128,10 +129,29 @@ export namespace BrowsingContext {
   export type BrowsingContextCreateType = 'tab' | 'window';
 
   export type BrowsingContextCreateParameters = {
-    type: BrowsingContextCreateType;
+    type?: BrowsingContextCreateType;
   };
+
   export type BrowsingContextCreateResult = {
     context: BrowsingContext;
+  };
+
+  export type BrowsingContextNavigateCommand = {
+    method: 'browsingContext.navigate';
+    params: BrowsingContextNavigateParameters;
+  };
+
+  export type BrowsingContextNavigateParameters = {
+    context: BrowsingContext;
+    url: string;
+    wait?: ReadinessState;
+  };
+
+  export type ReadinessState = 'none';
+  // TODO sadym: implement 'interactive' and 'complete' states.
+  export type BrowsingContextNavigateResult = {
+    navigation?: Navigation;
+    url: string;
   };
 }
 
