@@ -31,38 +31,62 @@ import { BrowsingContext } from '../../bidiProtocolTypes';
 describe('BrowsingContextProcessor', function () {
   let mockCdpServer: StubTransport;
   let browsingContextProcessor: BrowsingContextProcessor;
+  let cdpConnection: CdpConnection;
+
+  const EVALUATOR_SCRIPT = 'EVALUATOR_SCRIPT';
+  const NEW_CONTEXT_ID = 'NEW_CONTEXT_ID';
+  const TARGET_ATTACHED_TO_TARGET_EVENT = {
+    method: 'Target.attachedToTarget',
+    params: {
+      sessionId: '_ANY_VALUE_',
+      targetInfo: {
+        targetId: NEW_CONTEXT_ID,
+        type: 'page',
+        title: '',
+        url: '',
+        attached: true,
+        canAccessOpener: false,
+        browserContextId: '_ANY_ANOTHER_VALUE_',
+      },
+      waitingForDebugger: false,
+    },
+  };
 
   beforeEach(async function () {
     mockCdpServer = new StubTransport();
-
-    const onContextCreated = sinon.fake as unknown as (
-      t: Context
-    ) => Promise<void>;
-    const onContextDestroyed = sinon.fake as unknown as (
-      t: Context
-    ) => Promise<void>;
-
+    cdpConnection = new CdpConnection(mockCdpServer);
     browsingContextProcessor = new BrowsingContextProcessor(
-      new CdpConnection(mockCdpServer),
+      cdpConnection,
       'SELF_TARGET_ID',
-      onContextCreated,
-      onContextDestroyed,
-      'EVALUATOR_SCRIPT'
+      sinon.fake as unknown as (t: Context) => Promise<void>,
+      sinon.fake as unknown as (t: Context) => Promise<void>,
+      EVALUATOR_SCRIPT
     );
 
     // Actual `Context.create` logic involves several CDP calls, so mock it to avoid all the simulations.
-    Context.create = async (
-      contextId: string,
-      cdpClient: CdpClient,
-      EVALUATOR_SCRIPT: string
-    ) => {
-      return sinon.createStubInstance(Context) as unknown as Context;
-    };
+    Context.create = sinon.fake(
+      async (_1: string, _2: CdpClient, _3: string) => {
+        return sinon.createStubInstance(Context) as unknown as Context;
+      }
+    );
   });
 
-  describe('`process_browsingContext_create`', async function () {
-    const NEW_CONTEXT_ID = 'NEW_CONTEXT_ID';
+  describe('handle events', async function () {
+    it('`Target.attachedToTarget` creates Context', async function () {
+      sinon.assert.notCalled(Context.create as sinon.SinonSpy);
+      await mockCdpServer.emulateIncomingMessage(
+        TARGET_ATTACHED_TO_TARGET_EVENT
+      );
+      sinon.assert.calledOnceWithExactly(
+        Context.create as sinon.SinonSpy,
+        NEW_CONTEXT_ID,
+        sinon.match.any,
+        EVALUATOR_SCRIPT
+      );
+    });
+  });
 
+  describe('handle `process_browsingContext_create`', async function () {
     const BROWSING_CONTEXT_CREATE_COMMAND: BrowsingContext.BrowsingContextCreateCommand =
       {
         method: 'browsingContext.create',
@@ -82,23 +106,6 @@ describe('BrowsingContextProcessor', function () {
       id: 0,
       result: {
         targetId: NEW_CONTEXT_ID,
-      },
-    };
-
-    const TARGET_ATTACHED_TO_TARGET_EVENT = {
-      method: 'Target.attachedToTarget',
-      params: {
-        sessionId: '_ANY_VALUE_',
-        targetInfo: {
-          targetId: NEW_CONTEXT_ID,
-          type: 'page',
-          title: '',
-          url: '',
-          attached: true,
-          canAccessOpener: false,
-          browserContextId: '_ANY_ANOTHER_VALUE_',
-        },
-        waitingForDebugger: false,
       },
     };
 
