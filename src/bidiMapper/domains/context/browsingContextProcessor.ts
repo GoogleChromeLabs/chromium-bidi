@@ -165,13 +165,13 @@ export class BrowsingContextProcessor {
     );
   }
 
-  async process_script_invoke(
-    params: Script.ScriptInvokeParameters
-  ): Promise<Script.ScriptInvokeResult> {
+  async process_PROTO_script_invoke(
+    params: Script.PROTO.ScriptInvokeParameters
+  ): Promise<Script.PROTO.ScriptInvokeResult> {
     const context = this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
-    return await context.scriptInvoke(
+    return await context.PROTO_scriptInvoke(
       params.functionDeclaration,
       params.args,
       params.awaitPromise !== false // `awaitPromise` by default is `true`.

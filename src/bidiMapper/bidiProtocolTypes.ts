@@ -47,30 +47,32 @@ export namespace Script {
     target: Target;
   }
 
-  export interface ScriptInvokeParameters {
-    functionDeclaration: string;
-    args: InvokeArgument[];
-    awaitPromise?: boolean;
-    target: Target;
-  }
+  export namespace PROTO {
+    export interface ScriptInvokeParameters {
+      functionDeclaration: string;
+      args: InvokeArgument[];
+      awaitPromise?: boolean;
+      target: Target;
+    }
 
-  export type ScriptInvokeResult =
-    | ScriptInvokeSuccessResult
-    | ScriptExceptionResult;
+    export type ScriptInvokeResult =
+      | ScriptInvokeSuccessResult
+      | ScriptExceptionResult;
 
-  export interface ScriptInvokeSuccessResult {
-    result: CommonDataTypes.RemoteValue;
-  }
+    export interface ScriptInvokeSuccessResult {
+      result: CommonDataTypes.RemoteValue;
+    }
 
-  export type InvokeArgument = RemoteValueArgument | LocalValueArgument;
+    export type InvokeArgument = RemoteValueArgument | LocalValueArgument;
 
-  export interface RemoteValueArgument {
-    objectId: string;
-  }
+    export interface RemoteValueArgument {
+      objectId: string;
+    }
 
-  export interface LocalValueArgument {
-    type: string;
-    value: any;
+    export interface LocalValueArgument {
+      type: string;
+      value: any;
+    }
   }
 }
 

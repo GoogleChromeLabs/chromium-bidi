@@ -890,13 +890,13 @@ async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
         }, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_scriptInvokeWithArgs_invokeResultReturn(websocket):
+async def test_PROTO_scriptInvokeWithArgs_invokeResultReturn(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 48,
-        "method": "script.invoke",
+        "method": "PROTO.script.invoke",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
             "args": [{
@@ -924,13 +924,13 @@ async def test_scriptInvokeWithArgs_invokeResultReturn(websocket):
         }, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_scriptInvokeWithArgsAndDoNotAwaitPromise_promiseReturn(websocket):
+async def test_PROTO_scriptInvokeWithArgsAndDoNotAwaitPromise_promiseReturn(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 49,
-        "method": "script.invoke",
+        "method": "PROTO.script.invoke",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
             "args": [{
@@ -953,7 +953,7 @@ async def test_scriptInvokeWithArgsAndDoNotAwaitPromise_promiseReturn(websocket)
         }, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_scriptInvokeWithRemoteValueArgument_resultReturn(websocket):
+async def test_PROTO_scriptInvokeWithRemoteValueArgument_resultReturn(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -974,7 +974,7 @@ async def test_scriptInvokeWithRemoteValueArgument_resultReturn(websocket):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 51,
-        "method": "script.invoke",
+        "method": "PROTO.script.invoke",
         "params": {
             "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
             "args": [{

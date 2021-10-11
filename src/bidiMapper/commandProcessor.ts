@@ -165,11 +165,11 @@ export class CommandProcessor {
         return await this._contextProcessor.process_script_evaluate(
           commandData.params as Script.ScriptEvaluateParameters
         );
-      case 'script.invoke':
-        return await this._contextProcessor.process_script_invoke(
-          commandData.params as Script.ScriptInvokeParameters
-        );
 
+      case 'PROTO.script.invoke':
+        return await this._contextProcessor.process_PROTO_script_invoke(
+          commandData.params as Script.PROTO.ScriptInvokeParameters
+        );
       case 'PROTO.browsingContext.createContext':
         return await this._contextProcessor.process_createContext(
           commandData.params

@@ -174,11 +174,11 @@ export class Context {
     };
   }
 
-  public async scriptInvoke(
+  public async PROTO_scriptInvoke(
     functionDeclaration: string,
-    args: Script.InvokeArgument[],
+    args: Script.PROTO.InvokeArgument[],
     awaitPromise: boolean
-  ): Promise<Script.ScriptInvokeResult> {
+  ): Promise<Script.PROTO.ScriptInvokeResult> {
     // TODO sadym: add error handling for serialization/deserialization errors.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
     const invokeAndSerializeScript = `async (...serializedArgs)=>{ return _invoke(\n${functionDeclaration}\n, serializedArgs);
