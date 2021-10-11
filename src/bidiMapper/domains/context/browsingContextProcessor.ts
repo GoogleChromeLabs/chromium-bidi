@@ -192,9 +192,9 @@ export class BrowsingContextProcessor {
     });
   }
 
-  async process_browsingContext_navigate(
-    commandData: BrowsingContext.BrowsingContextNavigateCommand
-  ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
+  async process_PROTO_browsingContext_navigate(
+    commandData: BrowsingContext.PROTO.BrowsingContextNavigateCommand
+  ): Promise<BrowsingContext.PROTO.BrowsingContextNavigateResult> {
     const params = commandData.params;
     const context = await this._getKnownContext(params.context);
 

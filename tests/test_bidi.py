@@ -239,13 +239,13 @@ async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(websocke
             "url": "about:blank"}}
 
 @pytest.mark.asyncio
-async def test_navigateWaitNone_navigated(websocket):
+async def test_PROTO_navigateWaitNone_navigated(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     command = {
         "id": 15,
-        "method": "browsingContext.navigate",
+        "method": "PROTO.browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "wait": "none",
@@ -265,17 +265,17 @@ async def test_navigateWaitNone_navigated(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_navigateWaitInteractive_navigated(websocket):
+async def _ignore_test_PROTO_navigateWaitInteractive_navigated(websocket):
     ignore = True
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_navigateWaitComplete_navigated(websocket):
+async def _ignore_test_PROTO_navigateWaitComplete_navigated(websocket):
     ignore = True
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEmitted(websocket):
+async def _ignore_test_PROTO_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEmitted(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
