@@ -150,8 +150,12 @@ export class Context {
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
     const evalAndSerializeScript = `_serialize(\n${expression}\n);
       async function _serialize(value){
+        if(${awaitPromise ? 'true' : 'false'}
+            && value instanceof Promise) {
+          value = await value;
+        }
         return (${EVALUATOR_SCRIPT})
-          .serialize.apply(null, [${awaitPromise ? 'await' : ''} value])
+          .serialize.apply(null, [value])
       }`;
 
     const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
@@ -185,8 +189,11 @@ export class Context {
       async function _invoke(f, serializedArgs) {
         const evaluator = (${EVALUATOR_SCRIPT});
         const deserializedArgs = serializedArgs.map(evaluator.deserialize);
-        const resultValue =
-          ${awaitPromise ? 'await' : ''} f.apply(this, deserializedArgs);
+        let resultValue = f.apply(this, deserializedArgs);
+        if(${awaitPromise ? 'true' : 'false'}
+            && resultValue instanceof Promise) {
+          resultValue = await resultValue;
+        }
         return evaluator.serialize(resultValue);
       }}`;
 
