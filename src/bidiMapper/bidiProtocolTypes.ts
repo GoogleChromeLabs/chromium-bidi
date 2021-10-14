@@ -136,25 +136,25 @@ export namespace BrowsingContext {
     context: BrowsingContext;
   };
 
-  export namespace PROTO {
-    export type BrowsingContextNavigateCommand = {
-      method: 'PROTO.browsingContext.navigate';
-      params: BrowsingContextNavigateParameters;
-    };
+  export type BrowsingContextNavigateCommand = {
+    method: 'browsingContext.navigate';
+    params: BrowsingContextNavigateParameters;
+  };
 
-    export type BrowsingContextNavigateParameters = {
-      context: BrowsingContext;
-      url: string;
-      wait?: ReadinessState;
-    };
+  export type BrowsingContextNavigateParameters = {
+    context: BrowsingContext;
+    url: string;
+    wait?: ReadinessState;
+  };
 
-    export type ReadinessState = 'none';
-    // TODO sadym: implement 'interactive' and 'complete' states.
-    export type BrowsingContextNavigateResult = {
-      navigation?: Navigation;
-      url: string;
-    };
-  }
+  export type ReadinessState = 'none';
+  // TODO sadym: implement 'interactive' and 'complete' states.
+  export type BrowsingContextNavigateResult = {
+    navigation?: Navigation;
+    url: string;
+  };
+
+  export namespace PROTO {}
 }
 
 export namespace Session {

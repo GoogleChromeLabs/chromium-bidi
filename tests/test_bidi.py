@@ -71,10 +71,10 @@ async def read_JSON_message(websocket):
 
 # Open given URL in the given context.
 async def goto_url(websocket, contextID, url):
-    # Send "PROTO.browsingContext.navigate" command.
+    # Send "browsingContext.navigate" command.
     command = {
         "id": 9998,
-        "method": "PROTO.browsingContext.navigate",
+        "method": "browsingContext.navigate",
         "params": {
             "url": url,
             "context": contextID}}
@@ -84,7 +84,7 @@ async def goto_url(websocket, contextID, url):
     resp = await read_JSON_message(websocket)
     assert resp["method"] == "DEBUG.Page.load"
 
-    # Assert "PROTO.browsingContext.navigate" command done.
+    # Assert "browsingContext.navigate" command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 9998
     return contextID
@@ -239,13 +239,13 @@ async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(websocke
             "url": "about:blank"}}
 
 @pytest.mark.asyncio
-async def test_PROTO_navigateWaitNone_navigated(websocket):
+async def test_navigateWaitNone_navigated(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     command = {
         "id": 15,
-        "method": "PROTO.browsingContext.navigate",
+        "method": "browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "wait": "none",
@@ -265,23 +265,23 @@ async def test_PROTO_navigateWaitNone_navigated(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_PROTO_navigateWaitInteractive_navigated(websocket):
+async def _ignore_test_navigateWaitInteractive_navigated(websocket):
     ignore = True
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_PROTO_navigateWaitComplete_navigated(websocket):
+async def _ignore_test_navigateWaitComplete_navigated(websocket):
     ignore = True
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_PROTO_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEmitted(websocket):
+async def _ignore_test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEmitted(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     command = {
         "id": 16,
-        "method": "PROTO.browsingContext.navigate",
+        "method": "browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "context": contextID,

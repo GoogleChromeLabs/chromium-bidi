@@ -89,8 +89,8 @@ export class Context {
 
   public async navigate(
     url: string,
-    wait: BrowsingContext.PROTO.ReadinessState = 'none'
-  ): Promise<BrowsingContext.PROTO.BrowsingContextNavigateResult> {
+    wait: BrowsingContext.ReadinessState = 'none'
+  ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
     // TODO sadym: implement.
     if (wait !== 'none') {
       throw new Error(`Not implenented wait '${wait}'`);
