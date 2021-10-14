@@ -120,22 +120,6 @@ export namespace BrowsingContext {
     children: BrowsingContextInfoList;
   };
 
-  // `browsingContext.create`
-  export type BrowsingContextCreateCommand = {
-    method: 'browsingContext.create';
-    params: BrowsingContextCreateParameters;
-  };
-
-  export type BrowsingContextCreateType = 'tab' | 'window';
-
-  export type BrowsingContextCreateParameters = {
-    type?: BrowsingContextCreateType;
-  };
-
-  export type BrowsingContextCreateResult = {
-    context: BrowsingContext;
-  };
-
   export type BrowsingContextNavigateCommand = {
     method: 'browsingContext.navigate';
     params: BrowsingContextNavigateParameters;
@@ -154,7 +138,24 @@ export namespace BrowsingContext {
     url: string;
   };
 
-  export namespace PROTO {}
+  export namespace PROTO {
+    // `browsingContext.create`:
+    // https://github.com/w3c/webdriver-bidi/pull/133
+    export type BrowsingContextCreateCommand = {
+      method: 'PROTO.browsingContext.create';
+      params: BrowsingContextCreateParameters;
+    };
+
+    export type BrowsingContextCreateType = 'tab' | 'window';
+
+    export type BrowsingContextCreateParameters = {
+      type?: BrowsingContextCreateType;
+    };
+
+    export type BrowsingContextCreateResult = {
+      context: BrowsingContext;
+    };
+  }
 }
 
 export namespace Session {

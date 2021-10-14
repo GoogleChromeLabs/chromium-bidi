@@ -169,12 +169,12 @@ async def ignore_test_getTreeWithNestedContexts_contextReturned(websocket):
     # TODO sadym: implement
 
 @pytest.mark.asyncio
-async def test_createContext_eventContextCreatedEmittedAndContextCreated(websocket):
+async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextCreated(websocket):
     initialContextID = await get_open_context_id(websocket)
 
     command = {
         "id": 9,
-        "method": "browsingContext.create",
+        "method": "PROTO.browsingContext.create",
         "params": {}}
     await send_JSON_command(websocket, command)
 
