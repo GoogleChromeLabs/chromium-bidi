@@ -61,8 +61,8 @@ export class BrowsingContextProcessor {
     });
   }
 
-  // Creation of `Context` can take quite a while. To avoid race condition, in
-  // the map kept Pmomise, eventualy resolved with the`Context`.
+  // Creation of `Context` can take quite a while. To avoid race condition, keep
+  // a Promise in the map, eventually resolved with the `Context`.
   private async _getOrCreateContext(
     contextId: string,
     cdpSessionId: string
