@@ -58,8 +58,8 @@ describe('BrowsingContextProcessor', function () {
     browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       'SELF_TARGET_ID',
-      sinon.fake as unknown as (t: Context) => Promise<void>,
-      sinon.fake as unknown as (t: Context) => Promise<void>,
+      sinon.fake(),
+      sinon.fake(),
       EVALUATOR_SCRIPT
     );
 

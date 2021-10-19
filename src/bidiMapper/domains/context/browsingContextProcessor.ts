@@ -82,6 +82,10 @@ export class BrowsingContextProcessor {
     return contextPromise;
   }
 
+  private _hasKnownContext(contextId: string): boolean {
+    return this._contexts.has(contextId);
+  }
+
   private async _tryGetContext(
     contextId: string
   ): Promise<Context | undefined> {
@@ -89,9 +93,8 @@ export class BrowsingContextProcessor {
   }
 
   private async _getKnownContext(contextId: string): Promise<Context> {
-    const context = await this._contexts.get(contextId);
-    if (!context) throw new Error('context not found');
-    return context;
+    if (!this._hasKnownContext(contextId)) throw new Error('context not found');
+    return await this._contexts.get(contextId)!;
   }
 
   private async _handleAttachedToTargetEvent(
@@ -139,6 +142,7 @@ export class BrowsingContextProcessor {
 
     // TODO: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const targetId = params.targetId!;
     const context = await this._tryGetContext(targetId);
     if (context) {
@@ -163,10 +167,10 @@ export class BrowsingContextProcessor {
         newWindow: params.type === 'window',
       });
 
-      const targetId = result.targetId;
+      const contextId = result.targetId;
 
-      const existingContext = await this._tryGetContext(targetId);
-      if (existingContext) {
+      if (this._hasKnownContext(contextId)) {
+        const existingContext = await this._getKnownContext(contextId);
         resolve(existingContext.toBidi());
         return;
       }
@@ -174,14 +178,14 @@ export class BrowsingContextProcessor {
       const onAttachedToTarget = async (
         attachToTargetEventParams: Protocol.Target.AttachedToTargetEvent
       ) => {
-        if (attachToTargetEventParams.targetInfo.targetId === targetId) {
+        if (attachToTargetEventParams.targetInfo.targetId === contextId) {
           browserCdpClient.Target.removeListener(
             'attachedToTarget',
             onAttachedToTarget
           );
 
           const context = await this._getOrCreateContext(
-            targetId,
+            contextId,
             attachToTargetEventParams.sessionId
           );
           resolve(context.toBidi());
@@ -198,7 +202,10 @@ export class BrowsingContextProcessor {
     const params = commandData.params;
     const context = await this._getKnownContext(params.context);
 
-    return await context.navigate(params.url, params.wait);
+    return await context.navigate(
+      params.url,
+      params.wait !== undefined ? params.wait : 'none'
+    );
   }
 
   async process_script_evaluate(

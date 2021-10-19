@@ -89,7 +89,7 @@ export class Context {
 
   public async navigate(
     url: string,
-    wait: BrowsingContext.ReadinessState = 'none'
+    wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
     // TODO sadym: implement.
     if (wait !== 'none') {
