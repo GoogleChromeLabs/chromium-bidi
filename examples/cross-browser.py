@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script implemets Puppeteer's `examples/cross-browser.js` scenario using WebDriver BiDi.
+# This script implements Puppeteer's `examples/cross-browser.js` scenario using WebDriver BiDi.
 # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js
 
 import asyncio
@@ -126,7 +126,7 @@ async def main():
     #     "id": 1002,
     #     "result": {
     #         "result": {
-    #             "objectId": "...",
+    #             "objectId": "__SOME_OBJECT_ID__",
     #             "type": "array",
     #             "value": [
     #                 {
