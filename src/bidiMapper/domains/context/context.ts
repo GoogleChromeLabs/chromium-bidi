@@ -243,7 +243,7 @@ export class Context {
     };
   }
 
-  public async callFunction(
+  private async _callFunctionInternally(
     functionDeclaration: string,
     _this: Script.PROTO.ArgumentValue,
     args: Script.PROTO.ArgumentValue[],
@@ -281,8 +281,36 @@ export class Context {
       );
     }
 
+    return cdpCallFunctionResult.result.value;
+  }
+
+  public async callFunction(
+    functionDeclaration: string,
+    args: Script.PROTO.CallFunctionArgument[],
+    awaitPromise: boolean
+  ): Promise<Script.PROTO.ScriptCallFunctionResult> {
     return {
-      result: cdpCallFunctionResult.result.value,
+      result: await this._callFunctionInternally(
+        functionDeclaration,
+        args,
+        awaitPromise
+      ),
+    };
+  }
+
+  public async findElement(
+    selector: string
+  ): Promise<BrowsingContext.PROTO.BrowsingContextFindElementResult> {
+    const functionDeclaration =
+      '(resultsSelector) => document.querySelector(resultsSelector)';
+    const args = [{ type: 'string', value: selector }];
+
+    return {
+      result: await this._callFunctionInternally(
+        functionDeclaration,
+        args,
+        true
+      ),
     };
   }
 }

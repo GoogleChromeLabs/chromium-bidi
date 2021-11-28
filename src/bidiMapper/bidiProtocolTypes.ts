@@ -389,6 +389,23 @@ export namespace BrowsingContext {
     export type BrowsingContextCreateResult = {
       context: BrowsingContext;
     };
+
+    // `browsingContext.findElement`:
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/67
+    export type BrowsingContextFindElementCommand = {
+      method: 'PROTO.browsingContext.findElement';
+      params: BrowsingContextFindElementParameters;
+    };
+
+    export type BrowsingContextFindElementParameters = {
+      selector: string;
+      context: BrowsingContext;
+    };
+
+    export type BrowsingContextFindElementResult = {
+      // TODO: switch to NodeRemoteValue.
+      result: CommonDataTypes.RemoteValue;
+    };
   }
 }
 

@@ -70,6 +70,44 @@
         return result;
       }
 
+      // TODO: add unit test.
+      if(value instanceof Node) {
+        result.type = 'node';
+
+        // TODO: current implementation relies on `maxDepth`, while specification relies on
+        // `node details`. Decide which way is better and fix specification or implementation.
+        if (maxDepth > 0) {
+          result.value = {
+            nodeType: value.nodeType,
+            childNodeCount: value.childNodes.length
+          }
+          if(value.nodeValue!==null)
+            result.nodeValue = value.nodeValue;
+
+          // TODO: current implementation serializes `childNodes` instead of `children`. Decide
+          // which way is better and fix specification or implementation.
+          result.children = [];
+          for(var i=0; i<value.childNodes.length; i++){
+            const c = serialize(value.childNodes.item(i), maxDepth-1);
+            result.children.push(c);
+          }
+
+          if(value instanceof Element){
+            result.attributes = {};
+            for(var i = 0; i< value.attributes.length; i++){
+              const a = value.attributes.item(i);
+              const a_name = a.name;
+              const a_val = a.value;
+              result.attributes[a_name] = a_val;
+            }
+            if(value.shadowRoot!==null)
+              result.shadowRoot = serialize(value.shadowRoot, maxDepth-1);
+          }
+        }
+
+        return result;
+      }
+
       if (value instanceof Promise) {
         result.type = 'promise';
         return result;
