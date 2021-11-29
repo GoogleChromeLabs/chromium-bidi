@@ -45,6 +45,7 @@ export namespace CommonDataTypes {
 
   export type LocalValue =
     | PrimitiveProtocolValue
+    | RemoteReference
     | ArrayLocalValue
     | DateLocalValue
     | MapLocalValue
@@ -244,8 +245,10 @@ export namespace Script {
     params: ScriptEvaluateParameters;
   };
 
-  export type ScriptExceptionResult = {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
+  export type ScriptEvaluateParameters = {
+    expression: string;
+    awaitPromise?: boolean;
+    target: Target;
   };
 
   export type ScriptEvaluateResult =
@@ -256,10 +259,8 @@ export namespace Script {
     result: CommonDataTypes.RemoteValue;
   };
 
-  export type ScriptEvaluateParameters = {
-    expression: string;
-    awaitPromise?: boolean;
-    target: Target;
+  export type ScriptExceptionResult = {
+    exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
   export namespace PROTO {
@@ -402,9 +403,17 @@ export namespace BrowsingContext {
       context: BrowsingContext;
     };
 
-    export type BrowsingContextFindElementResult = {
+    export type BrowsingContextFindElementResult =
+      | BrowsingContextFindElementSuccessResult
+      | BrowsingContextFindElementExceptionResult;
+
+    export type BrowsingContextFindElementSuccessResult = {
       // TODO: switch to NodeRemoteValue.
       result: CommonDataTypes.RemoteValue;
+    };
+
+    export type BrowsingContextFindElementExceptionResult = {
+      exceptionDetails: CommonDataTypes.ExceptionDetails;
     };
   }
 }
