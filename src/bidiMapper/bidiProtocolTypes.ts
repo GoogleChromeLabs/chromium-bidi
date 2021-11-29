@@ -408,8 +408,7 @@ export namespace BrowsingContext {
       | BrowsingContextFindElementExceptionResult;
 
     export type BrowsingContextFindElementSuccessResult = {
-      // TODO: switch to NodeRemoteValue.
-      result: CommonDataTypes.RemoteValue;
+      result: CommonDataTypes.NodeRemoteValue;
     };
 
     export type BrowsingContextFindElementExceptionResult = {
