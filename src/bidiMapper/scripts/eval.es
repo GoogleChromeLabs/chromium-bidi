@@ -70,8 +70,8 @@
         return result;
       }
 
-      // TODO: add unit test.
-      if(value instanceof Node) {
+      // TODO: add unit test handling Node class properly.
+      if (typeof Node !== "undefined" && value instanceof Node) {
         result.type = 'node';
 
         // TODO: current implementation relies on `maxDepth`, while specification relies on
