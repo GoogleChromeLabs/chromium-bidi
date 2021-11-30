@@ -87,18 +87,15 @@
           // TODO: current implementation serializes `childNodes` instead of `children`. Decide
           // which way is better and fix specification or implementation.
           result.children = [];
-          for (let childNode of value.childNodes.values()) {
+          for (let childNode of value.childNodes) {
             const c = serialize(childNode, maxDepth-1);
             result.children.push(c);
           }
 
           if (value instanceof Element){
             result.attributes = {};
-            for(let i = 0; i< value.attributes.length; i++){
-              const a = value.attributes.item(i);
-              const a_name = a.name;
-              const a_val = a.value;
-              result.attributes[a_name] = a_val;
+            for(let attribute of value.attributes){
+              result.attributes[attribute.name] = attribute.value;
             }
             if(value.shadowRoot!==null)
               result.shadowRoot = serialize(value.shadowRoot, maxDepth-1);
