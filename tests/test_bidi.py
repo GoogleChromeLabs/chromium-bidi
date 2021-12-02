@@ -87,10 +87,6 @@ async def goto_url(websocket, context_id, url):
             "context": context_id}}
     await send_JSON_command(websocket, command)
 
-    # # Assert "DEBUG.Page.load" event emitted.
-    # resp = await read_JSON_message(websocket)
-    # assert resp["method"] == "DEBUG.Page.load"
-
     # Assert "browsingContext.navigate" command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 9998
