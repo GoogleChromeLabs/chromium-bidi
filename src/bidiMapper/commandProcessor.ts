@@ -147,26 +147,28 @@ export class CommandProcessor {
         return await this._process_session_status(
           commandData as Session.SessionStatusCommand
         );
+
       case 'browsingContext.getTree':
         return await this._process_browsingContext_getTree(
           commandData as BrowsingContext.BrowsingContextGetTreeCommand
-        );
-      case 'script.evaluate':
-        return await this._contextProcessor.process_script_evaluate(
-          commandData as Script.ScriptEvaluateCommand
         );
       case 'browsingContext.navigate':
         return await this._contextProcessor.process_browsingContext_navigate(
           commandData as BrowsingContext.BrowsingContextNavigateCommand
         );
 
+      case 'script.callFunction':
+        return await this._contextProcessor.process_script_callFunction(
+          commandData as Script.ScriptCallFunctionCommand
+        );
+      case 'script.evaluate':
+        return await this._contextProcessor.process_script_evaluate(
+          commandData as Script.ScriptEvaluateCommand
+        );
+
       case 'PROTO.browsingContext.create':
         return await this._contextProcessor.process_PROTO_browsingContext_create(
           commandData as BrowsingContext.PROTO.BrowsingContextCreateCommand
-        );
-      case 'PROTO.script.callFunction':
-        return await this._contextProcessor.process_PROTO_script_callFunction(
-          commandData as Script.PROTO.ScriptCallFunctionCommand
         );
       case 'PROTO.browsingContext.findElement':
         return await this._contextProcessor.PROTO_browsingContext_findElement(

@@ -231,9 +231,9 @@ export class BrowsingContextProcessor {
     );
   }
 
-  async process_PROTO_script_callFunction(
-    commandData: Script.PROTO.ScriptCallFunctionCommand
-  ): Promise<Script.PROTO.ScriptCallFunctionResult> {
+  async process_script_callFunction(
+    commandData: Script.ScriptCallFunctionCommand
+  ): Promise<Script.ScriptCallFunctionResult> {
     const params = commandData.params;
     const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
