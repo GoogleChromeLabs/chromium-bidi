@@ -367,8 +367,9 @@ export namespace BrowsingContext {
 
   export type NavigationInfo = {
     context: BrowsingContext;
-    navigation: Navigation | null;
-    url: string;
+    // TODO: implement or remove from specification.
+    // navigation: Navigation | null;
+    // url: string;
   };
 
   export type BrowsingContextCreatedEvent = {

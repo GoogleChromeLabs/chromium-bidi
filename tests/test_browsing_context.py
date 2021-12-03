@@ -38,14 +38,16 @@ async def test_browsingContext_getTree_contextReturned(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_getTreeWithGivenParent_contextReturned(websocket):
+async def _ignore_test_browsingContext_getTreeWithGivenParent_contextReturned(
+      websocket):
     ignore = True
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_getTreeWithNestedContexts_contextReturned(websocket):
+async def _ignore_test_browsingContext_getTreeWithNestedContexts_contextReturned(
+      websocket):
     ignore = True
     # TODO sadym: implement
 
@@ -149,19 +151,22 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket):
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    recursiveCompare(
-        resp,
-        {
-            "id": 13,
-            "result": {
-                "navigation": "F595626837D41F9A72482D53B0C22F25",
-                "url": "data:text/html,<h2>test</h2>"}},
-        ["navigation"])
+    recursiveCompare({
+        "id": 13,
+        "result": {
+            "navigation": "F595626837D41F9A72482D53B0C22F25",
+            "url": "data:text/html,<h2>test</h2>"}},
+        resp, ["navigation"])
+
+    # Wait for document loaded event.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id}}
 
 
 @pytest.mark.asyncio
-# TODO sadym: find a way to test if the command ended only after the DOM
-# actually loaded.
 async def test_browsingContext_navigateWaitInteractive_navigated(websocket):
     context_id = await get_open_context_id(websocket)
 
@@ -175,21 +180,28 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket):
             "context": context_id}}
     await send_JSON_command(websocket, command)
 
+    # Wait for document loaded event.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id}}
+
     # Assert command done.
     resp = await read_JSON_message(websocket)
     recursiveCompare(
-        resp,
         {
             "id": 14,
             "result": {
                 "navigation": "F595626837D41F9A72482D53B0C22F25",
                 "url": "data:text/html,<h2>test</h2>"}},
-        ["navigation"])
+        resp, ["navigation"])
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_navigateWaitComplete_navigated(websocket):
+async def _ignore_test_browsingContext_navigateWaitComplete_navigated(
+      websocket):
     ignore = True
 
 
@@ -545,7 +557,8 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket):
 
 
 @pytest.mark.asyncio
-async def test_PROTO_browsingContext_findElementMissingElement_missingElement(websocket):
+async def test_PROTO_browsingContext_findElementMissingElement_missingElement(
+      websocket):
     context_id = await get_open_context_id(websocket)
     await goto_url(websocket, context_id,
                    "data:text/html,<h2>test</h2>")

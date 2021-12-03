@@ -63,6 +63,22 @@ export class Context {
     await this._cdpClient.Runtime.enable();
     await this._cdpClient.Page.enable();
     await this._cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+    this._initializeEventListeners();
+  }
+
+  private _initializeEventListeners() {
+    this._handleDomContentEvent();
+  }
+
+  private _handleDomContentEvent() {
+    this._cdpClient.Page.on('domContentEventFired', async (params) => {
+      await this._bidiServer.sendMessage({
+        method: 'browsingContext.domContentLoaded',
+        params: {
+          context: this._contextId,
+        },
+      });
+    });
   }
 
   // TODO sadym: `dummyContextObject` needed for the running context.
