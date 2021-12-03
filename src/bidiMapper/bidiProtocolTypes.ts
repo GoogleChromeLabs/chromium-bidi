@@ -290,11 +290,11 @@ export namespace BrowsingContext {
   export type CommandType =
     | BrowsingContextGetTreeCommand
     | BrowsingContextNavigateCommand
-    | PROTO.BrowsingContextCreateCommand;
+    | BrowsingContextCreateCommand;
   export type ResultType =
     | BrowsingContextGetTreeResult
     | BrowsingContextNavigateResult
-    | PROTO.BrowsingContextCreateResult;
+    | BrowsingContextCreateResult;
   export type EventType =
     | BrowsingContextDomContentLoadedEvent
     | BrowsingContextCreatedEvent
@@ -344,6 +344,21 @@ export namespace BrowsingContext {
     url: string;
   };
 
+  export type BrowsingContextCreateCommand = {
+    method: 'browsingContext.create';
+    params: BrowsingContextCreateParameters;
+  };
+
+  export type BrowsingContextCreateType = 'tab' | 'window';
+
+  export type BrowsingContextCreateParameters = {
+    type?: BrowsingContextCreateType;
+  };
+
+  export type BrowsingContextCreateResult = {
+    context: BrowsingContext;
+  };
+
   // events
   export type BrowsingContextDomContentLoadedEvent = {
     method: 'browsingContext.domContentLoaded';
@@ -368,23 +383,6 @@ export namespace BrowsingContext {
 
   // proto
   export namespace PROTO {
-    // `browsingContext.create`:
-    // https://github.com/w3c/webdriver-bidi/pull/133
-    export type BrowsingContextCreateCommand = {
-      method: 'PROTO.browsingContext.create';
-      params: BrowsingContextCreateParameters;
-    };
-
-    export type BrowsingContextCreateType = 'tab' | 'window';
-
-    export type BrowsingContextCreateParameters = {
-      type?: BrowsingContextCreateType;
-    };
-
-    export type BrowsingContextCreateResult = {
-      context: BrowsingContext;
-    };
-
     // `browsingContext.findElement`:
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/67
     export type BrowsingContextFindElementCommand = {

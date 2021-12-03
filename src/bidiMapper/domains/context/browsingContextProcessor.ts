@@ -164,9 +164,9 @@ export class BrowsingContextProcessor {
     }
   }
 
-  async process_PROTO_browsingContext_create(
-    commandData: BrowsingContext.PROTO.BrowsingContextCreateCommand
-  ): Promise<BrowsingContext.PROTO.BrowsingContextCreateResult> {
+  async process_browsingContext_create(
+    commandData: BrowsingContext.BrowsingContextCreateCommand
+  ): Promise<BrowsingContext.BrowsingContextCreateResult> {
     const params = commandData.params;
 
     return new Promise(async (resolve) => {

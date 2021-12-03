@@ -180,13 +180,13 @@ async def _ignore_test_getTreeWithNestedContexts_contextReturned(websocket):
 
 
 @pytest.mark.asyncio
-async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextCreated(
+async def test_browsingContextCreate_eventContextCreatedEmittedAndContextCreated(
       websocket):
     initial_context_id = await get_open_context_id(websocket)
 
     command = {
         "id": 9,
-        "method": "PROTO.browsingContext.create",
+        "method": "browsingContext.create",
         "params": {}}
     await send_JSON_command(websocket, command)
 
@@ -231,7 +231,7 @@ async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextC
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(
+async def test_PROTO_PageClose_browsingContextContextDestroyedEmitted(
       websocket):
     context_id = await get_open_context_id(websocket)
 
@@ -240,18 +240,18 @@ async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(
                "params": {"context": context_id}}
     await send_JSON_command(websocket, command)
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {"id": 12, "result": {}}
-
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
     assert resp == {
         "method": "browsingContext.contextDestroyed",
         "params": {
             "context": context_id,
-            "parent": None,
-            "url": "about:blank"}}
+            "url": "about:blank",
+            "children": []}}
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp == {"id": 12, "result": {}}
 
 
 @pytest.mark.asyncio
@@ -1206,7 +1206,8 @@ async def test_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_resultR
 
 
 @pytest.mark.asyncio
-async def test_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(websocket):
+async def test_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(
+      websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
@@ -1356,7 +1357,8 @@ async def test_selectElementMissingElement_missingElement(websocket):
 
 
 # Testing serialization.
-async def assertSerialization(js_str_object, expected_serialized_object, websocket):
+async def assertSerialization(js_str_object, expected_serialized_object,
+      websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.

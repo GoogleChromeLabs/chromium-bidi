@@ -148,6 +148,10 @@ export class CommandProcessor {
           commandData as Session.SessionStatusCommand
         );
 
+      case 'browsingContext.create':
+        return await this._contextProcessor.process_browsingContext_create(
+          commandData as BrowsingContext.BrowsingContextCreateCommand
+        );
       case 'browsingContext.getTree':
         return await this._process_browsingContext_getTree(
           commandData as BrowsingContext.BrowsingContextGetTreeCommand
@@ -166,15 +170,10 @@ export class CommandProcessor {
           commandData as Script.ScriptEvaluateCommand
         );
 
-      case 'PROTO.browsingContext.create':
-        return await this._contextProcessor.process_PROTO_browsingContext_create(
-          commandData as BrowsingContext.PROTO.BrowsingContextCreateCommand
-        );
       case 'PROTO.browsingContext.findElement':
         return await this._contextProcessor.PROTO_browsingContext_findElement(
           commandData as BrowsingContext.PROTO.BrowsingContextFindElementCommand
         );
-
       case 'DEBUG.Page.close':
         return await this._process_DEBUG_Page_close(commandData.params as any);
 
