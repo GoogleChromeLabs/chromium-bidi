@@ -534,6 +534,12 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket):
             "context": context_id}})
 
     resp = await read_JSON_message(websocket)
+    assert resp == {
+        'method': 'browsingContext.domContentLoaded',
+        'params': {
+            'context': context_id}}
+
+    resp = await read_JSON_message(websocket)
     recursiveCompare({
         "id": 59,
         "result": {

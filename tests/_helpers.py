@@ -84,10 +84,17 @@ async def goto_url(websocket, context_id, url):
         "method": "browsingContext.navigate",
         "params": {
             "url": url,
-            "context": context_id}}
+            "context": context_id,
+            "wait": "interactive"}}
     await send_JSON_command(websocket, command)
 
-    # Assert "browsingContext.navigate" command done.
+    # Wait for the page loaded.
+    resp = await read_JSON_message(websocket)
+    assert resp ==  {'method': 'browsingContext.domContentLoaded',
+                     'params': {'context': context_id}}
+
+    # Wait the "browsingContext.navigate" command is done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 9998
+
     return context_id
