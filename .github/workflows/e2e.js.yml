@@ -6,8 +6,6 @@ name: e2e tests
 on:
   push:
     branches: '*'
-  pull_request:
-    branches: '*'
 
 jobs:
   e2e:
