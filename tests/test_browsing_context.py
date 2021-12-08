@@ -90,6 +90,14 @@ async def test_browsingContext_create_eventContextCreatedEmittedAndContextCreate
                 "url": "about:blank"}},
         ["url"])
 
+    # TODO: check the events order.
+    # Wait for the page events.
+    resp = await read_JSON_message(websocket)
+    assert resp["method"] == "browsingContext.domContentLoaded"
+
+    resp = await read_JSON_message(websocket)
+    assert resp["method"] == "browsingContext.load"
+
     # Get all contexts and assert new context is created.
     command = {"id": 10, "method": "browsingContext.getTree", "params": {}}
     await send_JSON_command(websocket, command)
@@ -151,19 +159,28 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket):
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    recursiveCompare({
+    navigation_id = resp["result"]["navigation"]
+    assert resp == {
         "id": 13,
         "result": {
-            "navigation": "F595626837D41F9A72482D53B0C22F25",
-            "url": "data:text/html,<h2>test</h2>"}},
-        resp, ["navigation"])
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
-    # Wait for document loaded event.
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": navigation_id}}
+
+    # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
     assert resp == {
         "method": "browsingContext.domContentLoaded",
         "params": {
-            "context": context_id}}
+            "context": context_id,
+            "navigation": navigation_id}}
 
 
 @pytest.mark.asyncio
@@ -180,22 +197,30 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket):
             "context": context_id}}
     await send_JSON_command(websocket, command)
 
-    # Wait for document loaded event.
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
+    navigation_id = resp["params"]["navigation"]
+    assert resp == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": navigation_id}}
+
+    # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
     assert resp == {
         "method": "browsingContext.domContentLoaded",
         "params": {
-            "context": context_id}}
+            "context": context_id,
+            "navigation": navigation_id}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    recursiveCompare(
-        {
-            "id": 14,
-            "result": {
-                "navigation": "F595626837D41F9A72482D53B0C22F25",
-                "url": "data:text/html,<h2>test</h2>"}},
-        resp, ["navigation"])
+    assert resp == {
+        "id": 14,
+        "result": {
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
 
 @pytest.mark.asyncio
@@ -509,21 +534,8 @@ async def _ignore_test_browsingContext_type_textTyped(websocket):
 async def test_PROTO_browsingContext_findElement_findsElement(websocket):
     context_id = await get_open_context_id(websocket)
 
-    # Send command.
-    command = {
-        "id": 58,
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": "data:text/html,<div class='container'>test<h2 class='child_1'>child 1</h2><h2 class='child_2'>child 2</h2></div>",
-            "wait": "none",
-            "context": context_id}}
-    await send_JSON_command(websocket, command)
-
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 58
-
-    # time.sleep(5)
+    await goto_url(websocket, context_id,
+        "data:text/html,<div class='container'>test<h2 class='child_1'>child 1</h2><h2 class='child_2'>child 2</h2></div>")
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -532,12 +544,6 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket):
         "params": {
             "selector": "body > .container",
             "context": context_id}})
-
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        'method': 'browsingContext.domContentLoaded',
-        'params': {
-            'context': context_id}}
 
     resp = await read_JSON_message(websocket)
     recursiveCompare({
