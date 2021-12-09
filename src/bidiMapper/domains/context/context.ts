@@ -74,23 +74,27 @@ export class Context {
     this._cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
 
     this._cdpClient.Page.on('lifecycleEvent', async (params) => {
-      if (params.name === 'DOMContentLoaded')
-        await this._bidiServer.sendMessage({
-          method: 'browsingContext.domContentLoaded',
-          params: {
-            context: this._contextId,
-            navigation: params.loaderId,
-          },
-        });
+      switch (params.name) {
+        case 'DOMContentLoaded':
+          await this._bidiServer.sendMessage({
+            method: 'browsingContext.domContentLoaded',
+            params: {
+              context: this._contextId,
+              navigation: params.loaderId,
+            },
+          });
+          break;
 
-      if (params.name === 'load')
-        await this._bidiServer.sendMessage({
-          method: 'browsingContext.load',
-          params: {
-            context: this._contextId,
-            navigation: params.loaderId,
-          },
-        });
+        case 'load':
+          await this._bidiServer.sendMessage({
+            method: 'browsingContext.load',
+            params: {
+              context: this._contextId,
+              navigation: params.loaderId,
+            },
+          });
+          break;
+      }
     });
   }
 
@@ -139,36 +143,30 @@ export class Context {
     // TODO: handle loading errors.
     const cdpNavigateResult = await this._cdpClient.Page.navigate({ url });
 
-    // Wait: none.
-    if (wait === 'none')
-      return {
-        navigation: cdpNavigateResult.loaderId,
-        url: url,
-      };
+    // Wait for `wait` condition.
+    switch (wait) {
+      case 'none':
+        break;
 
-    if (wait === 'interactive') {
-      await this._waitPageLifeCycleEvent(
-        'DOMContentLoaded',
-        cdpNavigateResult.loaderId!
-      );
+      case 'interactive':
+        await this._waitPageLifeCycleEvent(
+          'DOMContentLoaded',
+          cdpNavigateResult.loaderId!
+        );
+        break;
 
-      return {
-        navigation: cdpNavigateResult.loaderId,
-        url: url,
-      };
+      case 'complete':
+        await this._waitPageLifeCycleEvent('load', cdpNavigateResult.loaderId!);
+        break;
+
+      default:
+        throw new Error(`Not implemented wait '${wait}'`);
     }
 
-    if (wait === 'complete') {
-      await this._waitPageLifeCycleEvent('load', cdpNavigateResult.loaderId!);
-
-      return {
-        navigation: cdpNavigateResult.loaderId,
-        url: url,
-      };
-    }
-
-    // TODO sadym: implement.
-    throw new Error(`Not implemented wait '${wait}'`);
+    return {
+      navigation: cdpNavigateResult.loaderId,
+      url: url,
+    };
   }
 
   private async _waitPageLifeCycleEvent(eventName: string, loaderId: string) {
