@@ -30,16 +30,14 @@ export class BrowsingContextProcessor {
 
   // Set from outside.
   private _cdpConnection: CdpConnection;
-  private _selfTargetId: string;
 
   constructor(
     cdpConnection: CdpConnection,
-    selfTargetId: string,
+    private _selfTargetId: string,
     private _bidiServer: IBidiServer,
     private EVALUATOR_SCRIPT: string
   ) {
     this._cdpConnection = cdpConnection;
-    this._selfTargetId = selfTargetId;
 
     this._setCdpEventListeners(this._cdpConnection.browserClient());
   }
@@ -164,6 +162,34 @@ export class BrowsingContextProcessor {
     }
   }
 
+  private static _targetToBiDiContext(
+    target: Protocol.Target.TargetInfo
+  ): BrowsingContext.BrowsingContextInfo {
+    return {
+      context: target.targetId,
+      parent: target.openerId ? target.openerId : undefined,
+      url: target.url,
+      // TODO sadym: implement.
+      children: [],
+    };
+  }
+
+  async process_browsingContext_getTree(
+    commandData: BrowsingContext.BrowsingContextGetTreeCommand
+  ): Promise<BrowsingContext.BrowsingContextGetTreeResult> {
+    const { targetInfos } = await this._cdpConnection
+      .browserClient()
+      .Target.getTargets();
+    // TODO sadym: implement.
+    if (commandData.params.maxDepth || commandData.params.parent)
+      throw new Error('not implemented yet');
+    const contexts = targetInfos
+      // Don't expose any information about the tab with Mapper running.
+      .filter(this._isValidTarget)
+      .map(BrowsingContextProcessor._targetToBiDiContext);
+    return { contexts };
+  }
+
   async process_browsingContext_create(
     commandData: BrowsingContext.BrowsingContextCreateCommand
   ): Promise<BrowsingContext.BrowsingContextCreateResult> {
@@ -248,13 +274,20 @@ export class BrowsingContextProcessor {
     );
   }
 
-  async PROTO_browsingContext_findElement(
+  async process_PROTO_browsingContext_findElement(
     commandData: BrowsingContext.PROTO.BrowsingContextFindElementCommand
   ): Promise<BrowsingContext.PROTO.BrowsingContextFindElementResult> {
     const selector = commandData.params.selector;
     const context = await this._getKnownContext(commandData.params.context);
 
     return await context.findElement(selector);
+  }
+
+  async process_DEBUG_browsingContext_close(params: { context: string }) {
+    await this._cdpConnection.browserClient().Target.closeTarget({
+      targetId: params.context,
+    });
+    return {};
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {

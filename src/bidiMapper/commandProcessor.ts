@@ -19,7 +19,12 @@ import { CdpClient, CdpConnection } from '../cdp';
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
 import { Protocol } from 'devtools-protocol';
 import { BidiCommandMessage, IBidiServer } from './utils/bidiServer';
-import { BrowsingContext, Script, Session } from './bidiProtocolTypes';
+import {
+  BrowsingContext,
+  CommonDataTypes,
+  Script,
+  Session,
+} from './bidiProtocolTypes';
 
 export class CommandProcessor {
   private _browserCdpClient: CdpClient;
@@ -102,50 +107,39 @@ export class CommandProcessor {
     this._bidiServer.sendMessage(errorResponse);
   }
 
-  private _targetToContext(
-    target: Protocol.Target.TargetInfo
-  ): BrowsingContext.BrowsingContextInfo {
-    return {
-      context: target.targetId,
-      parent: target.openerId ? target.openerId : undefined,
-      url: target.url,
-      // TODO sadym: implement.
-      children: [],
-    };
-  }
-
-  private async _process_browsingContext_getTree(
-    commandData: BrowsingContext.BrowsingContextGetTreeCommand
-  ): Promise<BrowsingContext.BrowsingContextGetTreeResult> {
-    const { targetInfos } = await this._browserCdpClient.Target.getTargets();
-    // TODO sadym: implement.
-    if (commandData.params.maxDepth || commandData.params.parent)
-      throw new Error('not implemented yet');
-    const contexts = targetInfos
-      // Don't expose any information about the tab with Mapper running.
-      .filter(this._isValidTarget)
-      .map(this._targetToContext);
-    return { contexts };
-  }
-
-  private async _process_DEBUG_Page_close(params: { context: string }) {
-    await this._browserCdpClient.Target.closeTarget({
-      targetId: params.context,
-    });
-    return {};
-  }
-
   private _process_session_status = async function (
     commandData: Session.SessionStatusCommand
   ): Promise<Session.SessionStatusResult> {
     return { ready: true, message: 'ready' };
   };
 
-  private async _processCommand(commandData: BidiCommandMessage) {
+  private _process_session_subscribe = async function (
+    commandData: Session.SessionSubscribeCommand
+  ): Promise<Session.SessionSubscribeResult> {
+    throw new Error('Not implemented');
+  };
+
+  private _process_session_unsubscribe = async function (
+    commandData: Session.SessionUnsubscribeCommand
+  ): Promise<Session.SessionUnsubscribeResult> {
+    throw new Error('Not implemented');
+  };
+
+  private async _processCommand(
+    commandData: BidiCommandMessage
+  ): Promise<CommonDataTypes.CommandResultType> {
     switch (commandData.method) {
       case 'session.status':
         return await this._process_session_status(
           commandData as Session.SessionStatusCommand
+        );
+      case 'session.subscribe':
+        return await this._process_session_subscribe(
+          commandData as Session.SessionSubscribeCommand
+        );
+      case 'session.unsubscribe':
+        return await this._process_session_unsubscribe(
+          commandData as Session.SessionUnsubscribeCommand
         );
 
       case 'browsingContext.create':
@@ -153,7 +147,7 @@ export class CommandProcessor {
           commandData as BrowsingContext.BrowsingContextCreateCommand
         );
       case 'browsingContext.getTree':
-        return await this._process_browsingContext_getTree(
+        return await this._contextProcessor.process_browsingContext_getTree(
           commandData as BrowsingContext.BrowsingContextGetTreeCommand
         );
       case 'browsingContext.navigate':
@@ -171,11 +165,13 @@ export class CommandProcessor {
         );
 
       case 'PROTO.browsingContext.findElement':
-        return await this._contextProcessor.PROTO_browsingContext_findElement(
+        return await this._contextProcessor.process_PROTO_browsingContext_findElement(
           commandData as BrowsingContext.PROTO.BrowsingContextFindElementCommand
         );
       case 'DEBUG.browsingContext.close':
-        return await this._process_DEBUG_Page_close(commandData.params as any);
+        return await this._contextProcessor.process_DEBUG_browsingContext_close(
+          commandData.params as any
+        );
 
       default:
         throw new Error('unknown command');

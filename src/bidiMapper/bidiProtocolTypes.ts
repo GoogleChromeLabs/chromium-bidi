@@ -1,5 +1,13 @@
 export namespace CommonDataTypes {
   export type EmptyParams = {};
+  export type EmptyResult = {};
+
+  export type CommandResultType =
+    | BrowsingContext.ResultType
+    | Script.ResultType
+    | Session.ResultType;
+
+  export type EventType = BrowsingContext.EventType | Script.EventType;
 
   export type RemoteReference = {
     objectId: string;
@@ -416,8 +424,15 @@ export namespace BrowsingContext {
 }
 
 export namespace Session {
-  export type CommandType = SessionStatusCommand;
-  export type ResultType = SessionStatusResult;
+  export type CommandType =
+    | SessionStatusCommand
+    | SessionSubscribeCommand
+    | SessionUnsubscribeCommand;
+
+  export type ResultType =
+    | SessionStatusResult
+    | SessionSubscribeResult
+    | SessionUnsubscribeResult;
 
   export type SessionStatusCommand = {
     method: 'session.status';
@@ -428,4 +443,23 @@ export namespace Session {
     ready: boolean;
     message: string;
   };
+
+  export type SessionSubscribeCommand = {
+    method: 'session.subscribe';
+    params: SubscribeParameters;
+  };
+
+  export type SubscribeParameters = {
+    events: string[];
+    contexts?: BrowsingContext.BrowsingContext[];
+  };
+
+  export type SessionSubscribeResult = CommonDataTypes.EmptyResult;
+
+  export type SessionUnsubscribeCommand = {
+    method: 'session.unsubscribe';
+    params: SubscribeParameters;
+  };
+
+  export type SessionUnsubscribeResult = CommonDataTypes.EmptyResult;
 }
