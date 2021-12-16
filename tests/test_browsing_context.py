@@ -141,8 +141,7 @@ async def test_DEBUG_browsingContext_close_browsingContext_contextDestroyedEmitt
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitNone_navigated(websocket,
       context_id):
-    await subscribe(websocket, ["browsingContext.contextCreated",
-                                "browsingContext.domContentLoaded",
+    await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
     # Send command.
     await send_JSON_command(websocket, {
@@ -182,8 +181,7 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket,
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
       context_id):
-    await subscribe(websocket, ["browsingContext.contextCreated",
-                                "browsingContext.domContentLoaded",
+    await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
 
     # Send command.
