@@ -67,6 +67,7 @@ export class CommandProcessor {
     });
   }
 
+  // noinspection JSMethodCanBeStatic
   private _getErrorResponse(
     commandData: any,
     errorCode: string,
@@ -87,7 +88,7 @@ export class CommandProcessor {
     };
   }
 
-  private _respondWithError(
+  private async _respondWithError(
     commandData: any,
     errorCode: string,
     errorMessage: string
@@ -97,9 +98,10 @@ export class CommandProcessor {
       errorCode,
       errorMessage
     );
-    this._bidiServer.sendMessage(errorResponse);
+    await this._bidiServer.sendMessage(errorResponse);
   }
 
+  // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
   private async _process_session_status(
     commandData: Session.StatusCommand
   ): Promise<Session.StatusResult> {
@@ -117,6 +119,7 @@ export class CommandProcessor {
     return { result: {} };
   }
 
+  // noinspection JSUnusedLocalSymbols
   private _process_session_unsubscribe = async function (
     commandData: Session.UnsubscribeCommand
   ): Promise<Session.UnsubscribeResult> {
@@ -189,7 +192,7 @@ export class CommandProcessor {
     } catch (e) {
       const error = e as Error;
       console.error(error);
-      this._respondWithError(message, 'unknown error', error.message);
+      await this._respondWithError(message, 'unknown error', error.message);
     }
   };
 }

@@ -18,9 +18,8 @@ from _helpers import *
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket,
+      context_id):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 33,
@@ -62,9 +61,8 @@ async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmitted(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmitted(websocket,
+      context_id):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 43,
@@ -88,9 +86,8 @@ async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmitted(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleError_logEntryWithMethodErrorEmitted(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def _ignore_test_consoleError_logEntryWithMethodErrorEmitted(websocket,
+      context_id):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 44,

@@ -36,16 +36,14 @@ async def test_browsingContext_getTree_contextReturned(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_getTreeWithGivenParent_contextReturned(
-      websocket):
+async def _ignore_test_browsingContext_getTreeWithGivenParent_contextReturned():
     ignore = True
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_getTreeWithNestedContexts_contextReturned(
-      websocket):
+async def _ignore_test_browsingContext_getTreeWithNestedContexts_contextReturned():
     ignore = True
     # TODO sadym: implement
 
@@ -118,10 +116,8 @@ async def test_browsingContext_create_eventContextCreatedEmittedAndContextCreate
 @pytest.mark.asyncio
 # TODO: fix test in headful mode.
 async def test_DEBUG_browsingContext_close_browsingContext_contextDestroyedEmitted(
-      websocket):
+      websocket, context_id):
     await subscribe(websocket, ["browsingContext.contextDestroyed"])
-
-    context_id = await get_open_context_id(websocket)
 
     # Send command.
     command = {"id": 12, "method": "PROTO.browsingContext.close",
@@ -143,22 +139,19 @@ async def test_DEBUG_browsingContext_close_browsingContext_contextDestroyedEmitt
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigateWaitNone_navigated(websocket):
+async def test_browsingContext_navigateWaitNone_navigated(websocket,
+      context_id):
     await subscribe(websocket, ["browsingContext.contextCreated",
                                 "browsingContext.domContentLoaded",
                                 "browsingContext.load"])
-
-    context_id = await get_open_context_id(websocket)
-
     # Send command.
-    command = {
+    await send_JSON_command(websocket, {
         "id": 13,
         "method": "browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "wait": "none",
-            "context": context_id}}
-    await send_JSON_command(websocket, command)
+            "context": context_id}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -187,12 +180,11 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket):
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigateWaitInteractive_navigated(websocket):
+async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
+      context_id):
     await subscribe(websocket, ["browsingContext.contextCreated",
                                 "browsingContext.domContentLoaded",
                                 "browsingContext.load"])
-
-    context_id = await get_open_context_id(websocket)
 
     # Send command.
     command = {
@@ -231,9 +223,8 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket):
 
 
 @pytest.mark.asyncio
-async def test_PROTO_browsingContext_findElement_findsElement(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def test_PROTO_browsingContext_findElement_findsElement(websocket,
+      context_id):
     await goto_url(websocket, context_id,
                    "data:text/html,<div class='container'>test<h2 class='child_1'>child 1</h2><h2 class='child_2'>child 2</h2></div>")
 
@@ -264,9 +255,7 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket):
 
 @pytest.mark.asyncio
 async def test_PROTO_browsingContext_findElementMissingElement_missingElement(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     await goto_url(websocket, context_id,
                    "data:text/html,<h2>test</h2>")
 
@@ -281,29 +270,28 @@ async def test_PROTO_browsingContext_findElementMissingElement_missingElement(
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_type_textTyped(websocket):
+async def _ignore_test_browsingContext_type_textTyped():
     ignore = True
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted(
-      websocket):
+async def _ignore_test_browsingContext_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted():
     ignore = True
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_waitForSelector_success(websocket):
+async def _ignore_test_browsingContext_waitForSelector_success():
     ignore = True
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_waitForSelector_success_slow(websocket):
+async def _ignore_test_browsingContext_waitForSelector_success_slow():
     # 1. Wait for element which is not on the page.
     # 2. Assert element not found.
     # 3. Add element to the page.
@@ -316,29 +304,27 @@ async def _ignore_test_browsingContext_waitForSelector_success_slow(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_waitForHiddenSelector_success(websocket):
+async def _ignore_test_browsingContext_waitForHiddenSelector_success():
     ignore = True
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_waitForSelectorWithMinimumTimeout_failedWithTimeout(
-      websocket):
+async def _ignore_test_browsingContext_waitForSelectorWithMinimumTimeout_failedWithTimeout():
     ignore = True
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_waitForSelectorWithMissingElement_failedWithTimeout_slow(
-      websocket):
+async def _ignore_test_browsingContext_waitForSelectorWithMissingElement_failedWithTimeout_slow():
     ignore = True
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_clickElement_clickProcessed(websocket):
+async def _ignore_test_browsingContext_clickElement_clickProcessed():
     ignore = True
     # TODO sadym: implement

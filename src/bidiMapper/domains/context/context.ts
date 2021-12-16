@@ -151,6 +151,7 @@ export class Context {
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
     // TODO: handle loading errors.
+    // noinspection TypeScriptValidateJSTypes
     const cdpNavigateResult = await this._cdpClient.Page.navigate({ url });
 
     // Wait for `wait` condition.

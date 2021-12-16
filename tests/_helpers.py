@@ -36,6 +36,12 @@ async def websocket():
         yield connection
 
 
+# noinspection PyUnusedFunction
+@pytest.fixture
+async def context_id(websocket):
+    return await get_open_context_id(websocket)
+
+
 @pytest.fixture(autouse=True)
 async def before_each_test(websocket):
     # This method can be used for browser state preparation.
@@ -99,6 +105,7 @@ async def goto_url(websocket, context_id, url):
             "wait": "interactive"}})
 
 
+# noinspection PySameParameterValue
 async def execute_command(websocket, command, result_field='result'):
     command_id = get_next_command_id()
     command['id'] = command_id

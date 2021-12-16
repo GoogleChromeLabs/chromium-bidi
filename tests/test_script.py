@@ -17,9 +17,8 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
+      context_id):
     exception_details = await execute_command(websocket, {
         "id": 45,
         "method": "script.evaluate",
@@ -64,9 +63,8 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket):
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateDontWaitPromise_promiseReturned(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def test_script_evaluateDontWaitPromise_promiseReturned(websocket,
+      context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -83,9 +81,7 @@ async def test_script_evaluateDontWaitPromise_promiseReturned(websocket):
 
 @pytest.mark.asyncio
 async def test_script_evaluateThenableAndWaitPromise_thenableReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -105,9 +101,7 @@ async def test_script_evaluateThenableAndWaitPromise_thenableReturned(
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateWaitPromise_resultReturned(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def test_script_evaluateWaitPromise_resultReturned(websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -124,9 +118,7 @@ async def test_script_evaluateWaitPromise_resultReturned(websocket):
 
 @pytest.mark.asyncio
 async def test_script_evaluateChangingObject_resultObjectDidNotChange(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -158,9 +150,8 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateInteractsWithDom_resultReceived(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def test_script_evaluateInteractsWithDom_resultReceived(websocket,
+      context_id):
     result = await execute_command(websocket, {
         "id": 32,
         "method": "script.evaluate",
@@ -174,9 +165,7 @@ async def test_script_evaluateInteractsWithDom_resultReceived(websocket):
 
 
 @pytest.mark.asyncio
-async def test_script_callFunctionWithArgs_resultReturn(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -204,9 +193,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket):
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithThenableArgsAndAwaitParam_thenableReturn(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -233,9 +220,7 @@ async def test_script_callFunctionWithThenableArgsAndAwaitParam_thenableReturn(
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -258,9 +243,7 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -286,9 +269,7 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -307,9 +288,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultRe
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_promiseReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -329,9 +308,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_pro
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_resultReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -350,9 +327,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_result
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -372,9 +347,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_p
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnoredAndWindowUsedInstead(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -392,9 +365,7 @@ async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnore
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
+      websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -411,10 +382,9 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateWithNode_resultReceived(websocket):
+async def test_script_evaluateWithNode_resultReceived(websocket, context_id):
     # 1. Get element.
     # 2. Evaluate script on it.
-    context_id = await get_open_context_id(websocket)
     await goto_url(websocket, context_id,
                    "data:text/html,<h2>test</h2>")
 
