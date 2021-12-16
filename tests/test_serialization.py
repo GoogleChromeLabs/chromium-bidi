@@ -21,21 +21,14 @@ async def assertSerialization(js_str_object, expected_serialized_object,
       websocket):
     context_id = await get_open_context_id(websocket)
 
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 9997,
+    result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": f"({js_str_object})",
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 9997
-
     # Compare ignoring `objectId`.
-    recursiveCompare(expected_serialized_object, resp["result"]["result"],
-                     ["objectId"])
+    recursiveCompare(expected_serialized_object, result, ["objectId"])
 
 
 @pytest.mark.asyncio

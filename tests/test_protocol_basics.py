@@ -66,3 +66,48 @@ async def test_session_status(websocket):
     await send_JSON_command(websocket, command)
     resp = await read_JSON_message(websocket)
     assert resp == {"id": 5, "result": {"ready": True, "message": "ready"}}
+
+
+@pytest.mark.asyncio
+async def test_sessionSubscribeWithoutContext_subscribesToEventsInAllContexts(
+      websocket):
+    command = {"id": 6, "method": "session.subscribe",
+               "params": {"events": ["browsingContext.contextCreated"]}}
+    await send_JSON_command(websocket, command)
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {"id": 6, "result": {}}
+
+    command = {
+        "id": 7,
+        "method": "browsingContext.create",
+        "params": {}}
+    await send_JSON_command(websocket, command)
+
+    # Assert "browsingContext.contextCreated" event emitted.
+    resp = await read_JSON_message(websocket)
+    assert resp["method"] == "browsingContext.contextCreated"
+
+
+@pytest.mark.asyncio
+async def test_sessionSubscribeWithContext_subscribesToEventsInGivenContext(
+      websocket):
+    context_id = await get_open_context_id(websocket)
+
+    await subscribe(websocket, ["browsingContext.load"], [context_id])
+
+    # Navigate to some page.
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": "data:text/html,<h2>test</h2>",
+            "wait": "none",
+            "context": context_id}})
+
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": navigation_id}}

@@ -1,14 +1,31 @@
+export namespace Message {
+  export type OutgoingMessage = CommandResponse | Event | Error;
+
+  export type Command = { id: number } & (
+    | BrowsingContext.Command
+    | Script.Command
+    | Session.Command
+  );
+
+  export type CommandResponse = {
+    id: number;
+  } & CommandResponseResult;
+
+  export type CommandResponseResult =
+    | BrowsingContext.CommandResult
+    | Script.CommandResult
+    | Session.CommandResult;
+
+  export type Event = BrowsingContext.Event;
+
+  export type Error = {
+    id?: number;
+    error: string;
+    message: string;
+  };
+}
+
 export namespace CommonDataTypes {
-  export type EmptyParams = {};
-  export type EmptyResult = {};
-
-  export type CommandResultType =
-    | BrowsingContext.ResultType
-    | Script.ResultType
-    | Session.ResultType;
-
-  export type EventType = BrowsingContext.EventType | Script.EventType;
-
   export type RemoteReference = {
     objectId: string;
   };
@@ -231,8 +248,8 @@ export namespace CommonDataTypes {
 }
 
 export namespace Script {
-  export type CommandType = ScriptEvaluateCommand | ScriptCallFunctionCommand;
-  export type ResultType = ScriptEvaluateResult | ScriptCallFunctionResult;
+  export type Command = EvaluateCommand | CallFunctionCommand;
+  export type CommandResult = EvaluateResult | CallFunctionResult;
 
   export type RealmTarget = {
     // TODO sadym: implement.
@@ -244,7 +261,7 @@ export namespace Script {
 
   export type Target = ContextTarget | RealmTarget;
 
-  export type ScriptEvaluateCommand = {
+  export type EvaluateCommand = {
     method: 'script.evaluate';
     params: ScriptEvaluateParameters;
   };
@@ -255,24 +272,20 @@ export namespace Script {
     target: Target;
   };
 
-  export type ScriptEvaluateResult =
-    | ScriptEvaluateSuccessResult
-    | ScriptExceptionResult;
-
-  export type ScriptEvaluateSuccessResult = {
+  export type EvaluateResult = EvaluateSuccessResult | EvaluateExceptionResult;
+  export type EvaluateSuccessResult = {
     result: CommonDataTypes.RemoteValue;
   };
-
-  export type ScriptExceptionResult = {
+  export type EvaluateExceptionResult = {
     exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
-  export type ScriptCallFunctionCommand = {
+  export type CallFunctionCommand = {
     method: 'script.callFunction';
-    params: ScriptCallFunctionParameters;
+    params: CallFunctionParameters;
   };
 
-  export type ScriptCallFunctionParameters = {
+  export type CallFunctionParameters = {
     functionDeclaration: string;
     args?: ArgumentValue[];
     this?: ArgumentValue;
@@ -280,12 +293,14 @@ export namespace Script {
     target: Target;
   };
 
-  export type ScriptCallFunctionResult =
-    | ScriptCallFunctionSuccessResult
-    | ScriptExceptionResult;
-
-  export type ScriptCallFunctionSuccessResult = {
+  export type CallFunctionResult =
+    | CallFunctionSuccessResult
+    | CallFunctionExceptionResult;
+  export type CallFunctionSuccessResult = {
     result: CommonDataTypes.RemoteValue;
+  };
+  export type CallFunctionExceptionResult = {
+    exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
   export type ArgumentValue =
@@ -295,24 +310,28 @@ export namespace Script {
 
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext
 export namespace BrowsingContext {
-  export type CommandType =
-    | BrowsingContextGetTreeCommand
-    | BrowsingContextNavigateCommand
-    | BrowsingContextCreateCommand;
-  export type ResultType =
-    | BrowsingContextGetTreeResult
-    | BrowsingContextNavigateResult
-    | BrowsingContextCreateResult;
-  export type EventType =
-    | BrowsingContextLoadEvent
-    | BrowsingContextDomContentLoadedEvent
-    | BrowsingContextCreatedEvent
-    | BrowsingContextDestroyedEvent;
+  export type Command =
+    | GetTreeCommand
+    | NavigateCommand
+    | CreateCommand
+    | PROTO.FindElementCommand
+    | PROTO.CloseCommand;
+  export type CommandResult =
+    | GetTreeResult
+    | NavigateResult
+    | CreateResult
+    | PROTO.FindElementResult
+    | PROTO.CloseResult;
+  export type Event =
+    | LoadEvent
+    | DomContentLoadedEvent
+    | CreatedEvent
+    | DestroyedEvent;
 
   export type BrowsingContext = string;
   export type Navigation = string;
 
-  export type BrowsingContextGetTreeCommand = {
+  export type GetTreeCommand = {
     method: 'browsingContext.getTree';
     params: BrowsingContextGetTreeParameters;
   };
@@ -322,8 +341,10 @@ export namespace BrowsingContext {
     parent?: BrowsingContext;
   };
 
-  export type BrowsingContextGetTreeResult = {
-    contexts: BrowsingContextInfoList;
+  export type GetTreeResult = {
+    result: {
+      contexts: BrowsingContextInfoList;
+    };
   };
 
   export type BrowsingContextInfoList = BrowsingContextInfo[];
@@ -335,7 +356,7 @@ export namespace BrowsingContext {
     children: BrowsingContextInfoList;
   };
 
-  export type BrowsingContextNavigateCommand = {
+  export type NavigateCommand = {
     method: 'browsingContext.navigate';
     params: BrowsingContextNavigateParameters;
   };
@@ -347,33 +368,37 @@ export namespace BrowsingContext {
   };
 
   export type ReadinessState = 'none' | 'interactive' | 'complete';
-  export type BrowsingContextNavigateResult = {
-    navigation?: Navigation;
-    url: string;
+  export type NavigateResult = {
+    result: {
+      navigation?: Navigation;
+      url: string;
+    };
   };
 
-  export type BrowsingContextCreateCommand = {
+  export type CreateCommand = {
     method: 'browsingContext.create';
-    params: BrowsingContextCreateParameters;
+    params: CreateParameters;
   };
 
-  export type BrowsingContextCreateType = 'tab' | 'window';
+  export type CreateParametersType = 'tab' | 'window';
 
-  export type BrowsingContextCreateParameters = {
-    type?: BrowsingContextCreateType;
+  export type CreateParameters = {
+    type?: CreateParametersType;
   };
 
-  export type BrowsingContextCreateResult = {
-    context: BrowsingContext;
+  export type CreateResult = {
+    result: {
+      context: BrowsingContext;
+    };
   };
 
   // events
-  export type BrowsingContextLoadEvent = {
+  export type LoadEvent = {
     method: 'browsingContext.load';
     params: NavigationInfo;
   };
 
-  export type BrowsingContextDomContentLoadedEvent = {
+  export type DomContentLoadedEvent = {
     method: 'browsingContext.domContentLoaded';
     params: NavigationInfo;
   };
@@ -385,12 +410,12 @@ export namespace BrowsingContext {
     // url: string;
   };
 
-  export type BrowsingContextCreatedEvent = {
+  export type CreatedEvent = {
     method: 'browsingContext.contextCreated';
     params: BrowsingContextInfo;
   };
 
-  export type BrowsingContextDestroyedEvent = {
+  export type DestroyedEvent = {
     method: 'browsingContext.contextDestroyed';
     params: BrowsingContextInfo;
   };
@@ -399,7 +424,7 @@ export namespace BrowsingContext {
   export namespace PROTO {
     // `browsingContext.findElement`:
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/67
-    export type BrowsingContextFindElementCommand = {
+    export type FindElementCommand = {
       method: 'PROTO.browsingContext.findElement';
       params: BrowsingContextFindElementParameters;
     };
@@ -409,42 +434,44 @@ export namespace BrowsingContext {
       context: BrowsingContext;
     };
 
-    export type BrowsingContextFindElementResult =
-      | BrowsingContextFindElementSuccessResult
-      | BrowsingContextFindElementExceptionResult;
-
-    export type BrowsingContextFindElementSuccessResult = {
+    export type FindElementResult = {
       result: CommonDataTypes.NodeRemoteValue;
     };
 
-    export type BrowsingContextFindElementExceptionResult = {
-      exceptionDetails: CommonDataTypes.ExceptionDetails;
+    export type CloseCommand = {
+      method: 'PROTO.browsingContext.close';
+      params: CloseParameters;
     };
+
+    export type CloseParameters = {
+      context: BrowsingContext;
+    };
+
+    export type CloseResult = { result: {} };
   }
 }
 
 export namespace Session {
-  export type CommandType =
-    | SessionStatusCommand
-    | SessionSubscribeCommand
-    | SessionUnsubscribeCommand;
+  export type Command = StatusCommand | SubscribeCommand | UnsubscribeCommand;
 
-  export type ResultType =
-    | SessionStatusResult
-    | SessionSubscribeResult
-    | SessionUnsubscribeResult;
+  export type CommandResult =
+    | StatusResult
+    | SubscribeResult
+    | UnsubscribeResult;
 
-  export type SessionStatusCommand = {
+  export type StatusCommand = {
     method: 'session.status';
-    params: CommonDataTypes.EmptyParams;
+    params: {};
   };
 
-  export type SessionStatusResult = {
-    ready: boolean;
-    message: string;
+  export type StatusResult = {
+    result: {
+      ready: boolean;
+      message: string;
+    };
   };
 
-  export type SessionSubscribeCommand = {
+  export type SubscribeCommand = {
     method: 'session.subscribe';
     params: SubscribeParameters;
   };
@@ -454,12 +481,12 @@ export namespace Session {
     contexts?: BrowsingContext.BrowsingContext[];
   };
 
-  export type SessionSubscribeResult = CommonDataTypes.EmptyResult;
+  export type SubscribeResult = { result: {} };
 
-  export type SessionUnsubscribeCommand = {
+  export type UnsubscribeCommand = {
     method: 'session.unsubscribe';
     params: SubscribeParameters;
   };
 
-  export type SessionUnsubscribeResult = CommonDataTypes.EmptyResult;
+  export type UnsubscribeResult = { result: {} };
 }

@@ -21,6 +21,7 @@ import { Context } from './context';
 import { BrowsingContext, Script } from '../../bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
+import { IEventManager } from '../events/EventManager';
 
 const logContext = log('context');
 
@@ -35,6 +36,7 @@ export class BrowsingContextProcessor {
     cdpConnection: CdpConnection,
     private _selfTargetId: string,
     private _bidiServer: IBidiServer,
+    private _eventManager: IEventManager,
     private EVALUATOR_SCRIPT: string
   ) {
     this._cdpConnection = cdpConnection;
@@ -43,17 +45,23 @@ export class BrowsingContextProcessor {
   }
 
   private async _onContextCreated(context: Context): Promise<void> {
-    await this._bidiServer.sendMessage({
-      method: 'browsingContext.contextCreated',
-      params: context.toBidi(),
-    });
+    await this._eventManager.sendEvent(
+      {
+        method: 'browsingContext.contextCreated',
+        params: context.toBidi(),
+      },
+      context.id
+    );
   }
 
   private async _onContextDestroyed(context: Context): Promise<void> {
-    await this._bidiServer.sendMessage({
-      method: 'browsingContext.contextDestroyed',
-      params: context.toBidi(),
-    });
+    await this._eventManager.sendEvent(
+      {
+        method: 'browsingContext.contextDestroyed',
+        params: context.toBidi(),
+      },
+      context.id
+    );
   }
 
   private _setCdpEventListeners(browserCdpClient: CdpClient) {
@@ -83,6 +91,7 @@ export class BrowsingContextProcessor {
         contextId,
         sessionCdpClient,
         this._bidiServer,
+        this._eventManager,
         this.EVALUATOR_SCRIPT
       );
       this._contexts.set(contextId, contextPromise);
@@ -122,7 +131,7 @@ export class BrowsingContextProcessor {
     this._sessionToTargets.set(sessionId, context);
     context._setSessionId(sessionId);
 
-    this._onContextCreated(context);
+    await this._onContextCreated(context);
   }
 
   private async _handleInfoChangedEvent(
@@ -154,11 +163,9 @@ export class BrowsingContextProcessor {
     const targetId = params.targetId!;
     const context = await this._tryGetContext(targetId);
     if (context) {
-      this._onContextDestroyed(context);
-
       if (context._sessionId) this._sessionToTargets.delete(context._sessionId);
-
       this._contexts.delete(context.id);
+      await this._onContextDestroyed(context);
     }
   }
 
@@ -175,8 +182,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_browsingContext_getTree(
-    commandData: BrowsingContext.BrowsingContextGetTreeCommand
-  ): Promise<BrowsingContext.BrowsingContextGetTreeResult> {
+    commandData: BrowsingContext.GetTreeCommand
+  ): Promise<BrowsingContext.GetTreeResult> {
     const { targetInfos } = await this._cdpConnection
       .browserClient()
       .Target.getTargets();
@@ -185,14 +192,14 @@ export class BrowsingContextProcessor {
       throw new Error('not implemented yet');
     const contexts = targetInfos
       // Don't expose any information about the tab with Mapper running.
-      .filter(this._isValidTarget)
+      .filter((target) => this._isValidTarget(target))
       .map(BrowsingContextProcessor._targetToBiDiContext);
-    return { contexts };
+    return { result: { contexts } };
   }
 
   async process_browsingContext_create(
-    commandData: BrowsingContext.BrowsingContextCreateCommand
-  ): Promise<BrowsingContext.BrowsingContextCreateResult> {
+    commandData: BrowsingContext.CreateCommand
+  ): Promise<BrowsingContext.CreateResult> {
     const params = commandData.params;
 
     return new Promise(async (resolve) => {
@@ -207,7 +214,7 @@ export class BrowsingContextProcessor {
 
       if (this._hasKnownContext(contextId)) {
         const existingContext = await this._getKnownContext(contextId);
-        resolve(existingContext.toBidi());
+        resolve({ result: existingContext.toBidi() });
         return;
       }
 
@@ -224,7 +231,7 @@ export class BrowsingContextProcessor {
             contextId,
             attachToTargetEventParams.sessionId
           );
-          resolve(context.toBidi());
+          resolve({ result: context.toBidi() });
         }
       };
 
@@ -233,8 +240,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_browsingContext_navigate(
-    commandData: BrowsingContext.BrowsingContextNavigateCommand
-  ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
+    commandData: BrowsingContext.NavigateCommand
+  ): Promise<BrowsingContext.NavigateResult> {
     const params = commandData.params;
     const context = await this._getKnownContext(params.context);
 
@@ -245,8 +252,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_script_evaluate(
-    commandData: Script.ScriptEvaluateCommand
-  ): Promise<Script.ScriptEvaluateResult> {
+    commandData: Script.EvaluateCommand
+  ): Promise<Script.EvaluateResult> {
     const params = commandData.params;
     const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
@@ -258,8 +265,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_script_callFunction(
-    commandData: Script.ScriptCallFunctionCommand
-  ): Promise<Script.ScriptCallFunctionResult> {
+    commandData: Script.CallFunctionCommand
+  ): Promise<Script.CallFunctionResult> {
     const params = commandData.params;
     const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
@@ -275,22 +282,22 @@ export class BrowsingContextProcessor {
   }
 
   async process_PROTO_browsingContext_findElement(
-    commandData: BrowsingContext.PROTO.BrowsingContextFindElementCommand
-  ): Promise<BrowsingContext.PROTO.BrowsingContextFindElementResult> {
+    commandData: BrowsingContext.PROTO.FindElementCommand
+  ): Promise<BrowsingContext.PROTO.FindElementResult> {
     const selector = commandData.params.selector;
     const context = await this._getKnownContext(commandData.params.context);
 
-    return await context.findElement(selector);
+    return { result: await context.findElement(selector) };
   }
 
-  async process_DEBUG_browsingContext_close(params: { context: string }) {
+  async process_PROTO_browsingContext_close(params: { context: string }) {
     await this._cdpConnection.browserClient().Target.closeTarget({
       targetId: params.context,
     });
-    return {};
+    return { result: {} };
   }
 
-  _isValidTarget(target: Protocol.Target.TargetInfo) {
+  private _isValidTarget(target: Protocol.Target.TargetInfo) {
     if (target.targetId === this._selfTargetId) return false;
     if (!target.type || target.type !== 'page') return false;
     return true;

@@ -15,16 +15,11 @@
  * limitations under the License.
  */
 
-import { CdpClient, CdpConnection } from '../cdp';
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
-import { Protocol } from 'devtools-protocol';
-import { BidiCommandMessage, IBidiServer } from './utils/bidiServer';
-import {
-  BrowsingContext,
-  CommonDataTypes,
-  Script,
-  Session,
-} from './bidiProtocolTypes';
+import { BrowsingContext, Message, Script, Session } from './bidiProtocolTypes';
+import { CdpClient, CdpConnection } from '../cdp';
+import { IBidiServer } from './utils/bidiServer';
+import { IEventManager } from './domains/events/EventManager';
 
 export class CommandProcessor {
   private _browserCdpClient: CdpClient;
@@ -33,52 +28,50 @@ export class CommandProcessor {
   static run(
     cdpConnection: CdpConnection,
     bidiServer: IBidiServer,
+    eventManager: IEventManager,
     selfTargetId: string,
     EVALUATOR_SCRIPT: string
   ) {
     const commandProcessor = new CommandProcessor(
       cdpConnection,
       bidiServer,
+      eventManager,
       selfTargetId,
       EVALUATOR_SCRIPT
     );
 
-    commandProcessor.run();
+    commandProcessor._run();
   }
 
   private constructor(
     private _cdpConnection: CdpConnection,
     private _bidiServer: IBidiServer,
-    private _selfTargetId: string,
+    private _eventManager: IEventManager,
+    _selfTargetId: string,
     EVALUATOR_SCRIPT: string
   ) {
     this._browserCdpClient = this._cdpConnection.browserClient();
 
     this._contextProcessor = new BrowsingContextProcessor(
       this._cdpConnection,
-      this._selfTargetId,
+      _selfTargetId,
       this._bidiServer,
+      this._eventManager,
       EVALUATOR_SCRIPT
     );
   }
 
-  private run() {
+  private _run() {
     this._bidiServer.on('message', (messageObj) => {
       return this._onBidiMessage(messageObj);
     });
   }
 
-  private _isValidTarget = (target: Protocol.Target.TargetInfo) => {
-    if (target.targetId === this._selfTargetId) return false;
-    if (!target.type || target.type !== 'page') return false;
-    return true;
-  };
-
   private _getErrorResponse(
     commandData: any,
     errorCode: string,
     errorMessage: string
-  ) {
+  ): Message.Error {
     // TODO: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.
     let commandId = undefined;
@@ -107,69 +100,74 @@ export class CommandProcessor {
     this._bidiServer.sendMessage(errorResponse);
   }
 
-  private _process_session_status = async function (
-    commandData: Session.SessionStatusCommand
-  ): Promise<Session.SessionStatusResult> {
-    return { ready: true, message: 'ready' };
-  };
+  private async _process_session_status(
+    commandData: Session.StatusCommand
+  ): Promise<Session.StatusResult> {
+    return { result: { ready: true, message: 'ready' } };
+  }
 
-  private _process_session_subscribe = async function (
-    commandData: Session.SessionSubscribeCommand
-  ): Promise<Session.SessionSubscribeResult> {
-    throw new Error('Not implemented');
-  };
+  private async _process_session_subscribe(
+    commandData: Session.SubscribeCommand
+  ): Promise<Session.SubscribeResult> {
+    await this._eventManager.subscribe(
+      commandData.params.events,
+      commandData.params.contexts
+    );
+
+    return { result: {} };
+  }
 
   private _process_session_unsubscribe = async function (
-    commandData: Session.SessionUnsubscribeCommand
-  ): Promise<Session.SessionUnsubscribeResult> {
+    commandData: Session.UnsubscribeCommand
+  ): Promise<Session.UnsubscribeResult> {
     throw new Error('Not implemented');
   };
 
   private async _processCommand(
-    commandData: BidiCommandMessage
-  ): Promise<CommonDataTypes.CommandResultType> {
+    commandData: Message.Command
+  ): Promise<Message.CommandResponseResult> {
     switch (commandData.method) {
       case 'session.status':
         return await this._process_session_status(
-          commandData as Session.SessionStatusCommand
+          commandData as Session.StatusCommand
         );
       case 'session.subscribe':
         return await this._process_session_subscribe(
-          commandData as Session.SessionSubscribeCommand
+          commandData as Session.SubscribeCommand
         );
       case 'session.unsubscribe':
         return await this._process_session_unsubscribe(
-          commandData as Session.SessionUnsubscribeCommand
+          commandData as Session.UnsubscribeCommand
         );
 
       case 'browsingContext.create':
         return await this._contextProcessor.process_browsingContext_create(
-          commandData as BrowsingContext.BrowsingContextCreateCommand
+          commandData as BrowsingContext.CreateCommand
         );
       case 'browsingContext.getTree':
         return await this._contextProcessor.process_browsingContext_getTree(
-          commandData as BrowsingContext.BrowsingContextGetTreeCommand
+          commandData as BrowsingContext.GetTreeCommand
         );
       case 'browsingContext.navigate':
         return await this._contextProcessor.process_browsingContext_navigate(
-          commandData as BrowsingContext.BrowsingContextNavigateCommand
+          commandData as BrowsingContext.NavigateCommand
         );
 
       case 'script.callFunction':
         return await this._contextProcessor.process_script_callFunction(
-          commandData as Script.ScriptCallFunctionCommand
+          commandData as Script.CallFunctionCommand
         );
       case 'script.evaluate':
         return await this._contextProcessor.process_script_evaluate(
-          commandData as Script.ScriptEvaluateCommand
+          commandData as Script.EvaluateCommand
         );
 
       case 'PROTO.browsingContext.findElement':
         return await this._contextProcessor.process_PROTO_browsingContext_findElement(
-          commandData as BrowsingContext.PROTO.BrowsingContextFindElementCommand
+          commandData as BrowsingContext.PROTO.FindElementCommand
         );
-      case 'DEBUG.browsingContext.close':
-        return await this._contextProcessor.process_DEBUG_browsingContext_close(
+      case 'PROTO.browsingContext.close':
+        return await this._contextProcessor.process_PROTO_browsingContext_close(
           commandData.params as any
         );
 
@@ -178,16 +176,16 @@ export class CommandProcessor {
     }
   }
 
-  private _onBidiMessage = async (message: BidiCommandMessage) => {
+  private _onBidiMessage = async (message: Message.Command) => {
     try {
       const result = await this._processCommand(message);
 
       const response = {
         id: message.id,
-        result,
+        ...result,
       };
 
-      this._bidiServer.sendMessage(response);
+      await this._bidiServer.sendMessage(response);
     } catch (e) {
       const error = e as Error;
       console.error(error);

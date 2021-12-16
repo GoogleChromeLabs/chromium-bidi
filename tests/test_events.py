@@ -31,29 +31,27 @@ async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket):
 
     # Assert "log.entryAdded" event emitted.
     resp = await read_JSON_message(websocket)
-    recursiveCompare(
-        resp,
-        {
-            "method": "log.entryAdded",
-            "params": {
-                # BaseLogEntry
-                "level": "info",
-                "text": "some log message",
-                "timestamp": "__any_value__",
-                "stackTrace": [{
-                    "url": "__any_value__",
-                    "functionName": "",
-                    "lineNumber": 0,
-                    "columnNumber": 8}],
-                # ConsoleLogEntry
-                "type": "console",
-                "method": "log",
-                # TODO: replace `PROTO.context` with `realm`.
-                "PROTO.context": context_id,
-                "args": [{
-                    "type": "string",
-                    "value": "some log message"}]}},
-        ["timestamp", "url"])
+    recursiveCompare({
+        "method": "log.entryAdded",
+        "params": {
+            # BaseLogEntry
+            "level": "info",
+            "text": "some log message",
+            "timestamp": "__any_value__",
+            "stackTrace": [{
+                "url": "__any_value__",
+                "functionName": "",
+                "lineNumber": 0,
+                "columnNumber": 8}],
+            # ConsoleLogEntry
+            "type": "console",
+            "method": "log",
+            # TODO: replace `PROTO.context` with `realm`.
+            "PROTO.context": context_id,
+            "args": [{
+                "type": "string",
+                "value": "some log message"}]}
+    }, resp, ["timestamp", "url"])
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
