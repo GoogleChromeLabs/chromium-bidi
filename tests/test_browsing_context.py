@@ -48,14 +48,19 @@ async def _ignore_test_browsingContext_getTreeWithNestedContexts_contextReturned
     # TODO sadym: implement
 
 
+# noinspection PyUnusedLocal
 @pytest.mark.asyncio
-async def test_browsingContext_create_eventContextCreatedEmittedAndContextCreated(
-      websocket):
-    await subscribe(websocket, ["browsingContext.contextCreated",
-                                "browsingContext.domContentLoaded",
-                                "browsingContext.load"])
+async def test_browsingContext_create_eventContextCreatedEmitted(
+      websocket, context_id):
+    # Note: there can be a race condition between initial context created event
+    # and subscription command. Sometimes subscribe is
+    # called before the initial context emitted
+    # `browsingContext.contextCreated`. Having `context_id` causes calling
+    # `browsingContext.getTree`, which in order allows to avoid the race
+    # condition just by creating a delay before subscribing.
+    # TODO: avoid race condition properly.
 
-    initial_context_id = await get_open_context_id(websocket)
+    await subscribe(websocket, ["browsingContext.contextCreated"])
 
     await send_JSON_command(websocket, {
         "id": 9,
@@ -71,7 +76,7 @@ async def test_browsingContext_create_eventContextCreatedEmittedAndContextCreate
         "params": {
             "context": new_context_id,
             "children": [],
-            "url": "about:blank"}
+            "url": "__any_value__"}
     }, resp, ["url"])
 
     # Assert command done.
@@ -82,35 +87,8 @@ async def test_browsingContext_create_eventContextCreatedEmittedAndContextCreate
         "result": {
             "context": new_context_id,
             "children": [],
-            "url": "about:blank"}
+            "url": "__any_value__"}
     }, resp, ["url"])
-
-    # TODO: check the events order.
-    # Wait for the page events.
-    resp = await read_JSON_message(websocket)
-    assert resp["method"] == "browsingContext.domContentLoaded"
-
-    resp = await read_JSON_message(websocket)
-    assert resp["method"] == "browsingContext.load"
-
-    # Get all contexts and assert new context is created.
-    command = {"id": 10, "method": "browsingContext.getTree", "params": {}}
-    await send_JSON_command(websocket, command)
-
-    # Assert "browsingContext.getTree" command done.
-    # TODO sadym: make order-agnostic. Maybe order by `context`?
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 10,
-        "result": {
-            "contexts": [{
-                "context": new_context_id,
-                "url": "about:blank",
-                "children": []
-            }, {
-                "context": initial_context_id,
-                "url": "about:blank",
-                "children": []}]}}
 
 
 @pytest.mark.asyncio
