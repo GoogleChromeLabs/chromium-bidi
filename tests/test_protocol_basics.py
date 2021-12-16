@@ -122,13 +122,13 @@ async def test_sessionSubscribeWithContext_subscribesToEventsInGivenContext(
 
 @pytest.mark.asyncio
 async def test_sessionSubscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
-      websocket):
+      websocket, context_id):
     # 1. Get 2 contexts.
     # 2. Subscribe to event `browsingContext.load` on the first one.
     # 3. Navigate waiting complete loading in both contexts.
     # 4. Verify `browsingContext.load` emitted only for the first context.
 
-    first_context_id = await get_open_context_id(websocket)
+    first_context_id = context_id
 
     result = await execute_command(websocket, {
         "method": "browsingContext.create",

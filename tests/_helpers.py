@@ -39,7 +39,17 @@ async def websocket():
 # noinspection PyUnusedFunction
 @pytest.fixture
 async def context_id(websocket):
-    return await get_open_context_id(websocket)
+    # Note: there can be a race condition between initially created context's
+    # events and following subscription commands. Sometimes subscribe is called
+    # before the initial context emitted `browsingContext.contextCreated`,
+    # `browsingContext.domContentLoaded`, or `browsingContext.load` events,
+    # which makes events verification way harder. Navigation command guarantees
+    # there will be no follow-up events, as it uses `interactive` flag.
+    # TODO: find a way to avoid mentioned race condition properly.
+
+    open_context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, open_context_id, "about:blank")
+    return open_context_id
 
 
 @pytest.fixture(autouse=True)

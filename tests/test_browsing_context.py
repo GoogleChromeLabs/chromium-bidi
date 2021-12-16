@@ -202,7 +202,11 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
 async def test_PROTO_browsingContext_findElement_findsElement(websocket,
       context_id):
     await goto_url(websocket, context_id,
-                   "data:text/html,<div class='container'>test<h2 class='child_1'>child 1</h2><h2 class='child_2'>child 2</h2></div>")
+                   "data:text/html," +
+                   "<div class='container'>test" +
+                   "<h2 class='child_1'>child 1</h2>" +
+                   "<h2 class='child_2'>child 2</h2>" +
+                   "</div>")
 
     result = await execute_command(websocket, {
         "method": "PROTO.browsingContext.findElement",
