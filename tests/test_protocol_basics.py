@@ -106,8 +106,56 @@ async def test_sessionSubscribeWithContext_subscribesToEventsInGivenContext(
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
-    assert resp == {
-        "method": "browsingContext.load",
+    assert resp["method"] == "browsingContext.load"
+    assert resp["params"]["context"] == context_id
+
+
+@pytest.mark.asyncio
+async def test_sessionSubscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
+      websocket):
+    # 1. Get 2 contexts.
+    # 2. Subscribe to event `browsingContext.load` on the first one.
+    # 3. Navigate waiting complete loading in both contexts.
+    # 4. Verify `browsingContext.load` emitted only for the first context.
+
+    first_context_id = await get_open_context_id(websocket)
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.create",
+        "params": {}})
+    second_context_id = result["context"]
+
+    await subscribe(websocket, ["browsingContext.load"], [first_context_id])
+
+    # 3.1 Navigate first context.
+    command_id_1 = get_next_command_id()
+    await send_JSON_command(websocket, {
+        "id": command_id_1,
+        "method": "browsingContext.navigate",
         "params": {
-            "context": context_id,
-            "navigation": navigation_id}}
+            "url": "data:text/html,<h2>test</h2>",
+            "wait": "complete",
+            "context": first_context_id}})
+    # 4.1 Verify `browsingContext.load` is emitted for the first context.
+    resp = await read_JSON_message(websocket)
+    assert resp["method"] == "browsingContext.load"
+    assert resp["params"]["context"] == first_context_id
+
+    # Verify first navigation finished.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == command_id_1
+
+    # 3.2 Navigate second context.
+    command_id_2 = get_next_command_id()
+    await send_JSON_command(websocket, {
+        "id": command_id_2,
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": "data:text/html,<h2>test</h2>",
+            "wait": "complete",
+            "context": second_context_id}})
+
+    # 4.2 Verify second navigation finished without emitting
+    # `browsingContext.load`.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == command_id_2

@@ -48,7 +48,7 @@ async def subscribe(websocket, event_names, context_ids=None):
         "params": {
             "events": event_names}}
 
-    if context_id is not None:
+    if context_ids is not None:
         command["params"]["contexts"] = context_ids
 
     await execute_command(websocket, command)
