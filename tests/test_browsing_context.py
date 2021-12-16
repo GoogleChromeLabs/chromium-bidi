@@ -92,7 +92,6 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 
 
 @pytest.mark.asyncio
-# TODO: fix test in headful mode.
 async def test_DEBUG_browsingContext_close_browsingContext_contextDestroyedEmitted(
       websocket, context_id):
     await subscribe(websocket, ["browsingContext.contextDestroyed"])

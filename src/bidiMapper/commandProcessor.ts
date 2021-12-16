@@ -171,7 +171,7 @@ export class CommandProcessor {
         );
       case 'PROTO.browsingContext.close':
         return await this._contextProcessor.process_PROTO_browsingContext_close(
-          commandData.params as any
+          commandData as BrowsingContext.PROTO.CloseCommand
         );
 
       default:

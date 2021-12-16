@@ -290,10 +290,35 @@ export class BrowsingContextProcessor {
     return { result: await context.findElement(selector) };
   }
 
-  async process_PROTO_browsingContext_close(params: { context: string }) {
-    await this._cdpConnection.browserClient().Target.closeTarget({
-      targetId: params.context,
+  async process_PROTO_browsingContext_close(
+    commandData: BrowsingContext.PROTO.CloseCommand
+  ): Promise<BrowsingContext.PROTO.CloseResult> {
+    const browserCdpClient = this._cdpConnection.browserClient();
+
+    const detachedFromTargetPromise = new Promise<void>(async (resolve) => {
+      const onContextDestroyed = (
+        params: Protocol.Target.DetachedFromTargetEvent
+      ) => {
+        if (params.targetId === commandData.params.context) {
+          browserCdpClient.Target.removeListener(
+            'detachedFromTarget',
+            onContextDestroyed
+          );
+          resolve();
+        }
+      };
+      browserCdpClient.Target.on('detachedFromTarget', onContextDestroyed);
     });
+
+    await this._cdpConnection.browserClient().Target.closeTarget({
+      targetId: commandData.params.context,
+    });
+
+    // Sometimes CDP command finishes before `detachedFromTarget` event,
+    // sometimes after. Wait for the CDP command to be finished, and then wait
+    // for `detachedFromTarget` if it hasn't emitted.
+    await detachedFromTargetPromise;
+
     return { result: {} };
   }
 
