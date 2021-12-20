@@ -113,18 +113,18 @@ export class CommandProcessor {
   ): Promise<Session.SubscribeResult> {
     await this._eventManager.subscribe(
       commandData.params.events,
-      commandData.params.contexts
+      commandData.params.contexts ?? null
     );
 
     return { result: {} };
   }
 
-  // noinspection JSUnusedLocalSymbols
-  private _process_session_unsubscribe = async function (
+  // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
+  private _process_session_unsubscribe(
     commandData: Session.UnsubscribeCommand
   ): Promise<Session.UnsubscribeResult> {
     throw new Error('Not implemented');
-  };
+  }
 
   private async _processCommand(
     commandData: Message.Command
