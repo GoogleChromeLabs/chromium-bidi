@@ -85,18 +85,3 @@ class BidiSession:
         self._event_listeners[name].append(fn)
 
         return lambda: self._event_listeners[name].remove(fn)
-
-    async def send_command(
-          self,
-          method: str,
-          params: Mapping[str, Any]
-    ) -> Awaitable[Mapping[str, Any]]:
-        command_id = self._get_next_command_id()
-        assert command_id not in self._pending_commands
-        await self._send_JSON_command({
-            "id": command_id,
-            "method": method,
-            "params": params
-        })
-        self._pending_commands[command_id] = asyncio.Future()
-        return self._pending_commands[command_id]
