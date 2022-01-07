@@ -41,7 +41,7 @@ async def test_browsing_context_navigate_wait_none(bidi_session, wait_for_event,
         "navigation": navigation_id,
         "url": "data:text/html,<h2>test</h2>"}
 
-    # Verify events order.
+    # Verify event order.
     assert on_load_promise.done() is False
     assert on_dom_content_loaded_promise.done() is False
 
