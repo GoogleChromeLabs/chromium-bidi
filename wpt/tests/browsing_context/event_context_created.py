@@ -24,12 +24,12 @@ async def test_browsing_context_context_created_emitted(bidi_session,
     await bidi_session.session.subscribe(
         events=["browsingContext.contextCreated"])
 
-    on_context_created_promise = wait_for_event("browsingContext.contextCreated")
+    context_created_event_promise = wait_for_event("browsingContext.contextCreated")
 
     create_command_promise = await bidi_session.send_command(
         "browsingContext.create", {})
 
-    context_created_event = await on_context_created_promise
+    context_created_event = await context_created_event_promise
 
     recursive_compare({
         "context": "__any_value__",
