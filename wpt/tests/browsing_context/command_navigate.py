@@ -51,7 +51,7 @@ async def test_browsing_context_navigate_wait_none(bidi_session, wait_for_event,
         "context": context_id,
         "navigation": navigation_id}
 
-    # Verify events was not yet emitted.
+    # Verify event was not yet emitted.
     assert on_dom_content_loaded_promise.done() is False
 
     dom_content_loaded_event = await on_dom_content_loaded_promise
