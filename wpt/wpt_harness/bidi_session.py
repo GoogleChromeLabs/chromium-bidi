@@ -14,7 +14,6 @@ class BidiSession:
         self._event_listeners = {}
         self._pending_commands = {}
 
-        # read_message_task.start()
         asyncio.get_event_loop().create_task(
             self._read_messages_task())
 
