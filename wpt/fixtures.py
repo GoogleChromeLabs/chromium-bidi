@@ -64,7 +64,7 @@ async def context_id(bidi_session):
     # events and following subscription commands. Sometimes subscribe is called
     # before the initial context emitted `browsingContext.contextCreated`,
     # `browsingContext.domContentLoaded`, or `browsingContext.load` events,
-    # which makes events verification way harder. Navigation command guarantees
+    # which makes events verification way harder. The navigation command (goto_url) guarantees
     # there will be no follow-up events, as it uses `interactive` flag.
     # TODO: find a way to avoid mentioned race condition properly.
 
