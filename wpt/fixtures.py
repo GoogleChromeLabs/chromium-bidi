@@ -60,7 +60,7 @@ def send_command(bidi_session):
 
 @pytest.fixture
 async def context_id(bidi_session):
-    # Note: there can be a race condition between initially created context's
+    # Note: there can be a race condition between the initially created context's
     # events and following subscription commands. Sometimes subscribe is called
     # before the initial context emitted `browsingContext.contextCreated`,
     # `browsingContext.domContentLoaded`, or `browsingContext.load` events,
