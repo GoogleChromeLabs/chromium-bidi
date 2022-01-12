@@ -40,7 +40,7 @@ jobs:
         run: ./wpt install chrome browser
         working-directory: wpt
       - name: Run tests
-        run: ./wpt run --webdriver-binary=../chromium-bidi/runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-mach - --log-mach-level info chrome webdriver/tests/bidi/
+        run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-mach - --log-mach-level info chrome webdriver/tests/bidi/
         working-directory: wpt
 env:
   FORCE_COLOR: 3
