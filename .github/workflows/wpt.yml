@@ -36,8 +36,12 @@ jobs:
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
       # TODO: install certs
+      - name: Install Chrome
+        run: ./wpt install chrome browser
+      - run: find _venv
+      - run: find _venv3
       - name: Run tests
-        run: ./wpt run chrome webdriver/tests/bidi/
+        run: ./wpt run --webdriver-binary=../chromium-bidi/runBiDiServer.sh --binary _venv3/browsers/nightly/chrome chrome webdriver/tests/bidi/
         working-directory: wpt
 env:
   FORCE_COLOR: 3
