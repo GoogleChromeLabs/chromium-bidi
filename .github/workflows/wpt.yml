@@ -62,7 +62,7 @@ jobs:
           name: logs
           # Note: runBiDiServer.sh will be run multiple times and log.txt will be
           # overwritten. The problem might not be in the log.txt written last.
-          path: log.txt
+          path: logs
 
 env:
   FORCE_COLOR: 3
