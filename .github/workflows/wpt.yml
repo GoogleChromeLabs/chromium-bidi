@@ -44,7 +44,7 @@ jobs:
       - run: find _venv3
         working-directory: wpt
       - name: Run tests
-        run: ./wpt run --webdriver-binary=../chromium-bidi/runBiDiServer.sh --binary _venv3/browsers/nightly/chrome chrome webdriver/tests/bidi/
+        run: ./wpt run --webdriver-binary=../chromium-bidi/runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome chrome webdriver/tests/bidi/
         working-directory: wpt
 env:
   FORCE_COLOR: 3
