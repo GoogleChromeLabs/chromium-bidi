@@ -40,8 +40,7 @@ jobs:
         run: ./wpt install chrome browser
         working-directory: wpt
       - name: Run tests
-        run: ../runBiDiServer.sh --port=33611 --url-base=/ --enable-chrome-logs --disable-build-check
-        #run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-mach - --log-mach-level debug chrome webdriver/tests/bidi/
+        run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-mach - --log-mach-level debug chrome webdriver/tests/bidi/
         working-directory: wpt
   - name: Show log on failure
     if: ${{ failure() }}
