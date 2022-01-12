@@ -20,7 +20,6 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
-      # WPT setup
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -37,7 +36,8 @@ jobs:
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
-      # TODO: Install a pinned version of Chromium
+      # TODO: Install a pinned version of Chromium. This may become possible
+      # after https://github.com/web-platform-tests/wpt/issues/28970.
       - name: Install Chrome
         run: ./wpt install chrome browser
         working-directory: wpt
@@ -63,5 +63,6 @@ jobs:
           # Note: runBiDiServer.sh will be run multiple times and log.txt will be
           # overwritten. The problem might not be in the log.txt written last.
           path: log.txt
+
 env:
   FORCE_COLOR: 3
