@@ -31,30 +31,30 @@ jobs:
           repository: web-platform-tests/wpt
           # Pinned to keep tests and expectation metadata in sync.
           ref: d652c48f18663cbc83146dbdc485ad8a716dacd7
-          path: wpt
+          path: ../wpt
           fetch-depth: 1
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
-        working-directory: wpt
+        working-directory: ../wpt
       # TODO: Install a pinned version of Chromium. This may become possible
       # after https://github.com/web-platform-tests/wpt/issues/28970.
       - name: Install Chrome
         run: ./wpt install chrome browser
-        working-directory: wpt
+        working-directory: ../wpt
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --metadata ../metadata --log-wptreport wptreport.json chrome webdriver/tests/bidi/
-        working-directory: wpt
+        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --metadata ../chromium-bidi/metadata --log-wptreport wptreport.json chrome webdriver/tests/bidi/
+        working-directory: ../wpt
       - name: Update expectations
         if: ${{ always() }}
-        run: ./wpt update-expectations --product chrome --metadata ../metadata wptreport.json
-        working-directory: wpt
+        run: ./wpt update-expectations --product chrome --metadata ../chromium-bidi/metadata wptreport.json
+        working-directory: ../wpt
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: metadata
-          path: metadata
+          path: wpt/metadata
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
