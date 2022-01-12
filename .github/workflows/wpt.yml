@@ -41,7 +41,7 @@ jobs:
         working-directory: wpt
       - name: Run tests
         # For verbose debug logging, add --log-mach - --log-mach-level info
-        run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-wptreport=wptreport.json chrome webdriver/tests/bidi/session_subscribe/
+        run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-wptreport=wptreport.json chrome webdriver/tests/bidi/new_session/ webdriver/tests/bidi/session_subscribe/
         working-directory: wpt
       - name: Update expectations
         if: ${{ failure() }}
@@ -50,6 +50,12 @@ jobs:
           ./wpt update-expectations --product chrome --metadata ../metadata wptreport.json
           find ../metadata
         working-directory: wpt
+      - name: Upload expectations
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: metadata
+          path: metadata
       - name: Show log on failure
         if: ${{ failure() }}
         # Note: runBiDiServer.sh will be run multiple times and log.txt will be
