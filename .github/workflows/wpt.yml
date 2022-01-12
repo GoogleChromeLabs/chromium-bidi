@@ -43,7 +43,7 @@ jobs:
         working-directory: wpt
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-wptreport=wptreport.json chrome webdriver/tests/bidi/
+        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --metadata ../metadata --log-wptreport wptreport.json chrome webdriver/tests/bidi/
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
