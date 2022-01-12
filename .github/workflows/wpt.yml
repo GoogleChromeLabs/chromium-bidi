@@ -30,12 +30,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: web-platform-tests/wpt
+          # Pinned to keep tests and expectation metadata in sync.
+          ref: d652c48f18663cbc83146dbdc485ad8a716dacd7
           path: wpt
           fetch-depth: 1
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
-      # TODO: install certs
+      # TODO: Install a pinned version of Chromium
       - name: Install Chrome
         run: ./wpt install chrome browser
         working-directory: wpt
