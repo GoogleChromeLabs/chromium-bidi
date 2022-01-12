@@ -42,10 +42,10 @@ jobs:
       - name: Run tests
         run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-mach - --log-mach-level debug chrome webdriver/tests/bidi/
         working-directory: wpt
-  - name: Show log on failure
-    if: ${{ failure() }}
-    # Note: runBiDiServer.sh will be run multiple times and log.txt will be
-    # overwritten. The problem might not be in the log.txt written last.
-    run: cat log.txt
+      - name: Show log on failure
+        if: ${{ failure() }}
+        # Note: runBiDiServer.sh will be run multiple times and log.txt will be
+        # overwritten. The problem might not be in the log.txt written last.
+        run: cat log.txt
 env:
   FORCE_COLOR: 3
