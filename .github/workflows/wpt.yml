@@ -40,8 +40,8 @@ jobs:
         run: ./wpt install chrome browser
         working-directory: wpt
       - name: Run tests
-        # For verbose debug logging, add --log-mach - --log-mach-level debug
-        run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome chrome webdriver/tests/bidi/
+        # For verbose debug logging, add --log-mach --log-mach-level info --log-mach-verbose
+        run: ./wpt run --webdriver-binary=../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --log-mach --log-mach-verbose chrome webdriver/tests/bidi/
         working-directory: wpt
       - name: Show log on failure
         if: ${{ failure() }}
