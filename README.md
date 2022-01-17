@@ -186,7 +186,7 @@ npm run build
 ```sh
 ./wpt/wpt run \
   --webdriver-binary ./runBiDiServer.sh \
-  --binary $WPT_BROWSER_PATH \
+  --binary "$WPT_BROWSER_PATH" \
   --manifest ./wpt/MANIFEST.json \
   --metadata ./wpt-metadata \
   --log-wptreport ./wpt/wptreport.json \
