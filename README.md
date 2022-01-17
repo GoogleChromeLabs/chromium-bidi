@@ -140,7 +140,7 @@ git submodule update
 #### 2. Go to the WPT folder
 
 ```sh
-cd ./wpt
+cd wpt
 ```
 
 #### 3. Set up virtualenv
