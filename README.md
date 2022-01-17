@@ -143,11 +143,9 @@ git submodule update
 cd wpt
 ```
 
-#### 3. Set up virtualenv
+#### 3. [Set up virtualenv](https://web-platform-tests.org/running-tests/from-local-system.html#system-setup)
 
-```sh
-pip install virtualenv
-```
+Follow the [*System Setup*](https://web-platform-tests.org/running-tests/index.html) instructions.
 
 #### 4. [Setup `hosts` file](https://web-platform-tests.org/running-tests/from-local-system.html#hosts-file-setup):
 
@@ -189,7 +187,6 @@ npm run build
   --binary "$WPT_BROWSER_PATH" \
   --manifest ./wpt/MANIFEST.json \
   --metadata ./wpt-metadata \
-  --log-wptreport ./wpt/wptreport.json \
   chrome \
   webdriver/tests/bidi/
 ```
