@@ -71,7 +71,7 @@ async def subscribe(websocket, event_names, context_ids=None):
 
 
 # Compares 2 objects recursively ignoring values of specific attributes.
-def recursiveCompare(expected, actual, ignore_attributes):
+def recursiveCompare(expected, actual, ignore_attributes=[]):
     assert type(expected) == type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
@@ -80,7 +80,10 @@ def recursiveCompare(expected, actual, ignore_attributes):
         return
 
     if type(expected) is dict:
-        assert expected.keys() == actual.keys()
+        assert expected.keys() == actual.keys(), \
+            f"Key sets should be the same: " \
+            f"\nNot present: {set(expected.keys()) - set(actual.keys())}" \
+            f"\nUnexpected: {set(actual.keys()) - set(expected.keys())}"
         for index, val in enumerate(expected):
             if val not in ignore_attributes:
                 recursiveCompare(expected[val], actual[val], ignore_attributes)
@@ -126,7 +129,9 @@ async def execute_command(websocket, command, result_field='result'):
         # Wait for the command to be finished.
         resp = await read_JSON_message(websocket)
         if 'id' in resp and resp['id'] == command_id:
-            assert result_field in resp
+            assert result_field in resp, \
+                f"Field `{result_field}` should be in the result object:" \
+                f"\n {resp}"
             return resp[result_field]
 
 # Wait and return a specific event from Bidi server

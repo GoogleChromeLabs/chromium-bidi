@@ -5,6 +5,7 @@ export namespace Message {
     | BrowsingContext.Command
     | Script.Command
     | Session.Command
+    | Extensions.Command
   );
 
   export type CommandResponse = {
@@ -14,7 +15,8 @@ export namespace Message {
   export type CommandResponseResult =
     | BrowsingContext.CommandResult
     | Script.CommandResult
-    | Session.CommandResult;
+    | Session.CommandResult
+    | Extensions.CommandResult;
 
   export type Event = BrowsingContext.Event | Script.Event | Log.Event;
 
@@ -537,4 +539,23 @@ export namespace Log {
     method: 'log.entryAdded';
     params: LogEntry;
   };
+}
+
+export namespace Extensions {
+  export type Command = PROTO.SendCdpCommandCommand;
+  export type CommandResult = PROTO.SendCdpCommandResult;
+
+  export namespace PROTO {
+    export type SendCdpCommandCommand = {
+      method: 'PROTO.extensions.sendCdpCommand';
+      params: SendCdpCommandParams;
+    };
+
+    export type SendCdpCommandParams = {
+      cdpMethod: string;
+      cdpParams: object;
+    };
+
+    export type SendCdpCommandResult = { result: any };
+  }
 }

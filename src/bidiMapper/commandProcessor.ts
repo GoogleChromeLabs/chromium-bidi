@@ -16,7 +16,13 @@
  */
 
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
-import { BrowsingContext, Message, Script, Session } from './bidiProtocolTypes';
+import {
+  BrowsingContext,
+  Extensions,
+  Message,
+  Script,
+  Session,
+} from './bidiProtocolTypes';
 import { CdpClient, CdpConnection } from '../cdp';
 import { IBidiServer } from './utils/bidiServer';
 import { IEventManager } from './domains/events/EventManager';
@@ -173,6 +179,17 @@ export class CommandProcessor {
         return await this._contextProcessor.process_PROTO_browsingContext_close(
           commandData as BrowsingContext.PROTO.CloseCommand
         );
+
+      case 'PROTO.extensions.sendCdpCommand':
+        const sendCdpCommandData =
+          commandData as Extensions.PROTO.SendCdpCommandCommand;
+        const sendCdpCommandResult = await this._cdpConnection
+          .browserClient()
+          .sendCommand(
+            sendCdpCommandData.params.cdpMethod,
+            sendCdpCommandData.params.cdpParams
+          );
+        return { result: sendCdpCommandResult };
 
       default:
         throw new Error('unknown command');
