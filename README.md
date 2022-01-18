@@ -145,7 +145,7 @@ cd wpt
 
 #### 3. [Set up virtualenv](https://web-platform-tests.org/running-tests/from-local-system.html#system-setup)
 
-Follow the [*System Setup*](https://web-platform-tests.org/running-tests/index.html) instructions.
+Follow the [*System Setup*](https://web-platform-tests.org/running-tests/from-local-system.html#system-setup) instructions.
 
 #### 4. [Setup `hosts` file](https://web-platform-tests.org/running-tests/from-local-system.html#hosts-file-setup):
 
