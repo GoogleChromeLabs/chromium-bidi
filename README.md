@@ -147,7 +147,7 @@ cd wpt
 
 Follow the [*System Setup*](https://web-platform-tests.org/running-tests/from-local-system.html#system-setup) instructions.
 
-#### 4. [Setup `hosts` file](https://web-platform-tests.org/running-tests/from-local-system.html#hosts-file-setup):
+#### 4. Setup `hosts` file
 
 To get the WPT tests running, you need to set up the test domains in your hosts file.
 
