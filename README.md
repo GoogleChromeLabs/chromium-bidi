@@ -149,7 +149,7 @@ Follow the [*System Setup*](https://web-platform-tests.org/running-tests/from-lo
 
 #### 4. Setup `hosts` file
 
-To get the WPT tests running, you need to set up the test domains in your hosts file.
+Follow the [`hosts` File Setup](https://web-platform-tests.org/running-tests/from-local-system.html#hosts-file-setup) instructions.
 
 ##### On Linux, macOS or other UNIX-like system
 
