@@ -192,6 +192,31 @@ npm run build
 ```
 
 
+### Update WPT expectations if needed
+
+#### 1. Run WPT tests with custom `log-wptreport`:
+```sh
+./wpt/wpt run \
+  --webdriver-binary ./runBiDiServer.sh \
+  --binary "$WPT_BROWSER_PATH" \
+  --manifest ./wpt/MANIFEST.json \
+  --metadata ./wpt-metadata \
+  --log-wptreport wptreport.json \
+  chrome \
+  webdriver/tests/bidi/
+```
+
+
+#### 2. Update expectations based on the previous test run:
+```sh
+./wpt/wpt update-expectations \
+  --product chrome \
+  --manifest ./wpt/MANIFEST.json \
+  --metadata ./wpt-metadata \
+  ./wptreport.json
+```
+
+
 # How does it work?
 
 The architecture is described in the
