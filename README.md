@@ -143,7 +143,7 @@ git submodule update
 cd wpt
 ```
 
-#### 3. [Set up virtualenv](https://web-platform-tests.org/running-tests/from-local-system.html#system-setup)
+#### 3. Set up virtualenv
 
 Follow the [*System Setup*](https://web-platform-tests.org/running-tests/from-local-system.html#system-setup) instructions.
 
