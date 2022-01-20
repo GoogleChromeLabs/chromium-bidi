@@ -59,6 +59,8 @@ async def before_each_test(websocket):
 
 
 async def subscribe(websocket, event_names, context_ids=None):
+    if isinstance(event_names, str):
+        event_names = [event_names]
     command = {
         "method": "session.subscribe",
         "params": {
@@ -101,6 +103,9 @@ async def get_open_context_id(websocket):
 
 
 async def send_JSON_command(websocket, command):
+    if 'id' not in command:
+        command_id = get_next_command_id()
+        command['id'] = command_id
     await websocket.send(json.dumps(command))
 
 

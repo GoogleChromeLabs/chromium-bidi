@@ -18,7 +18,7 @@
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
 import {
   BrowsingContext,
-  Extensions,
+  CDP,
   Message,
   Script,
   Session,
@@ -180,16 +180,14 @@ export class CommandProcessor {
           commandData as BrowsingContext.PROTO.CloseCommand
         );
 
-      case 'PROTO.extensions.sendCdpCommand':
-        const sendCdpCommandData =
-          commandData as Extensions.PROTO.SendCdpCommandCommand;
-        const sendCdpCommandResult = await this._cdpConnection
-          .browserClient()
-          .sendCommand(
-            sendCdpCommandData.params.cdpMethod,
-            sendCdpCommandData.params.cdpParams
-          );
-        return { result: sendCdpCommandResult };
+      case 'PROTO.cdp.sendCommand':
+        return await this._contextProcessor.process_PROTO_cdp_sendCommand(
+          commandData as CDP.PROTO.SendCommandCommand
+        );
+      case 'PROTO.cdp.getSession':
+        return await this._contextProcessor.process_PROTO_cdp_getSession(
+          commandData as CDP.PROTO.GetSessionCommand
+        );
 
       default:
         throw new Error('unknown command');
