@@ -90,7 +90,7 @@ async def main():
         "id": 1001,
         "method": "browsingContext.navigate",
         "params": {
-            "url": appUrl,
+            "url": requestedPagePath,
             "context": context_id}}, websocket)
 
     # Puppeteer:
