@@ -85,8 +85,8 @@ async def main():
     # Puppeteer:
     # await page.goto('https://news.ycombinator.com/');
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L34
-    appUrl = f'file://{Path(__file__).parent.resolve()}/app.html'
-    print(appUrl)
+    requestedPagePath = f'file://{Path(__file__).parent.resolve()}/app.html'
+    print(requestedPagePath)
     await run_and_wait_command({
         "id": 1001,
         "method": "browsingContext.navigate",
