@@ -186,7 +186,7 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
             "params": {
                 # BaseLogEntry
                 "level": "error",
-                "text": "Uncaught",
+                "text": "Error: some error",
                 "timestamp": "__any_value__",
                 "stackTrace": {
                     "callFrames": [{
