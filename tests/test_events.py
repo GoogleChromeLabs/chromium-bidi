@@ -167,7 +167,6 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
 @pytest.mark.asyncio
 async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
     # Send command.
-    # Send command.
     command = {
         "id": 14,
         "method": "browsingContext.navigate",
