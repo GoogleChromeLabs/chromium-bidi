@@ -25,7 +25,6 @@ import websockets
 
 
 logging.basicConfig(
-    format="%(message)s",
     level=logging.DEBUG,
 )
 
