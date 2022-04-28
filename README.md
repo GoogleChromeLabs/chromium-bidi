@@ -244,9 +244,7 @@ There are 2 main modules:
 The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To
 add a new command, add it to `_processCommand`, write and call processor for it.
 
-## For maintainers
-
-### How to publish a new release
+## Publish new `npm` release
 
 1. On the `main` branch, bump the chromium-bidi version number in `package.json`:
 
