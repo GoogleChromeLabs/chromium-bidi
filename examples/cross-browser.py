@@ -65,13 +65,33 @@ async def main():
     # Puppeteer:
     # const page = await browser.newPage();
 
+    command_result = await run_and_wait_command({
+        "id": 999,
+        "method": "session.new",
+        "params": {}}, websocket)
+    # {
+    #     "id": 999,
+    #     "result": {
+    #         "sessionId": "5b2af764-15fd-48fc-a651-3a167f07969b",
+    #         "capabilities": {
+    #             "browserName": "some-browser",
+    #             "browserVersion": "101",
+    #             "platformName": "mac",
+    #             "proxy": {}
+    #         }
+    #     }
+    # }
+    session_id = command_result['result']['sessionId']
+
     # Part 1. Execute BiDi command and wait for result.
     # ... await browser.newPage();
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
     command_result = await run_and_wait_command({
         "id": 1000,
         "method": "browsingContext.create",
-        "params": {}}, websocket)
+        "params": {
+            "type": "tab"
+        }}, websocket)
 
     # Part 2. Get the command result.
     # const page = ...
