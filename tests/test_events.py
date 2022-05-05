@@ -132,7 +132,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
             "args": [{
                 "type": "string",
                 "value": "format specificier, string: %s, integer: %d, "
-                         "integer: %i, float: %f, %o, %O, %c "
+                         "integer: %i, float: %f, %o, %O, %c"
             }, {
                 "type": "string",
                 "value": "line 2"
@@ -159,11 +159,11 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
             }, {
                 "objectId": "__any_value__",
                 "type": "object",
-                "value": [{
+                "value": [[
                     "font-size", {
                         "type": "string",
                         "value": "20px"
-                    }}]}]}},
+                    }]]}]}},
         event_response,
         ("timestamp", "objectId"))
 

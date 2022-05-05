@@ -40,14 +40,14 @@ export class ScriptEvaluator {
    * @param cdpObject CDP remote object to be serialized.
    */
   public async serializeCdpObject(cdpObject: Protocol.Runtime.RemoteObject) {
-    let asd = (await this.#cdpClient.Runtime.callFunctionOn({
+    let cdpWebDriverValue = (await this.#cdpClient.Runtime.callFunctionOn({
       functionDeclaration: String((obj: any) => obj),
       awaitPromise: true,
       arguments: [cdpObject],
       generateWebDriverValue: true,
       objectId: await this.#getDummyContextId(),
     } as any)) as any;
-    return ScriptEvaluator.#cdpToBidiValue(asd);
+    return ScriptEvaluator.#cdpToBidiValue(cdpWebDriverValue);
   }
 
   /**
@@ -57,7 +57,7 @@ export class ScriptEvaluator {
    * @returns string The stringified object.
    */
   async stringifyObject(cdpObject: Protocol.Runtime.RemoteObject) {
-    let stringifyResult = (await this.#cdpClient.Runtime.callFunctionOn({
+    let stringifyResult = await this.#cdpClient.Runtime.callFunctionOn({
       functionDeclaration: String(function (obj: unknown) {
         return String(obj);
       }),
@@ -65,7 +65,7 @@ export class ScriptEvaluator {
       arguments: [cdpObject],
       returnByValue: true,
       objectId: await this.#getDummyContextId(),
-    } as any)) as any;
+    });
     return stringifyResult.result.value;
   }
 
@@ -85,14 +85,43 @@ export class ScriptEvaluator {
     args: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult> {
-    const cdpCallFunctionResult = await this.#executeCallFunction(
-      functionDeclaration,
-      _this,
-      args,
-      awaitPromise
+    const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
+      function _callFunction(f, args) {
+        const deserializedThis = args.shift();
+        const deserializedArgs = args;
+        return f.apply(deserializedThis, deserializedArgs);
+      }}`;
+
+    const dd = [await this.#deserializeToCdpArg(_this)];
+    dd.push(
+      ...(await Promise.all(
+        args.map(async (a) => {
+          return await this.#deserializeToCdpArg(a);
+        })
+      ))
     );
 
-    return cdpCallFunctionResult as any;
+    let cdpCallFunctionResult = (await this.#cdpClient.Runtime.callFunctionOn({
+      functionDeclaration: callFunctionAndSerializeScript,
+      awaitPromise,
+      arguments: dd, // this, arguments.
+      generateWebDriverValue: true,
+      objectId: await this.#getDummyContextId(),
+    } as any)) as any;
+
+    if (cdpCallFunctionResult.exceptionDetails) {
+      // Serialize exception details.
+      return await this.#serializeCdpExceptionDetails(
+        cdpCallFunctionResult.exceptionDetails,
+        this.#callFunctionStacktraceLineOffset
+      );
+    }
+
+    cdpCallFunctionResult = ScriptEvaluator.#cdpToBidiValue(
+      cdpCallFunctionResult
+    );
+
+    return { result: cdpCallFunctionResult as any };
   }
 
   async #serializeCdpExceptionDetails(
@@ -134,14 +163,9 @@ export class ScriptEvaluator {
 
   static #cdpToBidiValue(cdpValue: any): any {
     const bidiValue = (cdpValue.result as any).webDriverValue;
-
-    console.log('!!@@## cdpValue', JSON.stringify(cdpValue));
-
     if (cdpValue.result.objectId) {
       bidiValue.objectId = cdpValue.result.objectId;
     }
-
-    console.log('!!@@## bidiValue', JSON.stringify(bidiValue));
     return bidiValue;
   }
 
@@ -168,14 +192,11 @@ export class ScriptEvaluator {
     };
   }
 
-  static async #deserializeToCdpArg(serializedValue: any): Promise<any> {
+  async #deserializeToCdpArg(serializedValue: any): Promise<any> {
     if (serializedValue.objectId) {
       return { objectId: serializedValue.objectId };
     }
     switch (serializedValue.type) {
-      // case '':
-      //   return { value: arg };
-
       // Primitive Protocol Value
       // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
       case 'undefined': {
@@ -199,149 +220,159 @@ export class ScriptEvaluator {
         } else if (serializedValue.value === '-Infinity') {
           return { unserializableValue: '-Infinity' };
         } else {
-          return { unserializableValue: `Number(${serializedValue.value})` };
+          return {
+            value: serializedValue.value,
+          };
         }
       }
       case 'boolean': {
-        return { unserializableValue: 'serializedValue.value' };
+        return { value: !!serializedValue.value };
       }
       case 'bigint': {
-        // TODO: implement.
-        throw new Error(
-          `Deserialization of type ${serializedValue.type} is not yet implemented.`
-        );
+        return {
+          unserializableValue: `BigInt(${serializedValue.value})`,
+        };
       }
 
       // Local Value
       // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-LocalValue
       case 'array': {
-        throw new Error(
-          `Deserialization of type ${serializedValue.type} is not yet implemented.`
+        const args = await Promise.all(
+          (serializedValue.value as []).map(
+            async (c) => await this.#deserializeToCdpArg(c)
+          )
         );
-        // const result = [];
-        // for (let val of serializedValue.value) {
-        //   result.push(deserialize(val));
-        // }
-        // return result;
+
+        let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
+          functionDeclaration: String(function (...args: unknown[]) {
+            return args;
+          }),
+          awaitPromise: true,
+          arguments: args,
+          returnByValue: false,
+          objectId: await this.#getDummyContextId(),
+        });
+        return { objectId: argEvalResult.result.objectId };
       }
       case 'date': {
-        // TODO: implement.
-        throw new Error(
-          `Deserialization of type ${serializedValue.type} is not yet implemented.`
-        );
+        return {
+          unserializableValue: `new Date(Date.parse(${JSON.stringify(
+            serializedValue.value
+          )}))`,
+        };
       }
       case 'map': {
-        // TODO: implement.
-        throw new Error(
-          `Deserialization of type ${serializedValue.type} is not yet implemented.`
-        );
+        // Has value.length * 2 length, contains key followed by value.
+        const keyValueArray: any = [];
+
+        for (let i = 0; i < (serializedValue.value as []).length; i++) {
+          const pair = (serializedValue.value as [])[i];
+          const key = pair[0];
+          const value = pair[1];
+
+          let keyArg, valueArg;
+
+          // @ts-ignore
+          if (key.type) {
+            // Key is a serialized value.
+            keyArg = await this.#deserializeToCdpArg(key);
+          } else {
+            // Key is a primitive.
+            keyArg = { value: key };
+          }
+
+          valueArg = await this.#deserializeToCdpArg(value);
+
+          keyValueArray.push(keyArg);
+          keyValueArray.push(valueArg);
+        }
+
+        let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
+          functionDeclaration: String(function (...args: unknown[]) {
+            const result = new Map();
+            for (let i = 0; i < args.length; i += 2) {
+              // @ts-ignore
+              result.set(args[i], args[i + 1]);
+            }
+            return result;
+          }),
+          awaitPromise: true,
+          arguments: keyValueArray,
+          returnByValue: false,
+          objectId: await this.#getDummyContextId(),
+        });
+        return { objectId: argEvalResult.result.objectId };
       }
       case 'object': {
-        throw new Error(
-          `Deserialization of type ${serializedValue.type} is not yet implemented.`
-        );
-        // const result = {};
-        // for (let val of serializedValue.value) {
-        //   // TODO sadym: implement key deserialization.
-        //   result[val[0]] = deserialize(val[1]);
-        // }
-        // return result;
+        // Has value.length * 2 length, contains key followed by value.
+        const keyValueArray: any = [];
+
+        for (let i = 0; i < (serializedValue.value as []).length; i++) {
+          const pair = (serializedValue.value as [])[i];
+          const key = pair[0];
+          const value = pair[1];
+
+          let keyArg, valueArg;
+
+          // @ts-ignore
+          if (key.type) {
+            // Key is a serialized value.
+            keyArg = await this.#deserializeToCdpArg(key);
+          } else {
+            // Key is a primitive.
+            keyArg = { value: key };
+          }
+
+          valueArg = await this.#deserializeToCdpArg(value);
+
+          keyValueArray.push(keyArg);
+          keyValueArray.push(valueArg);
+        }
+
+        let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
+          functionDeclaration: String(function (...args: unknown[]) {
+            const result = {};
+            for (let i = 0; i < args.length; i += 2) {
+              // @ts-ignore
+              result[args[i]] = args[i + 1];
+            }
+            return result;
+          }),
+          awaitPromise: true,
+          arguments: keyValueArray,
+          returnByValue: false,
+          objectId: await this.#getDummyContextId(),
+        });
+        return { objectId: argEvalResult.result.objectId };
       }
       case 'regexp': {
-        // TODO: implement.
-        throw new Error(
-          `Deserialization of type ${serializedValue.type} is not yet implemented.`
-        );
+        return {
+          unserializableValue: `new RegExp(${JSON.stringify(
+            serializedValue.value.pattern
+          )}, ${JSON.stringify(serializedValue.value.flags)})`,
+        };
       }
       case 'set': {
-        // TODO: implement.
-        throw new Error(
-          `Deserialization of type ${serializedValue.type} is not yet implemented.`
+        const args = await Promise.all(
+          (serializedValue.value as []).map(
+            async (c) => await this.#deserializeToCdpArg(c)
+          )
         );
-      }
-      case 'PROTO.binding': {
-        throw new Error(
-          `Deserialization of type ${serializedValue.type} is not yet implemented.`
-        );
-        //   return (...args)=>{
-        //     const serializedArgs = args.map(a => serialize(a));
-        //     const callbackPayload = JSON.stringify({
-        //       arguments: serializedArgs,
-        //       id: serializedValue.id
-        //     });
-        //     getCdpBinding()(callbackPayload);
-        //   }
+
+        let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
+          functionDeclaration: String(function (...args: unknown[]) {
+            return new Set(args);
+          }),
+          awaitPromise: true,
+          arguments: args,
+          returnByValue: false,
+          objectId: await this.#getDummyContextId(),
+        });
+        return { objectId: argEvalResult.result.objectId };
       }
 
       default:
         throw new Error(`Type ${serializedValue.type} is not deserializable.`);
     }
-
-    //   default:
-    //     throw new Error(`Type ${serializedValue.type} is not deserializable.`);
-    // }
   }
-
-  async #executeCallFunction(
-    functionDeclaration: string,
-    _this: Script.ArgumentValue,
-    args: Script.ArgumentValue[],
-    awaitPromise: boolean
-  ): Promise<Script.CallFunctionResult> {
-    const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
-      function _callFunction(f, args) {
-        const deserializedThis = args.shift();
-        const deserializedArgs = args;
-        return f.apply(deserializedThis, deserializedArgs);
-      }}`;
-
-    const dd = [await ScriptEvaluator.#deserializeToCdpArg(_this)];
-    dd.push(
-      ...(await Promise.all(
-        args.map(async (a) => {
-          return await ScriptEvaluator.#deserializeToCdpArg(a);
-        })
-      ))
-    );
-
-    console.log('!!@@## _executeCallFunction', JSON.stringify(dd));
-
-    let cdpCallFunctionResult = (await this.#cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: callFunctionAndSerializeScript,
-      awaitPromise,
-      arguments: dd, // this, arguments.
-      generateWebDriverValue: true,
-      objectId: await this.#getDummyContextId(),
-    } as any)) as any;
-
-    if (cdpCallFunctionResult.exceptionDetails) {
-      // Serialize exception details.
-      return await this.#serializeCdpExceptionDetails(
-        cdpCallFunctionResult.exceptionDetails,
-        this.#callFunctionStacktraceLineOffset
-      );
-    }
-
-    cdpCallFunctionResult = ScriptEvaluator.#cdpToBidiValue(
-      cdpCallFunctionResult
-    );
-
-    return { result: cdpCallFunctionResult as any };
-  }
-
-  // TODO(sadym): implement.
-  // #handleBindingCalledEvent() {
-  //   this.#cdpClient.Runtime.on('bindingCalled', async (params) => {
-  //     if (params.name === this.#callbackName) {
-  //       const payload = JSON.parse(params.payload);
-  //       await this.#bidiServer.sendMessage({
-  //         method: 'PROTO.script.called',
-  //         params: {
-  //           arguments: payload.arguments,
-  //           id: payload.id,
-  //         },
-  //       });
-  //     }
-  //   });
-  // }
 }

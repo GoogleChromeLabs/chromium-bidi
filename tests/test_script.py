@@ -297,7 +297,7 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
-            "expression": "{SOME_PROPERTY:'SOME_VALUE'}",
+            "expression": "({SOME_PROPERTY:'SOME_VALUE'})",
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
