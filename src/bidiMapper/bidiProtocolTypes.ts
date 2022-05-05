@@ -454,8 +454,16 @@ export namespace BrowsingContext {
       context: BrowsingContext;
     };
 
-    export type FindElementResult = {
+    export type FindElementResult =
+      | FindElementSuccessResult
+      | FindElementExceptionResult;
+
+    export type FindElementSuccessResult = {
       result: CommonDataTypes.NodeRemoteValue;
+    };
+
+    export type FindElementExceptionResult = {
+      exceptionDetails: CommonDataTypes.ExceptionDetails;
     };
 
     export type CloseCommand = {

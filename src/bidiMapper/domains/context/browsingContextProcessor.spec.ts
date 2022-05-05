@@ -33,7 +33,6 @@ describe('BrowsingContextProcessor', function () {
   let bidiServer: IBidiServer;
   let eventManager: IEventManager;
 
-  const EVALUATOR_SCRIPT = 'EVALUATOR_SCRIPT';
   const NEW_CONTEXT_ID = 'NEW_CONTEXT_ID';
   const TARGET_ATTACHED_TO_TARGET_EVENT = {
     method: 'Target.attachedToTarget',
@@ -62,8 +61,7 @@ describe('BrowsingContextProcessor', function () {
       cdpConnection,
       'SELF_TARGET_ID',
       bidiServer,
-      eventManager,
-      EVALUATOR_SCRIPT
+      eventManager
     );
 
     // Actual `Context.create` logic involves several CDP calls, so mock it to avoid all the simulations.
@@ -91,8 +89,7 @@ describe('BrowsingContextProcessor', function () {
         NEW_CONTEXT_ID,
         sinon.match.any, // cdpClient.
         sinon.match.any, // bidiServer.
-        sinon.match.any, // eventManager.
-        EVALUATOR_SCRIPT
+        sinon.match.any // eventManager.
       );
     });
   });
