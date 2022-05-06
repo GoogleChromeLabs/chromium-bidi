@@ -148,7 +148,7 @@ async def test_serialization_weakMap(websocket, context_id):
 async def test_serialization_weakSet(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "new WeakSet()", {
-                                  "type": "nonsense",
+                                  "type": "weakset",
                                   "objectId": "__any_value__"
                               })
 
