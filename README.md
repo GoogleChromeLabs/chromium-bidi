@@ -196,6 +196,10 @@ export WPT_BROWSER_PATH="/Applications/Chromium.app/Contents/MacOS/Chromium"
 
 ### Run WPT tests
 
+#### 1. Make sure you have Chrome Dev instaled
+
+https://www.google.com/chrome/dev/
+
 #### 1. Build ChromeDriver BiDi
 
 ```sh
