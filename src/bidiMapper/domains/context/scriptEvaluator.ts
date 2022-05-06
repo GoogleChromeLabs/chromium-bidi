@@ -17,7 +17,7 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import { CommonDataTypes, Script } from '../../bidiProtocolTypes';
+import { CommonDataTypes, Message, Script } from '../../bidiProtocolTypes';
 
 export class ScriptEvaluator {
   #cdpClient: CdpClient;
@@ -30,8 +30,8 @@ export class ScriptEvaluator {
     this.#cdpClient = _cdpClient;
   }
 
-  public static create(cdpClient: CdpClient) {
-    return new ScriptEvaluator(cdpClient);
+  public static create(_cdpClient: CdpClient) {
+    return new ScriptEvaluator(_cdpClient);
   }
 
   /**
@@ -39,7 +39,9 @@ export class ScriptEvaluator {
    * target's `globalThis`.
    * @param cdpObject CDP remote object to be serialized.
    */
-  public async serializeCdpObject(cdpObject: Protocol.Runtime.RemoteObject) {
+  public async serializeCdpObject(
+    cdpObject: Protocol.Runtime.RemoteObject
+  ): Promise<CommonDataTypes.RemoteValue> {
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await this.#cdpClient.Runtime.callFunctionOn({
         functionDeclaration: String((obj: unknown) => obj),
@@ -57,7 +59,9 @@ export class ScriptEvaluator {
    * @param cdpObject CDP remote object representing an object.
    * @returns string The stringified object.
    */
-  async stringifyObject(cdpObject: Protocol.Runtime.RemoteObject) {
+  async stringifyObject(
+    cdpObject: Protocol.Runtime.RemoteObject
+  ): Promise<string> {
     let stringifyResult = await this.#cdpClient.Runtime.callFunctionOn({
       functionDeclaration: String(function (
         obj: Protocol.Runtime.RemoteObject
@@ -126,7 +130,7 @@ export class ScriptEvaluator {
   async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number
-  ) {
+  ): Promise<Message.ExceptionResult> {
     const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
       (frame) => ({
         url: frame.url,
@@ -294,6 +298,7 @@ export class ScriptEvaluator {
             > = {};
 
             for (let i = 0; i < args.length; i += 2) {
+              // Key should be either `string`, `number`, or `symbol`.
               const key = args[i] as string | number | symbol;
               result[key] = args[i + 1];
             }

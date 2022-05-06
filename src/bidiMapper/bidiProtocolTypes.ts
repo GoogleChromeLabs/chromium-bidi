@@ -16,7 +16,12 @@ export namespace Message {
     | BrowsingContext.CommandResult
     | Script.CommandResult
     | Session.CommandResult
-    | CDP.CommandResult;
+    | CDP.CommandResult
+    | ExceptionResult;
+
+  export type ExceptionResult = {
+    exceptionDetails: CommonDataTypes.ExceptionDetails;
+  };
 
   export type Event =
     | BrowsingContext.Event
@@ -276,12 +281,9 @@ export namespace Script {
     target: Target;
   };
 
-  export type EvaluateResult = EvaluateSuccessResult | EvaluateExceptionResult;
+  export type EvaluateResult = EvaluateSuccessResult | Message.ExceptionResult;
   export type EvaluateSuccessResult = {
     result: CommonDataTypes.RemoteValue;
-  };
-  export type EvaluateExceptionResult = {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
   export type CallFunctionCommand = {
@@ -299,12 +301,9 @@ export namespace Script {
 
   export type CallFunctionResult =
     | CallFunctionSuccessResult
-    | CallFunctionExceptionResult;
+    | Message.ExceptionResult;
   export type CallFunctionSuccessResult = {
     result: CommonDataTypes.RemoteValue;
-  };
-  export type CallFunctionExceptionResult = {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
   export type ArgumentValue =
@@ -463,14 +462,10 @@ export namespace BrowsingContext {
 
     export type FindElementResult =
       | FindElementSuccessResult
-      | FindElementExceptionResult;
+      | Message.ExceptionResult;
 
     export type FindElementSuccessResult = {
       result: CommonDataTypes.NodeRemoteValue;
-    };
-
-    export type FindElementExceptionResult = {
-      exceptionDetails: CommonDataTypes.ExceptionDetails;
     };
 
     export type CloseCommand = {

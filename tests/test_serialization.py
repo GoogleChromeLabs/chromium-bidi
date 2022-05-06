@@ -89,6 +89,13 @@ async def test_deserialization_serialization_specialNumber(websocket,
     await assertDeserializationAndSerialization(websocket, context_id, {
         "type": "number",
         "value": "Infinity"})
+    await assertDeserializationAndSerialization(websocket, context_id,
+                                                {
+                                                    "type": "number",
+                                                    "value": "+Infinity"
+                                                }, {
+                                                    "type": "number",
+                                                    "value": "Infinity"})
     await assertDeserializationAndSerialization(websocket, context_id, {
         "type": "number",
         "value": "-Infinity"})
