@@ -85,7 +85,7 @@ function parseArguments() {
  */
 async function _onNewBidiConnectionOpen(
   headless: boolean,
-  chrome_channel: boolean,
+  chrome_channel: string,
   bidiTransport: ITransport
 ): Promise<() => void> {
   const browserLaunchOptions: any = {
