@@ -57,7 +57,12 @@ export namespace CommonDataTypes {
     value: string;
   };
 
-  export type SpecialNumber = 'NaN' | '-0' | '+Infinity' | '-Infinity';
+  export type SpecialNumber =
+    | 'NaN'
+    | '-0'
+    | 'Infinity'
+    | '+Infinity'
+    | '-Infinity';
 
   export type NumberValue = {
     type: 'number';
@@ -110,8 +115,10 @@ export namespace CommonDataTypes {
 
   export type RegExpLocalValue = {
     type: 'regexp';
-    pattern: string;
-    flags?: string;
+    value: {
+      pattern: string;
+      flags?: string;
+    };
   };
 
   export type SetLocalValue = {

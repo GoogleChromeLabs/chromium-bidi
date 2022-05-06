@@ -17,7 +17,7 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import { Script } from '../../bidiProtocolTypes';
+import { CommonDataTypes, Script } from '../../bidiProtocolTypes';
 
 export class ScriptEvaluator {
   #cdpClient: CdpClient;
@@ -40,13 +40,14 @@ export class ScriptEvaluator {
    * @param cdpObject CDP remote object to be serialized.
    */
   public async serializeCdpObject(cdpObject: Protocol.Runtime.RemoteObject) {
-    let cdpWebDriverValue = (await this.#cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: String((obj: any) => obj),
-      awaitPromise: true,
-      arguments: [cdpObject],
-      generateWebDriverValue: true,
-      objectId: await this.#getDummyContextId(),
-    } as any)) as any;
+    const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
+      await this.#cdpClient.Runtime.callFunctionOn({
+        functionDeclaration: String((obj: unknown) => obj),
+        awaitPromise: true,
+        arguments: [cdpObject],
+        generateWebDriverValue: true,
+        objectId: await this.#getDummyContextId(),
+      });
     return ScriptEvaluator.#cdpToBidiValue(cdpWebDriverValue);
   }
 
@@ -58,7 +59,9 @@ export class ScriptEvaluator {
    */
   async stringifyObject(cdpObject: Protocol.Runtime.RemoteObject) {
     let stringifyResult = await this.#cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: String(function (obj: unknown) {
+      functionDeclaration: String(function (
+        obj: Protocol.Runtime.RemoteObject
+      ) {
         return String(obj);
       }),
       awaitPromise: true,
@@ -69,7 +72,7 @@ export class ScriptEvaluator {
     return stringifyResult.result.value;
   }
 
-  // TODO sadym: `dummyContextObject` needed for the running context.
+  // TODO(sadym): `dummyContextObject` needed for the running context.
   // Use the proper `executionContextId` instead:
   // https://github.com/GoogleChromeLabs/chromium-bidi/issues/52
   async #getDummyContextId(): Promise<string> {
@@ -92,8 +95,8 @@ export class ScriptEvaluator {
         return f.apply(deserializedThis, deserializedArgs);
       }}`;
 
-    const dd = [await this.#deserializeToCdpArg(_this)];
-    dd.push(
+    const thisAndArgumentsList = [await this.#deserializeToCdpArg(_this)];
+    thisAndArgumentsList.push(
       ...(await Promise.all(
         args.map(async (a) => {
           return await this.#deserializeToCdpArg(a);
@@ -101,13 +104,13 @@ export class ScriptEvaluator {
       ))
     );
 
-    let cdpCallFunctionResult = (await this.#cdpClient.Runtime.callFunctionOn({
+    const cdpCallFunctionResult = await this.#cdpClient.Runtime.callFunctionOn({
       functionDeclaration: callFunctionAndSerializeScript,
       awaitPromise,
-      arguments: dd, // this, arguments.
+      arguments: thisAndArgumentsList, // this, arguments.
       generateWebDriverValue: true,
       objectId: await this.#getDummyContextId(),
-    } as any)) as any;
+    });
 
     if (cdpCallFunctionResult.exceptionDetails) {
       // Serialize exception details.
@@ -117,11 +120,7 @@ export class ScriptEvaluator {
       );
     }
 
-    cdpCallFunctionResult = ScriptEvaluator.#cdpToBidiValue(
-      cdpCallFunctionResult
-    );
-
-    return { result: cdpCallFunctionResult as any };
+    return { result: ScriptEvaluator.#cdpToBidiValue(cdpCallFunctionResult) };
   }
 
   async #serializeCdpExceptionDetails(
@@ -161,12 +160,18 @@ export class ScriptEvaluator {
     };
   }
 
-  static #cdpToBidiValue(cdpValue: any): any {
-    const bidiValue = (cdpValue.result as any).webDriverValue;
+  static #cdpToBidiValue(
+    cdpValue:
+      | Protocol.Runtime.CallFunctionOnResponse
+      | Protocol.Runtime.EvaluateResponse
+  ): CommonDataTypes.RemoteValue {
+    const bidiValue = cdpValue.result.webDriverValue!;
     if (cdpValue.result.objectId) {
       bidiValue.objectId = cdpValue.result.objectId;
     }
-    return bidiValue;
+    // This relies on the CDP to implement proper BiDi serialization, except
+    // objectIds.
+    return bidiValue as CommonDataTypes.RemoteValue;
   }
 
   public async scriptEvaluate(
@@ -177,7 +182,7 @@ export class ScriptEvaluator {
       expression,
       awaitPromise,
       generateWebDriverValue: true,
-    } as any);
+    });
 
     if (cdpEvaluateResult.exceptionDetails) {
       // Serialize exception details.
@@ -192,8 +197,10 @@ export class ScriptEvaluator {
     };
   }
 
-  async #deserializeToCdpArg(serializedValue: any): Promise<any> {
-    if (serializedValue.objectId) {
+  async #deserializeToCdpArg(
+    serializedValue: CommonDataTypes.LocalValue
+  ): Promise<Protocol.Runtime.CallArgument> {
+    if (`objectId` in serializedValue) {
       return { objectId: serializedValue.objectId };
     }
     switch (serializedValue.type) {
@@ -236,24 +243,6 @@ export class ScriptEvaluator {
 
       // Local Value
       // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-LocalValue
-      case 'array': {
-        const args = await Promise.all(
-          (serializedValue.value as []).map(
-            async (c) => await this.#deserializeToCdpArg(c)
-          )
-        );
-
-        let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
-          functionDeclaration: String(function (...args: unknown[]) {
-            return args;
-          }),
-          awaitPromise: true,
-          arguments: args,
-          returnByValue: false,
-          objectId: await this.#getDummyContextId(),
-        });
-        return { objectId: argEvalResult.result.objectId };
-      }
       case 'date': {
         return {
           unserializableValue: `new Date(Date.parse(${JSON.stringify(
@@ -261,37 +250,23 @@ export class ScriptEvaluator {
           )}))`,
         };
       }
+      case 'regexp': {
+        return {
+          unserializableValue: `new RegExp(${JSON.stringify(
+            serializedValue.value.pattern
+          )}, ${JSON.stringify(serializedValue.value.flags)})`,
+        };
+      }
       case 'map': {
-        // Has value.length * 2 length, contains key followed by value.
-        const keyValueArray: any = [];
-
-        for (let i = 0; i < (serializedValue.value as []).length; i++) {
-          const pair = (serializedValue.value as [])[i];
-          const key = pair[0];
-          const value = pair[1];
-
-          let keyArg, valueArg;
-
-          // @ts-ignore
-          if (key.type) {
-            // Key is a serialized value.
-            keyArg = await this.#deserializeToCdpArg(key);
-          } else {
-            // Key is a primitive.
-            keyArg = { value: key };
-          }
-
-          valueArg = await this.#deserializeToCdpArg(value);
-
-          keyValueArray.push(keyArg);
-          keyValueArray.push(valueArg);
-        }
-
+        const keyValueArray = await this.#flattenKeyValuePairs(
+          serializedValue.value
+        );
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
-          functionDeclaration: String(function (...args: unknown[]) {
+          functionDeclaration: String(function (
+            ...args: Protocol.Runtime.CallArgument[]
+          ) {
             const result = new Map();
             for (let i = 0; i < args.length; i += 2) {
-              // @ts-ignore
               result.set(args[i], args[i + 1]);
             }
             return result;
@@ -305,36 +280,22 @@ export class ScriptEvaluator {
       }
       case 'object': {
         // Has value.length * 2 length, contains key followed by value.
-        const keyValueArray: any = [];
-
-        for (let i = 0; i < (serializedValue.value as []).length; i++) {
-          const pair = (serializedValue.value as [])[i];
-          const key = pair[0];
-          const value = pair[1];
-
-          let keyArg, valueArg;
-
-          // @ts-ignore
-          if (key.type) {
-            // Key is a serialized value.
-            keyArg = await this.#deserializeToCdpArg(key);
-          } else {
-            // Key is a primitive.
-            keyArg = { value: key };
-          }
-
-          valueArg = await this.#deserializeToCdpArg(value);
-
-          keyValueArray.push(keyArg);
-          keyValueArray.push(valueArg);
-        }
+        const keyValueArray = await this.#flattenKeyValuePairs(
+          serializedValue.value
+        );
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
-          functionDeclaration: String(function (...args: unknown[]) {
-            const result = {};
+          functionDeclaration: String(function (
+            ...args: Protocol.Runtime.CallArgument[]
+          ) {
+            const result: Record<
+              string | number | symbol,
+              Protocol.Runtime.CallArgument
+            > = {};
+
             for (let i = 0; i < args.length; i += 2) {
-              // @ts-ignore
-              result[args[i]] = args[i + 1];
+              const key = args[i] as string | number | symbol;
+              result[key] = args[i + 1];
             }
             return result;
           }),
@@ -345,19 +306,22 @@ export class ScriptEvaluator {
         });
         return { objectId: argEvalResult.result.objectId };
       }
-      case 'regexp': {
-        return {
-          unserializableValue: `new RegExp(${JSON.stringify(
-            serializedValue.value.pattern
-          )}, ${JSON.stringify(serializedValue.value.flags)})`,
-        };
+      case 'array': {
+        const args = await this.#flattenValueList(serializedValue.value);
+
+        let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
+          functionDeclaration: String(function (...args: unknown[]) {
+            return args;
+          }),
+          awaitPromise: true,
+          arguments: args,
+          returnByValue: false,
+          objectId: await this.#getDummyContextId(),
+        });
+        return { objectId: argEvalResult.result.objectId };
       }
       case 'set': {
-        const args = await Promise.all(
-          (serializedValue.value as []).map(
-            async (c) => await this.#deserializeToCdpArg(c)
-          )
-        );
+        const args = await this.#flattenValueList(serializedValue.value);
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (...args: unknown[]) {
@@ -372,7 +336,47 @@ export class ScriptEvaluator {
       }
 
       default:
-        throw new Error(`Type ${serializedValue.type} is not deserializable.`);
+        throw new Error(
+          `Value ${JSON.stringify(serializedValue)} is not deserializable.`
+        );
     }
+  }
+
+  async #flattenKeyValuePairs(
+    value: CommonDataTypes.MappingLocalValue
+  ): Promise<Protocol.Runtime.CallArgument[]> {
+    const keyValueArray: Protocol.Runtime.CallArgument[] = [];
+    for (let pair of value) {
+      const key = pair[0];
+      const value = pair[1];
+
+      let keyArg, valueArg;
+
+      if (typeof key === 'string') {
+        // Key is a string.
+        keyArg = { value: key };
+      } else {
+        // Key is a serialized value.
+        keyArg = await this.#deserializeToCdpArg(key);
+      }
+
+      valueArg = await this.#deserializeToCdpArg(value);
+
+      keyValueArray.push(keyArg);
+      keyValueArray.push(valueArg);
+    }
+    return keyValueArray;
+  }
+
+  async #flattenValueList(
+    list: CommonDataTypes.ListLocalValue
+  ): Promise<Protocol.Runtime.CallArgument[]> {
+    const result: Protocol.Runtime.CallArgument[] = [];
+
+    for (let value of list) {
+      result.push(await this.#deserializeToCdpArg(value));
+    }
+
+    return result;
   }
 }
