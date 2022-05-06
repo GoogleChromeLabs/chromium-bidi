@@ -66,13 +66,7 @@ describe('BrowsingContextProcessor', function () {
 
     // Actual `Context.create` logic involves several CDP calls, so mock it to avoid all the simulations.
     Context.create = sinon.fake(
-      async (
-        _1: string,
-        _2: CdpClient,
-        _3: IBidiServer,
-        _4: IEventManager,
-        _5: string
-      ) => {
+      async (_1: string, _2: CdpClient, _3: IBidiServer, _4: IEventManager) => {
         return sinon.createStubInstance(Context) as unknown as Context;
       }
     );
