@@ -262,6 +262,8 @@ export class ScriptEvaluator {
         };
       }
       case 'map': {
+        // TODO(sadym): if non of the nested keys and values has remote
+        //  reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
           serializedValue.value
         );
@@ -283,7 +285,8 @@ export class ScriptEvaluator {
         return { objectId: argEvalResult.result.objectId };
       }
       case 'object': {
-        // Has value.length * 2 length, contains key followed by value.
+        // TODO(sadym): if non of the nested keys and values has remote
+        //  reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
           serializedValue.value
         );
@@ -312,6 +315,8 @@ export class ScriptEvaluator {
         return { objectId: argEvalResult.result.objectId };
       }
       case 'array': {
+        // TODO(sadym): if non of the nested items has remote reference,
+        //  serialize to `unserializableValue` without CDP roundtrip.
         const args = await this.#flattenValueList(serializedValue.value);
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
@@ -326,6 +331,8 @@ export class ScriptEvaluator {
         return { objectId: argEvalResult.result.objectId };
       }
       case 'set': {
+        // TODO(sadym): if non of the nested items has remote reference,
+        //  serialize to `unserializableValue` without CDP roundtrip.
         const args = await this.#flattenValueList(serializedValue.value);
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
