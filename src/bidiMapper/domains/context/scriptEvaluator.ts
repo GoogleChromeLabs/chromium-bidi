@@ -282,6 +282,9 @@ export class ScriptEvaluator {
           returnByValue: false,
           objectId: await this.#getDummyContextId(),
         });
+
+        // TODO(sadym): dispose nested objects.
+
         return { objectId: argEvalResult.result.objectId };
       }
       case 'object': {
@@ -312,6 +315,9 @@ export class ScriptEvaluator {
           returnByValue: false,
           objectId: await this.#getDummyContextId(),
         });
+
+        // TODO(sadym): dispose nested objects.
+
         return { objectId: argEvalResult.result.objectId };
       }
       case 'array': {
@@ -328,6 +334,9 @@ export class ScriptEvaluator {
           returnByValue: false,
           objectId: await this.#getDummyContextId(),
         });
+
+        // TODO(sadym): dispose nested objects.
+
         return { objectId: argEvalResult.result.objectId };
       }
       case 'set': {
@@ -346,6 +355,8 @@ export class ScriptEvaluator {
         });
         return { objectId: argEvalResult.result.objectId };
       }
+
+      // TODO(sadym): dispose nested objects.
 
       default:
         throw new Error(
