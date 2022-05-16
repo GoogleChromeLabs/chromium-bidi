@@ -56,9 +56,10 @@ export namespace SessionParser {
         );
 
       const parts = event.split('.');
+      // It can be either 2, or 3 parts in case of having `PROTO.` prefix.
       if (parts.length < 2)
         throw new InvalidArgumentErrorResponse(
-          `Event should have format "str_1.str_2". ${JSON.stringify(event)}.`
+          `Event should contain ".": ${JSON.stringify(event)}.`
         );
 
       return event as string;
