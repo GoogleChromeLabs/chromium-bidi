@@ -23,33 +23,42 @@ export namespace SessionParser {
   export class SubscribeParamsParser {
     static parse(params: any): SessionType.SubscribeParameters {
       return {
-        contexts: BrowsingContextParser.BrowsingContextParser.parseOptionalList(
-          params.contexts
-        ),
         events: this.parseEventsList(params.events),
+        // Don't add `contexts` if it's not defined.
+        ...(params.contexts !== undefined && {
+          contexts:
+            BrowsingContextParser.BrowsingContextParser.parseOptionalList(
+              params.contexts
+            ),
+        }),
       };
     }
 
     public static parseEventsList(events: any): string[] {
       if (events === undefined)
-        throw new InvalidArgumentErrorResponse("Missing parameter 'events'.");
+        throw new InvalidArgumentErrorResponse('EventsList should be defined.');
       if (!Array.isArray(events))
         throw new InvalidArgumentErrorResponse(
-          `Wrong 'events' format. Not an array. ${JSON.stringify(events)}.`
+          `EventsList should be an array. ${JSON.stringify(events)}.`
         );
       return events.map((e) => this.parseEvent(e));
     }
 
     public static parseEvent(event: any): string {
-      if (!event || !(event instanceof String))
+      if (event === undefined)
         throw new InvalidArgumentErrorResponse(
-          `Wrong 'event' format ${JSON.stringify(event)}.`
+          `Event should not be undefined.`
+        );
+
+      if (typeof event !== 'string' && !(event instanceof String))
+        throw new InvalidArgumentErrorResponse(
+          `Event should be a string. ${JSON.stringify(event)}.`
         );
 
       const parts = event.split('.');
-      if (parts.length != 3 || parts[0].length == 0 || parts[2].length == 0)
+      if (parts.length < 2)
         throw new InvalidArgumentErrorResponse(
-          `Wrong 'event' format ${JSON.stringify(event)}.`
+          `Event should have format "str_1.str_2". ${JSON.stringify(event)}.`
         );
 
       return event as string;

@@ -34,10 +34,12 @@ export namespace BrowsingContextParser {
 
     public static parse(context: any): BrowsingContext.BrowsingContext {
       if (context === undefined)
-        throw new InvalidArgumentErrorResponse('Context is undefined');
+        throw new InvalidArgumentErrorResponse(
+          'BrowsingContext should not be undefined'
+        );
       if (typeof context !== 'string' && !(context instanceof String))
         throw new InvalidArgumentErrorResponse(
-          `BrowsingContext is not a string: ${JSON.stringify(context)}.`
+          `BrowsingContext should be a string ${JSON.stringify(context)}.`
         );
       if (context.length == 0)
         throw new InvalidArgumentErrorResponse(
