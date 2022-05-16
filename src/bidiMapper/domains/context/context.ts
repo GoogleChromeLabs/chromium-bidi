@@ -17,7 +17,7 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import { BrowsingContext, Script } from '../../bidiProtocolTypes';
+import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { LogManager } from './logManager';

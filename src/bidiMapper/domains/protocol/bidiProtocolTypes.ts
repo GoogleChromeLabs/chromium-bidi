@@ -1,7 +1,13 @@
 export namespace Message {
-  export type OutgoingMessage = CommandResponse | Event | Error;
+  export type OutgoingMessage = CommandResponse | EventMessage;
 
-  export type Command = { id: number } & (
+  export type RawCommandRequest = {
+    id: number;
+    method: string;
+    params: object;
+  };
+
+  export type CommandRequest = { id: number } & (
     | BrowsingContext.Command
     | Script.Command
     | Session.Command
@@ -17,22 +23,28 @@ export namespace Message {
     | Script.CommandResult
     | Session.CommandResult
     | CDP.CommandResult
-    | ExceptionResult;
+    | ExceptionResult
+    | ErrorResult;
 
   export type ExceptionResult = {
     exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
-  export type Event =
+  export type EventMessage =
     | BrowsingContext.Event
     | Script.Event
     | Log.Event
     | CDP.Event;
 
-  export type Error = {
-    id?: number;
-    error: string;
-    message: string;
+  export type ErrorCode =
+    | 'unknown error'
+    | 'unknown command'
+    | 'invalid argument';
+
+  export type ErrorResult = {
+    readonly error: ErrorCode;
+    readonly message: string;
+    readonly stacktrace?: string;
   };
 }
 
