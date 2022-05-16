@@ -23,7 +23,7 @@ import {
   Script,
   Session,
 } from './domains/protocol/bidiProtocolTypes';
-import { CdpClient, CdpConnection } from '../cdp';
+import { CdpConnection } from '../cdp';
 import { IBidiServer } from './utils/bidiServer';
 import { IEventManager } from './domains/events/EventManager';
 import {
@@ -31,7 +31,7 @@ import {
   UnknownCommandErrorResponse,
   UnknownErrorResponse,
 } from './domains/protocol/error';
-import { SubscribeParamsParser } from './domains/protocol/parsers/sessionParser';
+import { SessionParser } from './domains/protocol/parsers/sessionParser';
 
 export class CommandProcessor {
   #contextProcessor: BrowsingContextProcessor;
@@ -108,7 +108,7 @@ export class CommandProcessor {
         );
       case 'session.subscribe':
         return await this.#process_session_subscribe(
-          SubscribeParamsParser.parse(commandData.params)
+          SessionParser.SubscribeParamsParser.parse(commandData.params)
         );
       case 'session.unsubscribe':
         return await this.#process_session_unsubscribe(
