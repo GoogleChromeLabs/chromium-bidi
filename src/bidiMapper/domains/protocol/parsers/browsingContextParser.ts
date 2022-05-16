@@ -12,27 +12,15 @@ export namespace BrowsingContextParser {
           "Wrong format parameter 'contexts'. Not an array."
         );
 
-      // Get all the bad values.
-      const wrongContexts = contexts.filter((c) => {
-        // Return `true` if param is not correct.
-        if (!c) return true;
-        if (!(c instanceof String)) return true;
-        return c.length == 0;
-      });
-      if (wrongContexts.length > 0)
-        throw new InvalidArgumentErrorResponse(
-          "Wrong format parameter 'contexts': " + JSON.stringify(wrongContexts)
-        );
-
-      return contexts;
+      return contexts.map((c) => this.parse(c));
     }
 
     public static parse(context: any): BrowsingContext.BrowsingContext {
       if (context === undefined)
-        throw new InvalidArgumentErrorResponse("Missing parameter 'context'.");
+        throw new InvalidArgumentErrorResponse('Context is undefined');
       if (!(context instanceof String) || context.length == 0)
         throw new InvalidArgumentErrorResponse(
-          "Wrong format parameter 'context': " + JSON.stringify(context)
+          `Context has wrong format ${JSON.stringify(context)}.`
         );
 
       return context as BrowsingContext.BrowsingContext;
