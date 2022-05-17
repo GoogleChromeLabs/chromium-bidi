@@ -488,6 +488,13 @@ export namespace BrowsingContext {
 
     export type CloseResult = { result: {} };
   }
+
+  export const EventNames = new Set([
+    LoadEvent.method,
+    DomContentLoadedEvent.method,
+    ContextCreatedEvent.method,
+    ContextDestroyedEvent.method,
+  ]);
 }
 
 export namespace Session {
@@ -565,6 +572,8 @@ export namespace Log {
       super(LogEntryAddedEvent.method, params);
     }
   }
+
+  export const EventNames = new Set([LogEntryAddedEvent.method]);
 }
 
 export namespace CDP {
@@ -611,4 +620,11 @@ export namespace CDP {
       session?: string;
     };
   }
+  export const EventNames = new Set([PROTO.EventReceivedEvent.method]);
 }
+
+export const EventNames = new Set([
+  ...BrowsingContext.EventNames.keys(),
+  ...Log.EventNames.keys(),
+  ...CDP.EventNames.keys(),
+]);

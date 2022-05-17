@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Session as SessionType } from '../bidiProtocolTypes';
+import { EventNames, Session as SessionType } from '../bidiProtocolTypes';
 import { InvalidArgumentErrorResponse } from '../error';
 import { BrowsingContextParser } from './browsingContextParser';
 import { TypeHelper } from '../../../utils/typeHelper';
@@ -56,11 +56,9 @@ export namespace SessionParser {
           `Event should be a string. ${JSON.stringify(event)}.`
         );
 
-      const parts = event.split('.');
-      // It can be either 2, or 3 parts in case of having `PROTO.` prefix.
-      if (parts.length < 2)
+      if (!EventNames.has(event.toString()))
         throw new InvalidArgumentErrorResponse(
-          `Event should contain ".": ${JSON.stringify(event)}.`
+          `Unknown event. ${JSON.stringify(event)}.`
         );
 
       return event;

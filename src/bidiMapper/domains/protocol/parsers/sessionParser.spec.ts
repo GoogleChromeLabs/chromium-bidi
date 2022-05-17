@@ -17,15 +17,20 @@
 
 import * as chai from 'chai';
 import { SessionParser } from './sessionParser';
+import { BrowsingContext, Log } from '../bidiProtocolTypes';
 
 const expect = chai.expect;
 
 describe('test SubscribeParamsParser', function () {
   describe('parse', function () {
     it('valid params should be parsed', async function () {
+      // noinspection JSPrimitiveTypeWrapperUsage
       const params = {
         contexts: ['some_context', new String('another_context')],
-        events: ['event.1', new String('event.2')],
+        events: [
+          Log.LogEntryAddedEvent.method,
+          new String(BrowsingContext.ContextCreatedEvent.method),
+        ],
       };
       expect(SessionParser.SubscribeParamsParser.parse(params)).to.deep.equal(
         params
@@ -34,7 +39,7 @@ describe('test SubscribeParamsParser', function () {
 
     it('params without contexts should be parsed', async function () {
       const params = {
-        events: ['event.1'],
+        events: [Log.LogEntryAddedEvent.method],
       };
       expect(SessionParser.SubscribeParamsParser.parse(params)).to.deep.equal(
         params
