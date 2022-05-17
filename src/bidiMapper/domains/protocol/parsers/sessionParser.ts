@@ -18,6 +18,7 @@
 import { Session as SessionType } from '../bidiProtocolTypes';
 import { InvalidArgumentErrorResponse } from '../error';
 import { BrowsingContextParser } from './browsingContextParser';
+import { TypeHelper } from '../../../utils/typeHelper';
 
 export namespace SessionParser {
   export class SubscribeParamsParser {
@@ -50,7 +51,7 @@ export namespace SessionParser {
           `Event should not be undefined.`
         );
 
-      if (typeof event !== 'string' && !(event instanceof String))
+      if (!TypeHelper.isString(event))
         throw new InvalidArgumentErrorResponse(
           `Event should be a string. ${JSON.stringify(event)}.`
         );
@@ -62,7 +63,7 @@ export namespace SessionParser {
           `Event should contain ".": ${JSON.stringify(event)}.`
         );
 
-      return event as string;
+      return event;
     }
   }
 }

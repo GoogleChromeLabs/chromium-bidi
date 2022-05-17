@@ -17,6 +17,7 @@
 
 import { InvalidArgumentErrorResponse } from '../error';
 import { BrowsingContext } from '../bidiProtocolTypes';
+import { TypeHelper } from '../../../utils/typeHelper';
 
 export namespace BrowsingContextParser {
   export class BrowsingContextParser {
@@ -37,7 +38,7 @@ export namespace BrowsingContextParser {
         throw new InvalidArgumentErrorResponse(
           'BrowsingContext should not be undefined'
         );
-      if (typeof context !== 'string' && !(context instanceof String))
+      if (!TypeHelper.isString(context))
         throw new InvalidArgumentErrorResponse(
           `BrowsingContext should be a string ${JSON.stringify(context)}.`
         );
@@ -46,7 +47,7 @@ export namespace BrowsingContextParser {
           `BrowsingContext cannot be empty ${JSON.stringify(context)}.`
         );
 
-      return context as BrowsingContext.BrowsingContext;
+      return context;
     }
   }
 }
