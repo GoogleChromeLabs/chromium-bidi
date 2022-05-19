@@ -40,7 +40,9 @@ export class BidiServerRunner {
     const self = this;
 
     const server = http.createServer(function (request, response) {
-      debugInternal(new Date() + ' Received request for ' + request.url);
+      debugInternal(
+        `${new Date()} Received ${request.method} request for ${request.url}`
+      );
 
       if (!request.url) return response.end(404);
 
