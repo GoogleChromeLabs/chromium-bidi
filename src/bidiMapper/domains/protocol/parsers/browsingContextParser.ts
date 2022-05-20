@@ -35,7 +35,7 @@ export namespace BrowsingContextParser {
       ];
       if (type === undefined)
         throw new InvalidArgumentErrorResponse(
-          `Unknown 'params.type': ${JSON.stringify(context)}.`
+          `Unknown 'params.type': ${JSON.stringify(params.type.toString())}.`
         );
 
       return {

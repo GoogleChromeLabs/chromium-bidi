@@ -51,6 +51,15 @@ describe('test BrowsingContextParser', function () {
           .to.throw()
           .with.property('error', 'invalid argument');
       });
+      it('number type should not be parsed', async function () {
+        expect(() =>
+          BrowsingContextParser.CreateCommand.parseParams({
+            type: 42,
+          })
+        )
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
       it('missing type should not be parsed', async function () {
         expect(() => BrowsingContextParser.CreateCommand.parseParams({}))
           .to.throw()
