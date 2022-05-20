@@ -166,10 +166,10 @@ export class BrowsingContextProcessor {
   ): BrowsingContext.BrowsingContextInfo {
     return {
       context: target.targetId,
-      parent: target.openerId ? target.openerId : undefined,
+      parent: target.openerId ? target.openerId : null,
       url: target.url,
       // TODO sadym: implement.
-      children: [],
+      children: null,
     };
   }
 

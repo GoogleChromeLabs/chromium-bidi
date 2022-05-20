@@ -375,9 +375,9 @@ export namespace BrowsingContext {
 
   export type BrowsingContextInfo = {
     context: BrowsingContext;
-    parent?: BrowsingContext;
+    parent?: BrowsingContext | null;
     url: string;
-    children: BrowsingContextInfoList;
+    children: BrowsingContextInfoList | null;
   };
 
   export type NavigateCommand = {
