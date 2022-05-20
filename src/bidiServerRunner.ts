@@ -20,6 +20,7 @@ import http from 'http';
 import { ITransport } from './utils/transport';
 
 import debug from 'debug';
+
 const debugInternal = debug('bidiServer:internal');
 const debugSend = debug('bidiServer:SEND ►');
 const debugRecv = debug('bidiServer:RECV ◀');
@@ -39,34 +40,9 @@ export class BidiServerRunner {
   ) {
     const self = this;
 
-    const server = http.createServer(function (request, response) {
-      debugInternal(
-        `${new Date()} Received ${request.method} request for ${request.url}`
-      );
-
-      if (!request.url) return response.end(404);
-
-      // https://w3c.github.io/webdriver-bidi/#transport, step 2.
-      if (request.url === '/session') {
-        response.writeHead(200, {
-          'Content-Type': 'application/json;charset=utf-8',
-          'Cache-Control': 'no-cache',
-        });
-        response.write(
-          JSON.stringify({
-            value: {
-              sessionId: '1',
-              capabilities: {
-                webSocketUrl: 'ws://localhost:' + bidiPort,
-              },
-            },
-          })
-        );
-      } else {
-        response.writeHead(404);
-      }
-      response.end();
-    });
+    const server = http.createServer(
+      BidiServerRunner.#getHttpRequestProcessor(bidiPort)
+    );
     server.listen(bidiPort, function () {
       console.log(`Server is listening on port ${bidiPort}`);
     });
@@ -77,7 +53,7 @@ export class BidiServerRunner {
     });
 
     wsServer.on('request', async function (request) {
-      debugInternal('request received');
+      debugInternal('new ws request received');
 
       const bidiServer = new BidiServer();
 
@@ -88,7 +64,7 @@ export class BidiServerRunner {
       connection.on('message', function (message) {
         // 1. If |type| is not text, return.
         if (message.type !== 'utf8') {
-          self._respondWithError(
+          self.#respondWithError(
             connection,
             {},
             'invalid argument',
@@ -112,12 +88,57 @@ export class BidiServerRunner {
       });
 
       bidiServer.initialise((messageStr) => {
-        return self._sendClientMessageStr(messageStr, connection);
+        return self.#sendClientMessageStr(messageStr, connection);
       });
     });
   }
 
-  private static _sendClientMessageStr(
+  static #getHttpRequestProcessor(bidiPort: number) {
+    return function (
+      request: http.IncomingMessage,
+      response: http.ServerResponse
+    ) {
+      debugInternal(
+        `${new Date()} Received ${request.method} request for ${request.url}`
+      );
+
+      if (!request.url) return response.end(404);
+
+      // https://w3c.github.io/webdriver-bidi/#transport, step 2.
+      if (request.url === '/session') {
+        response.writeHead(200, {
+          'Content-Type': 'application/json;charset=utf-8',
+          'Cache-Control': 'no-cache',
+        });
+        response.write(
+          JSON.stringify({
+            value: {
+              sessionId: '1',
+              capabilities: {
+                webSocketUrl: 'ws://localhost:' + bidiPort,
+              },
+            },
+          })
+        );
+      } else if (request.url.startsWith('/session/1')) {
+        response.writeHead(200, {
+          'Content-Type': 'application/json;charset=utf-8',
+          'Cache-Control': 'no-cache',
+        });
+        response.write(
+          JSON.stringify({
+            value: {},
+          })
+        );
+      } else {
+        debugInternal(`Unknown ${request.method} request for ${request.url}`);
+        response.writeHead(404);
+      }
+      response.end();
+    };
+  }
+
+  static #sendClientMessageStr(
     messageStr: string,
     connection: websocket.connection
   ): Promise<void> {
@@ -125,29 +146,30 @@ export class BidiServerRunner {
     connection.sendUTF(messageStr);
     return Promise.resolve();
   }
-  private static _sendClientMessage(
+
+  static #sendClientMessage(
     messageObj: any,
     connection: websocket.connection
   ): Promise<void> {
     const messageStr = JSON.stringify(messageObj);
-    return this._sendClientMessageStr(messageStr, connection);
+    return this.#sendClientMessageStr(messageStr, connection);
   }
 
-  private static _respondWithError(
+  static #respondWithError(
     connection: websocket.connection,
     plainCommandData: any,
     errorCode: string,
     errorMessage: string
   ) {
-    const errorResponse = this._getErrorResponse(
+    const errorResponse = this.#getErrorResponse(
       plainCommandData,
       errorCode,
       errorMessage
     );
-    this._sendClientMessage(errorResponse, connection);
+    this.#sendClientMessage(errorResponse, connection);
   }
 
-  private static _getErrorResponse(
+  static #getErrorResponse(
     plainCommandData: any,
     errorCode: string,
     errorMessage: string
@@ -179,6 +201,7 @@ class BidiServer implements ITransport {
   setOnMessage(handler: (messageStr: string) => Promise<void>): void {
     this._handlers.push(handler);
   }
+
   sendMessage(messageStr: any): Promise<void> {
     if (!this._sendBidiMessage)
       throw new Error('Bidi connection is not initialised yet');
