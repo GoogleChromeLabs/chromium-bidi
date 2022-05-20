@@ -30,9 +30,10 @@ export namespace BrowsingContextParser {
         throw new InvalidArgumentErrorResponse(
           `'params.type' should be defined.`
         );
-      const type = (<any>BrowsingContextType.CreateParametersType)[
-        params.type.toString()
-      ];
+      // Parse `params.type` to `BrowsingContextType.CreateParametersType`.
+      const type: BrowsingContextType.CreateParametersType = (<any>(
+        BrowsingContextType.CreateParametersType
+      ))[params.type.toString()];
       if (type === undefined)
         throw new InvalidArgumentErrorResponse(
           `Unknown 'params.type': ${JSON.stringify(params.type.toString())}.`

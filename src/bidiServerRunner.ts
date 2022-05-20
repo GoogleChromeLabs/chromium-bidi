@@ -20,6 +20,7 @@ import http from 'http';
 import { ITransport } from './utils/transport';
 
 import debug from 'debug';
+
 const debugInternal = debug('bidiServer:internal');
 const debugSend = debug('bidiServer:SEND ►');
 const debugRecv = debug('bidiServer:RECV ◀');
@@ -40,8 +41,9 @@ export class BidiServerRunner {
     const self = this;
 
     const server = http.createServer(function (request, response) {
-      debugInternal(new Date() + ' Received request for ' + request.url);
-
+      debugInternal(
+        `${new Date()} Received ${request.method} request for ${request.url}`
+      );
       if (!request.url) return response.end(404);
 
       // https://w3c.github.io/webdriver-bidi/#transport, step 2.
@@ -61,6 +63,9 @@ export class BidiServerRunner {
           })
         );
       } else {
+        debugInternal(
+          `Unknown ${request.method} request for ${request.url}. 404 returned.`
+        );
         response.writeHead(404);
       }
       response.end();
@@ -123,6 +128,7 @@ export class BidiServerRunner {
     connection.sendUTF(messageStr);
     return Promise.resolve();
   }
+
   private static _sendClientMessage(
     messageObj: any,
     connection: websocket.connection
@@ -177,6 +183,7 @@ class BidiServer implements ITransport {
   setOnMessage(handler: (messageStr: string) => Promise<void>): void {
     this._handlers.push(handler);
   }
+
   sendMessage(messageStr: any): Promise<void> {
     if (!this._sendBidiMessage)
       throw new Error('Bidi connection is not initialised yet');
