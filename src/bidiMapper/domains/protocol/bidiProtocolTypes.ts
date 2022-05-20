@@ -404,10 +404,13 @@ export namespace BrowsingContext {
     params: CreateParameters;
   };
 
-  export type CreateParametersType = 'tab' | 'window';
+  export enum CreateParametersType {
+    'tab' = 'tab',
+    'window' = 'window',
+  }
 
   export type CreateParameters = {
-    type?: CreateParametersType;
+    type: CreateParametersType;
   };
 
   export type CreateResult = {

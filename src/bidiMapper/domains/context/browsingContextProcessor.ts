@@ -190,10 +190,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_browsingContext_create(
-    commandData: BrowsingContext.CreateCommand
+    params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
-    const params = commandData.params;
-
     return new Promise(async (resolve) => {
       const browserCdpClient = this._cdpConnection.browserClient();
 

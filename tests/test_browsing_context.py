@@ -65,7 +65,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
     await send_JSON_command(websocket, {
         "id": 9,
         "method": "browsingContext.create",
-        "params": {}})
+        "params": {"type": "tab"}})
 
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
