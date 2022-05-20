@@ -412,34 +412,35 @@ async def test_serialization_node(websocket, context_id):
             "context": context_id}})
 
     recursiveCompare({
-        "type": "node",
-        "value": {
-            "nodeType": 1,
-            "nodeValue": "",
-            "nodeName": "",
-            "localName": "div",
-            "namespaceURI": "http://www.w3.org/1999/xhtml",
-            "childNodeCount": 2,
-            "attributes": {
-                "some_attr_name": "some_attr_value"},
-            "children": [{
-                "type": "node",
-                "value": {
-                    "nodeType": 3,
-                    "nodeValue": "some text",
-                    "nodeName": "some text"}
-            }, {
-                "type": "node",
-                "value": {
-                    "nodeType": 1,
-                    "nodeValue": "",
-                    "nodeName": "",
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "childNodeCount": 1,
-                    "attributes": {}}}]},
-        "objectId": "__any_value__"},
-        result, ["objectId"])
+        "result": {
+            "type": "node",
+            "value": {
+                "nodeType": 1,
+                "nodeValue": "",
+                "nodeName": "",
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodeCount": 2,
+                "attributes": {
+                    "some_attr_name": "some_attr_value"},
+                "children": [{
+                    "type": "node",
+                    "value": {
+                        "nodeType": 3,
+                        "nodeValue": "some text",
+                        "nodeName": "some text"}
+                }, {
+                    "type": "node",
+                    "value": {
+                        "nodeType": 1,
+                        "nodeValue": "",
+                        "nodeName": "",
+                        "localName": "h2",
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodeCount": 1,
+                        "attributes": {}}}]},
+            "objectId": "__any_value__"
+        }}, result, ["objectId"])
 
 
 @pytest.mark.asyncio
