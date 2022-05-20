@@ -30,7 +30,8 @@ async def test_browsingContext_getTree_contextReturned(websocket):
     assert result == {
         "contexts": [{
             "context": context_id,
-            "children": [],
+            "children": None,
+            "parent": None,
             "url": "about:blank"}]}
 
 
