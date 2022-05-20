@@ -27,7 +27,7 @@ async def assertSerialization(websocket, context_id, js_str_object,
             "awaitPromise": False, }})
 
     # Compare ignoring `objectId`.
-    recursiveCompare(expected_serialized_object, result, ["objectId"])
+    recursiveCompare(expected_serialized_object, result["result"], ["objectId"])
 
 
 # Testing serialization.
@@ -47,7 +47,7 @@ async def assertDeserializationAndSerialization(websocket, context_id,
             "awaitPromise": False,
             "target": {"context": context_id}}})
     # Compare ignoring `objectId`.
-    recursiveCompare(expected_serialized_object, result, ["objectId"])
+    recursiveCompare(expected_serialized_object, result["result"], ["objectId"])
 
 
 @pytest.mark.asyncio
@@ -378,7 +378,7 @@ async def test_deserialization_serialization_date(websocket, context_id):
     # TODO(sadym): Add value check after date format is fixed.
     # https://github.com/w3c/webdriver-bidi/issues/202
     # assert result["value"] == "__some_specific_result__"
-    assert result["type"] == "date"
+    assert result["result"]["type"] == "date"
 
 
 @pytest.mark.asyncio
