@@ -182,6 +182,7 @@ export class Context {
     await this.#cdpClient.Page.enable();
     await this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
     this.#initializeEventListeners();
+    await this.#cdpClient.Runtime.runIfWaitingForDebugger();
   }
 
   #initializeEventListeners() {
@@ -208,8 +209,6 @@ export class Context {
   }
 
   #initializePageLifecycleEventListener() {
-    this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
-
     this.#cdpClient.Page.on('lifecycleEvent', async (params) => {
       switch (params.name) {
         case 'DOMContentLoaded':
