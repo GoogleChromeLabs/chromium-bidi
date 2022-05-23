@@ -171,7 +171,8 @@ export class Context {
       true
     );
 
-    return { result } as any;
+    // TODO(sadym): handle type properly.
+    return { result } as any as BrowsingContext.PROTO.FindElementResult;
   }
 
   async #initialize() {
