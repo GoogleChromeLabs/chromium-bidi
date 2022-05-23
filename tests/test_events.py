@@ -76,7 +76,7 @@ async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
         "params": {
             # BaseLogEntry
             "level": "info",
-            "text": "[null]\u0020[undefined]",
+            "text": "null\u0020undefined",
             "timestamp": "__any_value__",
             "stackTrace": {
                 "callFrames": [{
