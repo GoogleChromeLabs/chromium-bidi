@@ -32,7 +32,8 @@ export namespace Message {
   export type ErrorCode =
     | 'unknown error'
     | 'unknown command'
-    | 'invalid argument';
+    | 'invalid argument'
+    | 'no such frame';
 
   export type ErrorResult = {
     readonly error: ErrorCode;

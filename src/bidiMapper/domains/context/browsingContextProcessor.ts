@@ -22,6 +22,7 @@ import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
+import { NoSuchFrameException } from '../protocol/error';
 
 const logContext = log('context');
 
@@ -284,6 +285,10 @@ export class BrowsingContextProcessor {
     commandParams: BrowsingContext.CloseParameters
   ): Promise<BrowsingContext.CloseResult> {
     const browserCdpClient = this._cdpConnection.browserClient();
+
+    if (!this._hasKnownContext(commandParams.context)) {
+      throw new NoSuchFrameException(`no such frame`);
+    }
 
     const detachedFromTargetPromise = new Promise<void>(async (resolve) => {
       const onContextDestroyed = (
