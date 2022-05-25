@@ -287,7 +287,7 @@ export class BrowsingContextProcessor {
     const browserCdpClient = this._cdpConnection.browserClient();
 
     if (!this._hasKnownContext(commandParams.context)) {
-      throw new NoSuchFrameException(`no such frame`);
+      throw new NoSuchFrameException(`Context ${commandParams.context} not found`);
     }
 
     const detachedFromTargetPromise = new Promise<void>(async (resolve) => {
