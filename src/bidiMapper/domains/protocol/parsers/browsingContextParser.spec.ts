@@ -77,20 +77,20 @@ describe('test BrowsingContextParser', function () {
       it('context should be parsed', async function () {
         expect(
           BrowsingContextParser.CloseCommand.parseParams({
-            context: 'come_context',
+            context: 'some_context',
           })
         ).to.deep.equal({
-          context: 'come_context',
+          context: 'some_context',
         });
       });
       it('unknown params should be ignored', async function () {
         expect(
           BrowsingContextParser.CloseCommand.parseParams({
-            context: 'come_context',
+            context: 'some_context',
             unknown_param: 'unknown_value',
           })
         ).to.deep.equal({
-          context: 'come_context',
+          context: 'some_context',
         });
       });
       it('missing context should not be parsed', async function () {
