@@ -61,7 +61,7 @@ export class InvalidArgumentErrorResponse extends ErrorResponseClass {
 }
 
 export class NoSuchFrameException extends ErrorResponseClass {
-  constructor(message: string, stacktrace?: string) {
-    super('no such frame', message, stacktrace);
+  constructor(message: string) {
+    super('no such frame', message);
   }
 }
