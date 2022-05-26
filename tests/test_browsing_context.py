@@ -37,9 +37,44 @@ async def test_browsingContext_getTree_contextReturned(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_getTreeWithGivenParent_contextReturned():
-    ignore = True
-    # TODO sadym: implement
+async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
+      context_id):
+    result = await execute_command(websocket, {
+        "method": "browsingContext.create",
+        "params": {"type": "tab"}})
+    new_context_id = result["context"]
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
+
+    assert len(result['contexts']) == 2
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": new_context_id}})
+
+    assert result == {
+        "contexts": [{
+            "context": new_context_id,
+            "parent": None,
+            "url": "about:blank",
+            "children": None
+        }]}
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": context_id}})
+
+    assert result == {
+        "contexts": [{
+            "context": context_id,
+            "parent": None,
+            "url": "about:blank",
+            "children": None
+        }]}
 
 
 @pytest.mark.asyncio

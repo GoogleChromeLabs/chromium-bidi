@@ -363,7 +363,7 @@ export namespace BrowsingContext {
 
   export type BrowsingContextGetTreeParameters = {
     maxDepth?: number;
-    parent?: BrowsingContext;
+    root?: BrowsingContext;
   };
 
   export type GetTreeResult = {
