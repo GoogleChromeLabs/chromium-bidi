@@ -241,6 +241,92 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
 
 
 @pytest.mark.asyncio
+async def test_browsingContext_navigateSameDocumentNavigation_navigated(
+      websocket,
+      context_id):
+    url = "data:text/html,<h2>test</h2>"
+    url_with_hash_1 = url + "#1"
+    url_with_hash_2 = url + "#2"
+
+    # Initial navigation.
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url,
+            "wait": "complete",
+            "context": context_id}})
+
+    # Navigate back and forth in the same document with `wait:none`.
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "none",
+            "context": context_id}})
+    recursiveCompare({
+        'navigation': '__any_value__',
+        'url': url_with_hash_1},
+        resp, "navigation")
+
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_2,
+            "wait": "none",
+            "context": context_id}})
+    recursiveCompare({
+        'navigation': '__any_value__',
+        'url': url_with_hash_2},
+        resp, "navigation")
+
+    # Navigate back and forth in the same document with `wait:interactive`.
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "interactive",
+            "context": context_id}})
+    recursiveCompare({
+        'navigation': '__any_value__',
+        'url': url_with_hash_1},
+        resp, "navigation")
+
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_2,
+            "wait": "interactive",
+            "context": context_id}})
+    recursiveCompare({
+        'navigation': '__any_value__',
+        'url': url_with_hash_2},
+        resp, "navigation")
+
+    # Navigate back and forth in the same document with `wait:complete`.
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "complete",
+            "context": context_id}})
+    recursiveCompare({
+        'navigation': '__any_value__',
+        'url': url_with_hash_1},
+        resp, "navigation")
+
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_2,
+            "wait": "complete",
+            "context": context_id}})
+    recursiveCompare({
+        'navigation': '__any_value__',
+        'url': url_with_hash_2},
+        resp, "navigation")
+
+
+@pytest.mark.asyncio
 async def test_PROTO_browsingContext_findElement_findsElement(websocket,
       context_id):
     await goto_url(websocket, context_id,

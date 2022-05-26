@@ -395,7 +395,7 @@ export namespace BrowsingContext {
   export type ReadinessState = 'none' | 'interactive' | 'complete';
   export type NavigateResult = {
     result: {
-      navigation?: Navigation;
+      navigation: Navigation | null;
       url: string;
     };
   };
