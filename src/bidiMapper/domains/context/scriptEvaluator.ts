@@ -89,7 +89,7 @@ export class ScriptEvaluator {
   public async callFunction(
     functionDeclaration: string,
     _this: Script.ArgumentValue,
-    args: Script.ArgumentValue[],
+    _arguments: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.ScriptResult> {
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
@@ -102,7 +102,7 @@ export class ScriptEvaluator {
     const thisAndArgumentsList = [await this.#deserializeToCdpArg(_this)];
     thisAndArgumentsList.push(
       ...(await Promise.all(
-        args.map(async (a) => {
+        _arguments.map(async (a) => {
           return await this.#deserializeToCdpArg(a);
         })
       ))

@@ -282,7 +282,7 @@ export class BrowsingContextProcessor {
       params.this || {
         type: 'undefined',
       }, // `_this` is `undefined` by default.
-      params.args || [], // `args` is `[]` by default.
+      params.arguments || [], // `arguments` is `[]` by default.
       params.awaitPromise !== false // `awaitPromise` by default is `true`.
     );
   }

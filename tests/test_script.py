@@ -223,7 +223,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
-            "args": [{
+            "arguments": [{
                 "type": "string",
                 "value": "ARGUMENT_STRING_VALUE"
             }, {
@@ -254,7 +254,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
 #         "method": "script.callFunction",
 #         "params": {
 #             "functionDeclaration": "(...args)=>({then: (r)=>{r(args);}})",
-#             "args": [{
+#             "arguments": [{
 #                 "type": "string",
 #                 "value": "ARGUMENT_STRING_VALUE"
 #             }, {
@@ -280,7 +280,7 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
-            "args": [{
+            "arguments": [{
                 "type": "string",
                 "value": "ARGUMENT_STRING_VALUE"
             }, {
@@ -313,7 +313,7 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
-            "args": [{
+            "arguments": [{
                 "objectId": object_id
             }],
             "target": {"context": context_id}}})
@@ -445,6 +445,26 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
 
 
 @pytest.mark.asyncio
+# TODO(sadym): fix test. Serialize Number, String etc classes properly.
+async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
+      websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "function(){return this}",
+            "this": {
+                "type": "number",
+                "value": 42
+            },
+            "target": {"context": context_id}}})
+
+    assert result == {
+        "result": {
+            "type": "number",
+            "value": 42}}
+
+
+@pytest.mark.asyncio
 async def test_script_callFunctionWithNode_resultReceived(websocket,
       context_id):
     # 1. Get element.
@@ -466,7 +486,7 @@ async def test_script_callFunctionWithNode_resultReceived(websocket,
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(element) => {return '!!@@##, ' + element.innerHTML}",
-            "args": [{
+            "arguments": [{
                 "objectId": object_id}],
             "target": {"context": context_id}}})
 
@@ -510,7 +530,7 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket,
 #         "method": "script.callFunction",
 #         "params": {
 #             "functionDeclaration": "(callback) => {callback('CALLBACK_ARGUMENT'); return 'SOME_RESULT';}",
-#             "args": [{
+#             "arguments": [{
 #                 "type": "PROTO.binding",
 #                 "id": "BINDING_NAME"}],
 #             "target": {"context": context_id}

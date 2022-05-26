@@ -366,7 +366,7 @@ export namespace Script {
 
   export type CallFunctionParameters = {
     functionDeclaration: string;
-    args?: ArgumentValue[];
+    arguments?: ArgumentValue[];
     this?: ArgumentValue;
     awaitPromise?: boolean;
     target: Target;
