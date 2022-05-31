@@ -457,11 +457,12 @@ export namespace BrowsingContext {
     params: CreateParameters;
   };
 
+  // BrowsingContextCreateType = "tab" / "window"
+  //
+  // BrowsingContextCreateParameters = {
+  //   type: BrowsingContextCreateType
+  // }
   const CreateParametersTypeSchema = zod.enum(['tab', 'window']);
-  export type CreateParametersType = zod.infer<
-    typeof CreateParametersTypeSchema
-  >;
-
   const CreateParametersSchema = zod.object({
     type: CreateParametersTypeSchema,
   });
@@ -482,6 +483,9 @@ export namespace BrowsingContext {
     params: CloseParameters;
   };
 
+  // BrowsingContextCloseParameters = {
+  //   context: BrowsingContext
+  // }
   const CloseParametersSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
   });
@@ -554,12 +558,12 @@ export namespace BrowsingContext {
     };
   }
 
-  export const EventNames = new Set([
+  export const EventNames = [
     LoadEvent.method,
     DomContentLoadedEvent.method,
     ContextCreatedEvent.method,
     ContextDestroyedEvent.method,
-  ]);
+  ] as const;
 }
 
 // https://w3c.github.io/webdriver-bidi/#module-log
@@ -598,7 +602,7 @@ export namespace Log {
     }
   }
 
-  export const EventNames = new Set([LogEntryAddedEvent.method]);
+  export const EventNames = [LogEntryAddedEvent.method] as const;
 }
 
 export namespace CDP {
@@ -645,7 +649,7 @@ export namespace CDP {
       session?: string;
     };
   }
-  export const EventNames = new Set([PROTO.EventReceivedEvent.method]);
+  export const EventNames = [PROTO.EventReceivedEvent.method] as const;
 }
 
 export namespace Session {
@@ -674,17 +678,18 @@ export namespace Session {
   };
 
   const EventNameSchema = zod.enum([
-    BrowsingContext.LoadEvent.method,
-    BrowsingContext.DomContentLoadedEvent.method,
-    BrowsingContext.ContextCreatedEvent.method,
-    BrowsingContext.ContextDestroyedEvent.method,
-    Log.LogEntryAddedEvent.method,
-    CDP.PROTO.EventReceivedEvent.method,
+    ...BrowsingContext.EventNames,
+    ...Log.EventNames,
+    ...CDP.EventNames,
   ]);
 
+  // SessionSubscribeParameters = {
+  //   events: [*text],
+  //   ?contexts: [*BrowsingContext],
+  // }
   const SubscribeParametersSchema = zod.object({
-    contexts: zod.array(CommonDataTypes.BrowsingContextSchema).optional(),
     events: zod.array(EventNameSchema),
+    contexts: zod.array(CommonDataTypes.BrowsingContextSchema).optional(),
   });
   export type SubscribeParameters = zod.infer<typeof SubscribeParametersSchema>;
 
@@ -703,9 +708,3 @@ export namespace Session {
 
   export type UnsubscribeResult = { result: {} };
 }
-
-export const EventNames = new Set([
-  ...BrowsingContext.EventNames.keys(),
-  ...Log.EventNames.keys(),
-  ...CDP.EventNames.keys(),
-]);
