@@ -271,8 +271,9 @@ export class BrowsingContextProcessor {
   }
 
   async process_script_callFunction(
-    params: Script.CallFunctionParameters
+    commandData: Script.CallFunctionCommand
   ): Promise<Script.CallFunctionResult> {
+    const params = commandData.params;
     const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
@@ -280,9 +281,9 @@ export class BrowsingContextProcessor {
       params.functionDeclaration,
       params.this || {
         type: 'undefined',
-      }, // `this` is `undefined` by default.
-      params.arguments || [], // `arguments` is `[]` by default.
-      params.awaitPromise !== false // `awaitPromise` is `true` by default.
+      }, // `_this` is `undefined` by default.
+      params.args || [], // `args` is `[]` by default.
+      params.awaitPromise !== false // `awaitPromise` by default is `true`.
     );
   }
 

@@ -64,10 +64,9 @@ export namespace Message {
 }
 
 export namespace CommonDataTypes {
-  export const RemoteReferenceSchema = zod.object({
-    handle: zod.string().min(1),
-  });
-  export type RemoteReference = zod.infer<typeof RemoteReferenceSchema>;
+  export type RemoteReference = {
+    objectId: string;
+  };
 
   export type PrimitiveProtocolValue =
     | UndefinedValue
@@ -112,11 +111,15 @@ export namespace CommonDataTypes {
     value: string;
   };
 
-  export const LocalValueSchema = zod.object({
-    type: zod.string().min(1),
-    value: zod.any().optional(),
-  });
-  export type LocalValue = zod.infer<typeof LocalValueSchema>;
+  export type LocalValue =
+    | PrimitiveProtocolValue
+    | RemoteReference
+    | ArrayLocalValue
+    | DateLocalValue
+    | MapLocalValue
+    | ObjectLocalValue
+    | RegExpLocalValue
+    | SetLocalValue;
 
   export type ListLocalValue = LocalValue[];
 
@@ -132,12 +135,27 @@ export namespace CommonDataTypes {
 
   export type MappingLocalValue = [LocalValue | string, LocalValue][];
 
+  export type MapLocalValue = {
+    type: 'map';
+    value: MappingLocalValue;
+  };
+
+  export type ObjectLocalValue = {
+    type: 'object';
+    value: MappingLocalValue;
+  };
+
   export type RegExpLocalValue = {
     type: 'regexp';
     value: {
       pattern: string;
       flags?: string;
     };
+  };
+
+  export type SetLocalValue = {
+    type: 'set';
+    value: ListLocalValue;
   };
 
   export type RemoteValue =
@@ -301,6 +319,7 @@ export namespace Script {
   const RealmTargetSchema = zod.object({
     realm: zod.string().min(1),
   });
+  export type RealmTarget = zod.infer<typeof RealmTargetSchema>;
 
   //
   // Target = (
@@ -339,36 +358,21 @@ export namespace Script {
     params: CallFunctionParameters;
   };
 
-  const ArgumentValueSchema = zod.union([
-    CommonDataTypes.RemoteReferenceSchema,
-    CommonDataTypes.LocalValueSchema,
-  ]);
-  export type ArgumentValue = zod.infer<typeof ArgumentValueSchema>;
-
-  const OwnershipModelSchema = zod.enum(['root', 'none']);
-
-  const ScriptCallFunctionParametersSchema = zod.object({
-    functionDeclaration: zod.string(),
-    target: TargetSchema,
-    arguments: zod.array(ArgumentValueSchema).optional(),
-    this: ArgumentValueSchema.optional(),
-    awaitPromise: zod.boolean().optional(),
-    ownership: OwnershipModelSchema.optional(),
-  });
-
-  export type CallFunctionParameters = zod.infer<
-    typeof ScriptCallFunctionParametersSchema
-  >;
-
-  export function parseCallFunctionParameters(
-    params: unknown
-  ): CallFunctionParameters {
-    return parseObject(params, ScriptCallFunctionParametersSchema);
-  }
+  export type CallFunctionParameters = {
+    functionDeclaration: string;
+    args?: ArgumentValue[];
+    this?: ArgumentValue;
+    awaitPromise?: boolean;
+    target: Target;
+  };
 
   export type CallFunctionResult = {
     result: ScriptResult;
   };
+
+  export type ArgumentValue =
+    | CommonDataTypes.RemoteReference
+    | CommonDataTypes.LocalValue;
 
   export type StackTrace = {
     callFrames: StackFrame[];
@@ -453,8 +457,13 @@ export namespace BrowsingContext {
     params: CreateParameters;
   };
 
+  const CreateParametersTypeSchema = zod.enum(['tab', 'window']);
+  export type CreateParametersType = zod.infer<
+    typeof CreateParametersTypeSchema
+  >;
+
   const CreateParametersSchema = zod.object({
-    type: zod.enum(['tab', 'window']),
+    type: CreateParametersTypeSchema,
   });
   export type CreateParameters = zod.infer<typeof CreateParametersSchema>;
 
