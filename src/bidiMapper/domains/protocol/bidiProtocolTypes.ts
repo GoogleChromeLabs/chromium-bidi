@@ -1,14 +1,20 @@
 import { EventResponseClass } from './event';
 import { z as zod, ZodType } from 'zod';
 import { InvalidArgumentErrorResponse } from './error';
+import { log } from '../../../utils/log';
+
+const logParser = log('command parser');
 
 function parseObject<T extends ZodType>(obj: unknown, schema: T): zod.infer<T> {
   const parseResult = schema.safeParse(obj);
   if (parseResult.success) {
     return parseResult.data;
   }
-  // console.log('Parsing failed', parseResult);
-  console.log('Parse failed: ' + JSON.stringify(parseResult));
+  logParser(
+    `Command ${JSON.stringify(obj)} parse failed: ${JSON.stringify(
+      parseResult
+    )}.`
+  );
 
   const errorMessage = parseResult.error.errors
     .map(
