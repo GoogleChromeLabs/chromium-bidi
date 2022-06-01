@@ -4,6 +4,7 @@ import { InvalidArgumentErrorResponse } from './error';
 import { log } from '../../../utils/log';
 
 const logParser = log('command parser');
+const MAX_INT = 9007199254740991 as const;
 
 function parseObject<T extends ZodType>(obj: unknown, schema: T): zod.infer<T> {
   const parseResult = schema.safeParse(obj);
@@ -527,7 +528,7 @@ export namespace BrowsingContext {
   };
 
   const GetTreeParametersSchema = zod.object({
-    maxDepth: zod.number().optional(),
+    maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
     root: CommonDataTypes.BrowsingContextSchema.optional(),
   });
   export type GetTreeParameters = zod.infer<typeof GetTreeParametersSchema>;
