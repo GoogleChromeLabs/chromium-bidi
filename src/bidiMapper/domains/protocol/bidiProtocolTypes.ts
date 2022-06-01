@@ -538,31 +538,44 @@ export namespace BrowsingContext {
 
   export type GetTreeResult = {
     result: {
-      contexts: BrowsingContextInfoList;
+      contexts: InfoList;
     };
   };
 
-  export type BrowsingContextInfoList = BrowsingContextInfo[];
+  export type InfoList = Info[];
 
-  export type BrowsingContextInfo = {
+  export type Info = {
     context: CommonDataTypes.BrowsingContext;
     parent?: CommonDataTypes.BrowsingContext | null;
     url: string;
-    children: BrowsingContextInfoList | null;
+    children: InfoList | null;
   };
 
   export type NavigateCommand = {
     method: 'browsingContext.navigate';
-    params: BrowsingContextNavigateParameters;
+    params: NavigateParameters;
   };
 
-  export type BrowsingContextNavigateParameters = {
-    context: CommonDataTypes.BrowsingContext;
-    url: string;
-    wait?: ReadinessState;
-  };
+  const ReadinessStateSchema = zod.enum(['none', 'interactive', 'complete']);
+  export type ReadinessState = zod.infer<typeof ReadinessStateSchema>;
 
-  export type ReadinessState = 'none' | 'interactive' | 'complete';
+  // BrowsingContextNavigateParameters = {
+  //   context: BrowsingContext,
+  //   url: text,
+  //   ?wait: ReadinessState,
+  // }
+  // ReadinessState = "none" / "interactive" / "complete"
+  const NavigateParametersSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+    url: zod.string(),
+    wait: ReadinessStateSchema.optional(),
+  });
+  export type NavigateParameters = zod.infer<typeof NavigateParametersSchema>;
+
+  export function parseNavigateParameters(params: unknown): NavigateParameters {
+    return parseObject(params, NavigateParametersSchema);
+  }
+
   export type NavigateResult = {
     result: {
       navigation: Navigation | null;
@@ -638,18 +651,18 @@ export namespace BrowsingContext {
     // url: string;
   };
 
-  export class ContextCreatedEvent extends EventResponseClass<BrowsingContextInfo> {
+  export class ContextCreatedEvent extends EventResponseClass<BrowsingContext.Info> {
     static readonly method = 'browsingContext.contextCreated';
 
-    constructor(params: BrowsingContext.BrowsingContextInfo) {
+    constructor(params: BrowsingContext.Info) {
       super(ContextCreatedEvent.method, params);
     }
   }
 
-  export class ContextDestroyedEvent extends EventResponseClass<BrowsingContextInfo> {
+  export class ContextDestroyedEvent extends EventResponseClass<BrowsingContext.Info> {
     static readonly method = 'browsingContext.contextDestroyed';
 
-    constructor(params: BrowsingContextInfo) {
+    constructor(params: BrowsingContext.Info) {
       super(ContextDestroyedEvent.method, params);
     }
   }

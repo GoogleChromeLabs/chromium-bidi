@@ -76,9 +76,7 @@ export class CommandProcessor {
   }
 
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
-  async #process_session_status(
-    commandData: Session.StatusCommand
-  ): Promise<Session.StatusResult> {
+  async #process_session_status(): Promise<Session.StatusResult> {
     return { result: { ready: true, message: 'ready' } };
   }
 
@@ -104,10 +102,7 @@ export class CommandProcessor {
   ): Promise<Message.CommandResponseResult> {
     switch (commandData.method) {
       case 'session.status':
-        return await this.#process_session_status(
-          // TODO(sadym): add params parsing.
-          commandData as Session.StatusCommand
-        );
+        return await this.#process_session_status();
       case 'session.subscribe':
         return await this.#process_session_subscribe(
           Session.parseSubscribeParameters(commandData.params)
@@ -131,8 +126,7 @@ export class CommandProcessor {
         );
       case 'browsingContext.navigate':
         return await this.#contextProcessor.process_browsingContext_navigate(
-          // TODO(sadym): add params parsing.
-          commandData as BrowsingContext.NavigateCommand
+          BrowsingContext.parseNavigateParameters(commandData.params)
         );
 
       case 'script.callFunction':
