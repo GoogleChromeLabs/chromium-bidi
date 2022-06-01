@@ -757,8 +757,10 @@ export namespace CDP {
 
     const SendCommandParamsSchema = zod.object({
       cdpMethod: zod.string(),
+      // `passthrough` allows object to have any fields.
+      // https://github.com/colinhacks/zod#passthrough
       cdpParams: zod.object({}).passthrough(),
-      cdpSession: zod.string(),
+      cdpSession: zod.string().optional(),
     });
     export type SendCommandParams = zod.infer<typeof SendCommandParamsSchema>;
 

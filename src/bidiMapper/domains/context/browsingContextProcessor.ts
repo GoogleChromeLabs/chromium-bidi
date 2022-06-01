@@ -342,7 +342,7 @@ export class BrowsingContextProcessor {
     const sendCdpCommandResult = await this._cdpConnection.sendCommand(
       params.cdpMethod,
       params.cdpParams,
-      params.cdpSession
+      params.cdpSession ?? null
     );
     return { result: sendCdpCommandResult };
   }
