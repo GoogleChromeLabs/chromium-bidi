@@ -338,7 +338,7 @@ export class BrowsingContextProcessor {
     return true;
   }
 
-  async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandCdpParams) {
+  async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandParams) {
     const sendCdpCommandResult = await this._cdpConnection.sendCommand(
       params.cdpMethod,
       params.cdpParams,
@@ -347,8 +347,8 @@ export class BrowsingContextProcessor {
     return { result: sendCdpCommandResult };
   }
 
-  async process_PROTO_cdp_getSession(commandData: CDP.PROTO.GetSessionCommand) {
-    const context = commandData.params.context;
+  async process_PROTO_cdp_getSession(params: CDP.PROTO.GetSessionParams) {
+    const context = params.context;
     const sessionId = (await this._getKnownContext(context))._sessionId;
     if (sessionId === undefined) {
       return { result: { session: null } };

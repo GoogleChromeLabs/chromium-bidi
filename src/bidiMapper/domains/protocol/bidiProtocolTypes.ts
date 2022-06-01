@@ -752,22 +752,18 @@ export namespace CDP {
   export namespace PROTO {
     export type SendCommandCommand = {
       method: 'PROTO.cdp.sendCommand';
-      params: SendCommandCdpParams;
+      params: SendCommandParams;
     };
 
-    const SendCommandCdpParamsSchema = zod.object({
+    const SendCommandParamsSchema = zod.object({
       cdpMethod: zod.string(),
       cdpParams: zod.object({}).passthrough(),
       cdpSession: zod.string(),
     });
-    export type SendCommandCdpParams = zod.infer<
-      typeof SendCommandCdpParamsSchema
-    >;
+    export type SendCommandParams = zod.infer<typeof SendCommandParamsSchema>;
 
-    export function parseSendCommandCdpParams(
-      params: unknown
-    ): SendCommandCdpParams {
-      return parseObject(params, SendCommandCdpParamsSchema);
+    export function parseSendCommandParams(params: unknown): SendCommandParams {
+      return parseObject(params, SendCommandParamsSchema);
     }
 
     export type SendCommandResult = { result: any };
@@ -777,9 +773,14 @@ export namespace CDP {
       params: GetSessionParams;
     };
 
-    export type GetSessionParams = {
-      context: CommonDataTypes.BrowsingContext;
-    };
+    const GetSessionParamsSchema = zod.object({
+      context: CommonDataTypes.BrowsingContextSchema,
+    });
+    export type GetSessionParams = zod.infer<typeof GetSessionParamsSchema>;
+
+    export function parseGetSessionParams(params: unknown): GetSessionParams {
+      return parseObject(params, GetSessionParamsSchema);
+    }
 
     export type GetSessionResult = { result: { session: string } };
 
