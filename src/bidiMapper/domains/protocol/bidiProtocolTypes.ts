@@ -75,76 +75,187 @@ export namespace CommonDataTypes {
   });
   export type RemoteReference = zod.infer<typeof RemoteReferenceSchema>;
 
-  export type PrimitiveProtocolValue =
-    | UndefinedValue
-    | NullValue
-    | StringValue
-    | NumberValue
-    | BooleanValue
-    | BigIntValue;
+  // UndefinedValue = {
+  //   type: "undefined",
+  // }
+  const UndefinedValueSchema = zod.object({ type: zod.literal('undefined') });
 
-  export type UndefinedValue = {
-    type: 'undefined';
-  };
+  //
+  // NullValue = {
+  //   type: "null",
+  // }
+  const NullValueSchema = zod.object({ type: zod.literal('null') });
 
-  export type NullValue = {
-    type: 'null';
-  };
-
-  export type StringValue = {
-    type: 'string';
-    value: string;
-  };
-
-  export type SpecialNumber =
-    | 'NaN'
-    | '-0'
-    | 'Infinity'
-    | '+Infinity'
-    | '-Infinity';
-
-  export type NumberValue = {
-    type: 'number';
-    value: number | SpecialNumber;
-  };
-
-  export type BooleanValue = {
-    type: 'boolean';
-    value: boolean;
-  };
-
-  export type BigIntValue = {
-    type: 'bigint';
-    value: string;
-  };
-
-  export const LocalValueSchema = zod.object({
-    type: zod.string().min(1),
-    value: zod.any().optional(),
+  // StringValue = {
+  //   type: "string",
+  //   value: text,
+  // }
+  const StringValueSchema = zod.object({
+    type: zod.literal('string'),
+    value: zod.string(),
   });
-  export type LocalValue = zod.infer<typeof LocalValueSchema>;
 
-  export type ListLocalValue = LocalValue[];
+  // SpecialNumber = "NaN" / "-0" / "+Infinity" / "-Infinity";
+  const SpecialNumberSchema = zod.enum([
+    'NaN',
+    '-0',
+    'Infinity',
+    '+Infinity',
+    '-Infinity',
+  ]);
 
-  export type ArrayLocalValue = {
-    type: 'array';
-    value: ListLocalValue;
-  };
+  //
+  // NumberValue = {
+  //   type: "number",
+  //   value: number / SpecialNumber,
+  // }
+  const NumberValueSchema = zod.object({
+    type: zod.literal('number'),
+    value: zod.union([SpecialNumberSchema, zod.number()]),
+  });
 
-  export type DateLocalValue = {
-    type: 'date';
-    value: string;
-  };
+  // BooleanValue = {
+  //   type: "boolean",
+  //   value: bool,
+  // }
+  const BooleanValueSchema = zod.object({
+    type: zod.literal('boolean'),
+    value: zod.boolean(),
+  });
 
-  export type MappingLocalValue = [LocalValue | string, LocalValue][];
+  // BigIntValue = {
+  //   type: "bigint",
+  //   value: text,
+  // }
+  const BigIntValueSchema = zod.object({
+    type: zod.literal('bigint'),
+    value: zod.string(),
+  });
 
-  export type RegExpLocalValue = {
-    type: 'regexp';
-    value: {
-      pattern: string;
-      flags?: string;
-    };
-  };
+  const PrimitiveProtocolValueSchema = zod.union([
+    UndefinedValueSchema,
+    NullValueSchema,
+    StringValueSchema,
+    NumberValueSchema,
+    BooleanValueSchema,
+    BigIntValueSchema,
+  ]);
+
+  export type PrimitiveProtocolValue = zod.infer<
+    typeof PrimitiveProtocolValueSchema
+  >;
+
+  // LocalValue = {
+  //   PrimitiveProtocolValue //
+  //   ArrayLocalValue //
+  //   DateLocalValue //
+  //   MapLocalValue //
+  //   ObjectLocalValue //
+  //   RegExpLocalValue //
+  //   SetLocalValue //
+  // }
+
+  // `LocalValue` is a recursive type, so lazy declaration is needed:
+  // https://github.com/colinhacks/zod#recursive-types
+  export type LocalValue =
+    | PrimitiveProtocolValue
+    | ArrayLocalValue
+    | DateLocalValue
+    | MapLocalValue
+    | ObjectLocalValue
+    | RegExpLocalValue
+    | SetLocalValue;
+
+  export const LocalValueSchema: zod.ZodType<LocalValue> = zod.lazy(() =>
+    zod.union([
+      PrimitiveProtocolValueSchema,
+      ArrayLocalValueSchema,
+      DateLocalValueSchema,
+      MapLocalValueSchema,
+      ObjectLocalValueSchema,
+      RegExpLocalValueSchema,
+      SetLocalValueSchema,
+    ])
+  );
+
+  // ListLocalValue = [*LocalValue];
+  const ListLocalValueSchema = zod.array(LocalValueSchema);
+  export type ListLocalValue = zod.infer<typeof ListLocalValueSchema>;
+
+  // ArrayLocalValue = {
+  //   type: "array",
+  //   value: ListLocalValue,
+  // }
+  const ArrayLocalValueSchema: any = zod.lazy(() =>
+    zod.object({
+      type: zod.literal('array'),
+      value: ListLocalValueSchema,
+    })
+  );
+  export type ArrayLocalValue = zod.infer<typeof ArrayLocalValueSchema>;
+
+  // DateLocalValue = {
+  //   type: "date",
+  //   value: text
+  // }
+  const DateLocalValueSchema = zod.object({
+    type: zod.literal('date'),
+    value: zod.string().min(1),
+  });
+  export type DateLocalValue = zod.infer<typeof DateLocalValueSchema>;
+
+  // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
+  const MappingLocalValueSchema: any = zod.lazy(() =>
+    zod.tuple([zod.union([zod.string(), LocalValueSchema]), LocalValueSchema])
+  );
+  export type MappingLocalValue = zod.infer<typeof MappingLocalValueSchema>;
+
+  // MapLocalValue = {
+  //   type: "map",
+  //   value: MappingLocalValue,
+  // }
+  const MapLocalValueSchema = zod.object({
+    type: zod.literal('map'),
+    value: zod.array(MappingLocalValueSchema),
+  });
+  export type MapLocalValue = zod.infer<typeof MapLocalValueSchema>;
+
+  // ObjectLocalValue = {
+  //   type: "object",
+  //   value: MappingLocalValue,
+  // }
+  const ObjectLocalValueSchema = zod.object({
+    type: zod.literal('object'),
+    value: zod.array(MappingLocalValueSchema),
+  });
+  export type ObjectLocalValue = zod.infer<typeof ObjectLocalValueSchema>;
+
+  // RegExpLocalValue = {
+  //   type: "regexp",
+  //   value: RegExpValue,
+  // }
+  const RegExpLocalValueSchema: any = zod.lazy(() =>
+    zod.object({
+      type: zod.literal('regexp'),
+      value: zod.object({
+        pattern: zod.string(),
+        flags: zod.string().optional(),
+      }),
+    })
+  );
+  export type RegExpLocalValue = zod.infer<typeof RegExpLocalValueSchema>;
+
+  // SetLocalValue = {
+  //   type: "set",
+  //   value: ListLocalValue,
+  // }
+  const SetLocalValueSchema: any = zod.lazy(() =>
+    zod.object({
+      type: zod.literal('set'),
+      value: ListLocalValueSchema,
+    })
+  );
+  export type SetLocalValue = zod.infer<typeof SetLocalValueSchema>;
 
   export type RemoteValue =
     | PrimitiveProtocolValue
