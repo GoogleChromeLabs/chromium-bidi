@@ -752,14 +752,23 @@ export namespace CDP {
   export namespace PROTO {
     export type SendCommandCommand = {
       method: 'PROTO.cdp.sendCommand';
-      params: SendCdpCommandParams;
+      params: SendCommandCdpParams;
     };
 
-    export type SendCdpCommandParams = {
-      cdpMethod: string;
-      cdpParams: object;
-      cdpSession: string;
-    };
+    const SendCommandCdpParamsSchema = zod.object({
+      cdpMethod: zod.string(),
+      cdpParams: zod.object({}).passthrough(),
+      cdpSession: zod.string(),
+    });
+    export type SendCommandCdpParams = zod.infer<
+      typeof SendCommandCdpParamsSchema
+    >;
+
+    export function parseSendCommandCdpParams(
+      params: unknown
+    ): SendCommandCdpParams {
+      return parseObject(params, SendCommandCdpParamsSchema);
+    }
 
     export type SendCommandResult = { result: any };
 

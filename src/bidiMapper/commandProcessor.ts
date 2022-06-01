@@ -145,8 +145,7 @@ export class CommandProcessor {
 
       case 'PROTO.cdp.sendCommand':
         return await this.#contextProcessor.process_PROTO_cdp_sendCommand(
-          // TODO(sadym): add params parsing.
-          commandData as CDP.PROTO.SendCommandCommand
+          CDP.PROTO.parseSendCommandCdpParams(commandData.params)
         );
       case 'PROTO.cdp.getSession':
         return await this.#contextProcessor.process_PROTO_cdp_getSession(

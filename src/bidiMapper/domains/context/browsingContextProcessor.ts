@@ -338,13 +338,11 @@ export class BrowsingContextProcessor {
     return true;
   }
 
-  async process_PROTO_cdp_sendCommand(
-    commandData: CDP.PROTO.SendCommandCommand
-  ) {
+  async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandCdpParams) {
     const sendCdpCommandResult = await this._cdpConnection.sendCommand(
-      commandData.params.cdpMethod,
-      commandData.params.cdpParams,
-      commandData.params.cdpSession
+      params.cdpMethod,
+      params.cdpParams,
+      params.cdpSession
     );
     return { result: sendCdpCommandResult };
   }
