@@ -138,8 +138,7 @@ export class CommandProcessor {
 
       case 'script.callFunction':
         return await this.#contextProcessor.process_script_callFunction(
-          // TODO(sadym): add params parsing.
-          commandData as Script.CallFunctionCommand
+          Script.parseCallFunctionParameters(commandData.params)
         );
       case 'script.evaluate':
         return await this.#contextProcessor.process_script_evaluate(
