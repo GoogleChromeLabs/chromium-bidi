@@ -105,42 +105,42 @@ export class CommandProcessor {
         return await this.#process_session_status();
       case 'session.subscribe':
         return await this.#process_session_subscribe(
-          Session.parseSubscribeParameters(commandData.params)
+          Session.parseSubscribeParams(commandData.params)
         );
       case 'session.unsubscribe':
         return await this.#process_session_unsubscribe(
-          Session.parseSubscribeParameters(commandData.params)
+          Session.parseSubscribeParams(commandData.params)
         );
 
       case 'browsingContext.create':
         return await this.#contextProcessor.process_browsingContext_create(
-          BrowsingContext.parseCreateParameters(commandData.params)
+          BrowsingContext.parseCreateParams(commandData.params)
         );
       case 'browsingContext.close':
         return await this.#contextProcessor.process_browsingContext_close(
-          BrowsingContext.parseCloseParameters(commandData.params)
+          BrowsingContext.parseCloseParams(commandData.params)
         );
       case 'browsingContext.getTree':
         return await this.#contextProcessor.process_browsingContext_getTree(
-          BrowsingContext.parseGetTreeParameters(commandData.params)
+          BrowsingContext.parseGetTreeParams(commandData.params)
         );
       case 'browsingContext.navigate':
         return await this.#contextProcessor.process_browsingContext_navigate(
-          BrowsingContext.parseNavigateParameters(commandData.params)
+          BrowsingContext.parseNavigateParams(commandData.params)
         );
 
       case 'script.callFunction':
         return await this.#contextProcessor.process_script_callFunction(
-          Script.parseCallFunctionParameters(commandData.params)
+          Script.parseCallFunctionParams(commandData.params)
         );
       case 'script.evaluate':
         return await this.#contextProcessor.process_script_evaluate(
-          Script.parseEvaluateParameters(commandData.params)
+          Script.parseEvaluateParams(commandData.params)
         );
 
       case 'PROTO.browsingContext.findElement':
         return await this.#contextProcessor.process_PROTO_browsingContext_findElement(
-          BrowsingContext.PROTO.parseFindElementParameters(commandData.params)
+          BrowsingContext.PROTO.parseFindElementParams(commandData.params)
         );
 
       case 'PROTO.cdp.sendCommand':

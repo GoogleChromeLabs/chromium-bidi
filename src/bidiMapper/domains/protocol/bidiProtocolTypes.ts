@@ -443,7 +443,7 @@ export namespace Script {
     typeof ScriptEvaluateParametersSchema
   >;
 
-  export function parseEvaluateParameters(params: unknown): EvaluateParameters {
+  export function parseEvaluateParams(params: unknown): EvaluateParameters {
     return parseObject(params, ScriptEvaluateParametersSchema);
   }
 
@@ -477,7 +477,7 @@ export namespace Script {
     typeof ScriptCallFunctionParametersSchema
   >;
 
-  export function parseCallFunctionParameters(
+  export function parseCallFunctionParams(
     params: unknown
   ): CallFunctionParameters {
     return parseObject(params, ScriptCallFunctionParametersSchema);
@@ -532,7 +532,7 @@ export namespace BrowsingContext {
   });
   export type GetTreeParameters = zod.infer<typeof GetTreeParametersSchema>;
 
-  export function parseGetTreeParameters(params: unknown): GetTreeParameters {
+  export function parseGetTreeParams(params: unknown): GetTreeParameters {
     return parseObject(params, GetTreeParametersSchema);
   }
 
@@ -572,7 +572,7 @@ export namespace BrowsingContext {
   });
   export type NavigateParameters = zod.infer<typeof NavigateParametersSchema>;
 
-  export function parseNavigateParameters(params: unknown): NavigateParameters {
+  export function parseNavigateParams(params: unknown): NavigateParameters {
     return parseObject(params, NavigateParametersSchema);
   }
 
@@ -598,7 +598,7 @@ export namespace BrowsingContext {
   });
   export type CreateParameters = zod.infer<typeof CreateParametersSchema>;
 
-  export function parseCreateParameters(params: unknown): CreateParameters {
+  export function parseCreateParams(params: unknown): CreateParameters {
     return parseObject(params, CreateParametersSchema);
   }
 
@@ -621,7 +621,7 @@ export namespace BrowsingContext {
   });
   export type CloseParameters = zod.infer<typeof CloseParametersSchema>;
 
-  export function parseCloseParameters(params: unknown): CloseParameters {
+  export function parseCloseParams(params: unknown): CloseParameters {
     return parseObject(params, CloseParametersSchema);
   }
 
@@ -684,7 +684,7 @@ export namespace BrowsingContext {
       typeof FindElementParametersSchema
     >;
 
-    export function parseFindElementParameters(
+    export function parseFindElementParams(
       params: unknown
     ): FindElementParameters {
       return parseObject(params, FindElementParametersSchema);
@@ -841,9 +841,7 @@ export namespace Session {
   });
   export type SubscribeParameters = zod.infer<typeof SubscribeParametersSchema>;
 
-  export function parseSubscribeParameters(
-    params: unknown
-  ): SubscribeParameters {
+  export function parseSubscribeParams(params: unknown): SubscribeParameters {
     return parseObject(params, SubscribeParametersSchema);
   }
 
