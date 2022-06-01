@@ -172,7 +172,7 @@ export class BrowsingContextProcessor {
 
   private static _targetToBiDiContext(
     target: Protocol.Target.TargetInfo
-  ): BrowsingContext.BrowsingContextInfo {
+  ): BrowsingContext.Info {
     return {
       context: target.targetId,
       parent: target.openerId ? target.openerId : null,
@@ -245,9 +245,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_browsingContext_navigate(
-    commandData: BrowsingContext.NavigateCommand
+    params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
-    const params = commandData.params;
     const context = await this._getKnownContext(params.context);
 
     return await context.navigate(
@@ -285,12 +284,10 @@ export class BrowsingContextProcessor {
   }
 
   async process_PROTO_browsingContext_findElement(
-    commandData: BrowsingContext.PROTO.FindElementCommand
+    params: BrowsingContext.PROTO.FindElementParameters
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    const selector = commandData.params.selector;
-    const context = await this._getKnownContext(commandData.params.context);
-
-    return await context.findElement(selector);
+    const context = await this._getKnownContext(params.context);
+    return await context.findElement(params.selector);
   }
 
   async process_browsingContext_close(

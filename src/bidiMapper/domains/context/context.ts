@@ -86,7 +86,7 @@ export class Context {
     return this.#contextId;
   }
 
-  public serializeToBidiValue(): BrowsingContext.BrowsingContextInfo {
+  public serializeToBidiValue(): BrowsingContext.Info {
     return {
       context: this.#targetInfo!.targetId,
       parent: this.#targetInfo!.openerId

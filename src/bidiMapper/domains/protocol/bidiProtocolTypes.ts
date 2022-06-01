@@ -673,13 +673,22 @@ export namespace BrowsingContext {
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/67
     export type FindElementCommand = {
       method: 'PROTO.browsingContext.findElement';
-      params: BrowsingContextFindElementParameters;
+      params: FindElementParameters;
     };
 
-    export type BrowsingContextFindElementParameters = {
-      selector: string;
-      context: CommonDataTypes.BrowsingContext;
-    };
+    const FindElementParametersSchema = zod.object({
+      context: CommonDataTypes.BrowsingContextSchema,
+      selector: zod.string(),
+    });
+    export type FindElementParameters = zod.infer<
+      typeof FindElementParametersSchema
+    >;
+
+    export function parseFindElementParameters(
+      params: unknown
+    ): FindElementParameters {
+      return parseObject(params, FindElementParametersSchema);
+    }
 
     export type FindElementResult = FindElementSuccessResult;
 

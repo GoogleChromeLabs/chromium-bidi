@@ -140,8 +140,7 @@ export class CommandProcessor {
 
       case 'PROTO.browsingContext.findElement':
         return await this.#contextProcessor.process_PROTO_browsingContext_findElement(
-          // TODO(sadym): add params parsing.
-          commandData as BrowsingContext.PROTO.FindElementCommand
+          BrowsingContext.PROTO.parseFindElementParameters(commandData.params)
         );
 
       case 'PROTO.cdp.sendCommand':
