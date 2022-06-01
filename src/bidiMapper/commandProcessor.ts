@@ -127,8 +127,7 @@ export class CommandProcessor {
         );
       case 'browsingContext.getTree':
         return await this.#contextProcessor.process_browsingContext_getTree(
-          // TODO(sadym): add params parsing.
-          commandData as BrowsingContext.GetTreeCommand
+          BrowsingContext.parseGetTreeParameters(commandData.params)
         );
       case 'browsingContext.navigate':
         return await this.#contextProcessor.process_browsingContext_navigate(

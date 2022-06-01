@@ -523,13 +523,18 @@ export namespace BrowsingContext {
 
   export type GetTreeCommand = {
     method: 'browsingContext.getTree';
-    params: BrowsingContextGetTreeParameters;
+    params: GetTreeParameters;
   };
 
-  export type BrowsingContextGetTreeParameters = {
-    maxDepth?: number;
-    root?: CommonDataTypes.BrowsingContext;
-  };
+  const GetTreeParametersSchema = zod.object({
+    maxDepth: zod.number().optional(),
+    root: CommonDataTypes.BrowsingContextSchema.optional(),
+  });
+  export type GetTreeParameters = zod.infer<typeof GetTreeParametersSchema>;
+
+  export function parseGetTreeParameters(params: unknown): GetTreeParameters {
+    return parseObject(params, GetTreeParametersSchema);
+  }
 
   export type GetTreeResult = {
     result: {
