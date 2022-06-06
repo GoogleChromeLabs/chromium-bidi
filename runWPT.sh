@@ -3,7 +3,7 @@
 # Go to the project root folder.
 cd "$(dirname $0)/"
 
-npm run build && \
+#npm run build && \
 ./wpt/wpt run \
   --webdriver-binary ./runBiDiServer.sh \
   --binary "$WPT_BROWSER_PATH" \
