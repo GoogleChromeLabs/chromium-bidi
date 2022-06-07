@@ -3,7 +3,7 @@
 # Go to the project root folder.
 cd "$(dirname $0)/"
 
-#npm run build && \
+npm run build && \
 ./wpt/wpt run \
   --webdriver-binary ./runBiDiServer.sh \
   --binary "$WPT_BROWSER_PATH" \
@@ -12,3 +12,4 @@ cd "$(dirname $0)/"
   --log-wptreport wptreport.json \
   chromium \
   $1
+#  --timeout-multiplier 4 \
