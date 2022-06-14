@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Protocol } from 'devtools-protocol';
 import { StubTransport } from '../../../tests/stubTransport.spec';
 
 import * as sinon from 'sinon';
 
 import { BrowsingContextProcessor } from './browsingContextProcessor';
-import { CdpClient, CdpConnection } from '../../../cdp';
+import { CdpConnection } from '../../../cdp';
 import { Context } from './context';
 import { BrowsingContext } from '../protocol/bidiProtocolTypes';
 import { BidiServer, IBidiServer } from '../../utils/bidiServer';
@@ -34,19 +34,21 @@ describe('BrowsingContextProcessor', function () {
   let eventManager: IEventManager;
 
   const NEW_CONTEXT_ID = 'NEW_CONTEXT_ID';
+  const SESSION_ID = 'SESSION_ID';
+  const CDP_TARGET_INFO = {
+    targetId: NEW_CONTEXT_ID,
+    type: 'page',
+    title: '',
+    url: '',
+    attached: true,
+    canAccessOpener: false,
+    browserContextId: '_ANY_ANOTHER_VALUE_',
+  };
   const TARGET_ATTACHED_TO_TARGET_EVENT = {
     method: 'Target.attachedToTarget',
     params: {
-      sessionId: '_ANY_VALUE_',
-      targetInfo: {
-        targetId: NEW_CONTEXT_ID,
-        type: 'page',
-        title: '',
-        url: '',
-        attached: true,
-        canAccessOpener: false,
-        browserContextId: '_ANY_ANOTHER_VALUE_',
-      },
+      sessionId: SESSION_ID,
+      targetInfo: CDP_TARGET_INFO,
       waitingForDebugger: false,
     },
   };
@@ -66,7 +68,13 @@ describe('BrowsingContextProcessor', function () {
 
     // Actual `Context.create` logic involves several CDP calls, so mock it to avoid all the simulations.
     Context.create = sinon.fake(
-      (_1: string, _2: CdpClient, _3: IBidiServer, _4: IEventManager) => {
+      async (
+        _0: Protocol.Target.TargetInfo,
+        _1: string,
+        _2: CdpConnection,
+        _3: IBidiServer,
+        _4: IEventManager
+      ) => {
         return sinon.createStubInstance(Context) as unknown as Context;
       }
     );
@@ -80,7 +88,8 @@ describe('BrowsingContextProcessor', function () {
       );
       sinon.assert.calledOnceWithExactly(
         Context.create as sinon.SinonSpy,
-        NEW_CONTEXT_ID,
+        CDP_TARGET_INFO,
+        SESSION_ID,
         sinon.match.any, // cdpClient.
         sinon.match.any, // bidiServer.
         sinon.match.any // eventManager.

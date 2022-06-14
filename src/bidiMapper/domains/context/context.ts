@@ -16,7 +16,7 @@
  */
 
 import { Protocol } from 'devtools-protocol';
-import { CdpClient } from '../../../cdp';
+import { CdpClient, CdpConnection } from '../../../cdp';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
@@ -25,11 +25,11 @@ import { ScriptEvaluator } from './scriptEvaluator';
 import LoadEvent = BrowsingContext.LoadEvent;
 
 export class Context {
-  #targetInfo?: Protocol.Target.TargetInfo;
-  _sessionId?: string;
-
+  #targetInfo: Protocol.Target.TargetInfo;
+  readonly #sessionId: string;
   readonly #contextId: string;
   readonly #cdpClient: CdpClient;
+  readonly #browserClient: CdpClient;
   readonly #bidiServer: IBidiServer;
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
@@ -51,16 +51,21 @@ export class Context {
   }
 
   private constructor(
-    _contextId: string,
-    _cdpClient: CdpClient,
+    _targetInfo: Protocol.Target.TargetInfo,
+    _sessionId: string,
+    _cdpConnection: CdpConnection,
     _bidiServer: IBidiServer,
     _eventManager: IEventManager
   ) {
-    this.#contextId = _contextId;
-    this.#cdpClient = _cdpClient;
+    this.#contextId = _targetInfo.targetId;
+    this.#targetInfo = _targetInfo;
+    this.#sessionId = _sessionId;
+    this.#cdpClient = _cdpConnection.getCdpClient(_sessionId);
+    this.#browserClient = _cdpConnection.browserClient();
     this.#bidiServer = _bidiServer;
     this.#eventManager = _eventManager;
-    this.#scriptEvaluator = ScriptEvaluator.create(_cdpClient);
+    this.#scriptEvaluator = ScriptEvaluator.create(this.#cdpClient);
+
     // Just initiate initialization, don't wait for it to complete.
     // Field `initialized` has a promise, which is resolved after initialization
     // is completed.
@@ -68,25 +73,24 @@ export class Context {
     this.#initialize();
   }
 
-  public static create(
-    _contextId: string,
-    _cdpClient: CdpClient,
+  public static async create(
+    _targetInfo: Protocol.Target.TargetInfo,
+    _sessionId: string,
+    _cdpConnection: CdpConnection,
     _bidiServer: IBidiServer,
     _eventManager: IEventManager
-  ): Context {
-    return new Context(_contextId, _cdpClient, _bidiServer, _eventManager);
+  ): Promise<Context> {
+    return new Context(
+      _targetInfo,
+      _sessionId,
+      _cdpConnection,
+      _bidiServer,
+      _eventManager
+    );
   }
 
-  public setSessionId(sessionId: string): void {
-    this._sessionId = sessionId;
-  }
-
-  public updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {
-    this.#targetInfo = targetInfo;
-  }
-
-  public onInfoChangedEvent(targetInfo: Protocol.Target.TargetInfo) {
-    this.updateTargetInfo(targetInfo);
+  public getSessionId(): string {
+    return this.#sessionId;
   }
 
   public get id(): string {
@@ -214,6 +218,12 @@ export class Context {
     this.#initializeCdpEventListeners();
     // TODO(sadym): implement.
     // this.#handleBindingCalledEvent();
+
+    this.#browserClient.Target.on('targetInfoChanged', (params) => {
+      if (params.targetInfo.targetId === this.#targetInfo.targetId) {
+        this.#updateTargetInfo(params.targetInfo);
+      }
+    });
   }
 
   #initializeCdpEventListeners() {
@@ -224,7 +234,7 @@ export class Context {
           params: {
             cdpMethod: method,
             cdpParams: params,
-            session: this._sessionId,
+            session: this.#sessionId,
           },
         },
         null
@@ -256,6 +266,10 @@ export class Context {
           break;
       }
     });
+  }
+
+  #updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {
+    this.#targetInfo = targetInfo;
   }
 
   async #waitPageLifeCycleEvent(eventName: string, loaderId: string) {
