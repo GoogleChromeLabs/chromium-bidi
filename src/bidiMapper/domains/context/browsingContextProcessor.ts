@@ -17,17 +17,18 @@
 
 import { log } from '../../../utils/log';
 import { CdpClient, CdpConnection } from '../../../cdp';
-import { Context } from './context';
+import { TargetContext } from './targetContext';
 import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { NoSuchFrameException } from '../protocol/error';
+import { IContext } from './IContext';
 
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  private _contexts: Map<string, Context> = new Map();
+  private _contexts: Map<string, IContext> = new Map();
 
   // Set from outside.
   private _cdpConnection: CdpConnection;
@@ -56,11 +57,7 @@ export class BrowsingContextProcessor {
     return this._contexts.has(contextId);
   }
 
-  private _tryGetContext(contextId: string): Context | undefined {
-    return this._contexts.get(contextId);
-  }
-
-  private _getKnownContext(contextId: string): Context {
+  private _getKnownContext(contextId: string): IContext {
     if (!this._hasKnownContext(contextId)) {
       throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
@@ -82,7 +79,7 @@ export class BrowsingContextProcessor {
       return;
     }
 
-    const context = await Context.create(
+    const context = await TargetContext.create(
       targetInfo,
       sessionId,
       this._cdpConnection,
@@ -119,17 +116,16 @@ export class BrowsingContextProcessor {
     // TODO: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
-    const targetId = params.targetId!;
-    const context = await this._tryGetContext(targetId);
-    if (context) {
-      this._contexts.delete(context.id);
-      await this._eventManager.sendEvent(
-        new BrowsingContext.ContextDestroyedEvent(
-          context.serializeToBidiValue()
-        ),
-        context.id
-      );
+    const contextId = params.targetId!;
+    if (!this._hasKnownContext(contextId)) {
+      return;
     }
+    const context = this._getKnownContext(contextId);
+    this._contexts.delete(contextId);
+    await this._eventManager.sendEvent(
+      new BrowsingContext.ContextDestroyedEvent(context.serializeToBidiValue()),
+      contextId
+    );
   }
 
   private static _targetToBiDiContext(

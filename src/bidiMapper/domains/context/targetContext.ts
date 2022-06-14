@@ -22,9 +22,10 @@ import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { LogManager } from './logManager';
 import { ScriptEvaluator } from './scriptEvaluator';
+import { IContext } from './IContext';
 import LoadEvent = BrowsingContext.LoadEvent;
 
-export class Context {
+export class TargetContext implements IContext {
   #targetInfo: Protocol.Target.TargetInfo;
   readonly #sessionId: string;
   readonly #contextId: string;
@@ -79,8 +80,8 @@ export class Context {
     _cdpConnection: CdpConnection,
     _bidiServer: IBidiServer,
     _eventManager: IEventManager
-  ): Promise<Context> {
-    return new Context(
+  ): Promise<TargetContext> {
+    return new TargetContext(
       _targetInfo,
       _sessionId,
       _cdpConnection,
