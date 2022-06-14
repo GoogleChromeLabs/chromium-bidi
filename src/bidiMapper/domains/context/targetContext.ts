@@ -20,12 +20,12 @@ import { CdpClient, CdpConnection } from '../../../cdp';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
-import { LogManager } from './logManager';
-import { ScriptEvaluator } from './scriptEvaluator';
-import { IContext } from './IContext';
+import { LogManager } from '../log/logManager';
+import { ScriptEvaluator } from '../script/scriptEvaluator';
+import { Context } from './context';
 import LoadEvent = BrowsingContext.LoadEvent;
 
-export class TargetContext implements IContext {
+export class TargetContext extends Context {
   #targetInfo: Protocol.Target.TargetInfo;
   readonly #sessionId: string;
   readonly #contextId: string;
@@ -58,6 +58,7 @@ export class TargetContext implements IContext {
     _bidiServer: IBidiServer,
     _eventManager: IEventManager
   ) {
+    super();
     this.#contextId = _targetInfo.targetId;
     this.#targetInfo = _targetInfo;
     this.#sessionId = _sessionId;
@@ -151,6 +152,14 @@ export class TargetContext implements IContext {
     };
   }
 
+  public async scriptEvaluate(
+    expression: string,
+    awaitPromise: boolean
+  ): Promise<Script.EvaluateResult> {
+    await this.#waitInitialized();
+    return this.#scriptEvaluator.scriptEvaluate(expression, awaitPromise);
+  }
+
   public async callFunction(
     functionDeclaration: string,
     _this: Script.ArgumentValue,
@@ -166,31 +175,6 @@ export class TargetContext implements IContext {
         awaitPromise
       ),
     };
-  }
-
-  public async findElement(
-    selector: string
-  ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    await this.#waitInitialized();
-    const functionDeclaration = String((resultsSelector: string) =>
-      document.querySelector(resultsSelector)
-    );
-    const _arguments: Script.ArgumentValue[] = [
-      { type: 'string', value: selector },
-    ];
-
-    // TODO(sadym): handle not found exception.
-    const result = await this.#scriptEvaluator.callFunction(
-      functionDeclaration,
-      {
-        type: 'undefined',
-      },
-      _arguments,
-      true
-    );
-
-    // TODO(sadym): handle type properly.
-    return { result } as any as BrowsingContext.PROTO.FindElementResult;
   }
 
   async #initialize() {
@@ -220,6 +204,7 @@ export class TargetContext implements IContext {
     // TODO(sadym): implement.
     // this.#handleBindingCalledEvent();
 
+    // TODO(sadym): consider using only 1 listener.
     this.#browserClient.Target.on('targetInfoChanged', (params) => {
       if (params.targetInfo.targetId === this.#targetInfo.targetId) {
         this.#updateTargetInfo(params.targetInfo);
@@ -290,13 +275,5 @@ export class TargetContext implements IContext {
 
       this.#cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
     });
-  }
-
-  public async scriptEvaluate(
-    expression: string,
-    awaitPromise: boolean
-  ): Promise<Script.EvaluateResult> {
-    await this.#waitInitialized();
-    return this.#scriptEvaluator.scriptEvaluate(expression, awaitPromise);
   }
 }
