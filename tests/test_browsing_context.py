@@ -77,7 +77,6 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
 async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
       websocket,
       context_id):
@@ -93,12 +92,18 @@ async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
                                    {"method": "browsingContext.getTree",
                                     "params": {}})
 
-    assert result == {
+    recursive_compare({
         "contexts": [{
             "context": context_id,
-            "children": [{}],
+            "children": [{
+                "context": any_string,
+                "parent": context_id,
+                "url": "data:text/html,<h2>TEST_2</h2>",
+                "children": []
+            }],
             "parent": None,
-            "url": page_with_nested_iframe}]}
+            "url": page_with_nested_iframe}]},
+        result)
 
 
 # noinspection PyUnusedLocal
