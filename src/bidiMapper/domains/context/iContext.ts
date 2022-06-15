@@ -18,9 +18,13 @@
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 
 export interface IContext {
+  getContextId(): string;
+
   getSessionId(): string;
 
-  get id(): string;
+  getParentId(): string | null;
+
+  getChildren(): IContext[];
 
   serializeToBidiValue(): BrowsingContext.Info;
 

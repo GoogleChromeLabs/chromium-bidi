@@ -17,9 +17,47 @@
 
 import { IContext } from './IContext';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
+import { NoSuchFrameException } from '../protocol/error';
 
 export abstract class Context implements IContext {
   static _contexts: Map<string, IContext> = new Map();
+
+  static hasKnownContext(contextId: string): boolean {
+    return Context._contexts.has(contextId);
+  }
+
+  static getKnownContext(contextId: string): IContext {
+    if (!Context.hasKnownContext(contextId)) {
+      throw new NoSuchFrameException(`Context ${contextId} not found`);
+    }
+    return Context._contexts.get(contextId)!;
+  }
+
+  readonly #contextId: string;
+  readonly #sessionId: string;
+  readonly #parentId: string | null;
+  readonly #children: IContext[] = [];
+  #url: string = 'about:blank';
+
+  public getContextId = (): string => this.#contextId;
+  public getChildren = (): IContext[] => this.#children;
+  public getSessionId = (): string => this.#sessionId;
+  public getParentId = (): string | null => this.#parentId;
+  public getUrl = (): string | null => this.#url;
+
+  protected setUrl(url: string) {
+    this.#url = url;
+  }
+
+  protected constructor(
+    contextId: string,
+    parent: string | null,
+    sessionId: string
+  ) {
+    this.#contextId = contextId;
+    this.#parentId = parent;
+    this.#sessionId = sessionId;
+  }
 
   abstract callFunction(
     functionDeclaration: string,
@@ -27,10 +65,6 @@ export abstract class Context implements IContext {
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult>;
-
-  abstract getSessionId(): string;
-
-  abstract get id(): string;
 
   abstract navigate(
     url: string,
@@ -42,7 +76,14 @@ export abstract class Context implements IContext {
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult>;
 
-  abstract serializeToBidiValue(): BrowsingContext.Info;
+  public serializeToBidiValue(): BrowsingContext.Info {
+    return {
+      context: this.#contextId,
+      parent: this.#parentId,
+      url: this.#url,
+      children: this.#children.map((c) => c.serializeToBidiValue()),
+    };
+  }
 
   public async findElement(
     selector: string

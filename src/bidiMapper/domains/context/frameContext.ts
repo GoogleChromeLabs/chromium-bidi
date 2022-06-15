@@ -19,21 +19,30 @@ import { Protocol } from 'devtools-protocol';
 import { Context } from './context';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { UnknownErrorResponse } from '../protocol/error';
+import { CdpClient } from '../../../cdp';
 
 export class FrameContext extends Context {
-  readonly #contextId: string;
+  readonly #cdpClient: CdpClient;
 
-  private constructor(params: Protocol.Page.FrameAttachedEvent) {
-    super();
-    this.#contextId = params.frameId;
+  private constructor(
+    params: Protocol.Page.FrameAttachedEvent,
+    sessionId: string,
+    cdpClient: CdpClient
+  ) {
+    super(params.frameId, params.parentFrameId, sessionId);
+    this.#cdpClient = cdpClient;
   }
 
   public static async create(
-    params: Protocol.Page.FrameAttachedEvent
+    params: Protocol.Page.FrameAttachedEvent,
+    sessionId: string,
+    cdpClient: CdpClient
   ): Promise<FrameContext> {
-    return new FrameContext(params);
+    const context = new FrameContext(params, sessionId, cdpClient);
 
     // TODO(sadym): Add `Page.frameNavigated` handler.
+    context.#initializeEventListeners();
+    return context;
   }
 
   callFunction(
@@ -43,14 +52,6 @@ export class FrameContext extends Context {
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult> {
     throw new UnknownErrorResponse('Not implemented');
-  }
-
-  getSessionId(): string {
-    throw new UnknownErrorResponse('Not implemented');
-  }
-
-  get id(): string {
-    return this.#contextId;
   }
 
   navigate(
@@ -67,12 +68,15 @@ export class FrameContext extends Context {
     throw new UnknownErrorResponse('Not implemented');
   }
 
-  serializeToBidiValue(): BrowsingContext.Info {
-    return {
-      context: this.#contextId,
-      parent: 'NOT_IMPLEMENTED',
-      url: 'NOT_IMPLEMENTED',
-      children: [],
-    };
+  #initializeEventListeners() {
+    this.#cdpClient.Page.on(
+      'frameNavigated',
+      (params: Protocol.Page.FrameNavigatedEvent) => {
+        const frame = params.frame;
+        if (params.frame.id === this.getContextId()) {
+          this.setUrl(frame.url);
+        }
+      }
+    );
   }
 }

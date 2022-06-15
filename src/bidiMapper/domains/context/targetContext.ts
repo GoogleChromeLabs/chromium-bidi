@@ -25,18 +25,14 @@ import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Context } from './context';
 import LoadEvent = BrowsingContext.LoadEvent;
 import { FrameContext } from './frameContext';
-import { IContext } from './iContext';
 
 export class TargetContext extends Context {
-  #targetInfo: Protocol.Target.TargetInfo;
   readonly #sessionId: string;
-  readonly #contextId: string;
   readonly #cdpClient: CdpClient;
   readonly #browserClient: CdpClient;
   readonly #bidiServer: IBidiServer;
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
-  readonly #children: IContext[] = [];
 
   // Delegate to resolve `#initialized`.
   #markContextInitialized: () => void = () => {
@@ -55,20 +51,19 @@ export class TargetContext extends Context {
   }
 
   private constructor(
-    _targetInfo: Protocol.Target.TargetInfo,
-    _sessionId: string,
-    _cdpConnection: CdpConnection,
-    _bidiServer: IBidiServer,
-    _eventManager: IEventManager
+    targetInfo: Protocol.Target.TargetInfo,
+    sessionId: string,
+    cdpConnection: CdpConnection,
+    bidiServer: IBidiServer,
+    eventManager: IEventManager
   ) {
-    super();
-    this.#contextId = _targetInfo.targetId;
-    this.#targetInfo = _targetInfo;
-    this.#sessionId = _sessionId;
-    this.#cdpClient = _cdpConnection.getCdpClient(_sessionId);
-    this.#browserClient = _cdpConnection.browserClient();
-    this.#bidiServer = _bidiServer;
-    this.#eventManager = _eventManager;
+    // TODO(sadym): provide proper parent.
+    super(targetInfo.targetId, null, sessionId);
+    this.#sessionId = sessionId;
+    this.#cdpClient = cdpConnection.getCdpClient(sessionId);
+    this.#browserClient = cdpConnection.browserClient();
+    this.#bidiServer = bidiServer;
+    this.#eventManager = eventManager;
     this.#scriptEvaluator = ScriptEvaluator.create(this.#cdpClient);
 
     // Just initiate initialization, don't wait for it to complete.
@@ -92,24 +87,6 @@ export class TargetContext extends Context {
       _bidiServer,
       _eventManager
     );
-  }
-
-  public getSessionId(): string {
-    return this.#sessionId;
-  }
-
-  public get id(): string {
-    return this.#contextId;
-  }
-
-  // TODO(sadym): implement max_depth.
-  public serializeToBidiValue(): BrowsingContext.Info {
-    return {
-      context: this.#targetInfo!.targetId,
-      parent: this.#targetInfo!.openerId ? this.#targetInfo!.openerId : null,
-      url: this.#targetInfo!.url,
-      children: this.#children.map((c) => c.serializeToBidiValue()),
-    };
   }
 
   public async navigate(
@@ -182,7 +159,7 @@ export class TargetContext extends Context {
 
   async #initialize() {
     await LogManager.create(
-      this.#contextId,
+      this.getContextId(),
       this.#cdpClient,
       this.#bidiServer,
       this.#scriptEvaluator
@@ -209,7 +186,7 @@ export class TargetContext extends Context {
 
     // TODO(sadym): consider using only 1 listener.
     this.#browserClient.Target.on('targetInfoChanged', (params) => {
-      if (params.targetInfo.targetId === this.#targetInfo.targetId) {
+      if (params.targetInfo.targetId === this.getContextId()) {
         this.#updateTargetInfo(params.targetInfo);
       }
     });
@@ -235,9 +212,13 @@ export class TargetContext extends Context {
     this.#cdpClient.Page.on(
       'frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
-        const context = await FrameContext.create(params);
-        Context._contexts.set(context.id, context);
-        this.#children.push(context);
+        const frameContext = await FrameContext.create(
+          params,
+          this.#sessionId,
+          this.#cdpClient
+        );
+        Context._contexts.set(frameContext.getContextId(), frameContext);
+        this.getChildren().push(frameContext);
       }
     );
 
@@ -246,20 +227,20 @@ export class TargetContext extends Context {
         case 'DOMContentLoaded':
           await this.#eventManager.sendEvent(
             new BrowsingContext.DomContentLoadedEvent({
-              context: this.#contextId,
+              context: this.getContextId(),
               navigation: params.loaderId,
             }),
-            this.#contextId
+            this.getContextId()
           );
           break;
 
         case 'load':
           await this.#eventManager.sendEvent(
             new LoadEvent({
-              context: this.#contextId,
+              context: this.getContextId(),
               navigation: params.loaderId,
             }),
-            this.#contextId
+            this.getContextId()
           );
           break;
       }
@@ -267,7 +248,7 @@ export class TargetContext extends Context {
   }
 
   #updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {
-    this.#targetInfo = targetInfo;
+    this.setUrl(targetInfo.url);
   }
 
   async #waitPageLifeCycleEvent(eventName: string, loaderId: string) {
