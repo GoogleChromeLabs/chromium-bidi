@@ -22,7 +22,7 @@ import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
-import { NoSuchFrameException } from '../protocol/error';
+import { InvalidArgumentErrorResponse } from '../protocol/error';
 import { Context } from './context';
 
 const logContext = log('context');
@@ -202,9 +202,10 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.CloseResult> {
     const browserCdpClient = this._cdpConnection.browserClient();
 
-    if (!Context.hasKnownContext(commandParams.context)) {
-      throw new NoSuchFrameException(
-        `Context ${commandParams.context} not found`
+    const context = Context.getKnownContext(commandParams.context);
+    if (context.getParentId() !== null) {
+      throw new InvalidArgumentErrorResponse(
+        'Not a top-level browsing context cannot be closed.'
       );
     }
 
