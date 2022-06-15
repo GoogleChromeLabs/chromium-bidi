@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IContext } from './IContext';
+import { IContext } from './iContext';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { NoSuchFrameException } from '../protocol/error';
 
