@@ -24,12 +24,11 @@ import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { NoSuchFrameException } from '../protocol/error';
 import { IContext } from './IContext';
+import { Context } from './context';
 
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  private _contexts: Map<string, IContext> = new Map();
-
   // Set from outside.
   private _cdpConnection: CdpConnection;
 
@@ -54,14 +53,14 @@ export class BrowsingContextProcessor {
   }
 
   private _hasKnownContext(contextId: string): boolean {
-    return this._contexts.has(contextId);
+    return Context._contexts.has(contextId);
   }
 
   private _getKnownContext(contextId: string): IContext {
     if (!this._hasKnownContext(contextId)) {
       throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
-    return this._contexts.get(contextId)!;
+    return Context._contexts.get(contextId)!;
   }
 
   private async _handleAttachedToTargetEvent(
@@ -87,7 +86,7 @@ export class BrowsingContextProcessor {
       this._eventManager
     );
 
-    this._contexts.set(targetInfo.targetId, context);
+    Context._contexts.set(targetInfo.targetId, context);
 
     await this._eventManager.sendEvent(
       new BrowsingContext.ContextCreatedEvent({
@@ -121,45 +120,27 @@ export class BrowsingContextProcessor {
       return;
     }
     const context = this._getKnownContext(contextId);
-    this._contexts.delete(contextId);
+    Context._contexts.delete(contextId);
     await this._eventManager.sendEvent(
       new BrowsingContext.ContextDestroyedEvent(context.serializeToBidiValue()),
       contextId
     );
   }
 
-  private static _targetToBiDiContext(
-    targetInfo: Protocol.Target.TargetInfo
-  ): BrowsingContext.Info {
-    return {
-      context: targetInfo.targetId,
-      parent: targetInfo.openerId ? targetInfo.openerId : null,
-      url: targetInfo.url,
-      // TODO sadym: implement.
-      children: null,
-    };
-  }
-
   async process_browsingContext_getTree(
     params: BrowsingContext.GetTreeParameters
   ): Promise<BrowsingContext.GetTreeResult> {
-    // TODO sadym: consider replacing with known targets.
-    const { targetInfos } = await this._cdpConnection
-      .browserClient()
-      .Target.getTargets();
     // TODO sadym: implement.
     if (params.maxDepth) {
       throw new Error('not implemented yet');
     }
-    const contexts = targetInfos
-      // Don't expose any information about the tab with Mapper running.
-      .filter((target) => this._isValidTarget(target))
-      // Filter by `root`, if specified.
-      .filter(
-        (target) => params.root === undefined || params.root === target.targetId
-      )
-      .map(BrowsingContextProcessor._targetToBiDiContext);
-    return { result: { contexts } };
+    return {
+      result: {
+        contexts: Array.from(Context._contexts.values()).map((c) =>
+          c.serializeToBidiValue()
+        ),
+      },
+    };
   }
 
   async process_browsingContext_create(

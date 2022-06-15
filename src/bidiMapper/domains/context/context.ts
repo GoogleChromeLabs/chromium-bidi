@@ -19,6 +19,8 @@ import { IContext } from './IContext';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 
 export abstract class Context implements IContext {
+  static _contexts: Map<string, IContext> = new Map();
+
   abstract callFunction(
     functionDeclaration: string,
     _this: Script.ArgumentValue,

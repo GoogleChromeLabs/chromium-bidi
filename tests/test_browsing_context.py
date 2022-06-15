@@ -78,9 +78,27 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_browsingContext_getTreeWithNestedContexts_contextReturned():
-    ignore = True
-    # TODO sadym: implement
+async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
+      websocket,
+      context_id):
+    page_with_nested_iframe = 'data:text/html,<h1>TEST_1</h1><iframe src="data:text/html,<h2>TEST_2</h2>" />'
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": page_with_nested_iframe,
+            "wait": "complete",
+            "context": context_id}})
+
+    result = await execute_command(websocket,
+                                   {"method": "browsingContext.getTree",
+                                    "params": {}})
+
+    assert result == {
+        "contexts": [{
+            "context": context_id,
+            "children": [{}],
+            "parent": None,
+            "url": page_with_nested_iframe}]}
 
 
 # noinspection PyUnusedLocal

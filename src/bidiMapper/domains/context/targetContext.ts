@@ -24,6 +24,8 @@ import { LogManager } from '../log/logManager';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Context } from './context';
 import LoadEvent = BrowsingContext.LoadEvent;
+import { FrameContext } from './frameContext';
+import { IContext } from './iContext';
 
 export class TargetContext extends Context {
   #targetInfo: Protocol.Target.TargetInfo;
@@ -34,6 +36,7 @@ export class TargetContext extends Context {
   readonly #bidiServer: IBidiServer;
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
+  readonly #children: IContext[] = [];
 
   // Delegate to resolve `#initialized`.
   #markContextInitialized: () => void = () => {
@@ -99,13 +102,13 @@ export class TargetContext extends Context {
     return this.#contextId;
   }
 
+  // TODO(sadym): implement max_depth.
   public serializeToBidiValue(): BrowsingContext.Info {
     return {
       context: this.#targetInfo!.targetId,
       parent: this.#targetInfo!.openerId ? this.#targetInfo!.openerId : null,
       url: this.#targetInfo!.url,
-      // TODO sadym: implement.
-      children: [],
+      children: this.#children.map((c) => c.serializeToBidiValue()),
     };
   }
 
@@ -229,6 +232,15 @@ export class TargetContext extends Context {
   }
 
   #initializePageLifecycleEventListener() {
+    this.#cdpClient.Page.on(
+      'frameAttached',
+      async (params: Protocol.Page.FrameAttachedEvent) => {
+        const context = await FrameContext.create(params);
+        Context._contexts.set(context.id, context);
+        this.#children.push(context);
+      }
+    );
+
     this.#cdpClient.Page.on('lifecycleEvent', async (params) => {
       switch (params.name) {
         case 'DOMContentLoaded':
