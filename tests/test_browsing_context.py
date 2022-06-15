@@ -80,7 +80,9 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
 async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
       websocket,
       context_id):
-    page_with_nested_iframe = 'data:text/html,<h1>TEST_1</h1><iframe src="data:text/html,<h2>TEST_2</h2>" />'
+    nested_iframe = 'data:text/html,<h2>NESTED_IFRAME</h2>'
+    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
+                              f'<iframe src="{nested_iframe}" />'
     await execute_command(websocket, {
         "method": "browsingContext.navigate",
         "params": {
@@ -98,7 +100,7 @@ async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
             "children": [{
                 "context": any_string,
                 "parent": context_id,
-                "url": "data:text/html,<h2>TEST_2</h2>",
+                "url": nested_iframe,
                 "children": []
             }],
             "parent": None,
