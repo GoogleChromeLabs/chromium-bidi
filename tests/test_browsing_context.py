@@ -30,7 +30,7 @@ async def test_browsingContext_getTree_contextReturned(websocket):
     assert result == {
         "contexts": [{
             "context": context_id,
-            "children": None,
+            "children": [],
             "parent": None,
             "url": "about:blank"}]}
 
@@ -59,7 +59,7 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
             "context": new_context_id,
             "parent": None,
             "url": "about:blank",
-            "children": None
+            "children": []
         }]}
 
     result = await execute_command(websocket, {
@@ -72,7 +72,7 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
             "context": context_id,
             "parent": None,
             "url": "about:blank",
-            "children": None
+            "children": []
         }]}
 
 
@@ -165,7 +165,7 @@ async def test_browsingContext_close_browsingContext_closed(
             "context": context_id,
             "parent": None,
             "url": "about:blank",
-            "children": []}}
+            "children": None}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)

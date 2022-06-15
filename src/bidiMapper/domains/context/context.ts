@@ -127,6 +127,6 @@ export abstract class Context implements IContext {
     );
 
     // TODO(sadym): handle type properly.
-    return { result } as any as BrowsingContext.PROTO.FindElementResult;
+    return result as any as BrowsingContext.PROTO.FindElementResult;
   }
 }
