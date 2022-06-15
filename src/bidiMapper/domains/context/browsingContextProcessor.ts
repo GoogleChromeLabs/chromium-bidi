@@ -74,7 +74,7 @@ export class BrowsingContextProcessor {
       this._eventManager
     );
 
-    Context._contexts.set(targetInfo.targetId, context);
+    Context.addContext(context);
 
     await this._eventManager.sendEvent(
       new BrowsingContext.ContextCreatedEvent({
@@ -108,9 +108,11 @@ export class BrowsingContextProcessor {
       return;
     }
     const context = Context.getKnownContext(contextId);
-    Context._contexts.delete(contextId);
+    Context.removeContext(contextId);
     await this._eventManager.sendEvent(
-      new BrowsingContext.ContextDestroyedEvent(context.serializeToBidiValue()),
+      new BrowsingContext.ContextDestroyedEvent(
+        context.serializeToBidiValue(0)
+      ),
       contextId
     );
   }
@@ -118,15 +120,13 @@ export class BrowsingContextProcessor {
   async process_browsingContext_getTree(
     params: BrowsingContext.GetTreeParameters
   ): Promise<BrowsingContext.GetTreeResult> {
-    // TODO sadym: implement.
-    if (params.maxDepth) {
-      throw new Error('not implemented yet');
-    }
     return {
       result: {
-        contexts: Array.from(Context._contexts.values())
+        contexts: Context.getContexts(params.root)
           .filter((c) => c.getParentId() === null)
-          .map((c) => c.serializeToBidiValue()),
+          .map((c) =>
+            c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
+          ),
       },
     };
   }

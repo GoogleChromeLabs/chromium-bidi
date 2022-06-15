@@ -217,7 +217,7 @@ export class TargetContext extends Context {
           this.#sessionId,
           this.#cdpClient
         );
-        Context._contexts.set(frameContext.getContextId(), frameContext);
+        Context.addContext(frameContext);
         this.getChildren().push(frameContext);
       }
     );

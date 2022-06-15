@@ -20,17 +20,35 @@ import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { NoSuchFrameException } from '../protocol/error';
 
 export abstract class Context implements IContext {
-  static _contexts: Map<string, IContext> = new Map();
+  static #contexts: Map<string, IContext> = new Map();
 
-  static hasKnownContext(contextId: string): boolean {
-    return Context._contexts.has(contextId);
+  public static getContexts(root: string | undefined): IContext[] {
+    if (root === undefined) {
+      // Return top level contexts.
+      return Array.from(Context.#contexts.values()).filter(
+        (c) => c.getParentId() === null
+      );
+    }
+    return [Context.getKnownContext(root)];
   }
 
-  static getKnownContext(contextId: string): IContext {
+  public static removeContext(contextId: string) {
+    Context.#contexts.delete(contextId);
+  }
+
+  public static addContext(context: IContext) {
+    Context.#contexts.set(context.getContextId(), context);
+  }
+
+  public static hasKnownContext(contextId: string): boolean {
+    return Context.#contexts.has(contextId);
+  }
+
+  public static getKnownContext(contextId: string): IContext {
     if (!Context.hasKnownContext(contextId)) {
       throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
-    return Context._contexts.get(contextId)!;
+    return Context.#contexts.get(contextId)!;
   }
 
   readonly #contextId: string;
@@ -76,12 +94,15 @@ export abstract class Context implements IContext {
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult>;
 
-  public serializeToBidiValue(): BrowsingContext.Info {
+  public serializeToBidiValue(maxDepth: number): BrowsingContext.Info {
     return {
       context: this.#contextId,
       parent: this.#parentId,
       url: this.#url,
-      children: this.#children.map((c) => c.serializeToBidiValue()),
+      children:
+        maxDepth > 0
+          ? this.#children.map((c) => c.serializeToBidiValue(maxDepth - 1))
+          : null,
     };
   }
 

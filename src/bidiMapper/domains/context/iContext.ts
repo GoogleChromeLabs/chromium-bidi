@@ -26,7 +26,7 @@ export interface IContext {
 
   getChildren(): IContext[];
 
-  serializeToBidiValue(): BrowsingContext.Info;
+  serializeToBidiValue(maxDepth: number): BrowsingContext.Info;
 
   navigate(
     url: string,
