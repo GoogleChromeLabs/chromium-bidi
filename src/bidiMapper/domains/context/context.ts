@@ -50,17 +50,24 @@ export abstract class Context implements IContext {
   readonly #contextId: string;
   readonly #sessionId: string;
   readonly #parentId: string | null;
-  readonly #children: IContext[] = [];
+  readonly #childrenIds: Set<string> = new Set();
   #url: string = 'about:blank';
 
   public getContextId = (): string => this.#contextId;
-  public getChildren = (): IContext[] => this.#children;
+  public getChildren = (): IContext[] =>
+    Array.from(this.#childrenIds).map((contextId) =>
+      Context.getKnownContext(contextId)
+    );
   public getSessionId = (): string => this.#sessionId;
   public getParentId = (): string | null => this.#parentId;
   public getUrl = (): string | null => this.#url;
 
   protected setUrl(url: string) {
     this.#url = url;
+  }
+
+  protected addChild(child: IContext) {
+    this.#childrenIds.add(child.getContextId());
   }
 
   protected constructor(
@@ -97,7 +104,7 @@ export abstract class Context implements IContext {
       url: this.#url,
       children:
         maxDepth > 0
-          ? this.#children.map((c) => c.serializeToBidiValue(maxDepth - 1))
+          ? this.getChildren().map((c) => c.serializeToBidiValue(maxDepth - 1))
           : null,
     };
   }

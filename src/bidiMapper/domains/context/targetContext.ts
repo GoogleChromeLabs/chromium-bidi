@@ -218,7 +218,7 @@ export class TargetContext extends Context {
           this.#cdpClient
         );
         Context.addContext(frameContext);
-        this.getChildren().push(frameContext);
+        this.addChild(frameContext);
       }
     );
 
