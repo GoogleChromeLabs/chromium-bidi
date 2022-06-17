@@ -17,16 +17,11 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_getTree_contextReturned(websocket):
-    result = await execute_command(websocket,
-                                   {"method": "browsingContext.getTree",
-                                    "params": {}})
+async def test_browsingContext_getTree_contextReturned(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
 
-    # Assert "browsingContext.getTree" command done.
-    [context] = result['contexts']
-    context_id = context['context']
-    assert isinstance(context_id, str)
-    assert len(context_id) > 1
     assert result == {
         "contexts": [{
             "context": context_id,
@@ -62,19 +57,6 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
             "children": []
         }]}
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id}})
-
-    assert result == {
-        "contexts": [{
-            "context": context_id,
-            "parent": None,
-            "url": "about:blank",
-            "children": []
-        }]}
-
 
 @pytest.mark.asyncio
 async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
@@ -90,9 +72,9 @@ async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
             "wait": "complete",
             "context": context_id}})
 
-    result = await execute_command(websocket,
-                                   {"method": "browsingContext.getTree",
-                                    "params": {}})
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
 
     recursive_compare({
         "contexts": [{
@@ -108,7 +90,6 @@ async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
         result)
 
 
-# noinspection PyUnusedLocal
 @pytest.mark.asyncio
 async def test_browsingContext_create_eventContextCreatedEmitted(
       websocket, context_id):
@@ -426,21 +407,21 @@ async def test_PROTO_browsingContext_findElementMissingElement_missingElement(
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_type_textTyped():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_waitForSelector_success():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
@@ -453,33 +434,33 @@ async def _ignore_test_browsingContext_waitForSelector_success_slow():
     # 4. Wait for newly created element.
     # 5. Assert element found.
 
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_waitForHiddenSelector_success():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_waitForSelectorWithMinimumTimeout_failedWithTimeout():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_waitForSelectorWithMissingElement_failedWithTimeout_slow():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_clickElement_clickProcessed():
-    ignore = True
+    pass
     # TODO sadym: implement
