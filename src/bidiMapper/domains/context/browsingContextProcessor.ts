@@ -63,12 +63,16 @@ export class BrowsingContextProcessor {
 
     const { sessionId, targetInfo } = params;
     if (!this.#isValidTarget(targetInfo)) {
+      // DevTools or some other not supported by BiDi target.
+      this.#cdpConnection
+        .getCdpClient(sessionId)
+        .Runtime.runIfWaitingForDebugger();
       return;
     }
 
     // Already attached to the target.
     if (Context.hasKnownContext(targetInfo.targetId)) {
-      return;
+      // TODO(sadym): remove existing `Context` moving it's data to the new one.
     }
 
     const context = await TargetContext.create(
@@ -248,10 +252,7 @@ export class BrowsingContextProcessor {
     if (target.targetId === this.#selfTargetId) {
       return false;
     }
-    if (!target.type || target.type !== 'page') {
-      return false;
-    }
-    return true;
+    return ['page'].includes(target.type);
   }
 
   async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandParams) {
