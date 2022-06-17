@@ -47,11 +47,11 @@ export class BrowsingContextProcessor {
     this.#setCdpEventListeners(this.#cdpConnection.browserClient());
   }
 
-  #setCdpEventListeners(browserCdpClient: CdpClient) {
-    browserCdpClient.Target.on('attachedToTarget', async (params) => {
+  #setCdpEventListeners(cdpClient: CdpClient) {
+    cdpClient.Target.on('attachedToTarget', async (params) => {
       await this.#handleAttachedToTargetEvent(params);
     });
-    browserCdpClient.Target.on('detachedFromTarget', async (params) => {
+    cdpClient.Target.on('detachedFromTarget', async (params) => {
       await this.#handleDetachedFromTargetEvent(params);
     });
   }
@@ -62,17 +62,17 @@ export class BrowsingContextProcessor {
     logContext('AttachedToTarget event received: ' + JSON.stringify(params));
 
     const { sessionId, targetInfo } = params;
+
+    // TODO(sadym): Set listeners only once per session.
+    this.#setCdpEventListeners(this.#cdpConnection.getCdpClient(sessionId));
+
     if (!this.#isValidTarget(targetInfo)) {
       // DevTools or some other not supported by BiDi target.
-      this.#cdpConnection
+      await this.#cdpConnection
         .getCdpClient(sessionId)
         .Runtime.runIfWaitingForDebugger();
+      await this.#cdpConnection.browserClient().Target.detachFromTarget(params);
       return;
-    }
-
-    // Already attached to the target.
-    if (Context.hasKnownContext(targetInfo.targetId)) {
-      // TODO(sadym): remove existing `Context` moving it's data to the new one.
     }
 
     const context = await TargetContext.create(
@@ -86,16 +86,7 @@ export class BrowsingContextProcessor {
     Context.addContext(context);
 
     await this.#eventManager.sendEvent(
-      new BrowsingContext.ContextCreatedEvent({
-        context: context.getContextId(),
-        parent: targetInfo.openerId ? targetInfo.openerId : null,
-        // New-opened context `url` is always `about:blank`:
-        // https://github.com/w3c/webdriver-bidi/issues/220
-        url: 'about:blank',
-        // New-opened `children` are always empty:
-        // https://github.com/w3c/webdriver-bidi/issues/220
-        children: [],
-      }),
+      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue(0)),
       context.getContextId()
     );
   }
@@ -252,7 +243,7 @@ export class BrowsingContextProcessor {
     if (target.targetId === this.#selfTargetId) {
       return false;
     }
-    return ['page'].includes(target.type);
+    return ['page', 'iframe'].includes(target.type);
   }
 
   async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandParams) {

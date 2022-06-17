@@ -57,8 +57,11 @@ export class TargetContext extends Context {
     bidiServer: IBidiServer,
     eventManager: IEventManager
   ) {
-    // TODO(sadym): provide proper parent.
-    super(targetInfo.targetId, null, sessionId);
+    let parentId = null;
+    if (Context.hasKnownContext(targetInfo.targetId)) {
+      parentId = Context.getKnownContext(targetInfo.targetId).getParentId();
+    }
+    super(targetInfo.targetId, parentId, sessionId);
     this.#sessionId = sessionId;
     this.#cdpClient = cdpConnection.getCdpClient(sessionId);
     this.#browserClient = cdpConnection.browserClient();

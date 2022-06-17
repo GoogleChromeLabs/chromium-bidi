@@ -58,10 +58,11 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
         }]}
 
 
+# TODO(sadym): make offline.
 @pytest.mark.asyncio
 async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
       websocket, context_id):
-    nested_iframe = 'data:text/html,<h2>NESTED_IFRAME</h2>'
+    nested_iframe = 'https://example.com/'
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
                               f'<iframe src="{nested_iframe}" />'
     await execute_command(websocket, {
@@ -116,7 +117,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
         "params": {
             'context': new_context_id,
             'parent': None,
-            'children': [],
+            'children': None,
             'url': 'about:blank'}}
 
     # Assert command done.
