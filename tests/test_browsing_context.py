@@ -60,8 +60,7 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
 
 @pytest.mark.asyncio
 async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
-      websocket,
-      context_id):
+      websocket, context_id):
     nested_iframe = 'data:text/html,<h2>NESTED_IFRAME</h2>'
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
                               f'<iframe src="{nested_iframe}" />'

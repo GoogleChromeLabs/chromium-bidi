@@ -22,14 +22,10 @@ import { NoSuchFrameException } from '../protocol/error';
 export abstract class Context implements IContext {
   static #contexts: Map<string, IContext> = new Map();
 
-  public static getContexts(root: string | undefined): IContext[] {
-    if (root === undefined) {
-      // Return top level contexts.
-      return Array.from(Context.#contexts.values()).filter(
-        (c) => c.getParentId() === null
-      );
-    }
-    return [Context.getKnownContext(root)];
+  public static getContexts(root: string | null): IContext[] {
+    return Array.from(Context.#contexts.values()).filter(
+      (c) => c.getParentId() === root
+    );
   }
 
   public static removeContext(contextId: string) {

@@ -28,36 +28,41 @@ import { Context } from './context';
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  // Set from outside.
-  private _cdpConnection: CdpConnection;
+  readonly #cdpConnection: CdpConnection;
+  readonly #selfTargetId: string;
+  readonly #bidiServer: IBidiServer;
+  readonly #eventManager: IEventManager;
 
   constructor(
     cdpConnection: CdpConnection,
-    private _selfTargetId: string,
-    private _bidiServer: IBidiServer,
-    private _eventManager: IEventManager
+    selfTargetId: string,
+    bidiServer: IBidiServer,
+    eventManager: IEventManager
   ) {
-    this._cdpConnection = cdpConnection;
+    this.#cdpConnection = cdpConnection;
+    this.#selfTargetId = selfTargetId;
+    this.#bidiServer = bidiServer;
+    this.#eventManager = eventManager;
 
-    this._setCdpEventListeners(this._cdpConnection.browserClient());
+    this.#setCdpEventListeners(this.#cdpConnection.browserClient());
   }
 
-  private _setCdpEventListeners(browserCdpClient: CdpClient) {
+  #setCdpEventListeners(browserCdpClient: CdpClient) {
     browserCdpClient.Target.on('attachedToTarget', async (params) => {
-      await this._handleAttachedToTargetEvent(params);
+      await this.#handleAttachedToTargetEvent(params);
     });
     browserCdpClient.Target.on('detachedFromTarget', async (params) => {
-      await this._handleDetachedFromTargetEvent(params);
+      await this.#handleDetachedFromTargetEvent(params);
     });
   }
 
-  private async _handleAttachedToTargetEvent(
+  async #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent
   ) {
     logContext('AttachedToTarget event received: ' + JSON.stringify(params));
 
     const { sessionId, targetInfo } = params;
-    if (!this._isValidTarget(targetInfo)) {
+    if (!this.#isValidTarget(targetInfo)) {
       return;
     }
 
@@ -69,14 +74,14 @@ export class BrowsingContextProcessor {
     const context = await TargetContext.create(
       targetInfo,
       sessionId,
-      this._cdpConnection,
-      this._bidiServer,
-      this._eventManager
+      this.#cdpConnection,
+      this.#bidiServer,
+      this.#eventManager
     );
 
     Context.addContext(context);
 
-    await this._eventManager.sendEvent(
+    await this.#eventManager.sendEvent(
       new BrowsingContext.ContextCreatedEvent({
         context: context.getContextId(),
         parent: targetInfo.openerId ? targetInfo.openerId : null,
@@ -95,7 +100,7 @@ export class BrowsingContextProcessor {
   //   "params": {
   //     "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9",
   //     "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  private async _handleDetachedFromTargetEvent(
+  async #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
     logContext('detachedFromTarget event received: ' + JSON.stringify(params));
@@ -109,7 +114,7 @@ export class BrowsingContextProcessor {
     }
     const context = Context.getKnownContext(contextId);
     Context.removeContext(contextId);
-    await this._eventManager.sendEvent(
+    await this.#eventManager.sendEvent(
       new BrowsingContext.ContextDestroyedEvent(
         context.serializeToBidiValue(0)
       ),
@@ -122,7 +127,9 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.GetTreeResult> {
     return {
       result: {
-        contexts: Context.getContexts(params.root)
+        contexts: Context.getContexts(
+          params.root === undefined ? null : params.root
+        )
           .filter((c) => c.getParentId() === null)
           .map((c) =>
             c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
@@ -134,7 +141,7 @@ export class BrowsingContextProcessor {
   async process_browsingContext_create(
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
-    const browserCdpClient = this._cdpConnection.browserClient();
+    const browserCdpClient = this.#cdpConnection.browserClient();
 
     const result = await browserCdpClient.Target.createTarget({
       url: 'about:blank',
@@ -200,7 +207,7 @@ export class BrowsingContextProcessor {
   async process_browsingContext_close(
     commandParams: BrowsingContext.CloseParameters
   ): Promise<BrowsingContext.CloseResult> {
-    const browserCdpClient = this._cdpConnection.browserClient();
+    const browserCdpClient = this.#cdpConnection.browserClient();
 
     const context = Context.getKnownContext(commandParams.context);
     if (context.getParentId() !== null) {
@@ -224,7 +231,7 @@ export class BrowsingContextProcessor {
       browserCdpClient.Target.on('detachedFromTarget', onContextDestroyed);
     });
 
-    await this._cdpConnection.browserClient().Target.closeTarget({
+    await this.#cdpConnection.browserClient().Target.closeTarget({
       targetId: commandParams.context,
     });
 
@@ -236,8 +243,8 @@ export class BrowsingContextProcessor {
     return { result: {} };
   }
 
-  private _isValidTarget(target: Protocol.Target.TargetInfo) {
-    if (target.targetId === this._selfTargetId) {
+  #isValidTarget(target: Protocol.Target.TargetInfo) {
+    if (target.targetId === this.#selfTargetId) {
       return false;
     }
     if (!target.type || target.type !== 'page') {
@@ -247,7 +254,7 @@ export class BrowsingContextProcessor {
   }
 
   async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandParams) {
-    const sendCdpCommandResult = await this._cdpConnection.sendCommand(
+    const sendCdpCommandResult = await this.#cdpConnection.sendCommand(
       params.cdpMethod,
       params.cdpParams,
       params.cdpSession ?? null
