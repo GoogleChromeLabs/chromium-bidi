@@ -64,7 +64,7 @@ async def main():
         "params": {}}, websocket)
 
     # Not implemented:
-    # await browser.version());
+    # await browser.version();
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L32
 
     # Puppeteer:
