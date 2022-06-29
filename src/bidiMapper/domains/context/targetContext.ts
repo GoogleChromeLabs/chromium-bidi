@@ -232,29 +232,35 @@ export class TargetContext extends Context {
       }
     );
 
-    this.#cdpClient.Page.on('lifecycleEvent', async (params) => {
-      switch (params.name) {
-        case 'DOMContentLoaded':
-          await this.#eventManager.sendEvent(
-            new BrowsingContext.DomContentLoadedEvent({
-              context: this.getContextId(),
-              navigation: params.loaderId,
-            }),
-            this.getContextId()
-          );
-          break;
+    this.#cdpClient.Page.on(
+      'lifecycleEvent',
+      async (params: Protocol.Page.LifecycleEventEvent) => {
+        if (!Context.hasKnownContext(params.frameId)) {
+          return;
+        }
+        switch (params.name) {
+          case 'DOMContentLoaded':
+            await this.#eventManager.sendEvent(
+              new BrowsingContext.DomContentLoadedEvent({
+                context: params.frameId,
+                navigation: params.loaderId,
+              }),
+              this.getContextId()
+            );
+            break;
 
-        case 'load':
-          await this.#eventManager.sendEvent(
-            new LoadEvent({
-              context: this.getContextId(),
-              navigation: params.loaderId,
-            }),
-            this.getContextId()
-          );
-          break;
+          case 'load':
+            await this.#eventManager.sendEvent(
+              new LoadEvent({
+                context: params.frameId,
+                navigation: params.loaderId,
+              }),
+              this.getContextId()
+            );
+            break;
+        }
       }
-    });
+    );
   }
 
   #updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {

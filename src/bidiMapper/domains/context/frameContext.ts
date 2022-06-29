@@ -54,11 +54,48 @@ export class FrameContext extends Context {
     throw new UnknownErrorResponse('Not implemented');
   }
 
-  navigate(
+  public async navigate(
     url: string,
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
-    throw new UnknownErrorResponse('Not implemented');
+    // TODO: handle loading errors.
+    const cdpNavigateResult = await this.#cdpClient.Page.navigate({
+      url,
+      frameId: this.getContextId(),
+    });
+
+    // No `loaderId` means same-document navigation.
+    if (cdpNavigateResult.loaderId !== undefined) {
+      // Wait for `wait` condition.
+      switch (wait) {
+        case 'none':
+          break;
+
+        case 'interactive':
+          await this.#waitPageLifeCycleEvent(
+            'DOMContentLoaded',
+            cdpNavigateResult.loaderId!
+          );
+          break;
+
+        case 'complete':
+          await this.#waitPageLifeCycleEvent(
+            'load',
+            cdpNavigateResult.loaderId!
+          );
+          break;
+
+        default:
+          throw new Error(`Not implemented wait '${wait}'`);
+      }
+    }
+
+    return {
+      result: {
+        navigation: cdpNavigateResult.loaderId || null,
+        url: url,
+      },
+    };
   }
 
   scriptEvaluate(
@@ -78,5 +115,24 @@ export class FrameContext extends Context {
         }
       }
     );
+  }
+
+  async #waitPageLifeCycleEvent(eventName: string, loaderId: string) {
+    return new Promise<Protocol.Page.LifecycleEventEvent>((resolve) => {
+      const handleLifecycleEvent = async (
+        params: Protocol.Page.LifecycleEventEvent
+      ) => {
+        if (params.name !== eventName || params.loaderId !== loaderId) {
+          return;
+        }
+        this.#cdpClient.Page.removeListener(
+          'lifecycleEvent',
+          handleLifecycleEvent
+        );
+        resolve(params);
+      };
+
+      this.#cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
+    });
   }
 }
