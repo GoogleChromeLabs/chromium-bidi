@@ -147,7 +147,10 @@ export abstract class Context implements IContext {
     await this.waitInitialized();
 
     // TODO: handle loading errors.
-    const cdpNavigateResult = await this.cdpClient.Page.navigate({ url });
+    const cdpNavigateResult = await this.cdpClient.Page.navigate({
+      url,
+      frameId: this.getContextId(),
+    });
 
     // Wait for `wait` condition.
     switch (wait) {
