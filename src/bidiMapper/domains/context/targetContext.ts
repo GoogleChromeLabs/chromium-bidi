@@ -46,7 +46,7 @@ export class TargetContext extends Context {
     };
   });
 
-  async #waitInitialized(): Promise<void> {
+  protected async waitInitialized(): Promise<void> {
     await this.#initialized;
   }
 
@@ -61,7 +61,12 @@ export class TargetContext extends Context {
     if (Context.hasKnownContext(targetInfo.targetId)) {
       parentId = Context.getKnownContext(targetInfo.targetId).getParentId();
     }
-    super(targetInfo.targetId, parentId, sessionId);
+    super(
+      targetInfo.targetId,
+      parentId,
+      sessionId,
+      cdpConnection.getCdpClient(sessionId)
+    );
     this.#sessionId = sessionId;
     this.#cdpClient = cdpConnection.getCdpClient(sessionId);
     this.#browserClient = cdpConnection.browserClient();
@@ -92,54 +97,11 @@ export class TargetContext extends Context {
     );
   }
 
-  public async navigate(
-    url: string,
-    wait: BrowsingContext.ReadinessState
-  ): Promise<BrowsingContext.NavigateResult> {
-    await this.#waitInitialized();
-
-    // TODO: handle loading errors.
-    const cdpNavigateResult = await this.#cdpClient.Page.navigate({ url });
-
-    // No `loaderId` means same-document navigation.
-    if (cdpNavigateResult.loaderId !== undefined) {
-      // Wait for `wait` condition.
-      switch (wait) {
-        case 'none':
-          break;
-
-        case 'interactive':
-          await this.#waitPageLifeCycleEvent(
-            'DOMContentLoaded',
-            cdpNavigateResult.loaderId!
-          );
-          break;
-
-        case 'complete':
-          await this.#waitPageLifeCycleEvent(
-            'load',
-            cdpNavigateResult.loaderId!
-          );
-          break;
-
-        default:
-          throw new Error(`Not implemented wait '${wait}'`);
-      }
-    }
-
-    return {
-      result: {
-        navigation: cdpNavigateResult.loaderId || null,
-        url: url,
-      },
-    };
-  }
-
   public async scriptEvaluate(
     expression: string,
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult> {
-    await this.#waitInitialized();
+    await this.waitInitialized();
     return this.#scriptEvaluator.scriptEvaluate(expression, awaitPromise);
   }
 
@@ -149,7 +111,7 @@ export class TargetContext extends Context {
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult> {
-    await this.#waitInitialized();
+    await this.waitInitialized();
     return {
       result: await this.#scriptEvaluator.callFunction(
         functionDeclaration,
@@ -265,24 +227,5 @@ export class TargetContext extends Context {
 
   #updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {
     this.setUrl(targetInfo.url);
-  }
-
-  async #waitPageLifeCycleEvent(eventName: string, loaderId: string) {
-    return new Promise<Protocol.Page.LifecycleEventEvent>((resolve) => {
-      const handleLifecycleEvent = async (
-        params: Protocol.Page.LifecycleEventEvent
-      ) => {
-        if (params.name !== eventName || params.loaderId !== loaderId) {
-          return;
-        }
-        this.#cdpClient.Page.removeListener(
-          'lifecycleEvent',
-          handleLifecycleEvent
-        );
-        resolve(params);
-      };
-
-      this.#cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
-    });
   }
 }

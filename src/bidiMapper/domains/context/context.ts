@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import { IContext } from './iContext';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { NoSuchFrameException } from '../protocol/error';
+import { CdpClient } from '../../../cdp';
 
 export abstract class Context implements IContext {
   static #contexts: Map<string, IContext> = new Map();
+  protected readonly cdpClient: CdpClient;
 
   public static getTopLevelContexts(): IContext[] {
     return Array.from(Context.#contexts.values()).filter(
@@ -73,11 +76,13 @@ export abstract class Context implements IContext {
   protected constructor(
     contextId: string,
     parent: string | null,
-    sessionId: string
+    sessionId: string,
+    cdpClient: CdpClient
   ) {
     this.#contextId = contextId;
     this.#parentId = parent;
     this.#sessionId = sessionId;
+    this.cdpClient = cdpClient;
   }
 
   abstract callFunction(
@@ -87,15 +92,12 @@ export abstract class Context implements IContext {
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult>;
 
-  abstract navigate(
-    url: string,
-    wait: BrowsingContext.ReadinessState
-  ): Promise<BrowsingContext.NavigateResult>;
-
   abstract scriptEvaluate(
     expression: string,
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult>;
+
+  protected abstract waitInitialized(): Promise<void>;
 
   public serializeToBidiValue(
     maxDepth: number,
@@ -136,5 +138,95 @@ export abstract class Context implements IContext {
 
     // TODO(sadym): handle type properly.
     return result as any as BrowsingContext.PROTO.FindElementResult;
+  }
+
+  public async navigate(
+    url: string,
+    wait: BrowsingContext.ReadinessState
+  ): Promise<BrowsingContext.NavigateResult> {
+    await this.waitInitialized();
+
+    // TODO: handle loading errors.
+    const cdpNavigateResult = await this.cdpClient.Page.navigate({ url });
+
+    // Wait for `wait` condition.
+    switch (wait) {
+      case 'none':
+        break;
+
+      case 'interactive':
+        // No `loaderId` means same-document navigation.
+        if (cdpNavigateResult.loaderId === undefined) {
+          await this.waitNavigatedWithinDocument();
+        } else {
+          await this.waitPageLifeCycleEvent(
+            'DOMContentLoaded',
+            cdpNavigateResult.loaderId!
+          );
+        }
+        break;
+
+      case 'complete':
+        // No `loaderId` means same-document navigation.
+        if (cdpNavigateResult.loaderId === undefined) {
+          await this.waitNavigatedWithinDocument();
+        } else {
+          await this.waitPageLifeCycleEvent(
+            'load',
+            cdpNavigateResult.loaderId!
+          );
+        }
+        break;
+
+      default:
+        throw new Error(`Not implemented wait '${wait}'`);
+    }
+
+    return {
+      result: {
+        navigation: cdpNavigateResult.loaderId || null,
+        url: url,
+      },
+    };
+  }
+
+  protected async waitPageLifeCycleEvent(eventName: string, loaderId: string) {
+    return new Promise<Protocol.Page.LifecycleEventEvent>((resolve) => {
+      const handleLifecycleEvent = async (
+        params: Protocol.Page.LifecycleEventEvent
+      ) => {
+        if (params.name !== eventName || params.loaderId !== loaderId) {
+          return;
+        }
+        this.cdpClient.Page.removeListener(
+          'lifecycleEvent',
+          handleLifecycleEvent
+        );
+        resolve(params);
+      };
+
+      this.cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
+    });
+  }
+
+  protected async waitNavigatedWithinDocument() {
+    return new Promise<Protocol.Page.NavigatedWithinDocumentEvent>(
+      (resolve) => {
+        const handleLifecycleEvent = async (
+          params: Protocol.Page.NavigatedWithinDocumentEvent
+        ) => {
+          if (params.frameId !== this.getContextId()) {
+            return;
+          }
+          this.cdpClient.Page.removeListener(
+            'navigatedWithinDocument',
+            handleLifecycleEvent
+          );
+          resolve(params);
+        };
+
+        this.cdpClient.Page.on('navigatedWithinDocument', handleLifecycleEvent);
+      }
+    );
   }
 }
