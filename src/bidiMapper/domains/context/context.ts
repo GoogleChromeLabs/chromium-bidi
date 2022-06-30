@@ -18,7 +18,7 @@
 import { Protocol } from 'devtools-protocol';
 import { IContext } from './iContext';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
-import { NoSuchFrameException } from '../protocol/error';
+import { NoSuchFrameException, UnknownErrorResponse } from '../protocol/error';
 import { CdpClient } from '../../../cdp';
 
 export abstract class Context implements IContext {
@@ -151,6 +151,10 @@ export abstract class Context implements IContext {
       url,
       frameId: this.getContextId(),
     });
+
+    if (!!cdpNavigateResult.errorText) {
+      throw new UnknownErrorResponse(cdpNavigateResult.errorText);
+    }
 
     // Wait for `wait` condition.
     switch (wait) {
