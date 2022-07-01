@@ -16,16 +16,15 @@
  */
 
 import { Protocol } from 'devtools-protocol';
-import { IContext } from './iContext';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { NoSuchFrameException, UnknownErrorResponse } from '../protocol/error';
 import { CdpClient } from '../../../cdp';
 
-export abstract class Context implements IContext {
-  static #contexts: Map<string, IContext> = new Map();
+export abstract class Context {
+  static #contexts: Map<string, Context> = new Map();
   protected readonly cdpClient: CdpClient;
 
-  public static getTopLevelContexts(): IContext[] {
+  public static getTopLevelContexts(): Context[] {
     return Array.from(Context.#contexts.values()).filter(
       (c) => c.getParentId() === null
     );
@@ -35,7 +34,7 @@ export abstract class Context implements IContext {
     Context.#contexts.delete(contextId);
   }
 
-  public static addContext(context: IContext) {
+  public static addContext(context: Context) {
     Context.#contexts.set(context.getContextId(), context);
   }
 
@@ -43,7 +42,7 @@ export abstract class Context implements IContext {
     return Context.#contexts.has(contextId);
   }
 
-  public static getKnownContext(contextId: string): IContext {
+  public static getKnownContext(contextId: string): Context {
     if (!Context.hasKnownContext(contextId)) {
       throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
@@ -57,7 +56,7 @@ export abstract class Context implements IContext {
   #url: string = 'about:blank';
 
   public getContextId = (): string => this.#contextId;
-  public getChildren = (): IContext[] =>
+  public getChildren = (): Context[] =>
     Array.from(this.#childrenIds).map((contextId) =>
       Context.getKnownContext(contextId)
     );
@@ -65,11 +64,11 @@ export abstract class Context implements IContext {
   public getParentId = (): string | null => this.#parentId;
   public getUrl = (): string | null => this.#url;
 
-  protected setUrl(url: string) {
+  public setUrl(url: string) {
     this.#url = url;
   }
 
-  public addChild(child: IContext) {
+  public addChild(child: Context) {
     this.#childrenIds.add(child.getContextId());
   }
 
@@ -97,7 +96,7 @@ export abstract class Context implements IContext {
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult>;
 
-  protected abstract waitInitialized(): Promise<void>;
+  abstract waitInitialized(): Promise<void>;
 
   public serializeToBidiValue(
     maxDepth: number,
