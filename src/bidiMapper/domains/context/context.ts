@@ -151,7 +151,7 @@ export abstract class Context {
       frameId: this.getContextId(),
     });
 
-    if (!!cdpNavigateResult.errorText) {
+    if (cdpNavigateResult.errorText) {
       throw new UnknownErrorResponse(cdpNavigateResult.errorText);
     }
 
