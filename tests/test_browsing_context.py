@@ -59,7 +59,7 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
 
 
 @pytest.mark.asyncio
-async def test_navigateToPageWithHash_contxtInfoUpdated(
+async def test_navigateToPageWithHash_contextInfoUpdated(
       websocket,
       context_id):
     url = "data:text/html,<h2>test</h2>"
