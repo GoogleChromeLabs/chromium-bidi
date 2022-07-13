@@ -146,7 +146,9 @@ export class BrowsingContextProcessor {
         if (!Context.hasKnownContext(contextId)) {
           return;
         }
-        Context.getKnownContext(contextId).setUrl(params.frame.url);
+        Context.getKnownContext(contextId).setUrl(
+          params.frame.url + (params.frame.urlFragment ?? '')
+        );
       }
     );
   }
