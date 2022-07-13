@@ -59,6 +59,33 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
 
 
 @pytest.mark.asyncio
+async def test_navigateToPageWithHash_contxtInfoUpdated(
+      websocket,
+      context_id):
+    url = "data:text/html,<h2>test</h2>"
+    url_with_hash_1 = url + "#1"
+
+    # Initial navigation.
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "complete",
+            "context": context_id}})
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
+
+    assert result == {
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_1}]}
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsReturned(
       websocket, context_id):
     nested_iframe = 'data:text/html,<h1>CHILD_PAGE</h1>'
