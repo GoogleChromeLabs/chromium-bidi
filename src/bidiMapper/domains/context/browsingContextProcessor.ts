@@ -151,6 +151,17 @@ export class BrowsingContextProcessor {
         );
       }
     );
+
+    sessionCdpClient.Page.on(
+      'navigatedWithinDocument',
+      async function (params: Protocol.Page.NavigatedWithinDocumentEvent) {
+        const contextId = params.frameId;
+        if (!Context.hasKnownContext(contextId)) {
+          return;
+        }
+        Context.getKnownContext(contextId).setUrl(params.url);
+      }
+    );
   }
 
   async #handleAttachedToTargetEvent(
