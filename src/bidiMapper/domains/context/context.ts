@@ -97,14 +97,17 @@ export abstract class Context {
     this.#sessionId = sessionId;
     this.cdpClient = cdpClient;
 
-    this.setCDPListeners();
+    this.#setCdpListeners();
   }
 
-  setCDPListeners() {
+  #setCdpListeners() {
     this.cdpClient.Page.on(
       'lifecycleEvent',
-      async (params: Protocol.Page.LifecycleEventEvent) => {
-        let map = undefined;
+      (params: Protocol.Page.LifecycleEventEvent) => {
+        let map: Map<
+          string,
+          Deferred<Protocol.Page.LifecycleEventEvent>
+        > | null = null;
         if (params.name === 'DOMContentLoaded') {
           map = this.#targetDeferres.Page.lifecycleEvent.DOMContentLoaded;
         }
@@ -118,7 +121,7 @@ export abstract class Context {
 
     this.cdpClient.Page.on(
       'navigatedWithinDocument',
-      async (params: Protocol.Page.NavigatedWithinDocumentEvent) => {
+      (params: Protocol.Page.NavigatedWithinDocumentEvent) => {
         if (params.frameId !== this.getContextId()) {
           return;
         }
