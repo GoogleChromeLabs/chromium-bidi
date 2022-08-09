@@ -19,12 +19,11 @@ import { StubTransport } from '../../../tests/stubTransport.spec';
 import * as sinon from 'sinon';
 
 import { BrowsingContextProcessor } from './browsingContextProcessor';
-import { CdpClient, CdpConnection } from '../../../cdp';
+import { CdpConnection } from '../../../cdp';
 import { BrowsingContext } from '../protocol/bidiProtocolTypes';
 import { BidiServer, IBidiServer } from '../../utils/bidiServer';
 import { EventManager, IEventManager } from '../events/EventManager';
-import { ContextImpl } from './contextImpl';
-import { IContext } from './iContext';
+import { BrowsingContextImpl } from './browsingContextImpl';
 
 describe('BrowsingContextProcessor', function () {
   let mockCdpServer: StubTransport;
@@ -67,19 +66,21 @@ describe('BrowsingContextProcessor', function () {
     );
 
     // Actual `Context.create` logic involves several CDP calls, so mock it to avoid all the simulations.
-    ContextImpl.createTargetContext = sinon.fake(() => {
-      return sinon.createStubInstance(ContextImpl);
+    BrowsingContextImpl.createTargetContext = sinon.fake(() => {
+      return sinon.createStubInstance(BrowsingContextImpl);
     });
   });
 
   describe('handle events', async function () {
     it('`Target.attachedToTarget` creates Context', async function () {
-      sinon.assert.notCalled(ContextImpl.createTargetContext as sinon.SinonSpy);
+      sinon.assert.notCalled(
+        BrowsingContextImpl.createTargetContext as sinon.SinonSpy
+      );
       await mockCdpServer.emulateIncomingMessage(
         TARGET_ATTACHED_TO_TARGET_EVENT
       );
       sinon.assert.calledOnceWithExactly(
-        ContextImpl.createTargetContext as sinon.SinonSpy,
+        BrowsingContextImpl.createTargetContext as sinon.SinonSpy,
         NEW_CONTEXT_ID,
         null,
         sinon.match.any, // cdpClient.

@@ -25,14 +25,14 @@ import {
   InvalidArgumentErrorResponse,
   NoSuchFrameException,
 } from '../protocol/error';
-import { ContextImpl } from './contextImpl';
+import { BrowsingContextImpl } from './browsingContextImpl';
 
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  static #contexts: Map<string, ContextImpl> = new Map();
+  static #contexts: Map<string, BrowsingContextImpl> = new Map();
 
-  static #getTopLevelContexts(): ContextImpl[] {
+  static #getTopLevelContexts(): BrowsingContextImpl[] {
     return Array.from(BrowsingContextProcessor.#contexts.values()).filter(
       (c) => c.parentId === null
     );
@@ -42,7 +42,7 @@ export class BrowsingContextProcessor {
     BrowsingContextProcessor.#contexts.delete(contextId);
   }
 
-  static #registerContext(context: ContextImpl) {
+  static #registerContext(context: BrowsingContextImpl) {
     BrowsingContextProcessor.#contexts.set(context.contextId, context);
     if (context.parentId !== null) {
       BrowsingContextProcessor.#getKnownContext(context.parentId).addChild(
@@ -55,7 +55,7 @@ export class BrowsingContextProcessor {
     return BrowsingContextProcessor.#contexts.has(contextId);
   }
 
-  static #getKnownContext(contextId: string): ContextImpl {
+  static #getKnownContext(contextId: string): BrowsingContextImpl {
     if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
       throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
@@ -122,7 +122,7 @@ export class BrowsingContextProcessor {
     sessionCdpClient.Page.on(
       'frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
-        const context = ContextImpl.createFrameContext(
+        const context = BrowsingContextImpl.createFrameContext(
           params.frameId,
           params.parentFrameId,
           sessionCdpClient,
@@ -163,13 +163,13 @@ export class BrowsingContextProcessor {
 
     if (BrowsingContextProcessor.#hasKnownContext(targetInfo.targetId)) {
       // OOPiF.
-      ContextImpl.convertFrameToTargetContext(
+      BrowsingContextImpl.convertFrameToTargetContext(
         BrowsingContextProcessor.#getKnownContext(targetInfo.targetId),
         targetSessionCdpClient,
         sessionId
       );
     } else {
-      const context = ContextImpl.createTargetContext(
+      const context = BrowsingContextImpl.createTargetContext(
         targetInfo.targetId,
         null,
         targetSessionCdpClient,

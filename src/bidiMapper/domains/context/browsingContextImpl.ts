@@ -25,9 +25,8 @@ import { UnknownErrorResponse } from '../protocol/error';
 import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
-import { IContext } from './iContext';
 
-export class ContextImpl implements IContext {
+export class BrowsingContextImpl {
   readonly #targetDefers = {
     documentInitialized: new Deferred<void>(),
     targetUnblocked: new Deferred<void>(),
@@ -50,7 +49,7 @@ export class ContextImpl implements IContext {
   #cdpClient: CdpClient;
   readonly #bidiServer: IBidiServer;
   #eventManager: IEventManager;
-  readonly #children: ContextImpl[] = [];
+  readonly #children: BrowsingContextImpl[] = [];
   #scriptEvaluator: ScriptEvaluator;
   #executionContext: number | null = null;
 
@@ -80,8 +79,8 @@ export class ContextImpl implements IContext {
     bidiServer: IBidiServer,
     cdpSessionId: string,
     eventManager: IEventManager
-  ): ContextImpl {
-    const context = new ContextImpl(
+  ): BrowsingContextImpl {
+    const context = new BrowsingContextImpl(
       contextId,
       parentId,
       cdpClient,
@@ -100,8 +99,8 @@ export class ContextImpl implements IContext {
     bidiServer: IBidiServer,
     cdpSessionId: string,
     eventManager: IEventManager
-  ): ContextImpl {
-    const context = new ContextImpl(
+  ): BrowsingContextImpl {
+    const context = new BrowsingContextImpl(
       contextId,
       parentId,
       cdpClient,
@@ -118,10 +117,10 @@ export class ContextImpl implements IContext {
   }
 
   public static convertFrameToTargetContext(
-    context: ContextImpl,
+    context: BrowsingContextImpl,
     cdpClient: CdpClient,
     cdpSessionId: string
-  ): ContextImpl {
+  ): BrowsingContextImpl {
     context.#updateConnection(cdpClient, cdpSessionId);
     // No need in waiting for target to be unblocked.
     // noinspection JSIgnoredPromiseFromCall
@@ -174,7 +173,7 @@ export class ContextImpl implements IContext {
     return this.#cdpSessionId;
   }
 
-  get children(): ContextImpl[] {
+  get children(): BrowsingContextImpl[] {
     return this.#children;
   }
 
@@ -182,7 +181,7 @@ export class ContextImpl implements IContext {
     return this.#url;
   }
 
-  addChild(child: ContextImpl): void {
+  addChild(child: BrowsingContextImpl): void {
     this.#children.push(child);
   }
 
