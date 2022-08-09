@@ -43,7 +43,7 @@ export class BrowsingContextImpl {
   readonly #contextId: string;
   readonly #parentId: string | null;
   #url: string = 'about:blank';
-  #documentId: string | null = null;
+  #loaderId: string | null = null;
 
   #cdpSessionId: string;
   #cdpClient: CdpClient;
@@ -247,7 +247,7 @@ export class BrowsingContextImpl {
           this.#targetDefers.documentInitialized.resolve();
         }
 
-        if (params.loaderId !== this.#documentId) {
+        if (params.loaderId !== this.#loaderId) {
           return;
         }
 
@@ -259,7 +259,7 @@ export class BrowsingContextImpl {
             await this.#eventManager.sendEvent(
               new BrowsingContext.DomContentLoadedEvent({
                 context: this.contextId,
-                navigation: this.#documentId,
+                navigation: this.#loaderId,
               }),
               this.contextId
             );
@@ -270,7 +270,7 @@ export class BrowsingContextImpl {
             await this.#eventManager.sendEvent(
               new LoadEvent({
                 context: this.contextId,
-                navigation: this.#documentId,
+                navigation: this.#loaderId,
               }),
               this.contextId
             );
@@ -293,8 +293,8 @@ export class BrowsingContextImpl {
     );
   }
 
-  #documentChanged(documentId: string) {
-    if (this.#documentId === documentId) {
+  #documentChanged(loaderId: string) {
+    if (this.#loaderId === loaderId) {
       return;
     }
 
@@ -325,7 +325,7 @@ export class BrowsingContextImpl {
     this.#targetDefers.Page.lifecycleEvent.load =
       new Deferred<Protocol.Page.LifecycleEventEvent>();
 
-    this.#documentId = documentId;
+    this.#loaderId = loaderId;
   }
 
   async navigate(
@@ -346,7 +346,7 @@ export class BrowsingContextImpl {
 
     if (
       cdpNavigateResult.loaderId !== undefined &&
-      cdpNavigateResult.loaderId !== this.#documentId
+      cdpNavigateResult.loaderId !== this.#loaderId
     ) {
       this.#documentChanged(cdpNavigateResult.loaderId);
     }
