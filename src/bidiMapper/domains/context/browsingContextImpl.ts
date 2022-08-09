@@ -142,7 +142,7 @@ export class BrowsingContextImpl {
   }
 
   async #unblockAttachedTarget() {
-    await LogManager.create(
+    LogManager.create(
       this.#contextId,
       this.#cdpClient,
       this.#bidiServer,
