@@ -18,7 +18,6 @@
 import { Protocol } from 'devtools-protocol';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { CdpClient } from '../../../cdp';
-import { Context } from './context';
 import { IEventManager } from '../events/EventManager';
 import LoadEvent = BrowsingContext.LoadEvent;
 import { Deferred } from '../../utils/deferred';
@@ -27,6 +26,7 @@ import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { IContext } from './iContext';
+import { BrowsingContextProcessor } from './browsingContextProcessor';
 
 export class ContextImpl implements IContext {
   readonly #targetDefers = {
@@ -82,14 +82,13 @@ export class ContextImpl implements IContext {
     cdpSessionId: string,
     eventManager: IEventManager
   ) {
-    if (Context.hasKnownContext(contextId)) {
+    if (BrowsingContextProcessor.hasKnownContext(contextId)) {
       return await ContextImpl.targetFromFrame(
         contextId,
         parentId,
         cdpClient,
         bidiServer,
-        cdpSessionId,
-        eventManager
+        cdpSessionId
       );
     }
 
@@ -101,7 +100,7 @@ export class ContextImpl implements IContext {
       cdpSessionId,
       eventManager
     );
-    Context.registerContext(context);
+    BrowsingContextProcessor.registerContext(context);
     await context.#unblockAttachedTarget();
     await eventManager.sendEvent(
       new BrowsingContext.ContextCreatedEvent(
@@ -116,10 +115,11 @@ export class ContextImpl implements IContext {
     parentId: string | null,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
-    cdpSessionId: string,
-    eventManager: IEventManager
+    cdpSessionId: string
   ) {
-    const context = Context.getKnownContext(contextId) as ContextImpl;
+    const context = BrowsingContextProcessor.getKnownContext(
+      contextId
+    ) as ContextImpl;
     await context.#updateConnection(cdpClient, cdpSessionId);
     await context.#unblockAttachedTarget();
   }
@@ -173,7 +173,7 @@ export class ContextImpl implements IContext {
       cdpSessionId,
       eventManager
     );
-    Context.registerContext(context);
+    BrowsingContextProcessor.registerContext(context);
 
     context.#targetDefers.targetUnblocked.resolve();
 
