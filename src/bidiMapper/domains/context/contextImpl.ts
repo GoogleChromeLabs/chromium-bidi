@@ -458,6 +458,26 @@ export class ContextImpl implements IContext {
     selector: string
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
     await this.#targetDeferres.targetUnblocked;
-    throw Error('Not implemented');
+
+    const functionDeclaration = String((resultsSelector: string) =>
+      document.querySelector(resultsSelector)
+    );
+    const _arguments: Script.ArgumentValue[] = [
+      { type: 'string', value: selector },
+    ];
+
+    // TODO(sadym): handle not found exception.
+    const result = await this.callFunction(
+      functionDeclaration,
+      {
+        type: 'undefined',
+      },
+      _arguments,
+      true,
+      'root'
+    );
+
+    // TODO(sadym): handle type properly.
+    return result as any as BrowsingContext.PROTO.FindElementResult;
   }
 }
