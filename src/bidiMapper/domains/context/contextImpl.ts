@@ -45,17 +45,19 @@ export class ContextImpl implements IContext {
   readonly #contextId: string;
   readonly #parentId: string | null;
   #url: string = 'about:blank';
+  #documentId: string | null = null;
+
   #cdpSessionId: string;
   #cdpClient: CdpClient;
   readonly #bidiServer: IBidiServer;
   #eventManager: IEventManager;
   readonly #children: IContext[] = [];
-  #documentId: string | null;
+  #scriptEvaluator: ScriptEvaluator;
+  #executionContext: number | null = null;
 
   constructor(
     contextId: string,
     parentId: string | null,
-    documentId: string | null,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
     cdpSessionId: string,
@@ -63,12 +65,12 @@ export class ContextImpl implements IContext {
   ) {
     this.#contextId = contextId;
     this.#parentId = parentId;
-    this.#documentId = documentId;
     this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
     this.#cdpSessionId = cdpSessionId;
     this.#bidiServer = bidiServer;
 
+    this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
     this.#initListeners();
   }
 
@@ -94,7 +96,6 @@ export class ContextImpl implements IContext {
     const context = new ContextImpl(
       contextId,
       parentId,
-      null,
       cdpClient,
       bidiServer,
       cdpSessionId,
@@ -123,7 +124,7 @@ export class ContextImpl implements IContext {
     await context.#unblockAttachedTarget();
   }
 
-  async #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
+  #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
     if (!this.#targetDeferres.targetUnblocked.isFinished) {
       this.#targetDeferres.targetUnblocked.reject('OOPiF');
     }
@@ -132,6 +133,7 @@ export class ContextImpl implements IContext {
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
 
+    this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
     this.#initListeners();
   }
 
@@ -140,7 +142,7 @@ export class ContextImpl implements IContext {
       this.#contextId,
       this.#cdpClient,
       this.#bidiServer,
-      ScriptEvaluator.create(this.#cdpClient)
+      this.#scriptEvaluator
     );
     await this.#cdpClient.Runtime.enable();
     await this.#cdpClient.Page.enable();
@@ -166,7 +168,6 @@ export class ContextImpl implements IContext {
     const context = new ContextImpl(
       contextId,
       parentId,
-      null,
       cdpClient,
       bidiServer,
       cdpSessionId,
@@ -301,16 +302,19 @@ export class ContextImpl implements IContext {
         }
       }
     );
-  }
 
-  callFunction(
-    functionDeclaration: string,
-    _this: Script.ArgumentValue,
-    _arguments: Script.ArgumentValue[],
-    awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
-  ): Promise<Script.CallFunctionResult> {
-    throw Error('Not implemented');
+    this.#cdpClient.Runtime.on(
+      'executionContextCreated',
+      (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
+        if (params.context.auxData.frameId !== this.contextId) {
+          return;
+        }
+        if (!params.context.auxData.isDefault) {
+          return;
+        }
+        this.#executionContext = params.context.id;
+      }
+    );
   }
 
   #documentChanged(documentId: string) {
@@ -406,13 +410,48 @@ export class ContextImpl implements IContext {
     };
   }
 
+  async callFunction(
+    functionDeclaration: string,
+    _this: Script.ArgumentValue,
+    _arguments: Script.ArgumentValue[],
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<Script.CallFunctionResult> {
+    await this.#targetDeferres.targetUnblocked;
+
+    if (this.#executionContext === null) {
+      throw Error('No execution context');
+    }
+
+    return {
+      result: await this.#scriptEvaluator.callFunction(
+        this.#executionContext!,
+        functionDeclaration,
+        _this,
+        _arguments,
+        awaitPromise,
+        resultOwnership
+      ),
+    };
+  }
+
   async scriptEvaluate(
     expression: string,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     await this.#targetDeferres.targetUnblocked;
-    throw Error('Not implemented');
+
+    if (this.#executionContext === null) {
+      throw Error('No execution context');
+    }
+
+    return this.#scriptEvaluator.scriptEvaluate(
+      this.#executionContext!,
+      expression,
+      awaitPromise,
+      resultOwnership
+    );
   }
 
   async findElement(

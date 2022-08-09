@@ -43,65 +43,80 @@ export class LogManager {
       serializer
     );
 
-    await logManager._initialize();
+    await logManager.#initialize();
     return logManager;
   }
 
-  private async _initialize() {
-    this._initializeEventListeners();
+  async #initialize() {
+    this.#initializeEventListeners();
   }
 
-  private _initializeEventListeners() {
-    this._initializeLogEntryAddedEventListener();
+  #initializeEventListeners() {
+    this.#initializeLogEntryAddedEventListener();
   }
 
-  private _initializeLogEntryAddedEventListener() {
-    this._cdpClient.Runtime.on('consoleAPICalled', async (params) => {
-      const args = await Promise.all(
-        params.args.map(async (arg) => {
-          return await this._serializer?.serializeCdpObject(arg, 'none');
-        })
-      );
-
-      await this._bidiServer.sendMessage(
-        new Log.LogEntryAddedEvent({
-          level: this._getLogLevel(params.type),
-          text: getRemoteValuesText(args, true),
-          timestamp: params.timestamp,
-          stackTrace: this._getBidiStackTrace(params.stackTrace),
-          type: 'console',
-          method: params.type,
-          realm: this._contextId,
-          args: args,
-        })
-      );
-    });
-
-    this._cdpClient.Runtime.on('exceptionThrown', async (params) => {
-      let text = params.exceptionDetails.text;
-
-      if (params.exceptionDetails.exception) {
-        const exceptionString = await this._serializer.stringifyObject(
-          params.exceptionDetails.exception
+  #initializeLogEntryAddedEventListener() {
+    this._cdpClient.Runtime.on(
+      'consoleAPICalled',
+      async (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
+        const args = await Promise.all(
+          params.args.map(async (arg) => {
+            return this._serializer?.serializeCdpObject(
+              arg,
+              'none',
+              params.executionContextId
+            );
+          })
         );
-        if (exceptionString) {
-          text = exceptionString;
-        }
-      }
 
-      await this._bidiServer.sendMessage(
-        new Log.LogEntryAddedEvent({
-          level: 'error',
-          text,
-          timestamp: params.timestamp,
-          stackTrace: this._getBidiStackTrace(
-            params.exceptionDetails.stackTrace
-          ),
-          type: 'javascript',
-          realm: this._contextId,
-        })
-      );
-    });
+        await this._bidiServer.sendMessage(
+          new Log.LogEntryAddedEvent({
+            level: this._getLogLevel(params.type),
+            text: getRemoteValuesText(args, true),
+            timestamp: params.timestamp,
+            stackTrace: this._getBidiStackTrace(params.stackTrace),
+            type: 'console',
+            method: params.type,
+            realm: this._contextId,
+            args: args,
+          })
+        );
+      }
+    );
+
+    this._cdpClient.Runtime.on(
+      'exceptionThrown',
+      async (params: Protocol.Runtime.ExceptionThrownEvent) => {
+        let text = params.exceptionDetails.text;
+
+        if (params.exceptionDetails.exception) {
+          if (params.exceptionDetails.executionContextId === undefined) {
+            text = JSON.stringify(params.exceptionDetails.exception);
+          } else {
+            const exceptionString = await this._serializer.stringifyObject(
+              params.exceptionDetails.exception,
+              params.exceptionDetails.executionContextId!
+            );
+            if (exceptionString) {
+              text = exceptionString;
+            }
+          }
+        }
+
+        await this._bidiServer.sendMessage(
+          new Log.LogEntryAddedEvent({
+            level: 'error',
+            text,
+            timestamp: params.timestamp,
+            stackTrace: this._getBidiStackTrace(
+              params.exceptionDetails.stackTrace
+            ),
+            type: 'javascript',
+            realm: this._contextId,
+          })
+        );
+      }
+    );
   }
 
   private _getLogLevel(consoleAPIType: string): Log.LogLevel {
