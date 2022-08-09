@@ -26,7 +26,6 @@ import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { IContext } from './iContext';
-import { BrowsingContextProcessor } from './browsingContextProcessor';
 
 export class ContextImpl implements IContext {
   readonly #targetDefers = {
@@ -51,7 +50,7 @@ export class ContextImpl implements IContext {
   #cdpClient: CdpClient;
   readonly #bidiServer: IBidiServer;
   #eventManager: IEventManager;
-  readonly #children: IContext[] = [];
+  readonly #children: ContextImpl[] = [];
   #scriptEvaluator: ScriptEvaluator;
   #executionContext: number | null = null;
 
@@ -74,24 +73,14 @@ export class ContextImpl implements IContext {
     this.#initListeners();
   }
 
-  public static async createFromTarget(
+  public static createFrameContext(
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
     cdpSessionId: string,
     eventManager: IEventManager
-  ) {
-    if (BrowsingContextProcessor.hasKnownContext(contextId)) {
-      return await ContextImpl.targetFromFrame(
-        contextId,
-        parentId,
-        cdpClient,
-        bidiServer,
-        cdpSessionId
-      );
-    }
-
+  ): ContextImpl {
     const context = new ContextImpl(
       contextId,
       parentId,
@@ -100,28 +89,44 @@ export class ContextImpl implements IContext {
       cdpSessionId,
       eventManager
     );
-    BrowsingContextProcessor.registerContext(context);
-    await context.#unblockAttachedTarget();
-    await eventManager.sendEvent(
-      new BrowsingContext.ContextCreatedEvent(
-        context.serializeToBidiValue(0, true)
-      ),
-      context.contextId
-    );
+    context.#targetDefers.targetUnblocked.resolve();
+    return context;
   }
 
-  public static async targetFromFrame(
+  public static createTargetContext(
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
+    cdpSessionId: string,
+    eventManager: IEventManager
+  ): ContextImpl {
+    const context = new ContextImpl(
+      contextId,
+      parentId,
+      cdpClient,
+      bidiServer,
+      cdpSessionId,
+      eventManager
+    );
+
+    // No need in waiting for target to be unblocked.
+    // noinspection JSIgnoredPromiseFromCall
+    context.#unblockAttachedTarget();
+
+    return context;
+  }
+
+  public static convertFrameToTargetContext(
+    context: ContextImpl,
+    cdpClient: CdpClient,
     cdpSessionId: string
-  ) {
-    const context = BrowsingContextProcessor.getKnownContext(
-      contextId
-    ) as ContextImpl;
-    await context.#updateConnection(cdpClient, cdpSessionId);
-    await context.#unblockAttachedTarget();
+  ): ContextImpl {
+    context.#updateConnection(cdpClient, cdpSessionId);
+    // No need in waiting for target to be unblocked.
+    // noinspection JSIgnoredPromiseFromCall
+    context.#unblockAttachedTarget();
+    return context;
   }
 
   #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
@@ -157,34 +162,6 @@ export class ContextImpl implements IContext {
     this.#targetDefers.targetUnblocked.resolve();
   }
 
-  public static async createFromFrame(
-    contextId: string,
-    parentId: string | null,
-    cdpClient: CdpClient,
-    bidiServer: IBidiServer,
-    cdpSessionId: string,
-    eventManager: IEventManager
-  ) {
-    const context = new ContextImpl(
-      contextId,
-      parentId,
-      cdpClient,
-      bidiServer,
-      cdpSessionId,
-      eventManager
-    );
-    BrowsingContextProcessor.registerContext(context);
-
-    context.#targetDefers.targetUnblocked.resolve();
-
-    await eventManager.sendEvent(
-      new BrowsingContext.ContextCreatedEvent(
-        context.serializeToBidiValue(0, true)
-      ),
-      context.contextId
-    );
-  }
-
   get contextId(): string {
     return this.#contextId;
   }
@@ -197,7 +174,7 @@ export class ContextImpl implements IContext {
     return this.#cdpSessionId;
   }
 
-  get children(): IContext[] {
+  get children(): ContextImpl[] {
     return this.#children;
   }
 
@@ -205,7 +182,7 @@ export class ContextImpl implements IContext {
     return this.#url;
   }
 
-  addChild(child: IContext): void {
+  addChild(child: ContextImpl): void {
     this.#children.push(child);
   }
 

@@ -26,38 +26,37 @@ import {
   NoSuchFrameException,
 } from '../protocol/error';
 import { ContextImpl } from './contextImpl';
-import { IContext } from './iContext';
 
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  static #contexts: Map<string, IContext> = new Map();
+  static #contexts: Map<string, ContextImpl> = new Map();
 
-  public static getTopLevelContexts(): IContext[] {
+  static #getTopLevelContexts(): ContextImpl[] {
     return Array.from(BrowsingContextProcessor.#contexts.values()).filter(
       (c) => c.parentId === null
     );
   }
 
-  public static removeContext(contextId: string) {
+  static #removeContext(contextId: string) {
     BrowsingContextProcessor.#contexts.delete(contextId);
   }
 
-  public static registerContext(context: IContext) {
+  static #registerContext(context: ContextImpl) {
     BrowsingContextProcessor.#contexts.set(context.contextId, context);
     if (context.parentId !== null) {
-      BrowsingContextProcessor.getKnownContext(context.parentId).addChild(
+      BrowsingContextProcessor.#getKnownContext(context.parentId).addChild(
         context
       );
     }
   }
 
-  public static hasKnownContext(contextId: string): boolean {
+  static #hasKnownContext(contextId: string): boolean {
     return BrowsingContextProcessor.#contexts.has(contextId);
   }
 
-  public static getKnownContext(contextId: string): IContext {
-    if (!BrowsingContextProcessor.hasKnownContext(contextId)) {
+  static #getKnownContext(contextId: string): ContextImpl {
+    if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
       throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
     return BrowsingContextProcessor.#contexts.get(contextId)!;
@@ -123,13 +122,21 @@ export class BrowsingContextProcessor {
     sessionCdpClient.Page.on(
       'frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
-        await ContextImpl.createFromFrame(
+        const context = ContextImpl.createFrameContext(
           params.frameId,
           params.parentFrameId,
           sessionCdpClient,
           this.#bidiServer,
           sessionId,
           this.#eventManager
+        );
+
+        BrowsingContextProcessor.#registerContext(context);
+        await this.#eventManager.sendEvent(
+          new BrowsingContext.ContextCreatedEvent(
+            context.serializeToBidiValue(0, true)
+          ),
+          context.contextId
         );
       }
     );
@@ -154,14 +161,31 @@ export class BrowsingContextProcessor {
 
     this.#setSessionEventListeners(sessionId);
 
-    await ContextImpl.createFromTarget(
-      targetInfo.targetId,
-      null,
-      targetSessionCdpClient,
-      this.#bidiServer,
-      sessionId,
-      this.#eventManager
-    );
+    if (BrowsingContextProcessor.#hasKnownContext(targetInfo.targetId)) {
+      // OOPiF.
+      ContextImpl.convertFrameToTargetContext(
+        BrowsingContextProcessor.#getKnownContext(targetInfo.targetId),
+        targetSessionCdpClient,
+        sessionId
+      );
+    } else {
+      const context = ContextImpl.createTargetContext(
+        targetInfo.targetId,
+        null,
+        targetSessionCdpClient,
+        this.#bidiServer,
+        sessionId,
+        this.#eventManager
+      );
+
+      BrowsingContextProcessor.#registerContext(context);
+      await this.#eventManager.sendEvent(
+        new BrowsingContext.ContextCreatedEvent(
+          context.serializeToBidiValue(0, true)
+        ),
+        context.contextId
+      );
+    }
   }
 
   // { "method": "Target.detachedFromTarget",
@@ -177,11 +201,11 @@ export class BrowsingContextProcessor {
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;
-    if (!BrowsingContextProcessor.hasKnownContext(contextId)) {
+    if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
       return;
     }
-    const context = BrowsingContextProcessor.getKnownContext(contextId);
-    BrowsingContextProcessor.removeContext(contextId);
+    const context = BrowsingContextProcessor.#getKnownContext(contextId);
+    BrowsingContextProcessor.#removeContext(contextId);
     await this.#eventManager.sendEvent(
       new BrowsingContext.ContextDestroyedEvent(
         context.serializeToBidiValue(0, true)
@@ -195,8 +219,8 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.GetTreeResult> {
     const resultContexts =
       params.root === undefined
-        ? BrowsingContextProcessor.getTopLevelContexts()
-        : [BrowsingContextProcessor.getKnownContext(params.root)];
+        ? BrowsingContextProcessor.#getTopLevelContexts()
+        : [BrowsingContextProcessor.#getKnownContext(params.root)];
 
     return {
       result: {
@@ -230,7 +254,7 @@ export class BrowsingContextProcessor {
   async process_browsingContext_navigate(
     params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
-    const context = BrowsingContextProcessor.getKnownContext(params.context);
+    const context = BrowsingContextProcessor.#getKnownContext(params.context);
 
     return await context.navigate(
       params.url,
@@ -241,7 +265,7 @@ export class BrowsingContextProcessor {
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    const context = BrowsingContextProcessor.getKnownContext(
+    const context = BrowsingContextProcessor.#getKnownContext(
       (params.target as Script.ContextTarget).context
     );
     return await context.scriptEvaluate(
@@ -254,7 +278,7 @@ export class BrowsingContextProcessor {
   async process_script_callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    const context = BrowsingContextProcessor.getKnownContext(
+    const context = BrowsingContextProcessor.#getKnownContext(
       (params.target as Script.ContextTarget).context
     );
     return await context.callFunction(
@@ -271,7 +295,7 @@ export class BrowsingContextProcessor {
   async process_PROTO_browsingContext_findElement(
     params: BrowsingContext.PROTO.FindElementParameters
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    const context = BrowsingContextProcessor.getKnownContext(params.context);
+    const context = BrowsingContextProcessor.#getKnownContext(params.context);
     return await context.findElement(params.selector);
   }
 
@@ -280,7 +304,7 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.CloseResult> {
     const browserCdpClient = this.#cdpConnection.browserClient();
 
-    const context = BrowsingContextProcessor.getKnownContext(
+    const context = BrowsingContextProcessor.#getKnownContext(
       commandParams.context
     );
     if (context.parentId !== null) {
@@ -335,7 +359,7 @@ export class BrowsingContextProcessor {
   async process_PROTO_cdp_getSession(params: CDP.PROTO.GetSessionParams) {
     const context = params.context;
     const sessionId =
-      BrowsingContextProcessor.getKnownContext(context).cdpSessionId;
+      BrowsingContextProcessor.#getKnownContext(context).cdpSessionId;
     if (sessionId === undefined) {
       return { result: { session: null } };
     }
