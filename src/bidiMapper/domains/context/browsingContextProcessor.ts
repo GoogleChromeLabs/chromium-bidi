@@ -17,15 +17,13 @@
 
 import { log } from '../../../utils/log';
 import { CdpClient, CdpConnection } from '../../../cdp';
-import { TargetContext } from './targetContext';
 import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { InvalidArgumentErrorResponse } from '../protocol/error';
 import { Context } from './context';
-import { FrameContext } from './frameContext';
-import LoadEvent = BrowsingContext.LoadEvent;
+import { ContextImpl } from './contextImpl';
 
 const logContext = log('context');
 
@@ -55,16 +53,6 @@ export class BrowsingContextProcessor {
   }
 
   #setTargetEventListeners(cdpClient: CdpClient) {
-    cdpClient.Target.on(
-      'targetInfoChanged',
-      (params: Protocol.Target.TargetInfoChangedEvent) => {
-        const contextId = params.targetInfo.targetId;
-        if (!Context.hasKnownContext(contextId)) {
-          return;
-        }
-        Context.getKnownContext(contextId).setUrl(params.targetInfo.url);
-      }
-    );
     cdpClient.Target.on('attachedToTarget', async (params) => {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
@@ -100,66 +88,14 @@ export class BrowsingContextProcessor {
     sessionCdpClient.Page.on(
       'frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
-        await FrameContext.create(
-          params,
-          sessionId,
+        await ContextImpl.createFromFrame(
+          params.frameId,
+          params.parentFrameId,
           sessionCdpClient,
+          this.#bidiServer,
+          sessionId,
           this.#eventManager
         );
-      }
-    );
-
-    sessionCdpClient.Page.on(
-      'lifecycleEvent',
-      async (params: Protocol.Page.LifecycleEventEvent) => {
-        const contextId = params.frameId;
-        if (!Context.hasKnownContext(contextId)) {
-          return;
-        }
-        switch (params.name) {
-          case 'DOMContentLoaded':
-            await this.#eventManager.sendEvent(
-              new BrowsingContext.DomContentLoadedEvent({
-                context: contextId,
-                navigation: params.loaderId,
-              }),
-              contextId
-            );
-            break;
-
-          case 'load':
-            await this.#eventManager.sendEvent(
-              new LoadEvent({
-                context: contextId,
-                navigation: params.loaderId,
-              }),
-              contextId
-            );
-            break;
-        }
-      }
-    );
-    sessionCdpClient.Page.on(
-      'frameNavigated',
-      async function (params: Protocol.Page.FrameNavigatedEvent) {
-        const contextId = params.frame.id;
-        if (!Context.hasKnownContext(contextId)) {
-          return;
-        }
-        Context.getKnownContext(contextId).setUrl(
-          params.frame.url + (params.frame.urlFragment ?? '')
-        );
-      }
-    );
-
-    sessionCdpClient.Page.on(
-      'navigatedWithinDocument',
-      async function (params: Protocol.Page.NavigatedWithinDocumentEvent) {
-        const contextId = params.frameId;
-        if (!Context.hasKnownContext(contextId)) {
-          return;
-        }
-        Context.getKnownContext(contextId).setUrl(params.url);
       }
     );
   }
@@ -183,11 +119,12 @@ export class BrowsingContextProcessor {
 
     this.#setSessionEventListeners(sessionId);
 
-    await TargetContext.create(
-      targetInfo,
-      sessionId,
+    await ContextImpl.createFromTarget(
+      targetInfo.targetId,
+      null,
       targetSessionCdpClient,
       this.#bidiServer,
+      sessionId,
       this.#eventManager
     );
   }
@@ -309,7 +246,7 @@ export class BrowsingContextProcessor {
     const browserCdpClient = this.#cdpConnection.browserClient();
 
     const context = Context.getKnownContext(commandParams.context);
-    if (context.getParentId() !== null) {
+    if (context.parentId !== null) {
       throw new InvalidArgumentErrorResponse(
         'Not a top-level browsing context cannot be closed.'
       );
@@ -360,7 +297,7 @@ export class BrowsingContextProcessor {
 
   async process_PROTO_cdp_getSession(params: CDP.PROTO.GetSessionParams) {
     const context = params.context;
-    const sessionId = Context.getKnownContext(context).getSessionId();
+    const sessionId = Context.getKnownContext(context).cdpSessionId;
     if (sessionId === undefined) {
       return { result: { session: null } };
     }
