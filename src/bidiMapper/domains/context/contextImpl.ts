@@ -29,7 +29,7 @@ import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { IContext } from './iContext';
 
 export class ContextImpl implements IContext {
-  readonly #targetDeferres = {
+  readonly #targetDefers = {
     documentInitialized: new Deferred<void>(),
     targetUnblocked: new Deferred<void>(),
     Page: {
@@ -125,10 +125,10 @@ export class ContextImpl implements IContext {
   }
 
   #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
-    if (!this.#targetDeferres.targetUnblocked.isFinished) {
-      this.#targetDeferres.targetUnblocked.reject('OOPiF');
+    if (!this.#targetDefers.targetUnblocked.isFinished) {
+      this.#targetDefers.targetUnblocked.reject('OOPiF');
     }
-    this.#targetDeferres.targetUnblocked = new Deferred<void>();
+    this.#targetDefers.targetUnblocked = new Deferred<void>();
 
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
@@ -154,7 +154,7 @@ export class ContextImpl implements IContext {
     });
 
     await this.#cdpClient.Runtime.runIfWaitingForDebugger();
-    this.#targetDeferres.targetUnblocked.resolve();
+    this.#targetDefers.targetUnblocked.resolve();
   }
 
   public static async createFromFrame(
@@ -175,7 +175,7 @@ export class ContextImpl implements IContext {
     );
     Context.registerContext(context);
 
-    context.#targetDeferres.targetUnblocked.resolve();
+    context.#targetDefers.targetUnblocked.resolve();
 
     await eventManager.sendEvent(
       new BrowsingContext.ContextCreatedEvent(
@@ -255,7 +255,7 @@ export class ContextImpl implements IContext {
         }
 
         this.#url = params.url;
-        this.#targetDeferres.Page.navigatedWithinDocument.resolve(params);
+        this.#targetDefers.Page.navigatedWithinDocument.resolve(params);
       }
     );
 
@@ -268,7 +268,7 @@ export class ContextImpl implements IContext {
 
         if (params.name === 'init') {
           this.#documentChanged(params.loaderId);
-          this.#targetDeferres.documentInitialized.resolve();
+          this.#targetDefers.documentInitialized.resolve();
         }
 
         if (params.loaderId !== this.#documentId) {
@@ -277,7 +277,7 @@ export class ContextImpl implements IContext {
 
         switch (params.name) {
           case 'DOMContentLoaded':
-            this.#targetDeferres.Page.lifecycleEvent.DOMContentLoaded.resolve(
+            this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.resolve(
               params
             );
             await this.#eventManager.sendEvent(
@@ -290,7 +290,7 @@ export class ContextImpl implements IContext {
             break;
 
           case 'load':
-            this.#targetDeferres.Page.lifecycleEvent.load.resolve(params);
+            this.#targetDefers.Page.lifecycleEvent.load.resolve(params);
             await this.#eventManager.sendEvent(
               new LoadEvent({
                 context: this.contextId,
@@ -322,31 +322,31 @@ export class ContextImpl implements IContext {
       return;
     }
 
-    if (!this.#targetDeferres.documentInitialized.isFinished) {
-      this.#targetDeferres.documentInitialized.reject('Document changed');
+    if (!this.#targetDefers.documentInitialized.isFinished) {
+      this.#targetDefers.documentInitialized.reject('Document changed');
     }
-    this.#targetDeferres.documentInitialized = new Deferred<void>();
+    this.#targetDefers.documentInitialized = new Deferred<void>();
 
-    if (!this.#targetDeferres.Page.navigatedWithinDocument.isFinished) {
-      this.#targetDeferres.Page.navigatedWithinDocument.reject(
+    if (!this.#targetDefers.Page.navigatedWithinDocument.isFinished) {
+      this.#targetDefers.Page.navigatedWithinDocument.reject(
         'Document changed'
       );
     }
-    this.#targetDeferres.Page.navigatedWithinDocument =
+    this.#targetDefers.Page.navigatedWithinDocument =
       new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
 
-    if (!this.#targetDeferres.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
-      this.#targetDeferres.Page.lifecycleEvent.DOMContentLoaded.reject(
+    if (!this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
+      this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.reject(
         'Document changed'
       );
     }
-    this.#targetDeferres.Page.lifecycleEvent.DOMContentLoaded =
+    this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded =
       new Deferred<Protocol.Page.LifecycleEventEvent>();
 
-    if (!this.#targetDeferres.Page.lifecycleEvent.load.isFinished) {
-      this.#targetDeferres.Page.lifecycleEvent.load.reject('Document changed');
+    if (!this.#targetDefers.Page.lifecycleEvent.load.isFinished) {
+      this.#targetDefers.Page.lifecycleEvent.load.reject('Document changed');
     }
-    this.#targetDeferres.Page.lifecycleEvent.load =
+    this.#targetDefers.Page.lifecycleEvent.load =
       new Deferred<Protocol.Page.LifecycleEventEvent>();
 
     this.#documentId = documentId;
@@ -356,7 +356,7 @@ export class ContextImpl implements IContext {
     url: string,
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
-    await this.#targetDeferres.targetUnblocked;
+    await this.#targetDefers.targetUnblocked;
 
     // TODO: handle loading errors.
     const cdpNavigateResult = await this.#cdpClient.Page.navigate({
@@ -383,18 +383,18 @@ export class ContextImpl implements IContext {
       case 'interactive':
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.#targetDeferres.Page.navigatedWithinDocument;
+          await this.#targetDefers.Page.navigatedWithinDocument;
         } else {
-          await this.#targetDeferres.Page.lifecycleEvent.DOMContentLoaded;
+          await this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded;
         }
         break;
 
       case 'complete':
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.#targetDeferres.Page.navigatedWithinDocument;
+          await this.#targetDefers.Page.navigatedWithinDocument;
         } else {
-          await this.#targetDeferres.Page.lifecycleEvent.load;
+          await this.#targetDefers.Page.lifecycleEvent.load;
         }
         break;
 
@@ -417,7 +417,7 @@ export class ContextImpl implements IContext {
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
-    await this.#targetDeferres.targetUnblocked;
+    await this.#targetDefers.targetUnblocked;
 
     if (this.#executionContext === null) {
       throw Error('No execution context');
@@ -440,7 +440,7 @@ export class ContextImpl implements IContext {
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
-    await this.#targetDeferres.targetUnblocked;
+    await this.#targetDefers.targetUnblocked;
 
     if (this.#executionContext === null) {
       throw Error('No execution context');
@@ -457,7 +457,7 @@ export class ContextImpl implements IContext {
   async findElement(
     selector: string
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    await this.#targetDeferres.targetUnblocked;
+    await this.#targetDefers.targetUnblocked;
 
     const functionDeclaration = String((resultsSelector: string) =>
       document.querySelector(resultsSelector)
