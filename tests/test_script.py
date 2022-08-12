@@ -17,6 +17,102 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
+async def test_script_evaluate_strictMode(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "'use strict';x=1",
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare(
+        error_response({
+            "type": "error",
+            "handle": any_string
+        }, "ReferenceError: x is not defined"),
+        result)
+
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "y=1",
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare({
+        "result": {
+            "type": "number",
+            "value": 1
+        }, "realm": any_string},
+        result)
+
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "'use strict';z=1",
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare(
+        error_response({
+            "type": "error",
+            "handle": any_string
+        }, "ReferenceError: z is not defined"),
+        result)
+
+
+@pytest.mark.asyncio
+async def test_script_callFunction_strictMode(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "()=>{'use strict';return x=1}",
+            "arguments": [],
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+    recursive_compare(
+        error_response({
+            "type": "error",
+            "handle": any_string
+        }, "ReferenceError: x is not defined"),
+        result)
+
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "()=>{return y=1}",
+            "arguments": [],
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+    recursive_compare({
+        "result": {
+            "type": "number",
+            "value": 1
+        }, "realm": any_string},
+        result)
+
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "()=>{'use strict';return z=1}",
+            "arguments": [],
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+    recursive_compare(
+        error_response({
+            "type": "error",
+            "handle": any_string
+        }, "ReferenceError: z is not defined"),
+        result)
+
+
+@pytest.mark.asyncio
 async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
       context_id):
     result = await execute_command(websocket, {

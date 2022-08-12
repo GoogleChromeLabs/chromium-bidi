@@ -110,16 +110,33 @@ def recursive_compare(expected, actual):
     assert expected == actual
 
 
-def any_string(expected):
-    assert isinstance(expected, str), \
-        f"'{expected}' should be string, " \
-        f"but is {type(expected)} instead."
+def error_response(exception, exception_text):
+    return lambda actual: recursive_compare({"exceptionDetails": {
+        "exception": exception,
+        "columnNumber": any_int,
+        "lineNumber": any_int,
+        "stackTrace": any_value,
+        "text": exception_text},
+        "realm": any_string},
+        actual)
 
 
-def any_timestamp(expected):
-    assert isinstance(expected, float) or isinstance(expected, int), \
-        f"'{expected}' should be a float or integer, " \
-        f"but is {type(expected)} instead."
+def any_string(actual):
+    assert isinstance(actual, str), \
+        f"'{actual}' should be string, " \
+        f"but is {type(actual)} instead."
+
+
+def any_int(actual):
+    assert isinstance(actual, int), \
+        f"'{actual}' should be string, " \
+        f"but is {type(actual)} instead."
+
+
+def any_timestamp(actual):
+    assert isinstance(actual, float) or isinstance(actual, int), \
+        f"'{actual}' should be a float or integer, " \
+        f"but is {type(actual)} instead."
 
 
 # noinspection PyUnusedLocal
