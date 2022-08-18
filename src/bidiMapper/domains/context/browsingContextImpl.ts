@@ -51,7 +51,10 @@ export class BrowsingContextImpl {
   #eventManager: IEventManager;
   readonly #children: BrowsingContextImpl[] = [];
   #scriptEvaluator: ScriptEvaluator;
-  #executionContext: number | null = null;
+  readonly #sandboxToExecutionContextIdMap: Map<
+    string | null,
+    Protocol.Runtime.ExecutionContextId
+  > = new Map();
 
   constructor(
     contextId: string,
@@ -285,10 +288,9 @@ export class BrowsingContextImpl {
         if (params.context.auxData.frameId !== this.contextId) {
           return;
         }
-        if (!params.context.auxData.isDefault) {
-          return;
+        if (params.context.auxData.isDefault) {
+          this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
         }
-        this.#executionContext = params.context.id;
       }
     );
   }
@@ -396,17 +398,11 @@ export class BrowsingContextImpl {
   ): Promise<Script.CallFunctionResult> {
     await this.#targetDefers.targetUnblocked;
 
-    if (sandbox !== null) {
-      throw Error('Sandbox not implemented yet');
-    }
-
-    if (this.#executionContext === null) {
-      throw Error('No execution context');
-    }
+    const executionContext = await this.#getOrCreateSandbox(sandbox);
 
     return {
       result: await this.#scriptEvaluator.callFunction(
-        this.#executionContext!,
+        executionContext,
         functionDeclaration,
         _this,
         _arguments,
@@ -424,16 +420,10 @@ export class BrowsingContextImpl {
   ): Promise<Script.EvaluateResult> {
     await this.#targetDefers.targetUnblocked;
 
-    if (sandbox !== null) {
-      throw Error('Sandbox not implemented yet');
-    }
-
-    if (this.#executionContext === null) {
-      throw Error('No execution context');
-    }
+    const executionContext = await this.#getOrCreateSandbox(sandbox);
 
     return this.#scriptEvaluator.scriptEvaluate(
-      this.#executionContext!,
+      executionContext,
       expression,
       awaitPromise,
       resultOwnership
@@ -466,5 +456,25 @@ export class BrowsingContextImpl {
 
     // TODO(sadym): handle type properly.
     return result as any as BrowsingContext.PROTO.FindElementResult;
+  }
+
+  async #getOrCreateSandbox(
+    sandbox: string | null
+  ): Promise<Protocol.Runtime.ExecutionContextId> {
+    if (!this.#sandboxToExecutionContextIdMap.has(sandbox)) {
+      if (sandbox === null) {
+        throw Error('No default execution context');
+      }
+      const resp = await this.#cdpClient.Page.createIsolatedWorld({
+        frameId: this.contextId,
+        worldName: sandbox,
+      });
+      this.#sandboxToExecutionContextIdMap.set(
+        sandbox,
+        resp.executionContextId
+      );
+    }
+
+    return this.#sandboxToExecutionContextIdMap.get(sandbox)!;
   }
 }
