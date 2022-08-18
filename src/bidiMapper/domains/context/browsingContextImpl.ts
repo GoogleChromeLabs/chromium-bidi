@@ -390,10 +390,15 @@ export class BrowsingContextImpl {
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
+    sandbox: string | null,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
     await this.#targetDefers.targetUnblocked;
+
+    if (sandbox !== null) {
+      throw Error('Sandbox not implemented yet');
+    }
 
     if (this.#executionContext === null) {
       throw Error('No execution context');
@@ -413,10 +418,15 @@ export class BrowsingContextImpl {
 
   async scriptEvaluate(
     expression: string,
+    sandbox: string | null,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     await this.#targetDefers.targetUnblocked;
+
+    if (sandbox !== null) {
+      throw Error('Sandbox not implemented yet');
+    }
 
     if (this.#executionContext === null) {
       throw Error('No execution context');
@@ -449,6 +459,7 @@ export class BrowsingContextImpl {
         type: 'undefined',
       },
       _arguments,
+      null,
       true,
       'root'
     );
