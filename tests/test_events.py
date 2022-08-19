@@ -36,6 +36,10 @@ async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
         "params": {
             # BaseLogEntry
             "level": "info",
+            "source": {
+                "realm": any_string,
+                "context": context_id
+            },
             "text": "some log message\u0020line 2",
             "timestamp": any_timestamp,
             "stackTrace": {
@@ -47,7 +51,6 @@ async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
             # ConsoleLogEntry
             "type": "console",
             "method": "log",
-            "realm": context_id,
             "args": [{
                 "type": "string",
                 "value": "some log message"}, {
@@ -77,6 +80,10 @@ async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
         "params": {
             # BaseLogEntry
             "level": "info",
+            "source": {
+                "realm": any_string,
+                "context": context_id
+            },
             "text": "null\u0020undefined",
             "timestamp": any_timestamp,
             "stackTrace": {
@@ -88,7 +95,6 @@ async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
             # ConsoleLogEntry
             "type": "console",
             "method": "log",
-            "realm": context_id,
             "args": [
                 {"type": "null"},
                 {"type": "undefined"}]}},
@@ -157,6 +163,10 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
         "params": {
             # BaseLogEntry
             "level": "info",
+            "source": {
+                "realm": any_string,
+                "context": context_id
+            },
             "text": "format specificier, string: line 2, integer: 1, integer: "
                     "-2, float: 1.234, \"abc\", {\"id\": 1}, {\"font-size\": "
                     "\"20px\"}",
@@ -170,7 +180,6 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
             # ConsoleLogEntry
             "type": "console",
             "method": "log",
-            "realm": context_id,
             "args": [{
                 "type": "string",
                 "value": "format specificier, string: %s, integer: %d, "
@@ -229,6 +238,10 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
             "params": {
                 # BaseLogEntry
                 "level": "error",
+                "source": {
+                    "realm": any_string,
+                    "context": context_id
+                },
                 "text": "Error: some error",
                 "timestamp": any_timestamp,
                 "stackTrace": {
@@ -238,6 +251,5 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
                         "lineNumber": 0,
                         "columnNumber": 14}]},
                 # ConsoleLogEntry
-                "type": "javascript",
-                "realm": context_id}},
+                "type": "javascript"}},
         event_response)

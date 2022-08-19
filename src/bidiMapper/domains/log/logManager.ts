@@ -82,12 +82,15 @@ export class LogManager {
         await this.#bidiServer.sendMessage(
           new Log.LogEntryAddedEvent({
             level: LogManager.#getLogLevel(params.type),
+            source: {
+              realm: params.executionContextId.toString(),
+              context: this.#contextId,
+            },
             text: getRemoteValuesText(args, true),
             timestamp: Math.round(params.timestamp),
             stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
             type: 'console',
             method: params.type,
-            realm: this.#contextId,
             args: args,
           })
         );
@@ -116,13 +119,19 @@ export class LogManager {
         await this.#bidiServer.sendMessage(
           new Log.LogEntryAddedEvent({
             level: 'error',
+            source: {
+              // TODO sadym: add proper realm handling.
+              realm: (
+                params.exceptionDetails.executionContextId ?? 'UNKNOWN'
+              ).toString(),
+              context: this.#contextId,
+            },
             text,
             timestamp: Math.round(params.timestamp),
             stackTrace: LogManager.#getBidiStackTrace(
               params.exceptionDetails.stackTrace
             ),
             type: 'javascript',
-            realm: this.#contextId,
           })
         );
       }
