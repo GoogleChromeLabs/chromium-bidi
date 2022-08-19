@@ -83,7 +83,7 @@ export class LogManager {
           new Log.LogEntryAddedEvent({
             level: LogManager.#getLogLevel(params.type),
             text: getRemoteValuesText(args, true),
-            timestamp: params.timestamp,
+            timestamp: Math.round(params.timestamp),
             stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
             type: 'console',
             method: params.type,
@@ -117,7 +117,7 @@ export class LogManager {
           new Log.LogEntryAddedEvent({
             level: 'error',
             text,
-            timestamp: params.timestamp,
+            timestamp: Math.round(params.timestamp),
             stackTrace: LogManager.#getBidiStackTrace(
               params.exceptionDetails.stackTrace
             ),
