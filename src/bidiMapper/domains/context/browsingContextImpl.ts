@@ -51,6 +51,7 @@ export class BrowsingContextImpl {
   #eventManager: IEventManager;
   readonly #children: BrowsingContextImpl[] = [];
   #scriptEvaluator: ScriptEvaluator;
+  // Default execution context is set with key `null`.
   readonly #sandboxToExecutionContextIdMap: Map<
     string | null,
     Protocol.Runtime.ExecutionContextId
@@ -289,6 +290,7 @@ export class BrowsingContextImpl {
           return;
         }
         if (params.context.auxData.isDefault) {
+          // Default execution context is set with key `null`.
           this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
         }
       }
@@ -462,6 +464,7 @@ export class BrowsingContextImpl {
     sandbox: string | null
   ): Promise<Protocol.Runtime.ExecutionContextId> {
     if (!this.#sandboxToExecutionContextIdMap.has(sandbox)) {
+      // Default execution context is set with key `null`.
       if (sandbox === null) {
         throw Error('No default execution context');
       }
