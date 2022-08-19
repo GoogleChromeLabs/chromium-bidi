@@ -102,10 +102,9 @@ async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
 
 
 @pytest.mark.asyncio
-async def test_consoleInfo_logEntryWithMethodInfoEmitted(websocket, context_id):
+async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
     # Send command.
     await send_JSON_command(websocket, {
-        "id": 43,
         "method": "script.evaluate",
         "params": {
             "expression": "console.info('some log message')",
@@ -118,14 +117,50 @@ async def test_consoleInfo_logEntryWithMethodInfoEmitted(websocket, context_id):
     # Assert method "info".
     assert event_response["method"] == "log.entryAdded"
     assert event_response["params"]["method"] == "info"
+    assert event_response["params"]["level"] == "info"
 
 
 @pytest.mark.asyncio
-async def test_consoleError_logEntryWithMethodErrorEmitted(websocket,
-      context_id):
+async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
     # Send command.
     await send_JSON_command(websocket, {
-        "id": 44,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "console.debug('some log message')",
+            "target": {"context": context_id},
+            "awaitPromise": True}})
+
+    # Wait for responses
+    event_response = await wait_for_event(websocket, "log.entryAdded")
+
+    # Assert method "error".
+    assert event_response["method"] == "log.entryAdded"
+    assert event_response["params"]["method"] == "debug"
+    assert event_response["params"]["level"] == "debug"
+
+@pytest.mark.asyncio
+async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
+    # Send command.
+    await send_JSON_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "console.warn('some log message')",
+            "target": {"context": context_id},
+            "awaitPromise": True}})
+
+    # Wait for responses
+    event_response = await wait_for_event(websocket, "log.entryAdded")
+
+    # Assert method "error".
+    assert event_response["method"] == "log.entryAdded"
+    # Method is `console.warn`, while the level is `warning`.
+    assert event_response["params"]["method"] == "warn"
+    assert event_response["params"]["level"] == "warning"
+
+@pytest.mark.asyncio
+async def test_consoleError_levelAndMethodAreCorrect(websocket, context_id):
+    # Send command.
+    await send_JSON_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": "console.error('some log message')",
@@ -138,6 +173,7 @@ async def test_consoleError_logEntryWithMethodErrorEmitted(websocket,
     # Assert method "error".
     assert event_response["method"] == "log.entryAdded"
     assert event_response["params"]["method"] == "error"
+    assert event_response["params"]["level"] == "error"
 
 
 @pytest.mark.asyncio

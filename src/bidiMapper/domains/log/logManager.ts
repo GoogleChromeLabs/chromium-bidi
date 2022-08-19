@@ -90,7 +90,8 @@ export class LogManager {
             timestamp: Math.round(params.timestamp),
             stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
             type: 'console',
-            method: params.type,
+            // Console method is `warn`, not `warning`.
+            method: params.type === 'warning' ? 'warn' : params.type,
             args: args,
           })
         );
@@ -139,13 +140,13 @@ export class LogManager {
   }
 
   static #getLogLevel(consoleAPIType: string): Log.LogLevel {
-    if (consoleAPIType in ['error', 'assert']) {
+    if (['error', 'assert'].includes(consoleAPIType)) {
       return 'error';
     }
-    if (consoleAPIType in ['debug', 'trace']) {
+    if (['debug', 'trace'].includes(consoleAPIType)) {
       return 'debug';
     }
-    if (consoleAPIType in ['warning', 'warn']) {
+    if (['warning', 'warn'].includes(consoleAPIType)) {
       return 'warning';
     }
     return 'info';
