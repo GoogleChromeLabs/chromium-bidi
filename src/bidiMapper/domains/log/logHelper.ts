@@ -119,6 +119,38 @@ function getSingleRemoteValueText(arg: CommonDataTypes.RemoteValue): string {
   throw Error('Invalid value type: ' + arg.toString());
 }
 
+function argToString(arg: CommonDataTypes.RemoteValue) {
+  if (!arg.hasOwnProperty('value')) {
+    return arg.type;
+  }
+
+  switch (arg.type) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+      return arg.value;
+    case 'bigint':
+      return arg.value + 'n';
+    case 'regexp':
+      return `/${arg.value.pattern}/${arg.value.flags}`;
+    case 'date':
+      return `Date(${JSON.stringify(arg.value)})`;
+    case 'object':
+      return `Object(${arg.value.length})`;
+    case 'array':
+      return `Array(${arg.value.length})`;
+    case 'map':
+      return `Map(${arg.value.length})`;
+    case 'set':
+      return `Set(${arg.value.length})`;
+    case 'node':
+      return 'node';
+
+    default:
+      return arg.type;
+  }
+}
+
 export function getRemoteValuesText(
   args: CommonDataTypes.RemoteValue[],
   formatText: boolean
@@ -138,8 +170,8 @@ export function getRemoteValuesText(
 
   // if args[0] is not a format specifier, just join the args with \u0020
   return args
-    .map((arg: any) => {
-      return arg.hasOwnProperty('value') ? arg.value.toString() : arg.type;
+    .map((arg) => {
+      return argToString(arg);
     })
     .join('\u0020');
 }
