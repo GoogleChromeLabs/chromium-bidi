@@ -52,14 +52,22 @@ export function logMessageFormatter(
         );
       }
       if (token === '%s') {
-        output += arg.value.toString();
+        output += argToString(arg);
       } else if (token === '%d' || token === '%i') {
-        output += parseInt(arg.value.toString(), 10);
+        if (['string', 'number', 'bigint'].includes(arg.type)) {
+          output += parseInt(arg.value.toString(), 10);
+        } else {
+          output += 'NaN';
+        }
       } else if (token === '%f') {
-        output += parseFloat(arg.value.toString());
+        if (['string', 'number', 'bigint'].includes(arg.type)) {
+          output += parseFloat(arg.value.toString());
+        } else {
+          output += 'NaN';
+        }
       } else {
         // %o, %O, %c
-        output += getSingleRemoteValueText(arg as CommonDataTypes.RemoteValue);
+        output += toJSON(arg as CommonDataTypes.RemoteValue);
       }
     } else {
       output += token;
@@ -92,28 +100,42 @@ export function logMessageFormatter(
  * input: {"type": "object", "value": [["font-size", {"type": "string", "value": "20px"}]]}
  * output: '{"font-size": "20px"}'
  */
-function getSingleRemoteValueText(arg: CommonDataTypes.RemoteValue): string {
+function toJSON(arg: CommonDataTypes.RemoteValue): string {
   // arg type validation
-  if (!['number', 'string', 'object'].includes(arg.type)) {
-    throw Error('Invalid value type: ' + arg.toString());
+  if (
+    !['number', 'string', 'object', 'array', 'date', 'bigint'].includes(
+      arg.type
+    )
+  ) {
+    return argToString(arg);
+  }
+
+  if (arg.type === 'bigint' && typeof (arg.value, String)) {
+    return arg.value.toString() + 'n';
   }
 
   if (arg.type === 'number' && typeof (arg.value, Number)) {
     return arg.value.toString();
   }
 
-  if (arg.type === 'string' && typeof (arg.value, String)) {
-    return '"' + arg.value.toString() + '"';
+  if (['string', 'date'].includes(arg.type) && typeof (arg.value, String)) {
+    return JSON.stringify(arg.value);
   }
 
   if (arg.type === 'object' && typeof (arg.value, Object)) {
     return (
-      '{"' +
-      (arg.value as any[])[0][0] +
-      '": ' +
-      getSingleRemoteValueText((arg.value as any[])[0][1]) +
+      '{' +
+      (arg.value as any[][])
+        .map((pair) => {
+          return `${JSON.stringify(pair[0])}:${toJSON(pair[1])}`;
+        })
+        .join(',') +
       '}'
     );
+  }
+
+  if (arg.type === 'array' && typeof (arg.value, Object)) {
+    return '[' + (arg.value as any[]).map((val) => toJSON(val)).join(',') + ']';
   }
 
   throw Error('Invalid value type: ' + arg.toString());
@@ -128,13 +150,12 @@ function argToString(arg: CommonDataTypes.RemoteValue) {
     case 'string':
     case 'number':
     case 'boolean':
-      return arg.value;
     case 'bigint':
-      return arg.value + 'n';
+      return arg.value;
     case 'regexp':
       return `/${arg.value.pattern}/${arg.value.flags}`;
     case 'date':
-      return `Date(${JSON.stringify(arg.value)})`;
+      return new Date(arg.value).toString();
     case 'object':
       return `Object(${arg.value.length})`;
     case 'array':
