@@ -120,6 +120,11 @@ def any_timestamp(expected):
     assert isinstance(expected, int), \
         f"'{expected}' should be an integer, " \
         f"but is {type(expected)} instead."
+    # Check if the timestamp has the proper order of magnitude between
+    # "2020-01-01 00:00:00" (1577833200000) and
+    # "2100-01-01 00:00:00" (4102441200000).
+    assert 1577833200000 < expected < 4102441200000, \
+        f"'{expected}' should be in epoch milliseconds format."
 
 
 # noinspection PyUnusedLocal

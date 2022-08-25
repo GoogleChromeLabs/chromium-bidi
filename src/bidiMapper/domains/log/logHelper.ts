@@ -52,7 +52,7 @@ export function logMessageFormatter(
         );
       }
       if (token === '%s') {
-        output += argToString(arg);
+        output += stringFromArg(arg);
       } else if (token === '%d' || token === '%i') {
         if (['string', 'number', 'bigint'].includes(arg.type)) {
           output += parseInt(arg.value.toString(), 10);
@@ -67,7 +67,7 @@ export function logMessageFormatter(
         }
       } else {
         // %o, %O, %c
-        output += toJSON(arg as CommonDataTypes.RemoteValue);
+        output += toJson(arg as CommonDataTypes.RemoteValue);
       }
     } else {
       output += token;
@@ -100,14 +100,14 @@ export function logMessageFormatter(
  * input: {"type": "object", "value": [["font-size", {"type": "string", "value": "20px"}]]}
  * output: '{"font-size": "20px"}'
  */
-function toJSON(arg: CommonDataTypes.RemoteValue): string {
+function toJson(arg: CommonDataTypes.RemoteValue): string {
   // arg type validation
   if (
-    !['number', 'string', 'object', 'array', 'date', 'bigint'].includes(
+    !['array', 'bigint', 'date', 'number', 'object', 'string'].includes(
       arg.type
     )
   ) {
-    return argToString(arg);
+    return stringFromArg(arg);
   }
 
   if (arg.type === 'bigint' && typeof (arg.value, String)) {
@@ -118,7 +118,7 @@ function toJSON(arg: CommonDataTypes.RemoteValue): string {
     return arg.value.toString();
   }
 
-  if (['string', 'date'].includes(arg.type) && typeof (arg.value, String)) {
+  if (['date', 'string'].includes(arg.type) && typeof (arg.value, String)) {
     return JSON.stringify(arg.value);
   }
 
@@ -127,7 +127,7 @@ function toJSON(arg: CommonDataTypes.RemoteValue): string {
       '{' +
       (arg.value as any[][])
         .map((pair) => {
-          return `${JSON.stringify(pair[0])}:${toJSON(pair[1])}`;
+          return `${JSON.stringify(pair[0])}:${toJson(pair[1])}`;
         })
         .join(',') +
       '}'
@@ -135,13 +135,13 @@ function toJSON(arg: CommonDataTypes.RemoteValue): string {
   }
 
   if (arg.type === 'array' && typeof (arg.value, Object)) {
-    return '[' + (arg.value as any[]).map((val) => toJSON(val)).join(',') + ']';
+    return '[' + (arg.value as any[]).map((val) => toJson(val)).join(',') + ']';
   }
 
   throw Error('Invalid value type: ' + arg.toString());
 }
 
-function argToString(arg: CommonDataTypes.RemoteValue) {
+function stringFromArg(arg: CommonDataTypes.RemoteValue) {
   if (!arg.hasOwnProperty('value')) {
     return arg.type;
   }
@@ -192,7 +192,7 @@ export function getRemoteValuesText(
   // if args[0] is not a format specifier, just join the args with \u0020
   return args
     .map((arg) => {
-      return argToString(arg);
+      return stringFromArg(arg);
     })
     .join('\u0020');
 }

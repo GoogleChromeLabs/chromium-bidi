@@ -139,14 +139,14 @@ export class LogManager {
     );
   }
 
-  static #getLogLevel(consoleAPIType: string): Log.LogLevel {
-    if (['error', 'assert'].includes(consoleAPIType)) {
+  static #getLogLevel(consoleApiType: string): Log.LogLevel {
+    if (['error', 'assert'].includes(consoleApiType)) {
       return 'error';
     }
-    if (['debug', 'trace'].includes(consoleAPIType)) {
+    if (['debug', 'trace'].includes(consoleApiType)) {
       return 'debug';
     }
-    if (['warning', 'warn'].includes(consoleAPIType)) {
+    if (['warning', 'warn'].includes(consoleApiType)) {
       return 'warning';
     }
     return 'info';
