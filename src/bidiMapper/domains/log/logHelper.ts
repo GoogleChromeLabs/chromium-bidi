@@ -54,13 +54,13 @@ export function logMessageFormatter(
       if (token === '%s') {
         output += stringFromArg(arg);
       } else if (token === '%d' || token === '%i') {
-        if (['string', 'number', 'bigint'].includes(arg.type)) {
+        if (['bigint', 'number', 'string'].includes(arg.type)) {
           output += parseInt(arg.value.toString(), 10);
         } else {
           output += 'NaN';
         }
       } else if (token === '%f') {
-        if (['string', 'number', 'bigint'].includes(arg.type)) {
+        if (['bigint', 'number', 'string'].includes(arg.type)) {
           output += parseFloat(arg.value.toString());
         } else {
           output += 'NaN';
