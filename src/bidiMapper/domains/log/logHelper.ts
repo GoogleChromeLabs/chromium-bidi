@@ -110,19 +110,19 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
     return stringFromArg(arg);
   }
 
-  if (arg.type === 'bigint' && typeof (arg.value, String)) {
+  if (arg.type === 'bigint') {
     return arg.value.toString() + 'n';
   }
 
-  if (arg.type === 'number' && typeof (arg.value, Number)) {
+  if (arg.type === 'number') {
     return arg.value.toString();
   }
 
-  if (['date', 'string'].includes(arg.type) && typeof (arg.value, String)) {
+  if (['date', 'string'].includes(arg.type)) {
     return JSON.stringify(arg.value);
   }
 
-  if (arg.type === 'object' && typeof (arg.value, Object)) {
+  if (arg.type === 'object') {
     return (
       '{' +
       (arg.value as any[][])
@@ -134,7 +134,7 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
     );
   }
 
-  if (arg.type === 'array' && typeof (arg.value, Object)) {
+  if (arg.type === 'array') {
     return '[' + (arg.value as any[]).map((val) => toJson(val)).join(',') + ']';
   }
 
