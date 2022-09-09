@@ -317,8 +317,7 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket,
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
-            "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "navigation": navigation_id}}
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -326,8 +325,7 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket,
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
-            "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "navigation": navigation_id}}
 
 
 @pytest.mark.asyncio
@@ -353,8 +351,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
-            "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "navigation": navigation_id}}
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -362,8 +359,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
-            "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>", }}
+            "navigation": navigation_id}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -397,8 +393,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(websocket,
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
-            "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "navigation": navigation_id}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -414,8 +409,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(websocket,
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
-            "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "navigation": navigation_id}}
 
 
 @pytest.mark.asyncio

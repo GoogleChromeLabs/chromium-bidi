@@ -655,7 +655,8 @@ export namespace BrowsingContext {
   export type NavigationInfo = {
     context: CommonDataTypes.BrowsingContext;
     navigation: Navigation | null;
-    url: string;
+    // TODO: implement or remove from specification.
+    // url: string;
   };
 
   export class ContextCreatedEvent extends EventResponseClass<BrowsingContext.Info> {
