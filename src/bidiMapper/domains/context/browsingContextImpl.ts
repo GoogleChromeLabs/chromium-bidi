@@ -264,6 +264,7 @@ export class BrowsingContextImpl {
               new BrowsingContext.DomContentLoadedEvent({
                 context: this.contextId,
                 navigation: this.#loaderId,
+                url: this.#url,
               }),
               this.contextId
             );
@@ -275,6 +276,7 @@ export class BrowsingContextImpl {
               new LoadEvent({
                 context: this.contextId,
                 navigation: this.#loaderId,
+                url: this.#url,
               }),
               this.contextId
             );
