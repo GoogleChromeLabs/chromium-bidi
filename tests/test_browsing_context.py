@@ -171,10 +171,8 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
                 await read_JSON_message(websocket)]
 
     messages.sort(key=lambda x: x["method"] if "method" in x else "")
-    command_result = messages[0]
-    context_created_event = messages[1]
-    dom_content_loaded_event = messages[2]
-    load_event = messages[3]
+    [command_result, context_created_event, dom_content_loaded_event,
+     load_event] = messages
 
     new_context_id = command_result['result']['context']
 
