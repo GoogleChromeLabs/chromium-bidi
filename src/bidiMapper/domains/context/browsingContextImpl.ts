@@ -251,6 +251,11 @@ export class BrowsingContextImpl {
           this.#targetDefers.documentInitialized.resolve();
         }
 
+        if (params.name === 'commit') {
+          this.#loaderId = params.loaderId;
+          return;
+        }
+
         if (params.loaderId !== this.#loaderId) {
           return;
         }
