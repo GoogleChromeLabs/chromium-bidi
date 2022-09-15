@@ -147,25 +147,17 @@ export class BrowsingContextProcessor {
     });
 
     sessionCdpClient.Page.on(
-      'lifecycleEvent',
-      async (params: Protocol.Page.LifecycleEventEvent) => {
-        const contextId = params.frameId;
+      'frameNavigated',
+      async (params: Protocol.Page.FrameNavigatedEvent) => {
+        const contextId = params.frame.id;
         if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
           return;
         }
         const context = BrowsingContextProcessor.#getKnownContext(contextId);
-        if (params.name === 'init') {
-          // At the point the page is initiated, all the nested iframes are
-          // detached.
-          for (let child of context.children) {
-            await this.#removeContext(child.contextId);
-            await this.#eventManager.sendEvent(
-              new BrowsingContext.ContextDestroyedEvent(
-                child.serializeToBidiValue(0, true)
-              ),
-              child.contextId
-            );
-          }
+        // At the point the page is initiated, all the nested iframes are
+        // detached.
+        for (let child of context.children) {
+          await this.#removeContext(child.contextId);
         }
       }
     );
