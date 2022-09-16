@@ -38,15 +38,21 @@ export class BrowsingContextProcessor {
     );
   }
 
+  async #removeChildrenContexts(context: BrowsingContextImpl): Promise<void> {
+    // Remove context's children.
+    for (let child of context.children) {
+      await this.#removeContext(child.contextId);
+    }
+  }
+
   async #removeContext(contextId: string): Promise<void> {
     if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
       return;
     }
     const context = BrowsingContextProcessor.#getKnownContext(contextId);
+
     // Remove context's children.
-    for (let child of context.children) {
-      await this.#removeContext(child.contextId);
-    }
+    await this.#removeChildrenContexts(context);
 
     // Remove context from the parent.
     if (context.parentId !== null) {
@@ -156,9 +162,8 @@ export class BrowsingContextProcessor {
         const context = BrowsingContextProcessor.#getKnownContext(contextId);
         // At the point the page is initiated, all the nested iframes are
         // detached.
-        for (let child of context.children) {
-          await this.#removeContext(child.contextId);
-        }
+        // Remove context's children.
+        await this.#removeChildrenContexts(context);
       }
     );
 
