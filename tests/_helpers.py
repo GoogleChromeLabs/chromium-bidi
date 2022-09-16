@@ -63,6 +63,8 @@ async def iframe_id(context_id, websocket):
         "params": {"root": context_id}})
 
     iframe_id = result["contexts"][0]["children"][0]["context"]
+    await goto_url(websocket, iframe_id, "data:text/html,<h1>FRAME</h1>")
+
     return iframe_id
 
 
