@@ -25,7 +25,8 @@ import {
   InvalidArgumentErrorResponse,
   NoSuchFrameException,
 } from '../protocol/error';
-import { BrowsingContextImpl } from './browsingContextImpl';
+import { BrowsingContextImpl, ScriptTarget } from './browsingContextImpl';
+import { ScriptEvaluator } from '../script/scriptEvaluator';
 
 const logContext = log('context');
 
@@ -312,36 +313,48 @@ export class BrowsingContextProcessor {
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    if ('realm' in params.target) {
-      throw new Error('Realm target is not implemented yet.');
-    }
-    const target: Script.ContextTarget = params.target;
+    const scriptTarget = BrowsingContextProcessor.#getScriptTarget(
+      params.target
+    );
 
-    const context = BrowsingContextProcessor.#getKnownContext(target.context);
-    return await context.scriptEvaluate(
+    return await scriptTarget.context.scriptEvaluate(
       params.expression,
-      target.sandbox ?? null,
+      scriptTarget.target,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );
   }
 
+  static #getScriptTarget(target: Script.Target): ScriptTarget {
+    if ('realm' in target) {
+      const { executionContextId, browsingContextId } =
+        ScriptEvaluator.getRealmInfo(target.realm);
+      return {
+        context: BrowsingContextProcessor.#getKnownContext(browsingContextId),
+        target: { executionContext: executionContextId },
+      };
+    } else {
+      return {
+        context: BrowsingContextProcessor.#getKnownContext(target.context),
+        target: { sandbox: target.sandbox ?? null },
+      };
+    }
+  }
+
   async process_script_callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    if ('realm' in params.target) {
-      throw new Error('Realm target is not implemented yet.');
-    }
-    const target: Script.ContextTarget = params.target;
+    const scriptTarget = BrowsingContextProcessor.#getScriptTarget(
+      params.target
+    );
 
-    const context = BrowsingContextProcessor.#getKnownContext(target.context);
-    return await context.callFunction(
+    return await scriptTarget.context.callFunction(
       params.functionDeclaration,
       params.this || {
         type: 'undefined',
       }, // `this` is `undefined` by default.
       params.arguments || [], // `arguments` is `[]` by default.
-      target.sandbox ?? null,
+      scriptTarget.target,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );

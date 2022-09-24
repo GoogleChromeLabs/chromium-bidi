@@ -18,8 +18,60 @@
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
 import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
+import { NoSuchFrameException } from '../protocol/error';
+
+export type RealmInfo = {
+  browsingContextId: string;
+  executionContextId: Protocol.Runtime.ExecutionContextId;
+};
 
 export class ScriptEvaluator {
+  static realmMap: Map<string, RealmInfo> = new Map();
+
+  static removeRealm(browsingContextId: string, executionContextId: number) {
+    const realmId = ScriptEvaluator.getRealmId(
+      browsingContextId,
+      executionContextId
+    );
+    ScriptEvaluator.realmMap.delete(realmId);
+  }
+
+  static registerRealm(
+    realm: string,
+    browsingContextId: string,
+    executionContextId: number
+  ) {
+    ScriptEvaluator.realmMap.set(realm, {
+      executionContextId,
+      browsingContextId,
+    });
+  }
+
+  static getRealmInfo(realm: string): RealmInfo {
+    const info = ScriptEvaluator.realmMap.get(realm);
+    if (info === undefined) {
+      throw new NoSuchFrameException(`Realm ${realm} not found`);
+    }
+    return info;
+  }
+
+  static getRealmId(
+    browsingContextId: string,
+    executionContextId: number
+  ): string {
+    for (let [key, value] of ScriptEvaluator.realmMap.entries()) {
+      if (
+        value.executionContextId === executionContextId &&
+        value.browsingContextId === browsingContextId
+      ) {
+        return key;
+      }
+    }
+    throw new Error(
+      `Cannot find execution context ${executionContextId} in frame ${browsingContextId}`
+    );
+  }
+
   #cdpClient: CdpClient;
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
@@ -83,6 +135,7 @@ export class ScriptEvaluator {
   }
 
   public async callFunction(
+    browsingContext: string,
     executionContext: Protocol.Runtime.ExecutionContextId,
     functionDeclaration: string,
     _this: Script.ArgumentValue,
@@ -125,7 +178,7 @@ export class ScriptEvaluator {
           resultOwnership,
           executionContext
         ),
-        realm: 'TODO: ADD',
+        realm: ScriptEvaluator.getRealmId(browsingContext, executionContext),
       };
     }
 
@@ -134,7 +187,7 @@ export class ScriptEvaluator {
         cdpCallFunctionResult,
         resultOwnership
       ),
-      realm: 'TODO: ADD',
+      realm: ScriptEvaluator.getRealmId(browsingContext, executionContext),
     };
   }
 
@@ -206,6 +259,7 @@ export class ScriptEvaluator {
   }
 
   public async scriptEvaluate(
+    browsingContext: string,
     executionContext: Protocol.Runtime.ExecutionContextId,
     expression: string,
     awaitPromise: boolean,
@@ -228,7 +282,7 @@ export class ScriptEvaluator {
             resultOwnership,
             executionContext
           ),
-          realm: 'TODO: ADD',
+          realm: ScriptEvaluator.getRealmId(browsingContext, executionContext),
         },
       };
     }
@@ -236,7 +290,7 @@ export class ScriptEvaluator {
     return {
       result: {
         result: await this.#cdpToBidiValue(cdpEvaluateResult, resultOwnership),
-        realm: 'TODO: ADD',
+        realm: ScriptEvaluator.getRealmId(browsingContext, executionContext),
       },
     };
   }

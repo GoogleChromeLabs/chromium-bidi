@@ -26,6 +26,11 @@ import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 
+export type ScriptTarget = {
+  context: BrowsingContextImpl;
+  target: { executionContext: number } | { sandbox: string | null };
+};
+
 export class BrowsingContextImpl {
   readonly #targetDefers = {
     documentInitialized: new Deferred<void>(),
@@ -308,6 +313,17 @@ export class BrowsingContextImpl {
           // Default execution context is set with key `null`.
           this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
         }
+        ScriptEvaluator.registerRealm(
+          params.context.uniqueId,
+          this.contextId,
+          params.context.id
+        );
+      }
+    );
+    this.#cdpClient.Runtime.on(
+      'executionContextDestroyed',
+      (params: Protocol.Runtime.ExecutionContextDestroyedEvent) => {
+        ScriptEvaluator.removeRealm(this.contextId, params.executionContextId);
       }
     );
   }
@@ -405,20 +421,30 @@ export class BrowsingContextImpl {
     };
   }
 
+  async #getExecutionContext(
+    target: { executionContext: number } | { sandbox: string | null }
+  ): Promise<Protocol.Runtime.ExecutionContextId> {
+    if ('sandbox' in target) {
+      return await this.#getOrCreateSandbox(target.sandbox);
+    }
+    return target.executionContext;
+  }
+
   async callFunction(
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
-    sandbox: string | null,
+    target: { executionContext: number } | { sandbox: string | null },
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
     await this.#targetDefers.targetUnblocked;
 
-    const executionContext = await this.#getOrCreateSandbox(sandbox);
+    const executionContext = await this.#getExecutionContext(target);
 
     return {
       result: await this.#scriptEvaluator.callFunction(
+        this.contextId,
         executionContext,
         functionDeclaration,
         _this,
@@ -431,15 +457,16 @@ export class BrowsingContextImpl {
 
   async scriptEvaluate(
     expression: string,
-    sandbox: string | null,
+    target: { executionContext: number } | { sandbox: string | null },
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     await this.#targetDefers.targetUnblocked;
 
-    const executionContext = await this.#getOrCreateSandbox(sandbox);
+    const executionContext = await this.#getExecutionContext(target);
 
     return this.#scriptEvaluator.scriptEvaluate(
+      this.contextId,
       executionContext,
       expression,
       awaitPromise,
@@ -466,7 +493,8 @@ export class BrowsingContextImpl {
         type: 'undefined',
       },
       _arguments,
-      null,
+      // TODO: execute in isolated world.
+      { sandbox: null },
       true,
       'root'
     );
