@@ -325,7 +325,10 @@ export class BrowsingContextProcessor {
     );
   }
 
-  static #getScriptTarget(target: Script.Target): ScriptTarget {
+  static #getScriptTarget(target: Script.Target): {
+    context: BrowsingContextImpl;
+    target: ScriptTarget;
+  } {
     if ('realm' in target) {
       const { executionContextId, browsingContextId } =
         ScriptEvaluator.getRealmInfo(target.realm);

@@ -26,10 +26,9 @@ import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 
-export type ScriptTarget = {
-  context: BrowsingContextImpl;
-  target: { executionContext: number } | { sandbox: string | null };
-};
+export type ScriptTarget =
+  | { executionContext: number }
+  | { sandbox: string | null };
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {
@@ -422,7 +421,7 @@ export class BrowsingContextImpl {
   }
 
   async #getExecutionContext(
-    target: { executionContext: number } | { sandbox: string | null }
+    target: ScriptTarget
   ): Promise<Protocol.Runtime.ExecutionContextId> {
     if ('sandbox' in target) {
       return await this.#getOrCreateSandbox(target.sandbox);
@@ -434,7 +433,7 @@ export class BrowsingContextImpl {
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
-    target: { executionContext: number } | { sandbox: string | null },
+    target: ScriptTarget,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
@@ -457,7 +456,7 @@ export class BrowsingContextImpl {
 
   async scriptEvaluate(
     expression: string,
-    target: { executionContext: number } | { sandbox: string | null },
+    target: ScriptTarget,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
