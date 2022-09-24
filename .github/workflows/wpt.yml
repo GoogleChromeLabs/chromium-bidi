@@ -103,14 +103,14 @@ jobs:
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
-        run: ./wpt update-expectations --product chromium --manifest MANIFEST.json --metadata ../wpt-metadata wptreport.json
+        run: ./wpt update-expectations --product chromium --manifest MANIFEST.json --metadata ../wpt-headful-metadata wptreport.json
         working-directory: wpt
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: wpt-metadata
-          path: wpt-metadata
+          name: wpt-headful-metadata
+          path: wpt-headful-metadata
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
