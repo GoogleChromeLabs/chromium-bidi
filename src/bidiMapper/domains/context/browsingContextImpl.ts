@@ -25,6 +25,7 @@ import { UnknownErrorResponse } from '../protocol/error';
 import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
+import { Realm, RealmType } from '../script/realm';
 
 export type ScriptTarget =
   | { executionContext: number }
@@ -312,17 +313,26 @@ export class BrowsingContextImpl {
           // Default execution context is set with key `null`.
           this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
         }
-        ScriptEvaluator.registerRealm(
-          params.context.uniqueId,
-          this.contextId,
-          params.context.id
+        Realm.registerRealm(
+          new Realm(
+            params.context.uniqueId,
+            this.contextId,
+            params.context.id,
+            params.context.origin,
+            // TODO: differentiate types.
+            RealmType.window
+          )
         );
       }
     );
     this.#cdpClient.Runtime.on(
       'executionContextDestroyed',
       (params: Protocol.Runtime.ExecutionContextDestroyedEvent) => {
-        ScriptEvaluator.removeRealm(this.contextId, params.executionContextId);
+        const realmId = Realm.getRealmId(
+          this.contextId,
+          params.executionContextId
+        );
+        Realm.removeRealm(realmId);
       }
     );
   }

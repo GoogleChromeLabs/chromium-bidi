@@ -694,3 +694,59 @@ async def test_scriptCallFunction_realm(websocket, context_id):
         "exceptionDetails": any_value,
         "realm": realm
     }, result)
+
+
+@pytest.mark.asyncio
+async def test_scriptGetRealms(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.getRealms",
+        "params": {}})
+
+    recursive_compare({
+        "realms": [{
+            "realm": any_string,
+            "origin": "://",
+            "type": "window",
+            "context": context_id
+        }]}, result)
+
+    old_realm = result["realms"][0]["realm"]
+
+    # Create a sandbox.
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "",
+            "target": {
+                "context": context_id,
+                "sandbox": 'some_sandbox'
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare({
+        "result": any_value,
+        "realm": any_string
+    }, result)
+
+    new_realm = result["realm"]
+
+    result = await execute_command(websocket, {
+        "method": "script.getRealms",
+        "params": {}})
+
+    # Assert 2 realms are created.
+    recursive_compare({
+        "realms":
+            comppare_sorted("realm", [{
+                "realm": old_realm,
+                "origin": "://",
+                "type": "window",
+                "context": context_id
+            }, {
+                "realm": new_realm,
+                "origin": "",
+                "type": "window",
+                "context": context_id
+            }])
+    }, result)

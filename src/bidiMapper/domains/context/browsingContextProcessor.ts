@@ -26,7 +26,7 @@ import {
   NoSuchFrameException,
 } from '../protocol/error';
 import { BrowsingContextImpl, ScriptTarget } from './browsingContextImpl';
-import { ScriptEvaluator } from '../script/scriptEvaluator';
+import { Realm } from '../script/realm';
 
 const logContext = log('context');
 
@@ -160,8 +160,8 @@ export class BrowsingContextProcessor {
           return;
         }
         const context = BrowsingContextProcessor.#getKnownContext(contextId);
-        // At the point the page is initiated, all the nested iframes are
-        // detached.
+        // At the point the page is initiated, all the nested iframes from the
+        // previous page are detached and realms are destroyed.
         // Remove context's children.
         await this.#removeChildContexts(context);
       }
@@ -330,8 +330,9 @@ export class BrowsingContextProcessor {
     target: ScriptTarget;
   } {
     if ('realm' in target) {
-      const { executionContextId, browsingContextId } =
-        ScriptEvaluator.getRealmInfo(target.realm);
+      const { executionContextId, browsingContextId } = Realm.getRealm(
+        target.realm
+      );
       return {
         context: BrowsingContextProcessor.#getKnownContext(browsingContextId),
         target: { executionContext: executionContextId },
@@ -342,6 +343,16 @@ export class BrowsingContextProcessor {
         target: { sandbox: target.sandbox ?? null },
       };
     }
+  }
+
+  process_script_getRealms(
+    params: Script.GetRealmsParameters
+  ): Script.GetRealmsResult {
+    const realms = Realm.getRealms({
+      browsingContextId: params.context,
+      type: params.type,
+    }).map((realm) => realm.toBiDi());
+    return { result: { realms } };
   }
 
   async process_script_callFunction(
