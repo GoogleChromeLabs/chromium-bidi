@@ -705,7 +705,7 @@ async def test_scriptGetRealms(websocket, context_id):
     recursive_compare({
         "realms": [{
             "realm": any_string,
-            "origin": "://",
+            "origin": "null",
             "type": "window",
             "context": context_id
         }]}, result)
@@ -729,7 +729,7 @@ async def test_scriptGetRealms(websocket, context_id):
         "realm": any_string
     }, result)
 
-    new_realm = result["realm"]
+    sandbox_realm = result["realm"]
 
     result = await execute_command(websocket, {
         "method": "script.getRealms",
@@ -740,13 +740,14 @@ async def test_scriptGetRealms(websocket, context_id):
         "realms":
             comppare_sorted("realm", [{
                 "realm": old_realm,
-                "origin": "://",
+                "origin": "null",
                 "type": "window",
                 "context": context_id
             }, {
-                "realm": new_realm,
-                "origin": "",
+                "realm": sandbox_realm,
+                "origin": "null",
                 "type": "window",
+                "sandbox": "some_sandbox",
                 "context": context_id
             }])
     }, result)

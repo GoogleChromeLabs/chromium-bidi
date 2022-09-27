@@ -312,35 +312,34 @@ export class BrowsingContextImpl {
     this.#cdpClient.Runtime.on(
       'executionContextCreated',
       (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
-        try {
-          if (params.context.auxData.frameId !== this.contextId) {
-            return;
-          }
-          if (params.context.auxData.isDefault) {
-            // Default execution context is set with key `null`.
-            this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
-          }
-          if (params.context.name !== undefined) {
-            this.#sandboxToExecutionContextIdMap.set(
-              params.context.name,
-              params.context.id
-            );
-          }
-
-          Realm.registerRealm(
-            new Realm(
-              params.context.uniqueId,
-              this.contextId,
-              params.context.id,
-              this.#getOrigin(params),
-              // TODO: differentiate types.
-              RealmType.window,
-              params.context.name ?? null
-            )
-          );
-        } catch (e) {
-          console.log('!!@@## ' + JSON.stringify(e));
+        if (params.context.auxData.frameId !== this.contextId) {
+          return;
         }
+        if (params.context.auxData.isDefault) {
+          // Default execution context is set with key `null`.
+          this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
+        }
+        if (params.context.name !== undefined) {
+          this.#sandboxToExecutionContextIdMap.set(
+            params.context.name,
+            params.context.id
+          );
+        }
+
+        Realm.registerRealm(
+          new Realm(
+            params.context.uniqueId,
+            this.contextId,
+            params.context.id,
+            this.#getOrigin(params),
+            // TODO: differentiate types.
+            RealmType.window,
+            // Sandbox name for isolated world.
+            params.context.auxData.type === 'isolated'
+              ? params.context.name
+              : undefined
+          )
+        );
       }
     );
     this.#cdpClient.Runtime.on(
