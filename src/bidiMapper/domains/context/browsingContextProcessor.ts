@@ -348,6 +348,10 @@ export class BrowsingContextProcessor {
   process_script_getRealms(
     params: Script.GetRealmsParameters
   ): Script.GetRealmsResult {
+    if (params.context !== undefined) {
+      // Make sure the context is known.
+      BrowsingContextProcessor.#getKnownContext(params.context);
+    }
     const realms = Realm.getRealms({
       browsingContextId: params.context,
       type: params.type,
