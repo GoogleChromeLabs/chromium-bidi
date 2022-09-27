@@ -426,6 +426,7 @@ export namespace Script {
   export type WindowRealmInfo = BaseRealmInfo & {
     type: 'window';
     context: CommonDataTypes.BrowsingContext;
+    sandbox?: string;
   };
 
   export type DedicatedWorkerRealmInfo = BaseRealmInfo & {

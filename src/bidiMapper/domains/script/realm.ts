@@ -90,17 +90,20 @@ export class Realm {
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
   readonly #type: RealmType;
+  readonly #sandbox: string | undefined;
 
   constructor(
     realmId: string,
     browsingContextId: string,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
-    type: RealmType
+    type: RealmType,
+    sandbox: string | undefined
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
     this.#executionContextId = executionContextId;
+    this.#sandbox = sandbox;
     this.#origin = origin;
     this.#type = type;
   }
@@ -111,6 +114,7 @@ export class Realm {
       origin: this.origin,
       type: this.type,
       context: this.browsingContextId,
+      ...(this.#sandbox !== undefined ? { sandbox: this.#sandbox } : {}),
     };
   }
 

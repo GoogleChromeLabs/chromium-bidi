@@ -57,7 +57,7 @@ export class BrowsingContextImpl {
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
   #scriptEvaluator: ScriptEvaluator;
   // Default execution context is set with key `null`.
-  readonly #sandboxToExecutionContextIdMap: Map<
+  #sandboxToExecutionContextIdMap: Map<
     string | null,
     Protocol.Runtime.ExecutionContextId
   > = new Map();
@@ -237,6 +237,12 @@ export class BrowsingContextImpl {
           return;
         }
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
+
+        // Remove all the already created realms.
+        Realm.getRealms({ browsingContextId: this.contextId }).map((realm) =>
+          Realm.removeRealm(realm.realmId)
+        );
+        this.#sandboxToExecutionContextIdMap = new Map();
       }
     );
 
@@ -306,23 +312,35 @@ export class BrowsingContextImpl {
     this.#cdpClient.Runtime.on(
       'executionContextCreated',
       (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
-        if (params.context.auxData.frameId !== this.contextId) {
-          return;
+        try {
+          if (params.context.auxData.frameId !== this.contextId) {
+            return;
+          }
+          if (params.context.auxData.isDefault) {
+            // Default execution context is set with key `null`.
+            this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
+          }
+          if (params.context.name !== undefined) {
+            this.#sandboxToExecutionContextIdMap.set(
+              params.context.name,
+              params.context.id
+            );
+          }
+
+          Realm.registerRealm(
+            new Realm(
+              params.context.uniqueId,
+              this.contextId,
+              params.context.id,
+              this.#getOrigin(params),
+              // TODO: differentiate types.
+              RealmType.window,
+              params.context.name ?? null
+            )
+          );
+        } catch (e) {
+          console.log('!!@@## ' + JSON.stringify(e));
         }
-        if (params.context.auxData.isDefault) {
-          // Default execution context is set with key `null`.
-          this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
-        }
-        Realm.registerRealm(
-          new Realm(
-            params.context.uniqueId,
-            this.contextId,
-            params.context.id,
-            params.context.origin,
-            // TODO: differentiate types.
-            RealmType.window
-          )
-        );
       }
     );
     this.#cdpClient.Runtime.on(
@@ -335,6 +353,25 @@ export class BrowsingContextImpl {
         Realm.removeRealm(realmId);
       }
     );
+  }
+
+  #getOrigin(params: Protocol.Runtime.ExecutionContextCreatedEvent) {
+    if (params.context.auxData.type === 'isolated') {
+      // Sandbox should have the same origin as the context itself, but in CDP it
+      // has an empty one. Get oro
+      const defaultRealm = Realm.getRealm(
+        Realm.getRealmId(
+          this.contextId,
+          this.#sandboxToExecutionContextIdMap.get(null)!
+        )
+      );
+
+      return defaultRealm.origin;
+    }
+    // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
+    return ['://', ''].includes(params.context.origin)
+      ? 'null'
+      : params.context.origin;
   }
 
   #documentChanged(loaderId: string) {
