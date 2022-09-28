@@ -499,7 +499,7 @@ export namespace Script {
   // }
   const ContextTargetSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
-    sandbox: zod.string().optional(),
+    sandbox: zod.string().min(1).optional(),
   });
   export type ContextTarget = zod.infer<typeof ContextTargetSchema>;
 
