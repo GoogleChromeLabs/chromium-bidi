@@ -26,6 +26,7 @@ import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Realm, RealmType } from '../script/realm';
+import { BrowsingContextStorage } from './browsingContextStorage';
 
 export type ScriptTarget =
   | { executionContext: number }
@@ -62,7 +63,7 @@ export class BrowsingContextImpl {
     Protocol.Runtime.ExecutionContextId
   > = new Map();
 
-  constructor(
+  private constructor(
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
@@ -79,16 +80,18 @@ export class BrowsingContextImpl {
 
     this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
     this.#initListeners();
+
+    BrowsingContextStorage.registerContext(this);
   }
 
-  public static createFrameContext(
+  public static async createFrameContext(
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
     cdpSessionId: string,
     eventManager: IEventManager
-  ): BrowsingContextImpl {
+  ): Promise<BrowsingContextImpl> {
     const context = new BrowsingContextImpl(
       contextId,
       parentId,
@@ -98,17 +101,25 @@ export class BrowsingContextImpl {
       eventManager
     );
     context.#targetDefers.targetUnblocked.resolve();
+
+    await eventManager.sendEvent(
+      new BrowsingContext.ContextCreatedEvent(
+        context.serializeToBidiValue(0, true)
+      ),
+      context.contextId
+    );
+
     return context;
   }
 
-  public static createTargetContext(
+  public static async createTargetContext(
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
     cdpSessionId: string,
     eventManager: IEventManager
-  ): BrowsingContextImpl {
+  ): Promise<BrowsingContextImpl> {
     const context = new BrowsingContextImpl(
       contextId,
       parentId,
@@ -119,8 +130,15 @@ export class BrowsingContextImpl {
     );
 
     // No need in waiting for target to be unblocked.
-    // noinspection JSIgnoredPromiseFromCall
+    // noinspection ES6MissingAwait
     context.#unblockAttachedTarget();
+
+    await eventManager.sendEvent(
+      new BrowsingContext.ContextCreatedEvent(
+        context.serializeToBidiValue(0, true)
+      ),
+      context.contextId
+    );
 
     return context;
   }
@@ -135,6 +153,29 @@ export class BrowsingContextImpl {
     // noinspection JSIgnoredPromiseFromCall
     context.#unblockAttachedTarget();
     return context;
+  }
+
+  public async removeChildContexts() {
+    await Promise.all(this.children.map((child) => child.remove));
+  }
+
+  public async remove() {
+    await this.removeChildContexts();
+
+    // Remove context from the parent.
+    if (this.parentId !== null) {
+      BrowsingContextStorage.getKnownContext(this.parentId).#removeFromChildren(
+        this.contextId
+      );
+    }
+
+    await this.#eventManager.sendEvent(
+      new BrowsingContext.ContextDestroyedEvent(
+        this.serializeToBidiValue(0, true)
+      ),
+      this.contextId
+    );
+    BrowsingContextStorage.forgetContext(this.contextId);
   }
 
   #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
@@ -194,7 +235,7 @@ export class BrowsingContextImpl {
     this.#children.set(child.contextId, child);
   }
 
-  removeChild(childContextId: string): void {
+  #removeFromChildren(childContextId: string): void {
     this.#children.delete(childContextId);
   }
 
@@ -326,7 +367,7 @@ export class BrowsingContextImpl {
           );
         }
 
-        Realm.registerRealm(
+        Realm.create(
           params.context.uniqueId,
           this.contextId,
           params.context.id,

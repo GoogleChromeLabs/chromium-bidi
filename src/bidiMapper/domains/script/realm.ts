@@ -26,7 +26,7 @@ export enum RealmType {
 export class Realm {
   static readonly #realmMap: Map<string, Realm> = new Map();
 
-  static registerRealm(
+  static create(
     realmId: string,
     browsingContextId: string,
     executionContextId: Protocol.Runtime.ExecutionContextId,
