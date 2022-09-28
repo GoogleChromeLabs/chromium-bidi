@@ -21,19 +21,23 @@ import { Log, Script } from '../protocol/bidiProtocolTypes';
 import { getRemoteValuesText } from './logHelper';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Protocol } from 'devtools-protocol';
+import { Realm } from '../script/realm';
 
 export class LogManager {
   readonly #contextId: string;
   readonly #cdpClient: CdpClient;
   readonly #bidiServer: IBidiServer;
   readonly #serializer: ScriptEvaluator;
+  readonly #cdpSessionId: string;
 
   private constructor(
     contextId: string,
     cdpClient: CdpClient,
+    cdpSessionId: string,
     bidiServer: IBidiServer,
     serializer: ScriptEvaluator
   ) {
+    this.#cdpSessionId = cdpSessionId;
     this.#serializer = serializer;
     this.#bidiServer = bidiServer;
     this.#cdpClient = cdpClient;
@@ -43,12 +47,14 @@ export class LogManager {
   public static create(
     contextId: string,
     cdpClient: CdpClient,
+    cdpSessionId: string,
     bidiServer: IBidiServer,
     serializer: ScriptEvaluator
   ) {
     const logManager = new LogManager(
       contextId,
       cdpClient,
+      cdpSessionId,
       bidiServer,
       serializer
     );
@@ -69,13 +75,13 @@ export class LogManager {
     this.#cdpClient.Runtime.on(
       'consoleAPICalled',
       async (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
+        const realm = Realm.getRealm({
+          cdpSessionId: this.#cdpSessionId,
+          executionContextId: params.executionContextId,
+        });
         const args = await Promise.all(
           params.args.map(async (arg) => {
-            return this.#serializer?.serializeCdpObject(
-              arg,
-              'none',
-              params.executionContextId
-            );
+            return this.#serializer?.serializeCdpObject(arg, 'none', realm);
           })
         );
 
@@ -101,31 +107,35 @@ export class LogManager {
     this.#cdpClient.Runtime.on(
       'exceptionThrown',
       async (params: Protocol.Runtime.ExceptionThrownEvent) => {
-        let text = params.exceptionDetails.text;
-
-        if (params.exceptionDetails.exception) {
-          if (params.exceptionDetails.executionContextId === undefined) {
-            text = JSON.stringify(params.exceptionDetails.exception);
-          } else {
-            const exceptionString = await this.#serializer.stringifyObject(
-              params.exceptionDetails.exception,
-              params.exceptionDetails.executionContextId!
-            );
-            if (exceptionString) {
-              text = exceptionString;
-            }
+        const realm: Realm | undefined = (() => {
+          if (params.exceptionDetails.executionContextId !== undefined) {
+            return Realm.getRealm({
+              cdpSessionId: this.#cdpSessionId,
+              executionContextId: params.exceptionDetails.executionContextId!,
+            });
           }
-        }
+          return undefined;
+        })();
+
+        const text = await (async () => {
+          if (!params.exceptionDetails.exception) {
+            return params.exceptionDetails.text;
+          }
+          if (realm === undefined) {
+            return JSON.stringify(params.exceptionDetails.exception);
+          }
+          return await this.#serializer.stringifyObject(
+            params.exceptionDetails.exception,
+            realm
+          );
+        })();
 
         await this.#bidiServer.sendMessage(
           new Log.LogEntryAddedEvent({
             level: 'error',
             source: {
-              // TODO sadym: add proper realm handling.
-              realm: (
-                params.exceptionDetails.executionContextId ?? 'UNKNOWN'
-              ).toString(),
-              context: this.#contextId,
+              realm: realm ? realm.realmId : 'UNKNOWN',
+              context: realm ? realm.browsingContextId : 'UNKNOWN',
             },
             text,
             timestamp: Math.round(params.timestamp),

@@ -212,7 +212,7 @@ export class BrowsingContextProcessor {
 
   static async #getRealm(target: Script.Target): Promise<Realm> {
     if ('realm' in target) {
-      return Realm.getRealm(target.realm);
+      return Realm.getRealm({ realmId: target.realm });
     }
     const context = BrowsingContextStorage.getKnownContext(target.context);
     return await context.getOrCreateSandbox(target.sandbox);

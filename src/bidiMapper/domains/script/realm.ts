@@ -17,7 +17,6 @@
 
 import { Protocol } from 'devtools-protocol';
 import { Script } from '../protocol/bidiProtocolTypes';
-import { NoSuchFrameException } from '../protocol/error';
 import { ScriptEvaluator } from './scriptEvaluator';
 import { BrowsingContextStorage } from '../context/browsingContextStorage';
 
@@ -35,6 +34,7 @@ export class Realm {
     origin: string,
     type: RealmType,
     sandbox: string | undefined,
+    cdpSessionId: string,
     scriptEvaluator: ScriptEvaluator
   ): Realm {
     const realm = new Realm(
@@ -44,6 +44,7 @@ export class Realm {
       origin,
       type,
       sandbox,
+      cdpSessionId,
       scriptEvaluator
     );
     Realm.#realmMap.set(realm.realmId, realm);
@@ -52,13 +53,18 @@ export class Realm {
 
   static findRealms(
     filter: {
+      realmId?: string;
       browsingContextId?: string;
       executionContextId?: Protocol.Runtime.ExecutionContextId;
       type?: string;
       sandbox?: string;
+      cdpSessionId?: string;
     } = {}
   ): Realm[] {
     return Array.from(Realm.#realmMap.values()).filter((realm) => {
+      if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
+        return false;
+      }
       if (
         filter.browsingContextId !== undefined &&
         filter.browsingContextId !== realm.browsingContextId
@@ -77,8 +83,32 @@ export class Realm {
       if (filter.sandbox !== undefined && filter.sandbox !== realm.#sandbox) {
         return false;
       }
+      if (
+        filter.cdpSessionId !== undefined &&
+        filter.cdpSessionId !== realm.#cdpSessionId
+      ) {
+        return false;
+      }
       return true;
     });
+  }
+
+  static getRealm(filter: {
+    realmId?: string;
+    browsingContextId?: string;
+    executionContextId?: Protocol.Runtime.ExecutionContextId;
+    type?: string;
+    sandbox?: string;
+    cdpSessionId?: string;
+  }): Realm {
+    const maybeRealm = Realm.findRealms(filter);
+    if (maybeRealm.length > 1) {
+      throw Error(`multiple realms found for ${JSON.stringify(filter)}`);
+    }
+    if (maybeRealm.length < 1) {
+      throw Error(`Realm not found for ${JSON.stringify(filter)}`);
+    }
+    return maybeRealm[0];
   }
 
   static clearBrowsingContext(browsingContextId: string) {
@@ -89,31 +119,6 @@ export class Realm {
     Realm.#realmMap.delete(this.realmId);
   }
 
-  static getRealm(realmId: string): Realm {
-    const info = Realm.#realmMap.get(realmId);
-    if (info === undefined) {
-      throw new NoSuchFrameException(`Realm ${realmId} not found`);
-    }
-    return info;
-  }
-
-  static getRealmId(
-    browsingContextId: string,
-    executionContextId: number
-  ): string {
-    for (let realm of Realm.#realmMap.values()) {
-      if (
-        realm.executionContextId === executionContextId &&
-        realm.browsingContextId === browsingContextId
-      ) {
-        return realm.realmId;
-      }
-    }
-    throw new Error(
-      `Cannot find execution context ${executionContextId} in frame ${browsingContextId}`
-    );
-  }
-
   readonly #realmId: string;
   readonly #browsingContextId: string;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
@@ -121,6 +126,7 @@ export class Realm {
   readonly #type: RealmType;
   readonly #sandbox: string | undefined;
   readonly #scriptEvaluator: ScriptEvaluator;
+  readonly #cdpSessionId: string;
 
   private constructor(
     realmId: string,
@@ -129,6 +135,7 @@ export class Realm {
     origin: string,
     type: RealmType,
     sandbox: string | undefined,
+    cdpSessionId: string,
     scriptEvaluator: ScriptEvaluator
   ) {
     this.#realmId = realmId;
@@ -137,6 +144,7 @@ export class Realm {
     this.#sandbox = sandbox;
     this.#origin = origin;
     this.#type = type;
+    this.#cdpSessionId = cdpSessionId;
     this.#scriptEvaluator = scriptEvaluator;
   }
 

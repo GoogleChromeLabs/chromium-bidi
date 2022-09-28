@@ -196,6 +196,7 @@ export class BrowsingContextImpl {
     LogManager.create(
       this.#contextId,
       this.#cdpClient,
+      this.#cdpSessionId,
       this.#bidiServer,
       this.#scriptEvaluator
     );
@@ -359,6 +360,10 @@ export class BrowsingContextImpl {
         if (params.context.auxData.frameId !== this.contextId) {
           return;
         }
+        // Only this execution contexts are supported for now.
+        if (!['default', 'isolated'].includes(params.context.auxData.type)) {
+          return;
+        }
         const realm = Realm.create(
           params.context.uniqueId,
           this.contextId,
@@ -370,6 +375,7 @@ export class BrowsingContextImpl {
           params.context.auxData.type === 'isolated'
             ? params.context.name
             : undefined,
+          this.#cdpSessionId,
           this.#scriptEvaluator
         );
 
