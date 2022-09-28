@@ -352,7 +352,7 @@ export class BrowsingContextProcessor {
       // Make sure the context is known.
       BrowsingContextProcessor.#getKnownContext(params.context);
     }
-    const realms = Realm.getRealms({
+    const realms = Realm.findRealms({
       browsingContextId: params.context,
       type: params.type,
     }).map((realm) => realm.toBiDi());

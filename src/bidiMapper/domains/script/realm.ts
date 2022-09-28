@@ -26,11 +26,26 @@ export enum RealmType {
 export class Realm {
   static readonly #realmMap: Map<string, Realm> = new Map();
 
-  static registerRealm(realm: Realm) {
+  static registerRealm(
+    realmId: string,
+    browsingContextId: string,
+    executionContextId: Protocol.Runtime.ExecutionContextId,
+    origin: string,
+    type: RealmType,
+    sandbox: string | undefined
+  ) {
+    const realm = new Realm(
+      realmId,
+      browsingContextId,
+      executionContextId,
+      origin,
+      type,
+      sandbox
+    );
     Realm.#realmMap.set(realm.realmId, realm);
   }
 
-  static getRealms(
+  static findRealms(
     filter: {
       browsingContextId?: string;
       type?: string;
@@ -62,12 +77,6 @@ export class Realm {
     return info;
   }
 
-  static removeRealmsForContext(browsingContextId: string) {
-    Array.from(Realm.#realmMap.values())
-      .filter((realm) => realm.browsingContextId === browsingContextId)
-      .map((realm) => Realm.#realmMap.delete(realm.realmId));
-  }
-
   static getRealmId(
     browsingContextId: string,
     executionContextId: number
@@ -92,7 +101,7 @@ export class Realm {
   readonly #type: RealmType;
   readonly #sandbox: string | undefined;
 
-  constructor(
+  private constructor(
     realmId: string,
     browsingContextId: string,
     executionContextId: Protocol.Runtime.ExecutionContextId,

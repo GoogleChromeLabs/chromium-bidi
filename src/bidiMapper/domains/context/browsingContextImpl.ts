@@ -239,7 +239,7 @@ export class BrowsingContextImpl {
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
 
         // Remove all the already created realms.
-        Realm.getRealms({ browsingContextId: this.contextId }).map((realm) =>
+        Realm.findRealms({ browsingContextId: this.contextId }).map((realm) =>
           Realm.removeRealm(realm.realmId)
         );
         this.#sandboxToExecutionContextIdMap = new Map();
@@ -327,18 +327,16 @@ export class BrowsingContextImpl {
         }
 
         Realm.registerRealm(
-          new Realm(
-            params.context.uniqueId,
-            this.contextId,
-            params.context.id,
-            this.#getOrigin(params),
-            // TODO: differentiate types.
-            RealmType.window,
-            // Sandbox name for isolated world.
-            params.context.auxData.type === 'isolated'
-              ? params.context.name
-              : undefined
-          )
+          params.context.uniqueId,
+          this.contextId,
+          params.context.id,
+          this.#getOrigin(params),
+          // TODO: differentiate types.
+          RealmType.window,
+          // Sandbox name for isolated world.
+          params.context.auxData.type === 'isolated'
+            ? params.context.name
+            : undefined
         );
       }
     );
