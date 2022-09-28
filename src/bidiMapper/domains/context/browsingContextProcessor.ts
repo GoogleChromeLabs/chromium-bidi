@@ -22,7 +22,7 @@ import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { InvalidArgumentErrorResponse } from '../protocol/error';
-import { BrowsingContextImpl, ScriptTarget } from './browsingContextImpl';
+import { BrowsingContextImpl } from './browsingContextImpl';
 import { Realm } from '../script/realm';
 import { BrowsingContextStorage } from './browsingContextStorage';
 
@@ -210,39 +210,23 @@ export class BrowsingContextProcessor {
     );
   }
 
+  static async #getRealm(target: Script.Target): Promise<Realm> {
+    if ('realm' in target) {
+      return Realm.getRealm(target.realm);
+    }
+    const context = BrowsingContextStorage.getKnownContext(target.context);
+    return await context.getOrCreateSandbox(target.sandbox);
+  }
+
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    const scriptTarget = BrowsingContextProcessor.#getScriptTarget(
-      params.target
-    );
-
-    return await scriptTarget.context.scriptEvaluate(
+    const realm = await BrowsingContextProcessor.#getRealm(params.target);
+    return await realm.scriptEvaluate(
       params.expression,
-      scriptTarget.target,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );
-  }
-
-  static #getScriptTarget(target: Script.Target): {
-    context: BrowsingContextImpl;
-    target: ScriptTarget;
-  } {
-    if ('realm' in target) {
-      const { executionContextId, browsingContextId } = Realm.getRealm(
-        target.realm
-      );
-      return {
-        context: BrowsingContextStorage.getKnownContext(browsingContextId),
-        target: { executionContext: executionContextId },
-      };
-    } else {
-      return {
-        context: BrowsingContextStorage.getKnownContext(target.context),
-        target: { sandbox: target.sandbox ?? null },
-      };
-    }
   }
 
   process_script_getRealms(
@@ -262,17 +246,13 @@ export class BrowsingContextProcessor {
   async process_script_callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    const scriptTarget = BrowsingContextProcessor.#getScriptTarget(
-      params.target
-    );
-
-    return await scriptTarget.context.callFunction(
+    const realm = await BrowsingContextProcessor.#getRealm(params.target);
+    return await realm.callFunction(
       params.functionDeclaration,
       params.this || {
         type: 'undefined',
       }, // `this` is `undefined` by default.
       params.arguments || [], // `arguments` is `[]` by default.
-      scriptTarget.target,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );

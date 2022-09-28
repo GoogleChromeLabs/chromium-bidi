@@ -18,6 +18,8 @@
 import { Protocol } from 'devtools-protocol';
 import { Script } from '../protocol/bidiProtocolTypes';
 import { NoSuchFrameException } from '../protocol/error';
+import { ScriptEvaluator } from './scriptEvaluator';
+import { BrowsingContextStorage } from '../context/browsingContextStorage';
 
 export enum RealmType {
   window = 'window',
@@ -32,23 +34,28 @@ export class Realm {
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
-    sandbox: string | undefined
-  ) {
+    sandbox: string | undefined,
+    scriptEvaluator: ScriptEvaluator
+  ): Realm {
     const realm = new Realm(
       realmId,
       browsingContextId,
       executionContextId,
       origin,
       type,
-      sandbox
+      sandbox,
+      scriptEvaluator
     );
     Realm.#realmMap.set(realm.realmId, realm);
+    return realm;
   }
 
   static findRealms(
     filter: {
       browsingContextId?: string;
+      executionContextId?: Protocol.Runtime.ExecutionContextId;
       type?: string;
+      sandbox?: string;
     } = {}
   ): Realm[] {
     return Array.from(Realm.#realmMap.values()).filter((realm) => {
@@ -58,15 +65,28 @@ export class Realm {
       ) {
         return false;
       }
+      if (
+        filter.executionContextId !== undefined &&
+        filter.executionContextId !== realm.executionContextId
+      ) {
+        return false;
+      }
       if (filter.type !== undefined && filter.type !== realm.type) {
+        return false;
+      }
+      if (filter.sandbox !== undefined && filter.sandbox !== realm.#sandbox) {
         return false;
       }
       return true;
     });
   }
 
-  static removeRealm(realmId: string) {
-    Realm.#realmMap.delete(realmId);
+  static clearBrowsingContext(browsingContextId: string) {
+    Realm.findRealms({ browsingContextId }).map((realm) => realm.remove());
+  }
+
+  remove() {
+    Realm.#realmMap.delete(this.realmId);
   }
 
   static getRealm(realmId: string): Realm {
@@ -100,6 +120,7 @@ export class Realm {
   readonly #origin: string;
   readonly #type: RealmType;
   readonly #sandbox: string | undefined;
+  readonly #scriptEvaluator: ScriptEvaluator;
 
   private constructor(
     realmId: string,
@@ -107,7 +128,8 @@ export class Realm {
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
-    sandbox: string | undefined
+    sandbox: string | undefined,
+    scriptEvaluator: ScriptEvaluator
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
@@ -115,6 +137,7 @@ export class Realm {
     this.#sandbox = sandbox;
     this.#origin = origin;
     this.#type = type;
+    this.#scriptEvaluator = scriptEvaluator;
   }
 
   toBiDi(): Script.RealmInfo {
@@ -145,5 +168,47 @@ export class Realm {
 
   get type(): RealmType {
     return this.#type;
+  }
+
+  async callFunction(
+    functionDeclaration: string,
+    _this: Script.ArgumentValue,
+    _arguments: Script.ArgumentValue[],
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<Script.CallFunctionResult> {
+    const context = BrowsingContextStorage.getKnownContext(
+      this.browsingContextId
+    );
+    await context.awaitUnblocked();
+
+    return {
+      result: await this.#scriptEvaluator.callFunction(
+        this,
+        functionDeclaration,
+        _this,
+        _arguments,
+        awaitPromise,
+        resultOwnership
+      ),
+    };
+  }
+
+  async scriptEvaluate(
+    expression: string,
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<Script.EvaluateResult> {
+    const context = BrowsingContextStorage.getKnownContext(
+      this.browsingContextId
+    );
+    await context.awaitUnblocked();
+
+    return this.#scriptEvaluator.scriptEvaluate(
+      this,
+      expression,
+      awaitPromise,
+      resultOwnership
+    );
   }
 }

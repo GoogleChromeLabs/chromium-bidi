@@ -40,12 +40,12 @@ export class ScriptEvaluator {
    * target's `globalThis`.
    * @param cdpObject CDP remote object to be serialized.
    * @param resultOwnership indicates desired OwnershipModel.
-   * @param executionContext point to the execution context
+   * @param realm
    */
   public async serializeCdpObject(
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel,
-    executionContext: Protocol.Runtime.ExecutionContextId
+    realm: Realm
   ): Promise<CommonDataTypes.RemoteValue> {
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await this.#cdpClient.Runtime.callFunctionOn({
@@ -53,7 +53,7 @@ export class ScriptEvaluator {
         awaitPromise: false,
         arguments: [cdpObject],
         generateWebDriverValue: true,
-        executionContextId: executionContext,
+        executionContextId: realm.executionContextId,
       });
     return await this.#cdpToBidiValue(cdpWebDriverValue, resultOwnership);
   }
@@ -62,12 +62,12 @@ export class ScriptEvaluator {
    * Gets the string representation of an object. This is equivalent to
    * calling toString() on the object value.
    * @param cdpObject CDP remote object representing an object.
-   * @param executionContext
+   * @param realm
    * @returns string The stringified object.
    */
   async stringifyObject(
     cdpObject: Protocol.Runtime.RemoteObject,
-    executionContext: Protocol.Runtime.ExecutionContextId
+    realm: Realm
   ): Promise<string> {
     let stringifyResult = await this.#cdpClient.Runtime.callFunctionOn({
       functionDeclaration: String(function (
@@ -78,14 +78,13 @@ export class ScriptEvaluator {
       awaitPromise: false,
       arguments: [cdpObject],
       returnByValue: true,
-      executionContextId: executionContext,
+      executionContextId: realm.executionContextId,
     });
     return stringifyResult.result.value;
   }
 
   public async callFunction(
-    browsingContext: string,
-    executionContext: Protocol.Runtime.ExecutionContextId,
+    realm: Realm,
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
@@ -100,12 +99,12 @@ export class ScriptEvaluator {
       }}`;
 
     const thisAndArgumentsList = [
-      await this.#deserializeToCdpArg(_this, executionContext),
+      await this.#deserializeToCdpArg(_this, realm),
     ];
     thisAndArgumentsList.push(
       ...(await Promise.all(
         _arguments.map(async (a) => {
-          return await this.#deserializeToCdpArg(a, executionContext);
+          return await this.#deserializeToCdpArg(a, realm);
         })
       ))
     );
@@ -115,7 +114,7 @@ export class ScriptEvaluator {
       awaitPromise,
       arguments: thisAndArgumentsList, // this, arguments.
       generateWebDriverValue: true,
-      executionContextId: executionContext,
+      executionContextId: realm.executionContextId,
     });
 
     if (cdpCallFunctionResult.exceptionDetails) {
@@ -125,9 +124,9 @@ export class ScriptEvaluator {
           cdpCallFunctionResult.exceptionDetails,
           this.#callFunctionStacktraceLineOffset,
           resultOwnership,
-          executionContext
+          realm
         ),
-        realm: Realm.getRealmId(browsingContext, executionContext),
+        realm: realm.realmId,
       };
     }
 
@@ -136,7 +135,7 @@ export class ScriptEvaluator {
         cdpCallFunctionResult,
         resultOwnership
       ),
-      realm: Realm.getRealmId(browsingContext, executionContext),
+      realm: realm.realmId,
     };
   }
 
@@ -144,7 +143,7 @@ export class ScriptEvaluator {
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number,
     resultOwnership: Script.OwnershipModel,
-    executionContext: Protocol.Runtime.ExecutionContextId
+    realm: Realm
   ): Promise<Script.ExceptionDetails> {
     const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
       (frame) => ({
@@ -161,12 +160,12 @@ export class ScriptEvaluator {
       // Exception should always be there.
       cdpExceptionDetails.exception!,
       resultOwnership,
-      executionContext
+      realm
     );
 
     const text = await this.stringifyObject(
       cdpExceptionDetails.exception!,
-      executionContext
+      realm
     );
 
     return {
@@ -208,14 +207,13 @@ export class ScriptEvaluator {
   }
 
   public async scriptEvaluate(
-    browsingContext: string,
-    executionContext: Protocol.Runtime.ExecutionContextId,
+    realm: Realm,
     expression: string,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     let cdpEvaluateResult = await this.#cdpClient.Runtime.evaluate({
-      contextId: executionContext,
+      contextId: realm.executionContextId,
       expression,
       awaitPromise,
       generateWebDriverValue: true,
@@ -229,9 +227,9 @@ export class ScriptEvaluator {
             cdpEvaluateResult.exceptionDetails,
             this.#evaluateStacktraceLineOffset,
             resultOwnership,
-            executionContext
+            realm
           ),
-          realm: Realm.getRealmId(browsingContext, executionContext),
+          realm: realm.realmId,
         },
       };
     }
@@ -239,14 +237,14 @@ export class ScriptEvaluator {
     return {
       result: {
         result: await this.#cdpToBidiValue(cdpEvaluateResult, resultOwnership),
-        realm: Realm.getRealmId(browsingContext, executionContext),
+        realm: realm.realmId,
       },
     };
   }
 
   async #deserializeToCdpArg(
     argumentValue: Script.ArgumentValue,
-    executionContext: Protocol.Runtime.ExecutionContextId
+    realm: Realm
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('handle' in argumentValue) {
       return { objectId: argumentValue.handle };
@@ -310,7 +308,7 @@ export class ScriptEvaluator {
         //  reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
           argumentValue.value,
-          executionContext
+          realm
         );
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (
@@ -325,7 +323,7 @@ export class ScriptEvaluator {
           awaitPromise: false,
           arguments: keyValueArray,
           returnByValue: false,
-          executionContextId: executionContext,
+          executionContextId: realm.executionContextId,
         });
 
         // TODO(sadym): dispose nested objects.
@@ -337,7 +335,7 @@ export class ScriptEvaluator {
         //  reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
           argumentValue.value,
-          executionContext
+          realm
         );
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
@@ -359,7 +357,7 @@ export class ScriptEvaluator {
           awaitPromise: false,
           arguments: keyValueArray,
           returnByValue: false,
-          executionContextId: executionContext,
+          executionContextId: realm.executionContextId,
         });
 
         // TODO(sadym): dispose nested objects.
@@ -369,10 +367,7 @@ export class ScriptEvaluator {
       case 'array': {
         // TODO(sadym): if non of the nested items has remote reference,
         //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(
-          argumentValue.value,
-          executionContext
-        );
+        const args = await this.#flattenValueList(argumentValue.value, realm);
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (...args: unknown[]) {
@@ -381,7 +376,7 @@ export class ScriptEvaluator {
           awaitPromise: false,
           arguments: args,
           returnByValue: false,
-          executionContextId: executionContext,
+          executionContextId: realm.executionContextId,
         });
 
         // TODO(sadym): dispose nested objects.
@@ -391,10 +386,7 @@ export class ScriptEvaluator {
       case 'set': {
         // TODO(sadym): if non of the nested items has remote reference,
         //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(
-          argumentValue.value,
-          executionContext
-        );
+        const args = await this.#flattenValueList(argumentValue.value, realm);
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (...args: unknown[]) {
@@ -403,7 +395,7 @@ export class ScriptEvaluator {
           awaitPromise: false,
           arguments: args,
           returnByValue: false,
-          executionContextId: executionContext,
+          executionContextId: realm.executionContextId,
         });
         return { objectId: argEvalResult.result.objectId };
       }
@@ -419,7 +411,7 @@ export class ScriptEvaluator {
 
   async #flattenKeyValuePairs(
     value: CommonDataTypes.MappingLocalValue,
-    executionContext: Protocol.Runtime.ExecutionContextId
+    realm: Realm
   ): Promise<Protocol.Runtime.CallArgument[]> {
     const keyValueArray: Protocol.Runtime.CallArgument[] = [];
     for (let pair of value) {
@@ -433,10 +425,10 @@ export class ScriptEvaluator {
         keyArg = { value: key };
       } else {
         // Key is a serialized value.
-        keyArg = await this.#deserializeToCdpArg(key, executionContext);
+        keyArg = await this.#deserializeToCdpArg(key, realm);
       }
 
-      valueArg = await this.#deserializeToCdpArg(value, executionContext);
+      valueArg = await this.#deserializeToCdpArg(value, realm);
 
       keyValueArray.push(keyArg);
       keyValueArray.push(valueArg);
@@ -446,12 +438,12 @@ export class ScriptEvaluator {
 
   async #flattenValueList(
     list: CommonDataTypes.ListLocalValue,
-    executionContext: Protocol.Runtime.ExecutionContextId
+    realm: Realm
   ): Promise<Protocol.Runtime.CallArgument[]> {
     const result: Protocol.Runtime.CallArgument[] = [];
 
     for (let value of list) {
-      result.push(await this.#deserializeToCdpArg(value, executionContext));
+      result.push(await this.#deserializeToCdpArg(value, realm));
     }
 
     return result;
