@@ -87,21 +87,6 @@ export class BrowsingContextProcessor {
     });
 
     sessionCdpClient.Page.on(
-      'frameNavigated',
-      async (params: Protocol.Page.FrameNavigatedEvent) => {
-        const contextId = params.frame.id;
-        if (!BrowsingContextStorage.hasKnownContext(contextId)) {
-          return;
-        }
-        const context = BrowsingContextStorage.getKnownContext(contextId);
-        // At the point the page is initiated, all the nested iframes from the
-        // previous page are detached and realms are destroyed.
-        // Remove context's children.
-        await context.removeChildContexts();
-      }
-    );
-
-    sessionCdpClient.Page.on(
       'frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
         await BrowsingContextImpl.createFrameContext(

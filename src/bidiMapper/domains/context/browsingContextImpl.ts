@@ -156,7 +156,7 @@ export class BrowsingContextImpl {
   }
 
   public async removeChildContexts() {
-    await Promise.all(this.children.map((child) => child.remove));
+    await Promise.all(this.children.map((child) => child.remove()));
   }
 
   public async remove() {
@@ -273,11 +273,16 @@ export class BrowsingContextImpl {
 
     this.#cdpClient.Page.on(
       'frameNavigated',
-      (params: Protocol.Page.FrameNavigatedEvent) => {
+      async (params: Protocol.Page.FrameNavigatedEvent) => {
         if (this.contextId !== params.frame.id) {
           return;
         }
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
+
+        // At the point the page is initiated, all the nested iframes from the
+        // previous page are detached and realms are destroyed.
+        // Remove context's children.
+        await this.removeChildContexts();
 
         // Remove all the already created realms.
         Realm.findRealms({ browsingContextId: this.contextId }).map((realm) =>
