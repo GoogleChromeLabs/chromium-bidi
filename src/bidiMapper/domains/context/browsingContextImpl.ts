@@ -164,9 +164,8 @@ export class BrowsingContextImpl {
 
     // Remove context from the parent.
     if (this.parentId !== null) {
-      BrowsingContextStorage.getKnownContext(this.parentId).#removeFromChildren(
-        this.contextId
-      );
+      const parent = BrowsingContextStorage.getKnownContext(this.parentId);
+      parent.#children.delete(this.contextId);
     }
 
     await this.#eventManager.sendEvent(
@@ -233,10 +232,6 @@ export class BrowsingContextImpl {
 
   addChild(child: BrowsingContextImpl): void {
     this.#children.set(child.contextId, child);
-  }
-
-  #removeFromChildren(childContextId: string): void {
-    this.#children.delete(childContextId);
   }
 
   async awaitLoaded(): Promise<void> {
