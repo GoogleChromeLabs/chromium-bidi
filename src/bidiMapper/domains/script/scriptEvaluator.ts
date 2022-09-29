@@ -119,7 +119,10 @@ export class ScriptEvaluator {
       // helps to save round-trips.
       if (
         e.code === -32000 &&
-        e.message === 'Could not find object with given id'
+        [
+          'Could not find object with given id',
+          'Invalid remote object id',
+        ].includes(e.message)
       ) {
         throw new InvalidArgumentException('Handle was not found.');
       }
