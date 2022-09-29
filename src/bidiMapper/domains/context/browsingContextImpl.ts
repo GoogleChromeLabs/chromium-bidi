@@ -24,7 +24,6 @@ import { Deferred } from '../../utils/deferred';
 import { UnknownErrorResponse } from '../protocol/error';
 import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
-import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Realm, RealmType } from '../script/realm';
 import { BrowsingContextStorage } from './browsingContextStorage';
 
@@ -509,6 +508,7 @@ export class BrowsingContextImpl {
       { type: 'string', value: selector },
     ];
 
+    // TODO: execute in isolated world.
     // TODO(sadym): handle not found exception.
     const result = await this.#defaultRealm.callFunction(
       functionDeclaration,
@@ -516,7 +516,6 @@ export class BrowsingContextImpl {
         type: 'undefined',
       },
       _arguments,
-      // TODO: execute in isolated world.
       true,
       'root'
     );
