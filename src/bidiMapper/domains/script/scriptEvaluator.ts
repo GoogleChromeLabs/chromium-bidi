@@ -21,14 +21,14 @@ import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
 import { Realm } from './realm';
 
 export class ScriptEvaluator {
-  #cdpClient: CdpClient;
+  readonly #cdpClient: CdpClient;
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
   readonly #evaluateStacktraceLineOffset = 0;
   readonly #callFunctionStacktraceLineOffset = 1;
 
-  private constructor(_cdpClient: CdpClient) {
-    this.#cdpClient = _cdpClient;
+  private constructor(cdpClient: CdpClient) {
+    this.#cdpClient = cdpClient;
   }
 
   public static create(_cdpClient: CdpClient) {

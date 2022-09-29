@@ -27,18 +27,15 @@ export class LogManager {
   readonly #contextId: string;
   readonly #cdpClient: CdpClient;
   readonly #bidiServer: IBidiServer;
-  readonly #serializer: ScriptEvaluator;
   readonly #cdpSessionId: string;
 
   private constructor(
     contextId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    bidiServer: IBidiServer,
-    serializer: ScriptEvaluator
+    bidiServer: IBidiServer
   ) {
     this.#cdpSessionId = cdpSessionId;
-    this.#serializer = serializer;
     this.#bidiServer = bidiServer;
     this.#cdpClient = cdpClient;
     this.#contextId = contextId;
@@ -48,15 +45,13 @@ export class LogManager {
     contextId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    bidiServer: IBidiServer,
-    serializer: ScriptEvaluator
+    bidiServer: IBidiServer
   ) {
     const logManager = new LogManager(
       contextId,
       cdpClient,
       cdpSessionId,
-      bidiServer,
-      serializer
+      bidiServer
     );
 
     logManager.#initialize();
@@ -81,7 +76,7 @@ export class LogManager {
         });
         const args = await Promise.all(
           params.args.map(async (arg) => {
-            return this.#serializer?.serializeCdpObject(arg, 'none', realm);
+            return realm.serializeCdpObject(arg, 'none');
           })
         );
 
@@ -124,7 +119,7 @@ export class LogManager {
           if (realm === undefined) {
             return JSON.stringify(params.exceptionDetails.exception);
           }
-          return await this.#serializer.stringifyObject(
+          return await realm.stringifyObject(
             params.exceptionDetails.exception,
             realm
           );

@@ -16,10 +16,11 @@
  */
 
 import { Protocol } from 'devtools-protocol';
-import { Script } from '../protocol/bidiProtocolTypes';
+import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
 import { ScriptEvaluator } from './scriptEvaluator';
 import { BrowsingContextStorage } from '../context/browsingContextStorage';
 import { NoSuchFrameException } from '../protocol/error';
+import { CdpClient } from '../../../cdp';
 
 export enum RealmType {
   window = 'window',
@@ -36,7 +37,7 @@ export class Realm {
     type: RealmType,
     sandbox: string | undefined,
     cdpSessionId: string,
-    scriptEvaluator: ScriptEvaluator
+    cdpClient: CdpClient
   ): Realm {
     const realm = new Realm(
       realmId,
@@ -46,7 +47,7 @@ export class Realm {
       type,
       sandbox,
       cdpSessionId,
-      scriptEvaluator
+      cdpClient
     );
     Realm.#realmMap.set(realm.realmId, realm);
     return realm;
@@ -130,6 +131,7 @@ export class Realm {
   readonly #sandbox: string | undefined;
   readonly #scriptEvaluator: ScriptEvaluator;
   readonly #cdpSessionId: string;
+  readonly #cdpClient: CdpClient;
 
   private constructor(
     realmId: string,
@@ -139,7 +141,7 @@ export class Realm {
     type: RealmType,
     sandbox: string | undefined,
     cdpSessionId: string,
-    scriptEvaluator: ScriptEvaluator
+    cdpClient: CdpClient
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
@@ -148,7 +150,8 @@ export class Realm {
     this.#origin = origin;
     this.#type = type;
     this.#cdpSessionId = cdpSessionId;
-    this.#scriptEvaluator = scriptEvaluator;
+    this.#cdpClient = cdpClient;
+    this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
   }
 
   toBiDi(): Script.RealmInfo {
@@ -221,5 +224,36 @@ export class Realm {
       awaitPromise,
       resultOwnership
     );
+  }
+
+  /**
+   * Serializes a given CDP object into BiDi, keeping references in the
+   * target's `globalThis`.
+   * @param cdpObject CDP remote object to be serialized.
+   * @param resultOwnership indicates desired OwnershipModel.
+   */
+  public async serializeCdpObject(
+    cdpObject: Protocol.Runtime.RemoteObject,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<CommonDataTypes.RemoteValue> {
+    return await this.#scriptEvaluator.serializeCdpObject(
+      cdpObject,
+      resultOwnership,
+      this
+    );
+  }
+
+  /**
+   * Gets the string representation of an object. This is equivalent to
+   * calling toString() on the object value.
+   * @param cdpObject CDP remote object representing an object.
+   * @param realm
+   * @returns string The stringified object.
+   */
+  async stringifyObject(
+    cdpObject: Protocol.Runtime.RemoteObject,
+    realm: Realm
+  ): Promise<string> {
+    return this.#scriptEvaluator.stringifyObject(cdpObject, this);
   }
 }

@@ -52,7 +52,6 @@ export class BrowsingContextImpl {
   readonly #bidiServer: IBidiServer;
   #eventManager: IEventManager;
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
-  #scriptEvaluator: ScriptEvaluator;
 
   #maybeDefaultRealm: Realm | undefined;
 
@@ -80,7 +79,6 @@ export class BrowsingContextImpl {
     this.#cdpSessionId = cdpSessionId;
     this.#bidiServer = bidiServer;
 
-    this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
     this.#initListeners();
 
     BrowsingContextStorage.registerContext(this);
@@ -188,7 +186,6 @@ export class BrowsingContextImpl {
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
 
-    this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
     this.#initListeners();
   }
 
@@ -197,8 +194,7 @@ export class BrowsingContextImpl {
       this.#contextId,
       this.#cdpClient,
       this.#cdpSessionId,
-      this.#bidiServer,
-      this.#scriptEvaluator
+      this.#bidiServer
     );
     await this.#cdpClient.Runtime.enable();
     await this.#cdpClient.Page.enable();
@@ -376,7 +372,7 @@ export class BrowsingContextImpl {
             ? params.context.name
             : undefined,
           this.#cdpSessionId,
-          this.#scriptEvaluator
+          this.#cdpClient
         );
 
         if (params.context.auxData.isDefault) {
