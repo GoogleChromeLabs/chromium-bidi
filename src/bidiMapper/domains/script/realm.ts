@@ -103,16 +103,16 @@ export class Realm {
     sandbox?: string;
     cdpSessionId?: string;
   }): Realm {
-    const maybeRealm = Realm.findRealms(filter);
-    if (maybeRealm.length > 1) {
-      throw Error(`multiple realms found for ${JSON.stringify(filter)}`);
+    const maybeRealms = Realm.findRealms(filter);
+    if (maybeRealms.length > 1) {
+      throw Error(`Multiple realms found. Filter: ${JSON.stringify(filter)}.`);
     }
-    if (maybeRealm.length < 1) {
+    if (maybeRealms.length < 1) {
       throw new NoSuchFrameException(
         `Realm ${JSON.stringify(filter)} not found`
       );
     }
-    return maybeRealm[0];
+    return maybeRealms[0];
   }
 
   static clearBrowsingContext(browsingContextId: string) {
@@ -129,7 +129,6 @@ export class Realm {
   readonly #origin: string;
   readonly #type: RealmType;
   readonly #sandbox: string | undefined;
-  readonly #scriptEvaluator: ScriptEvaluator;
   readonly #cdpSessionId: string;
   readonly #cdpClient: CdpClient;
 
@@ -151,7 +150,6 @@ export class Realm {
     this.#type = type;
     this.#cdpSessionId = cdpSessionId;
     this.#cdpClient = cdpClient;
-    this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
   }
 
   toBiDi(): Script.RealmInfo {
@@ -184,6 +182,10 @@ export class Realm {
     return this.#type;
   }
 
+  get cdpClient(): CdpClient {
+    return this.#cdpClient;
+  }
+
   async callFunction(
     functionDeclaration: string,
     _this: Script.ArgumentValue,
@@ -197,7 +199,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await this.#scriptEvaluator.callFunction(
+      result: await ScriptEvaluator.callFunction(
         this,
         functionDeclaration,
         _this,
@@ -218,7 +220,7 @@ export class Realm {
     );
     await context.awaitUnblocked();
 
-    return this.#scriptEvaluator.scriptEvaluate(
+    return ScriptEvaluator.scriptEvaluate(
       this,
       expression,
       awaitPromise,
@@ -236,7 +238,7 @@ export class Realm {
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
-    return await this.#scriptEvaluator.serializeCdpObject(
+    return await ScriptEvaluator.serializeCdpObject(
       cdpObject,
       resultOwnership,
       this
@@ -254,6 +256,6 @@ export class Realm {
     cdpObject: Protocol.Runtime.RemoteObject,
     realm: Realm
   ): Promise<string> {
-    return this.#scriptEvaluator.stringifyObject(cdpObject, this);
+    return ScriptEvaluator.stringifyObject(cdpObject, this);
   }
 }

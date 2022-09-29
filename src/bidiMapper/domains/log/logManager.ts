@@ -102,16 +102,19 @@ export class LogManager {
     this.#cdpClient.Runtime.on(
       'exceptionThrown',
       async (params: Protocol.Runtime.ExceptionThrownEvent) => {
+        // Try to find realm by `cdpSessionId` and `executionContextId`,
+        // if provided.
         const realm: Realm | undefined = (() => {
           if (params.exceptionDetails.executionContextId !== undefined) {
             return Realm.getRealm({
               cdpSessionId: this.#cdpSessionId,
-              executionContextId: params.exceptionDetails.executionContextId!,
+              executionContextId: params.exceptionDetails.executionContextId,
             });
           }
           return undefined;
         })();
 
+        // Try all the best to get the exception text.
         const text = await (async () => {
           if (!params.exceptionDetails.exception) {
             return params.exceptionDetails.text;

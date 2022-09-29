@@ -58,7 +58,7 @@ export class BrowsingContextProcessor {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
     cdpClient.Target.on('detachedFromTarget', async (params) => {
-      await this.#handleDetachedFromTargetEvent(params);
+      await BrowsingContextProcessor.#handleDetachedFromTargetEvent(params);
     });
   }
 
@@ -122,11 +122,9 @@ export class BrowsingContextProcessor {
 
     if (BrowsingContextStorage.hasKnownContext(targetInfo.targetId)) {
       // OOPiF.
-      BrowsingContextImpl.convertFrameToTargetContext(
-        BrowsingContextStorage.getKnownContext(targetInfo.targetId),
-        targetSessionCdpClient,
-        sessionId
-      );
+      BrowsingContextStorage.getKnownContext(
+        targetInfo.targetId
+      ).convertFrameToTargetContext(targetSessionCdpClient, sessionId);
     } else {
       await BrowsingContextImpl.createTargetContext(
         targetInfo.targetId,
@@ -143,7 +141,7 @@ export class BrowsingContextProcessor {
   //   "params": {
   //     "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9",
   //     "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  async #handleDetachedFromTargetEvent(
+  static async #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
     // TODO: params.targetId is deprecated. Update this class to track using
@@ -190,12 +188,7 @@ export class BrowsingContextProcessor {
     await context.awaitLoaded();
 
     return {
-      result: {
-        context: contextId,
-        parent: null,
-        url: 'about:blank',
-        children: [],
-      },
+      result: context.serializeToBidiValue(0, false),
     };
   }
 
