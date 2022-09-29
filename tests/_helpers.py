@@ -121,12 +121,12 @@ def not_one_of(not_expected_list):
     return _not_one_of
 
 
-def comppare_sorted(key_name, expected):
-    def _comppare_sorted(actual):
+def compare_sorted(key_name, expected):
+    def _compare_sorted(actual):
         recursive_compare(sorted(expected, key=lambda x: x[key_name]),
                           sorted(actual, key=lambda x: x[key_name]))
 
-    return _comppare_sorted
+    return _compare_sorted
 
 
 def any_timestamp(actual):

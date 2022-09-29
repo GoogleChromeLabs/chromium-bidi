@@ -738,7 +738,7 @@ async def test_scriptGetRealms(websocket, context_id):
     # Assert 2 realms are created.
     recursive_compare({
         "realms":
-            comppare_sorted("realm", [{
+            compare_sorted("realm", [{
                 "realm": old_realm,
                 "origin": "null",
                 "type": "window",
