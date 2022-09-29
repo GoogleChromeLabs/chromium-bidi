@@ -229,7 +229,16 @@ export class Realm {
   }
 
   async disown(handle: string): Promise<void> {
-    await this.#cdpClient.Runtime.releaseObject({ objectId: handle });
+    try {
+      await this.#cdpClient.Runtime.releaseObject({ objectId: handle });
+    } catch (e: any) {
+      // Heuristic to determine if the problem is in the unknown handler.
+      // Ignore the error if so.
+      if (e.code === -32000 && e.message === 'Invalid remote object id') {
+        return;
+      }
+      throw e;
+    }
   }
 
   /**
