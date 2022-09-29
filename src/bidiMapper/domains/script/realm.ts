@@ -228,6 +228,10 @@ export class Realm {
     );
   }
 
+  async disown(handle: string): Promise<void> {
+    await this.#cdpClient.Runtime.releaseObject({ objectId: handle });
+  }
+
   /**
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.
