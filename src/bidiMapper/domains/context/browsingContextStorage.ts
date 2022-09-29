@@ -27,11 +27,11 @@ export class BrowsingContextStorage {
     );
   }
 
-  static forgetContext(contextId: string) {
+  static removeContext(contextId: string) {
     BrowsingContextStorage.#contexts.delete(contextId);
   }
 
-  static registerContext(context: BrowsingContextImpl) {
+  static addContext(context: BrowsingContextImpl) {
     BrowsingContextStorage.#contexts.set(context.contextId, context);
     if (context.parentId !== null) {
       BrowsingContextStorage.getKnownContext(context.parentId).addChild(

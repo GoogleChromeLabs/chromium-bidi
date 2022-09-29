@@ -80,7 +80,7 @@ export class BrowsingContextImpl {
 
     this.#initListeners();
 
-    BrowsingContextStorage.registerContext(this);
+    BrowsingContextStorage.addContext(this);
   }
 
   public static async createFrameContext(
@@ -144,7 +144,7 @@ export class BrowsingContextImpl {
     this.#unblockAttachedTarget();
   }
 
-  public async remove() {
+  public async delete() {
     await this.#removeChildContexts();
 
     // Remove context from the parent.
@@ -157,11 +157,11 @@ export class BrowsingContextImpl {
       new BrowsingContext.ContextDestroyedEvent(this.serializeToBidiValue()),
       this.contextId
     );
-    BrowsingContextStorage.forgetContext(this.contextId);
+    BrowsingContextStorage.removeContext(this.contextId);
   }
 
   async #removeChildContexts() {
-    await Promise.all(this.children.map((child) => child.remove()));
+    await Promise.all(this.children.map((child) => child.delete()));
   }
 
   #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
@@ -374,7 +374,7 @@ export class BrowsingContextImpl {
         Realm.findRealms({
           cdpSessionId: this.#cdpSessionId,
           executionContextId: params.executionContextId,
-        }).map((realm) => realm.remove());
+        }).map((realm) => realm.delete());
       }
     );
   }

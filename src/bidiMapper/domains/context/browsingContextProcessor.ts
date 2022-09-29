@@ -148,7 +148,7 @@ export class BrowsingContextProcessor {
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;
-    await BrowsingContextStorage.findContext(contextId)?.remove();
+    await BrowsingContextStorage.findContext(contextId)?.delete();
   }
 
   async process_browsingContext_getTree(

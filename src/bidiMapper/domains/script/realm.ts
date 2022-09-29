@@ -116,10 +116,10 @@ export class Realm {
   }
 
   static clearBrowsingContext(browsingContextId: string) {
-    Realm.findRealms({ browsingContextId }).map((realm) => realm.remove());
+    Realm.findRealms({ browsingContextId }).map((realm) => realm.delete());
   }
 
-  remove() {
+  delete() {
     Realm.#realmMap.delete(this.realmId);
   }
 
