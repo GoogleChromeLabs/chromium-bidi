@@ -19,6 +19,7 @@ import { Protocol } from 'devtools-protocol';
 import { Script } from '../protocol/bidiProtocolTypes';
 import { ScriptEvaluator } from './scriptEvaluator';
 import { BrowsingContextStorage } from '../context/browsingContextStorage';
+import { NoSuchFrameException } from '../protocol/error';
 
 export enum RealmType {
   window = 'window',
@@ -106,7 +107,9 @@ export class Realm {
       throw Error(`multiple realms found for ${JSON.stringify(filter)}`);
     }
     if (maybeRealm.length < 1) {
-      throw Error(`Realm not found for ${JSON.stringify(filter)}`);
+      throw new NoSuchFrameException(
+        `Realm ${JSON.stringify(filter)} not found`
+      );
     }
     return maybeRealm[0];
   }
