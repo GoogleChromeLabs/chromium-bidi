@@ -132,8 +132,8 @@ export class LogManager {
           new Log.LogEntryAddedEvent({
             level: 'error',
             source: {
-              realm: realm ? realm.realmId : 'UNKNOWN',
-              context: realm ? realm.browsingContextId : 'UNKNOWN',
+              realm: realm?.realmId ?? 'UNKNOWN',
+              context: realm?.browsingContextId ?? 'UNKNOWN',
             },
             text,
             timestamp: Math.round(params.timestamp),
