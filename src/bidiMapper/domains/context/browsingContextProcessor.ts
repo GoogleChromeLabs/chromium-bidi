@@ -162,7 +162,7 @@ export class BrowsingContextProcessor {
     return {
       result: {
         contexts: resultContexts.map((c) =>
-          c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE, true)
+          c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
         ),
       },
     };
@@ -188,7 +188,7 @@ export class BrowsingContextProcessor {
     await context.awaitLoaded();
 
     return {
-      result: context.serializeToBidiValue(0, false),
+      result: context.serializeToBidiValue(1),
     };
   }
 
