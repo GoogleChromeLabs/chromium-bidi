@@ -26,6 +26,9 @@ export class ScriptEvaluator {
   static readonly #evaluateStacktraceLineOffset = 0;
   static readonly #callFunctionStacktraceLineOffset = 1;
 
+  // Keeps track of `handle`s and their realms sent to client.
+  static readonly #knownHandlesToRealm: Map<string, string> = new Map();
+
   /**
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.
@@ -148,6 +151,29 @@ export class ScriptEvaluator {
     };
   }
 
+  static realmDestroyed(realm: Realm) {
+    return Array.from(this.#knownHandlesToRealm.entries())
+      .filter(([h, r]) => r === realm.realmId)
+      .map(([h, r]) => this.#knownHandlesToRealm.delete(h));
+  }
+
+  static async disown(realm: Realm, handle: string) {
+    // Disowning an object from different realm does nothing.
+    if (ScriptEvaluator.#knownHandlesToRealm.get(handle) !== realm.realmId) {
+      return;
+    }
+    try {
+      await realm.cdpClient.Runtime.releaseObject({ objectId: handle });
+    } catch (e: any) {
+      // Heuristic to determine if the problem is in the unknown handler.
+      // Ignore the error if so.
+      if (!(e.code === -32000 && e.message === 'Invalid remote object id')) {
+        throw e;
+      }
+    }
+    this.#knownHandlesToRealm.delete(handle);
+  }
+
   static async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number,
@@ -209,6 +235,8 @@ export class ScriptEvaluator {
 
     if (resultOwnership === 'root') {
       bidiValue.handle = objectId;
+      // Remember all the handles sent to client.
+      this.#knownHandlesToRealm.set(objectId, realm.realmId);
     } else {
       await realm.cdpClient.Runtime.releaseObject({ objectId });
     }
@@ -221,7 +249,7 @@ export class ScriptEvaluator {
     expression: string,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
-  ): Promise<Script.EvaluateResult> {
+  ): Promise<Script.ScriptResult> {
     let cdpEvaluateResult = await realm.cdpClient.Runtime.evaluate({
       contextId: realm.executionContextId,
       expression,
@@ -232,27 +260,23 @@ export class ScriptEvaluator {
     if (cdpEvaluateResult.exceptionDetails) {
       // Serialize exception details.
       return {
-        result: {
-          exceptionDetails: await this.#serializeCdpExceptionDetails(
-            cdpEvaluateResult.exceptionDetails,
-            this.#evaluateStacktraceLineOffset,
-            resultOwnership,
-            realm
-          ),
-          realm: realm.realmId,
-        },
+        exceptionDetails: await this.#serializeCdpExceptionDetails(
+          cdpEvaluateResult.exceptionDetails,
+          this.#evaluateStacktraceLineOffset,
+          resultOwnership,
+          realm
+        ),
+        realm: realm.realmId,
       };
     }
 
     return {
-      result: {
-        result: await ScriptEvaluator.#cdpToBidiValue(
-          cdpEvaluateResult,
-          realm,
-          resultOwnership
-        ),
-        realm: realm.realmId,
-      },
+      result: await ScriptEvaluator.#cdpToBidiValue(
+        cdpEvaluateResult,
+        realm,
+        resultOwnership
+      ),
+      realm: realm.realmId,
     };
   }
 
