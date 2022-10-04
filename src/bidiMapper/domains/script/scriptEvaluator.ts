@@ -118,11 +118,14 @@ export class ScriptEvaluator {
       });
     } catch (e: any) {
       // Heuristic to determine if the problem is in the argument.
-      // The check can bve done on the `deserialization` step, but this approach
+      // The check can be done on the `deserialization` step, but this approach
       // helps to save round-trips.
       if (
         e.code === -32000 &&
-        e.message === 'Could not find object with given id'
+        [
+          'Could not find object with given id',
+          'Argument should belong to the same JavaScript world as target object',
+        ].includes(e.message)
       ) {
         throw new InvalidArgumentException('Handle was not found.');
       }
