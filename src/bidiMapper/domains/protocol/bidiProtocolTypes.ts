@@ -179,8 +179,13 @@ export namespace CommonDataTypes {
     ])
   );
 
+  const LocalOrRemoteValueSchema = zod.union([
+    LocalValueSchema,
+    RemoteReferenceSchema,
+  ]);
+
   // ListLocalValue = [*LocalValue];
-  const ListLocalValueSchema = zod.array(LocalValueSchema);
+  const ListLocalValueSchema = zod.array(LocalOrRemoteValueSchema);
   export type ListLocalValue = zod.infer<typeof ListLocalValueSchema>;
 
   // ArrayLocalValue = {
@@ -207,7 +212,10 @@ export namespace CommonDataTypes {
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
   const MappingLocalValueSchema: any = zod.lazy(() =>
-    zod.tuple([zod.union([zod.string(), LocalValueSchema]), LocalValueSchema])
+    zod.tuple([
+      zod.union([zod.string(), LocalOrRemoteValueSchema]),
+      LocalOrRemoteValueSchema,
+    ])
   );
   export type MappingLocalValue = zod.infer<typeof MappingLocalValueSchema>;
 

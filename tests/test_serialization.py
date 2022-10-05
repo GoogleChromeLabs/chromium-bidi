@@ -462,3 +462,79 @@ async def _ignore_test_serialization_generator(websocket, context_id):
                                   "type": "generator",
                                   "handle": any_string
                               })
+
+
+@pytest.mark.asyncio
+# Not specified nor implemented yet.
+async def test_deserialization_nestedObjectInObject(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "({a:1})",
+            "target": {"context": context_id},
+            "awaitPromise": False,
+            "resultOwnership": "root"
+        }})
+
+    nested_handle = result["result"]["handle"]
+
+    arg = {"type": "object",
+           "value": [[
+               "nested_object", {
+                   "handle": nested_handle}]]}
+
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "(arg)=>{return arg}",
+            "this": {
+                "type": "undefined"},
+            "arguments": [arg],
+            "awaitPromise": False,
+            "target": {"context": context_id}}})
+
+    recursive_compare({
+        "result": {
+            "type": "object",
+            "value": [[
+                "nested_object", {
+                    "type": "object"}]]},
+        "realm": any_string},
+        result)
+
+
+@pytest.mark.asyncio
+# Not specified nor implemented yet.
+async def test_deserialization_nestedObjectInArray(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "({a:1})",
+            "target": {"context": context_id},
+            "awaitPromise": False,
+            "resultOwnership": "root"
+        }})
+
+    nested_handle = result["result"]["handle"]
+
+    arg = {"type": "array",
+           "value": [{
+               "handle": nested_handle}]}
+
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "(arg)=>{return arg}",
+            "this": {
+                "type": "undefined"},
+            "arguments": [arg],
+            "awaitPromise": False,
+            "target": {"context": context_id}}})
+
+    recursive_compare({
+        "result": {
+            "type": "array",
+            "value": [{
+                "type": "object"}]},
+        "realm": any_string},
+        result)
