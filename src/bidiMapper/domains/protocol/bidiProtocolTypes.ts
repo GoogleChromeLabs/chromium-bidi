@@ -179,9 +179,11 @@ export namespace CommonDataTypes {
     ])
   );
 
+  // Order is important, as `parse` is processed in the same order.
+  // `RemoteReferenceSchema` has higher priority.
   const LocalOrRemoteValueSchema = zod.union([
-    LocalValueSchema,
     RemoteReferenceSchema,
+    LocalValueSchema,
   ]);
 
   // ListLocalValue = [*LocalValue];
@@ -523,7 +525,9 @@ export namespace Script {
   //   RealmTarget //
   //   ContextTarget
   // );
-  const TargetSchema = zod.union([ContextTargetSchema, RealmTargetSchema]);
+  // Order is important, as `parse` is processed in the same order.
+  // `RealmTargetSchema` has higher priority.
+  const TargetSchema = zod.union([RealmTargetSchema, ContextTargetSchema]);
   export type Target = zod.infer<typeof TargetSchema>;
 
   const OwnershipModelSchema = zod.enum(['root', 'none']);

@@ -513,3 +513,46 @@ async def test_deserialization_nestedObjectInArray(websocket, context_id):
                 "type": "object"}]},
         "realm": any_string},
         result)
+
+
+@pytest.mark.asyncio
+async def test_deserialization_handleAndValue(websocket, context_id):
+    # When `handle` is present, `type` and `values` are ignored.
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "({a:1})",
+            "target": {"context": context_id},
+            "awaitPromise": False,
+            "resultOwnership": "root"
+        }})
+
+    nested_handle = result["result"]["handle"]
+
+    arg = {"type": "object",
+           "value": [[
+               "nested_object", {
+                   "handle": nested_handle,
+                   "type": "string",
+                   "value": "SOME_STRING"}]]}
+
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "(arg)=>{return arg.nested_object}",
+            "this": {
+                "type": "undefined"},
+            "arguments": [arg],
+            "awaitPromise": False,
+            "target": {"context": context_id}}})
+
+    # Assert the `type` and `value` were ignored.
+    recursive_compare({
+        "result": {
+            "type": "object",
+            "value": [[
+                "a", {
+                    "type": "number",
+                    "value": 1}]]},
+        "realm": any_string},
+        result)
