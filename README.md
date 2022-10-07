@@ -1,12 +1,74 @@
 # WebDriver BiDi for Chromium [![chromium-bidi on npm](https://img.shields.io/npm/v/chromium-bidi)](https://www.npmjs.com/package/chromium-bidi)
 
 This is an implementation of the
-[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol for Chromium,
-implemented as a JavaScript layer translating between BiDi and CDP, running
+[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol with some extensions (**BiDi+**)
+for Chromium, implemented as a JavaScript layer translating between BiDi and CDP, running
 inside a Chrome tab.
 
-Current status can be checked here:
-[Chromium BiDi progress](https://docs.google.com/spreadsheets/d/1acM-kHlubpwnW1mFboS9hePawq3u1kf21oQzD16q-Ao/edit?usp=sharing&resourcekey=0-PuLHQYLmDJUOXH_mFO-QiA).
+Current status can be checked in [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
+
+## BiDi+
+
+**"BiDi+"** is an extension of the WebDriver BiDi protocol. In addition to the [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
+
+### Command `cdp.sendCommand`
+
+```cddl
+CdpSendCommandCommand = {
+  method: "cdp.sendCommand",
+  params: ScriptEvaluateParameters
+}
+
+CdpSendCommandParameters = {
+   cdpMethod: text;
+   cdpParams: any;
+   cdpSession?: text;
+}
+
+CdpSendCommandResult = {
+   result: any;
+   cdpSession: text;
+}
+```
+
+The command runs the described [CDP command](https://chromedevtools.github.io/devtools-protocol)
+and returns result.
+
+### Command `cdp.getSession`
+
+```cddl
+CdpGetSessionCommand = {
+   method: "cdp.sendCommand";
+   params: ScriptEvaluateParameters;
+}
+
+CdpGetSessionParameters = {
+   context: BrowsingContext;
+}
+
+CdpGetSessionResult = {
+   cdpSession: text;
+}
+```
+
+The command returns the default CDP session for the selected browsing context.
+
+### Event `cdp.eventReceived`
+
+```cddl
+CdpEventReceivedEvent = {
+   method: "cdp.eventReceived";
+   params: ScriptEvaluateParameters;
+}
+
+CdpEventReceivedParameters = {
+   cdpMethod: text;
+   cdpParams: any;
+   cdpSession: string;
+}
+```
+
+The event contains a CDP event.
 
 # Setup
 
