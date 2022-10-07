@@ -16,18 +16,18 @@ Current status can be checked in [WPT WebDriver BiDi status](https://wpt.fyi/res
 ```cddl
 CdpSendCommandCommand = {
   method: "cdp.sendCommand",
-  params: ScriptEvaluateParameters
+  params: ScriptEvaluateParameters,
 }
 
 CdpSendCommandParameters = {
-   cdpMethod: text;
-   cdpParams: any;
-   cdpSession?: text;
+   cdpMethod: text,
+   cdpParams: any,
+   cdpSession?: text,
 }
 
 CdpSendCommandResult = {
-   result: any;
-   cdpSession: text;
+   result: any,
+   cdpSession: text,
 }
 ```
 
@@ -38,16 +38,16 @@ and returns result.
 
 ```cddl
 CdpGetSessionCommand = {
-   method: "cdp.sendCommand";
-   params: ScriptEvaluateParameters;
+   method: "cdp.sendCommand",
+   params: ScriptEvaluateParameters,
 }
 
 CdpGetSessionParameters = {
-   context: BrowsingContext;
+   context: BrowsingContext,
 }
 
 CdpGetSessionResult = {
-   cdpSession: text;
+   cdpSession: text,
 }
 ```
 
@@ -57,18 +57,61 @@ The command returns the default CDP session for the selected browsing context.
 
 ```cddl
 CdpEventReceivedEvent = {
-   method: "cdp.eventReceived";
-   params: ScriptEvaluateParameters;
+   method: "cdp.eventReceived",
+   params: ScriptEvaluateParameters,
 }
 
 CdpEventReceivedParameters = {
-   cdpMethod: text;
-   cdpParams: any;
-   cdpSession: string;
+   cdpMethod: text,
+   cdpParams: any,
+   cdpSession: string,
 }
 ```
 
 The event contains a CDP event.
+
+## Field `channel`
+Each command can be extended with a `channel`:
+
+```cddl
+Command = {
+   id: js-uint,
+   channel?: text,
+   CommandData,
+   Extensible,
+}
+```
+If provided, the very same `channel` is added to the response:
+```cddl
+CommandResponse = {
+   id: js-uint,
+   channel?: text,
+   result: ResultData,
+   Extensible,
+}
+
+ErrorResponse = {
+  id: js-uint / null,
+  channel?: text,
+  error: ErrorCode,
+  message: text,
+  ?stacktrace: text,
+  Extensible
+}
+```
+
+When client uses commands [`session.subscribe`](https://w3c.github.io/webdriver-bidi/#command-session-subscribe) 
+and [`session.unsubscribe`](https://w3c.github.io/webdriver-bidi/#command-session-unsubscribe) 
+with `channel`, the subscriptions are handled per channel, and the corresponding 
+`channel` filed is added to the event message:
+
+```cddl
+Event = {
+  channel?: text,
+  EventData,
+  Extensible,
+}
+```
 
 # Setup
 
