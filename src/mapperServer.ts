@@ -16,25 +16,26 @@
  */
 
 import debug from 'debug';
-
-const debugInternal = debug('bidiMapper:internal');
-const debugLog = debug('bidiMapper:log');
-
 import WebSocket from 'ws';
 import Protocol from 'devtools-protocol';
 
 import { CdpClient, CdpConnection, WebSocketTransport } from './cdp';
 
+const debugInternal = debug('bidiMapper:internal');
+const debugLog = debug('bidiMapper:log');
+
 export class MapperServer {
-  private _handlers: ((message: string) => void)[] = new Array();
+  #handlers: ((message: string) => void)[] = [];
+  #cdpConnection: CdpConnection;
+  #mapperCdpClient: CdpClient;
 
   static async create(
     cdpUrl: string,
     mapperContent: string
   ): Promise<MapperServer> {
-    const cdpConnection = await this._establishCdpConnection(cdpUrl);
+    const cdpConnection = await this.#establishCdpConnection(cdpUrl);
     try {
-      const mapperCdpClient = await this._initMapper(
+      const mapperCdpClient = await this.#initMapper(
         cdpConnection,
         mapperContent
       );
@@ -46,29 +47,31 @@ export class MapperServer {
   }
 
   private constructor(
-    private _cdpConnection: CdpConnection,
-    private _mapperCdpClient: CdpClient
+    cdpConnection: CdpConnection,
+    mapperCdpClient: CdpClient
   ) {
-    this._mapperCdpClient.Runtime.on('bindingCalled', this._onBindingCalled);
-    this._mapperCdpClient.Runtime.on(
+    this.#mapperCdpClient = mapperCdpClient;
+    this.#cdpConnection = cdpConnection;
+    this.#mapperCdpClient.Runtime.on('bindingCalled', this.#onBindingCalled);
+    this.#mapperCdpClient.Runtime.on(
       'consoleAPICalled',
-      this._onConsoleAPICalled
+      this.#onConsoleAPICalled
     );
   }
 
   setOnMessage(handler: (message: string) => void): void {
-    this._handlers.push(handler);
-  }
-  sendMessage(messageJson: string): Promise<void> {
-    return this._sendBidiMessage(messageJson);
-  }
-  close() {
-    this._cdpConnection.close();
+    this.#handlers.push(handler);
   }
 
-  private static async _establishCdpConnection(
-    cdpUrl: string
-  ): Promise<CdpConnection> {
+  sendMessage(messageJson: string): Promise<void> {
+    return this.#sendBidiMessage(messageJson);
+  }
+
+  close() {
+    this.#cdpConnection.close();
+  }
+
+  static async #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
     return new Promise((resolve, reject) => {
       debugInternal('Establishing session with cdpUrl: ', cdpUrl);
 
@@ -86,25 +89,23 @@ export class MapperServer {
     });
   }
 
-  private async _sendBidiMessage(bidiMessageJson: string): Promise<void> {
-    await this._mapperCdpClient.Runtime.evaluate({
+  async #sendBidiMessage(bidiMessageJson: string): Promise<void> {
+    await this.#mapperCdpClient.Runtime.evaluate({
       expression: 'onBidiMessage(' + JSON.stringify(bidiMessageJson) + ')',
     });
   }
 
-  private _onBidiMessage(bidiMessage: string): void {
-    for (let handler of this._handlers) handler(bidiMessage);
+  #onBidiMessage(bidiMessage: string): void {
+    for (let handler of this.#handlers) handler(bidiMessage);
   }
 
-  private _onBindingCalled = async (
-    params: Protocol.Runtime.BindingCalledEvent
-  ) => {
+  #onBindingCalled = async (params: Protocol.Runtime.BindingCalledEvent) => {
     if (params.name === 'sendBidiResponse') {
-      this._onBidiMessage(params.payload);
+      this.#onBidiMessage(params.payload);
     }
   };
 
-  private _onConsoleAPICalled = async (
+  #onConsoleAPICalled = async (
     params: Protocol.Runtime.ConsoleAPICalledEvent
   ) => {
     debugLog(
@@ -114,7 +115,7 @@ export class MapperServer {
     );
   };
 
-  private static async _initMapper(
+  static async #initMapper(
     cdpConnection: CdpConnection,
     mapperContent: string
   ): Promise<CdpClient> {

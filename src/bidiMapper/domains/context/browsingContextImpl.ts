@@ -19,13 +19,13 @@ import { Protocol } from 'devtools-protocol';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { CdpClient } from '../../../cdp';
 import { IEventManager } from '../events/EventManager';
-import LoadEvent = BrowsingContext.LoadEvent;
 import { Deferred } from '../../utils/deferred';
 import { UnknownException } from '../protocol/error';
 import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { Realm, RealmType } from '../script/realm';
 import { BrowsingContextStorage } from './browsingContextStorage';
+import LoadEvent = BrowsingContext.LoadEvent;
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {

@@ -20,6 +20,7 @@ import { CdpMessage } from './cdpMessage';
 import { CdpClient, createClient } from './cdpClient';
 
 import { log } from '../utils/log';
+
 const logCdp = log('cdp');
 
 interface CdpCallbacks {
@@ -32,34 +33,36 @@ interface CdpCallbacks {
  * Manages a CdpClient instance for each active CDP session.
  */
 export class CdpConnection {
-  private _browserCdpClient: CdpClient;
-  private _sessionCdpClients: Map<string, CdpClient> = new Map();
-  private _commandCallbacks: Map<number, CdpCallbacks> = new Map();
-  private _nextId: number;
+  readonly #browserCdpClient: CdpClient;
+  #sessionCdpClients: Map<string, CdpClient> = new Map();
+  #commandCallbacks: Map<number, CdpCallbacks> = new Map();
+  #nextId: number;
+  #transport: ITransport;
 
-  constructor(private _transport: ITransport) {
-    this._nextId = 0;
-    this._transport.setOnMessage(this._onMessage);
-    this._browserCdpClient = createClient(this, null);
+  constructor(_transport: ITransport) {
+    this.#transport = _transport;
+    this.#nextId = 0;
+    this.#transport.setOnMessage(this.#onMessage);
+    this.#browserCdpClient = createClient(this, null);
   }
 
   /**
    * Close the connection to the browser.
    */
   close() {
-    this._transport.close();
-    for (const [_id, { reject }] of this._commandCallbacks) {
+    this.#transport.close();
+    for (const { reject } of this.#commandCallbacks.values()) {
       reject(new Error('Disconnected'));
     }
-    this._commandCallbacks.clear();
-    this._sessionCdpClients.clear();
+    this.#commandCallbacks.clear();
+    this.#sessionCdpClients.clear();
   }
 
   /**
    * @returns The CdpClient object attached to the root browser session.
    */
   browserClient(): CdpClient {
-    return this._browserCdpClient;
+    return this.#browserCdpClient;
   }
 
   /**
@@ -68,7 +71,7 @@ export class CdpConnection {
    * @returns The CdpClient object attached to the given session, or null if the session is not attached.
    */
   getCdpClient(sessionId: string): CdpClient {
-    const cdpClient = this._sessionCdpClients.get(sessionId);
+    const cdpClient = this.#sessionCdpClients.get(sessionId);
     if (!cdpClient) {
       throw new Error('Unknown CDP session ID');
     }
@@ -81,20 +84,23 @@ export class CdpConnection {
     sessionId: string | null
   ): Promise<object> {
     return new Promise((resolve, reject) => {
-      const id = this._nextId++;
-      this._commandCallbacks.set(id, { resolve, reject });
+      const id = this.#nextId++;
+      this.#commandCallbacks.set(id, { resolve, reject });
       let messageObj: CdpMessage = { id, method, params };
       if (sessionId) {
         messageObj.sessionId = sessionId;
       }
 
       const messageStr = JSON.stringify(messageObj);
-      this._transport.sendMessage(messageStr);
+      // No need in waiting for result. The result promise will be fulfilled
+      // only after the command response received.
+      // noinspection JSIgnoredPromiseFromCall
+      this.#transport.sendMessage(messageStr);
       logCdp('sent > ' + messageStr);
     });
   }
 
-  private _onMessage = async (message: string) => {
+  async #onMessage(message: string) {
     logCdp('received < ' + message);
 
     const parsed = JSON.parse(message);
@@ -103,18 +109,18 @@ export class CdpConnection {
     // Listen for these events on every session.
     if (parsed.method === 'Target.attachedToTarget') {
       const { sessionId } = parsed.params;
-      this._sessionCdpClients.set(sessionId, createClient(this, sessionId));
+      this.#sessionCdpClients.set(sessionId, createClient(this, sessionId));
     } else if (parsed.method === 'Target.detachedFromTarget') {
       const { sessionId } = parsed.params;
-      const client = this._sessionCdpClients.get(sessionId);
+      const client = this.#sessionCdpClients.get(sessionId);
       if (client) {
-        this._sessionCdpClients.delete(sessionId);
+        this.#sessionCdpClients.delete(sessionId);
       }
     }
 
     if (parsed.id !== undefined) {
       // Handle command response.
-      const callbacks = this._commandCallbacks.get(parsed.id);
+      const callbacks = this.#commandCallbacks.get(parsed.id);
       if (callbacks) {
         if (parsed.result) {
           callbacks.resolve(parsed.result);
@@ -124,11 +130,11 @@ export class CdpConnection {
       }
     } else if (parsed.method) {
       const client = parsed.sessionId
-        ? this._sessionCdpClients.get(parsed.sessionId)
-        : this._browserCdpClient;
+        ? this.#sessionCdpClients.get(parsed.sessionId)
+        : this.#browserCdpClient;
       if (client) {
         client._onCdpEvent(parsed.method, parsed.params || {});
       }
     }
-  };
+  }
 }

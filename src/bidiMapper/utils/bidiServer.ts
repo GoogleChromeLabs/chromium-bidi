@@ -54,10 +54,13 @@ export declare interface BidiServer {
 }
 
 export class BidiServer extends EventEmitter implements IBidiServer {
-  constructor(private _transport: ITransport) {
-    super();
+  #transport: ITransport;
 
-    this._transport.setOnMessage(this.#onBidiMessage);
+  constructor(_transport: ITransport) {
+    super();
+    this.#transport = _transport;
+
+    this.#transport.setOnMessage(this.#onBidiMessage);
   }
 
   /**
@@ -71,11 +74,11 @@ export class BidiServer extends EventEmitter implements IBidiServer {
 
     const messageStr = JSON.stringify(messageObj);
     logBidi('sent > ' + messageStr);
-    this._transport.sendMessage(messageStr);
+    await this.#transport.sendMessage(messageStr);
   }
 
   close(): void {
-    this._transport.close();
+    this.#transport.close();
   }
 
   #onBidiMessage = async (messageStr: string) => {

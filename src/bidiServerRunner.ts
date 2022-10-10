@@ -47,7 +47,9 @@ export class BidiServerRunner {
       debugInternal(
         `${new Date()} Received ${request.method} request for ${request.url}`
       );
-      if (!request.url) return response.end(404);
+      if (!request.url) {
+        return response.end(404);
+      }
 
       // https://w3c.github.io/webdriver-bidi/#transport, step 2.
       if (request.url === '/session') {
@@ -229,8 +231,9 @@ class BidiServer implements ITransport {
   }
 
   sendMessage(messageStr: any): Promise<void> {
-    if (!this.#sendBidiMessage)
+    if (!this.#sendBidiMessage) {
       throw new Error('Bidi connection is not initialised yet');
+    }
 
     return this.#sendBidiMessage(messageStr);
   }

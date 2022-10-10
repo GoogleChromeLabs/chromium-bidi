@@ -73,25 +73,25 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   logSystem('launched');
 
-  bidiServer.sendMessage({ launched: true }, null);
+  await bidiServer.sendMessage({ launched: true }, null);
 })();
 
 function _createCdpConnection() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
   class WindowCdpTransport implements ITransport {
-    private _onMessage: ((message: string) => void) | null = null;
+    #onMessage: ((message: string) => void) | null = null;
 
     constructor() {
       window.cdp.onmessage = (message: string) => {
-        if (this._onMessage) {
-          this._onMessage.call(null, message);
+        if (this.#onMessage) {
+          this.#onMessage.call(null, message);
         }
       };
     }
 
     setOnMessage(onMessage: (message: string) => Promise<void>): void {
-      this._onMessage = onMessage;
+      this.#onMessage = onMessage;
     }
 
     async sendMessage(message: string): Promise<void> {
@@ -99,7 +99,7 @@ function _createCdpConnection() {
     }
 
     close() {
-      this._onMessage = null;
+      this.#onMessage = null;
       window.cdp.onmessage = null;
     }
   }
@@ -109,18 +109,18 @@ function _createCdpConnection() {
 
 function _createBidiServer() {
   class WindowBidiTransport implements ITransport {
-    private _onMessage: ((message: string) => void) | null = null;
+    #onMessage: ((message: string) => void) | null = null;
 
     constructor() {
       window.onBidiMessage = (message: string) => {
-        if (this._onMessage) {
-          this._onMessage.call(null, message);
+        if (this.#onMessage) {
+          this.#onMessage.call(null, message);
         }
       };
     }
 
     setOnMessage(onMessage: (message: string) => Promise<void>): void {
-      this._onMessage = onMessage;
+      this.#onMessage = onMessage;
     }
 
     async sendMessage(message: string): Promise<void> {
@@ -128,7 +128,7 @@ function _createBidiServer() {
     }
 
     close() {
-      this._onMessage = null;
+      this.#onMessage = null;
       window.onBidiMessage = null;
     }
   }

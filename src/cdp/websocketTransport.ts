@@ -19,26 +19,28 @@ import { ITransport } from '../utils/transport';
 import WebSocket from 'ws';
 
 export class WebSocketTransport implements ITransport {
-  private _onMessage: ((message: string) => void) | null = null;
+  #onMessage: ((message: string) => void) | null = null;
+  #webSocket: WebSocket;
 
-  constructor(private _ws: WebSocket) {
-    this._ws.on('message', (message: string) => {
-      if (this._onMessage) {
-        this._onMessage.call(null, message);
+  constructor(webSocket: WebSocket) {
+    this.#webSocket = webSocket;
+    this.#webSocket.on('message', (message: string) => {
+      if (this.#onMessage) {
+        this.#onMessage.call(null, message);
       }
     });
   }
 
   setOnMessage(onMessage: (message: string) => void): void {
-    this._onMessage = onMessage;
+    this.#onMessage = onMessage;
   }
 
   async sendMessage(message: string): Promise<void> {
-    this._ws.send(message);
+    this.#webSocket.send(message);
   }
 
   close() {
-    this._onMessage = null;
-    this._ws.close();
+    this.#onMessage = null;
+    this.#webSocket.close();
   }
 }

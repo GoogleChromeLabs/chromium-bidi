@@ -19,11 +19,11 @@ import { StubTransport } from '../tests/stubTransport.spec';
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
-
 import * as sinon from 'sinon';
 
 import { CdpConnection } from './cdpConnection';
+
+chai.use(chaiAsPromised);
 
 const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';

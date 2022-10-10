@@ -22,5 +22,6 @@
 export interface ITransport {
   setOnMessage: (handler: (message: string) => Promise<void>) => void;
   sendMessage: (message: string) => Promise<void>;
+
   close(): void;
 }

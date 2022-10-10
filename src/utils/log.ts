@@ -34,7 +34,9 @@ function findOrCreateTypeLogContainer(type: string) {
   const elementId = type + '_log';
 
   const existingContainer = document.getElementById(elementId);
-  if (existingContainer) return existingContainer;
+  if (existingContainer) {
+    return existingContainer;
+  }
 
   const newContainer = document.createElement('div');
   newContainer.id = elementId;

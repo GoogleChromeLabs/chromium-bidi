@@ -47,8 +47,11 @@ const domainConstructorMap = new Map<
 
 // Base class for all domains.
 class DomainImpl extends EventEmitter {
-  constructor(private _client: CdpClientImpl) {
+  #client: CdpClientImpl;
+
+  constructor(client: CdpClientImpl) {
     super();
+    this.#client = client;
   }
 }
 
@@ -84,20 +87,21 @@ interface CdpClientImpl {
 }
 
 class CdpClientImpl extends EventEmitter {
-  private _domains: Map<string, DomainImpl>;
+  readonly #domains: Map<string, DomainImpl>;
+  readonly #cdpConnection: CdpConnection;
+  readonly #sessionId: string | null;
 
-  constructor(
-    private _cdpConnection: CdpConnection,
-    private _sessionId: string | null
-  ) {
+  constructor(cdpConnection: CdpConnection, sessionId: string | null) {
     super();
+    this.#sessionId = sessionId;
+    this.#cdpConnection = cdpConnection;
 
-    this._domains = new Map();
+    this.#domains = new Map();
     for (const [domainName, ctor] of domainConstructorMap.entries()) {
-      this._domains.set(domainName, new ctor(this));
+      this.#domains.set(domainName, new ctor(this));
       Object.defineProperty(this, domainName, {
         get(this: CdpClientImpl) {
-          return this._domains.get(domainName);
+          return this.#domains.get(domainName);
         },
       });
     }
@@ -109,7 +113,7 @@ class CdpClientImpl extends EventEmitter {
    * @param params Parameters to pass to the CDP command.
    */
   sendCommand(method: string, params: object): Promise<object> {
-    return this._cdpConnection.sendCommand(method, params, this._sessionId);
+    return this.#cdpConnection.sendCommand(method, params, this.#sessionId);
   }
 
   _onCdpEvent(method: string, params: object) {
@@ -118,7 +122,7 @@ class CdpClientImpl extends EventEmitter {
 
     // Next, get the correct domain instance and tell it to emit the strongly typed event.
     const [domainName, eventName] = method.split('.');
-    const domain = this._domains.get(domainName);
+    const domain = this.#domains.get(domainName);
     if (domain) {
       domain.emit(eventName, params);
     }
@@ -128,8 +132,9 @@ class CdpClientImpl extends EventEmitter {
 /**
  * Creates a new CDP client object that communicates with the browser using a given
  * transport mechanism.
- * @param transport A transport object that will be used to send and receive raw CDP messages.
  * @returns A connected CDP client object.
+ * @param cdpConnection
+ * @param sessionId
  */
 export function createClient(
   cdpConnection: CdpConnection,
