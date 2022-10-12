@@ -38,6 +38,7 @@ Firefox can be run by:
 ```
 
 CDP-BiDi Mapper can be run from the project root:
+
 ```sh
 npm run server
 ```
