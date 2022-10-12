@@ -1,6 +1,6 @@
 # Examples
 
-The examples are stored in the `/examples` folder and are intended to show who the
+The examples are stored in the `/examples` folder and are intended to show how the
 BiDi protocol can be used. Examples are based on
 [Puppeteer's examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
 .
