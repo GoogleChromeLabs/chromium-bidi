@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+/**
+ * Wraps any value into a pair of a positive unique incrementing id and value itself.
+ */
 export class IdWrapper<T> {
   static #counter = 0;
   readonly #id: number;
