@@ -157,7 +157,7 @@ export class LogManager {
       return 'debug';
     }
     if (['warn', 'warning'].includes(consoleApiType)) {
-      return 'warn';
+      return 'warning';
     }
     return 'info';
   }
