@@ -66,16 +66,14 @@ export interface IEventManager {
 export class EventManager implements IEventManager {
   /**
    * Maps event name to a desired buffer length.
-   * @private
    */
   static readonly #eventBufferLength: Map<string, number> = new Map([
-    ['log.entryAdded', 10],
+    ['log.entryAdded', 100],
   ]);
   /**
    * Maps event name to a set of contexts where this event already happened.
    * Needed for getting buffered events from all the contexts in case of
    * subscripting to all contexts.
-   * @private
    */
   #eventToContextsMap: Map<
     string,
@@ -84,14 +82,12 @@ export class EventManager implements IEventManager {
   /**
    * Maps `eventName` + `browsingContext` to buffer. Used to get buffered events
    * during subscription. Channel-agnostic.
-   * @private
    */
   #eventBuffers: Map<string, Buffer<EventWrapper>> = new Map();
   /**
    * Maps `eventName` + `browsingContext` + `channel` to last sent event id.
    * Used to avoid sending duplicated events when user
    * subscribes -> unsubscribes -> subscribes.
-   * @private
    */
   #lastMessageSent: Map<string, number> = new Map();
   #subscriptionManager: SubscriptionManager;
@@ -104,10 +100,6 @@ export class EventManager implements IEventManager {
 
   /**
    * Returns consistent key to be used to access value maps.
-   * @param eventName
-   * @param browsingContext
-   * @param channel
-   * @private
    */
   static #getMapKey(
     eventName: string,
@@ -177,8 +169,6 @@ export class EventManager implements IEventManager {
 
   /**
    * If the event is buffer-able, put it in the buffer.
-   * @param eventWrapper
-   * @private
    */
   #bufferEvent(eventWrapper: EventWrapper) {
     const eventName = eventWrapper.event.method;
@@ -208,9 +198,6 @@ export class EventManager implements IEventManager {
 
   /**
    * If the event is buffer-able, mark it as sent to the given contextId and channel.
-   * @param eventWrapper
-   * @param channel
-   * @private
    */
   #markEventSent(eventWrapper: EventWrapper, channel: string | null) {
     const eventName = eventWrapper.event.method;
@@ -232,10 +219,6 @@ export class EventManager implements IEventManager {
 
   /**
    * Returns events which are buffered and not yet sent to the given channel events.
-   * @param eventName
-   * @param contextId
-   * @param channel
-   * @private
    */
   #getBufferedEvents(
     eventName: string,
