@@ -22,12 +22,10 @@ const expect = chai.expect;
 
 describe('test IdWrapper', () => {
   it('wraps value with unique id', () => {
-    const wrapper_1 = new IdWrapper('SOME_STRING_1');
-    const wrapper_2 = new IdWrapper('SOME_STRING_2');
+    const wrapper_1 = new IdWrapper();
+    const wrapper_2 = new IdWrapper();
 
     expect(wrapper_1.id).to.equal(1);
-    expect(wrapper_1.value).to.equal('SOME_STRING_1');
     expect(wrapper_2.id).to.equal(2);
-    expect(wrapper_2.value).to.equal('SOME_STRING_2');
   });
 });

@@ -16,23 +16,17 @@
  */
 
 /**
- * Wraps any value into a pair of a positive unique incrementing id and value itself.
+ * Creates an object with a positive unique incrementing id.
  */
-export class IdWrapper<T> {
+export class IdWrapper {
   static #counter = 0;
   readonly #id: number;
-  readonly #value: T;
 
-  constructor(value: T) {
+  constructor() {
     this.#id = ++IdWrapper.#counter;
-    this.#value = value;
   }
 
   get id(): number {
     return this.#id;
-  }
-
-  get value(): T {
-    return this.#value;
   }
 }
