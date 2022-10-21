@@ -72,7 +72,7 @@ export class EventManager implements IEventManager {
   }
 
   /**
-   * Returns consistent key to be used to access values maps.
+   * Returns consistent key to be used to access value maps.
    * @param eventName
    * @param browsingContext
    * @param channel
@@ -96,7 +96,6 @@ export class EventManager implements IEventManager {
         event.method,
         contextId
       );
-    // Buffers event if needed.
     this.#bufferEvent(eventWrapper, contextId);
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {

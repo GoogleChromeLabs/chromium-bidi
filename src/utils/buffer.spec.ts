@@ -25,6 +25,7 @@ const expect = chai.expect;
 describe('test Buffer', () => {
   it('should keep values', () => {
     const buffer = new Buffer<number>(2);
+    expect(buffer.get()).to.deep.equal([]);
     buffer.add(1);
     expect(buffer.get()).to.deep.equal([1]);
     buffer.add(2);
