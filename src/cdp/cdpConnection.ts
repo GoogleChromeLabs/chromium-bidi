@@ -20,7 +20,7 @@ import { CdpMessage } from './cdpMessage';
 import { CdpClient, createClient } from './cdpClient';
 
 import { log } from '../utils/log';
-const logCdp = log('cdp');
+const logCdp = log('CDP');
 
 interface CdpCallbacks {
   resolve: (messageObj: object) => void;

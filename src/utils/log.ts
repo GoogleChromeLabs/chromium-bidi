@@ -15,30 +15,52 @@
  * limitations under the License.
  */
 
-export function log(type: string): (...message: any[]) => void {
+export function log(name: string): (...message: any[]) => void {
   return (...messages: any[]) => {
     // If run in browser, add debug message to the page.
     if (globalThis.document?.documentElement) {
-      console.log(type, ...messages);
+      console.log(name, ...messages);
 
-      const typeLogContainer = findOrCreateTypeLogContainer(type);
+      const typeLogContainer = findOrCreateTypeLogContainer(name);
 
-      const pre = document.createElement('pre');
-      pre.textContent = messages.join(', ');
-      typeLogContainer.appendChild(pre);
+      // This piece of HTML should be added:
+      /*
+        <div class="pre">...log message...</div>
+      */
+      const lineElement = document.createElement('div');
+      lineElement.className = 'pre';
+      lineElement.textContent = messages.join(', ');
+      typeLogContainer.appendChild(lineElement);
     }
   };
 }
 
-function findOrCreateTypeLogContainer(type: string) {
-  const elementId = type + '_log';
+// This piece of HTML should be added:
+/*
+ <div class="divider debug-shown"></div>
+ <div class="item debug-shown">
+   <div class="text_3">System</div>
+   <div id="system_log" class="debug_log"></div>
+ </div>
+*/
+function findOrCreateTypeLogContainer(name: string) {
+  const typeLogContainerId = name + '_log';
 
-  const existingContainer = document.getElementById(elementId);
-  if (existingContainer) return existingContainer;
+  const existingContainer = document.getElementById(typeLogContainerId);
+  if (existingContainer) {
+    return existingContainer;
+  }
 
-  const newContainer = document.createElement('div');
-  newContainer.id = elementId;
-  newContainer.innerHTML = `<h3>${type}:</h3>`;
-  document.body.appendChild(newContainer);
-  return newContainer;
+  const debugContainer = document.getElementById('debug')!;
+
+  const divider = document.createElement('div');
+  divider.className = 'divider debug-shown';
+  debugContainer.appendChild(divider);
+
+  const htmlItem = document.createElement('div');
+  htmlItem.className = 'item';
+  htmlItem.innerHTML = `<div class="text_3">${name}</div><div id="${typeLogContainerId}" class="debug_log"></div>`;
+  debugContainer.appendChild(htmlItem);
+
+  return document.getElementById(typeLogContainerId)!;
 }

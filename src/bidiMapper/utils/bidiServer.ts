@@ -21,7 +21,7 @@ import { EventEmitter } from 'events';
 import { ITransport } from '../../utils/transport';
 import { Message } from '../domains/protocol/bidiProtocolTypes';
 
-const logBidi = log('bidi');
+const logBidi = log('BiDi Communication');
 
 export interface IBidiServer {
   on(

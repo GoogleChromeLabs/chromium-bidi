@@ -26,7 +26,7 @@ import { BrowsingContextImpl } from './browsingContextImpl';
 import { Realm } from '../script/realm';
 import { BrowsingContextStorage } from './browsingContextStorage';
 
-const logContext = log('context');
+const logContext = log('Browsing Contexts');
 
 export class BrowsingContextProcessor {
   readonly sessions: Set<string> = new Set();
