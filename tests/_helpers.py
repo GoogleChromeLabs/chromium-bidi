@@ -182,6 +182,7 @@ async def send_JSON_command(websocket, command):
         command_id = get_next_command_id()
         command["id"] = command_id
     await websocket.send(json.dumps(command))
+    return command["id"]
 
 
 async def read_JSON_message(websocket):

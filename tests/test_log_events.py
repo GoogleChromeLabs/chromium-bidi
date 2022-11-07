@@ -302,3 +302,112 @@ async def test_buffer_bufferedEventsReturned(websocket, context_id):
     # Wait for subscription command to finish.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 16
+
+
+@pytest.mark.asyncio
+async def test_runtimeException_emitted(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
+
+    # Throw JS page error and get expected error message text.
+    command_id = await send_JSON_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": """
+                const error_message = "SOME_ERROR_MESSAGE";
+                const script = document.createElement("script");
+                script.append(document.createTextNode(
+                    `(() => { throw new Error("${error_message}") })()`
+                ));
+                document.body.append(script);
+                const err = new Error(error_message);
+                err.toString();
+            """,
+            "target": {"context": context_id},
+            "awaitPromise": True}})
+
+    # Assert event was emitted before the command is done.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "method": "log.entryAdded",
+        "params": {
+            "level": "error",
+            "source": {
+                "realm": any_string,
+                "context": any_string},
+            "text": any_string,
+            "timestamp": any_timestamp,
+            "stackTrace": any_value,
+            "type": "javascript"}},
+        resp)
+
+    error_text = resp["params"]["text"]
+
+    resp = await read_JSON_message(websocket)
+    # Assert error message is correct.
+    recursive_compare({
+        "id": command_id,
+        "result": {
+            'realm': any_string,
+            'result': {
+                'type': 'string',
+                'value': error_text}}},
+        resp)
+
+
+@pytest.mark.asyncio
+async def test_runtimeException_buffered(websocket, context_id):
+    # Throw JS page error and get expected error message text.
+    command_id = await send_JSON_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": """
+                const error_message = "SOME_ERROR_MESSAGE";
+                const script = document.createElement("script");
+                script.append(document.createTextNode(
+                    `(() => { throw new Error("${error_message}") })()`
+                ));
+                document.body.append(script);
+                const err = new Error(error_message);
+                err.toString();
+            """,
+            "target": {"context": context_id},
+            "awaitPromise": True}})
+
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "id": command_id,
+        "result": {
+            'realm': any_string,
+            'result': {
+                'type': 'string',
+                'value': any_string}}},
+        resp)
+    error_text = resp["result"]["result"]["value"]
+
+    # Subscribe to events with buffer.
+    subscribe_command_id = await send_JSON_command(websocket, {
+        "method": "session.subscribe",
+        "params": {
+            "events": ["log.entryAdded"]}})
+
+    # Assert event was emitted.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "method": "log.entryAdded",
+        "params": {
+            "level": "error",
+            "source": {
+                "realm": any_string,
+                "context": any_string},
+            "text": error_text,
+            "timestamp": any_timestamp,
+            "stackTrace": any_value,
+            "type": "javascript"}},
+        resp)
+
+    # Assert subscribe command is finished.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "id": subscribe_command_id,
+        "result": {}},
+        resp)

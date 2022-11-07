@@ -148,6 +148,7 @@ export class LogManager {
    *   //     "exceptionDetails": {
    *   //       "text": "Uncaught",
    *   //       "exception": {
+   *   //         "className":"Error"
    *   //         "description": "Error: cached_message\\n    at <anonymous>:1:16\\n...",
    *   //         "objectId": "-2282565827719730523.1.1",
    *   //         "preview": {
@@ -183,7 +184,7 @@ export class LogManager {
       )?.value;
 
     if (previewMessage !== undefined) {
-      return previewMessage;
+      return `${params.exceptionDetails.exception.className}: ${previewMessage}`;
     }
 
     if (realm === undefined) {
