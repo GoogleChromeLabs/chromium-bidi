@@ -15,52 +15,20 @@
  * limitations under the License.
  */
 
-export function log(name: string): (...message: any[]) => void {
-  return (...messages: any[]) => {
-    // If run in browser, add debug message to the page.
-    if (globalThis.document?.documentElement) {
-      console.log(name, ...messages);
+import { MapperTabPage } from '../bidiMapper/utils/mapperTabPage';
 
-      const typeLogContainer = findOrCreateTypeLogContainer(name);
-
-      // This piece of HTML should be added:
-      /*
-        <div class="pre">...log message...</div>
-      */
-      const lineElement = document.createElement('div');
-      lineElement.className = 'pre';
-      lineElement.textContent = messages.join(', ');
-      typeLogContainer.appendChild(lineElement);
-    }
-  };
+export enum LogType {
+  system = 'System',
+  bidi = 'BiDi Messages',
+  browsingContexts = 'Browsing Contexts',
+  cdp = 'CDP',
+  commandParser = 'Command parser',
 }
 
-// This piece of HTML should be added:
-/*
- <div class="divider debug-shown"></div>
- <div class="item debug-shown">
-   <div class="text_3">System</div>
-   <div id="system_log" class="debug_log"></div>
- </div>
-*/
-function findOrCreateTypeLogContainer(name: string) {
-  const typeLogContainerId = name + '_log';
-
-  const existingContainer = document.getElementById(typeLogContainerId);
-  if (existingContainer) {
-    return existingContainer;
-  }
-
-  const debugContainer = document.getElementById('debug')!;
-
-  const divider = document.createElement('div');
-  divider.className = 'divider debug-shown';
-  debugContainer.appendChild(divider);
-
-  const htmlItem = document.createElement('div');
-  htmlItem.className = 'item';
-  htmlItem.innerHTML = `<div class="text_3">${name}</div><div id="${typeLogContainerId}" class="debug_log"></div>`;
-  debugContainer.appendChild(htmlItem);
-
-  return document.getElementById(typeLogContainerId)!;
+export function log(logType: LogType): (...message: any[]) => void {
+  return (...messages: any[]) => {
+    console.log(logType, ...messages);
+    // Add messages to the Mapper Tab Page, if exists.
+    MapperTabPage.log(logType, ...messages);
+  };
 }
