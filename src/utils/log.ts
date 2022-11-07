@@ -25,7 +25,7 @@ export enum LogType {
   commandParser = 'Command parser',
 }
 
-export function log(logType: LogType): (...message: any[]) => void {
+export function log(logType: LogType): (...message: unknown[]) => void {
   return (...messages: any[]) => {
     console.log(logType, ...messages);
     // Add messages to the Mapper Tab Page, if exists.

@@ -34,7 +34,7 @@ export class MapperTabPage {
     this.#findOrCreateTypeLogContainer('CDP');
   }
 
-  static log(logType: LogType, ...messages: any[]) {
+  static log(logType: LogType, ...messages: unknown[]) {
     // If run not in browser (e.g. unit test), do nothing.
     if (!globalThis.document?.documentElement) {
       return;
