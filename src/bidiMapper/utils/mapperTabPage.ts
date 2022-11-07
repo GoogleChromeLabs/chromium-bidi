@@ -19,7 +19,7 @@ import { LogType } from '../../utils/log';
 export class MapperTabPage {
   // HTML source code for the user-facing Mapper tab.
   static #mapperPageSource =
-    '<!DOCTYPE html><html lang=en><head><title>BiDi-CDP Mapper</title><style>body{font-family:Roboto,serif;font-size:13px;color:#202124}.log{padding:12px;margin-top:16px;font-family:Menlo,serif;font-size:11px;line-height:180%;background:#f1f3f4;border-radius:4px;display:flex;flex-direction:column;gap:10px}.pre{overflow-wrap:break-word}.card{margin:60px auto;padding:2px 0;max-width:900px;box-shadow:0 1px 4px rgba(0,0,0,0.15),0 1px 6px rgba(0,0,0,0.2);border-radius:8px}.divider{height:1px;background:#f0f0f0}.item{padding:16px 20px}.text_1{font-size:18px}.text_2{padding-top:5px;color:#606367}</style></head><div class=card><div class=item><div class=text_1>BiDi-CDP Mapper is controlling this tab</div><div class=text_2>Closing or reloading it will stop the BiDi process. <a target=_blank title="BiDi-CDP Mapper GitHub Repository" href=https://github.com/GoogleChromeLabs/chromium-bidi>Details.</a></div></div><div class=divider></div><details id=details><summary class=item>Debug information</summary></details></div></html>';
+    '<!DOCTYPE html><html lang="en"><head><title>BiDi-CDP Mapper</title><style>body{font-family: Roboto, serif; font-size: 13px; color: #202124;}.log{padding: 12px; margin-top: 16px; font-family: Menlo, serif; font-size: 11px; line-height: 180%; background: #f1f3f4; border-radius: 4px; display: flex; flex-direction: column; gap: 10px;}.pre{overflow-wrap: break-word;}.card{margin: 60px auto; padding: 2px 0; max-width: 900px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px;}.divider{height: 1px; background: #f0f0f0;}.item{padding: 16px 20px;}</style></head><div class="card"><div class="item"><h1>BiDi-CDP Mapper is controlling this tab</h1><p>Closing or reloading it will stop the BiDi process. <a target="_blank" title="BiDi-CDP Mapper GitHub Repository" href="https://github.com/GoogleChromeLabs/chromium-bidi">Details.</a></p></div><div class="divider"></div><details id="details"><summary class="item">Debug information</summary></details></div></html>';
 
   static generatePage() {
     // If run not in browser (e.g. unit test), do nothing.
@@ -55,7 +55,7 @@ export class MapperTabPage {
   /*
       <div class="divider"></div>
       <div class="item">
-        <div>CDP</div>
+        <h3>${name}</h3>
         <div id="${name}_log" class="log">
   */
   static #findOrCreateTypeLogContainer(logType: string) {
@@ -74,7 +74,7 @@ export class MapperTabPage {
 
     const htmlItem = document.createElement('div');
     htmlItem.className = 'item';
-    htmlItem.innerHTML = `<div>${logType}</div><div id="${containerId}" class="log"></div>`;
+    htmlItem.innerHTML = `<h3>${logType}</h3><div id="${containerId}" class="log"></div>`;
     debugElement.appendChild(htmlItem);
 
     return document.getElementById(containerId)!;
