@@ -116,18 +116,7 @@ export class LogManager {
         });
 
         // Try all the best to get the exception text.
-        const text = await (async () => {
-          if (!params.exceptionDetails.exception) {
-            return params.exceptionDetails.text;
-          }
-          if (realm === undefined) {
-            return JSON.stringify(params.exceptionDetails.exception);
-          }
-          return await realm.stringifyObject(
-            params.exceptionDetails.exception,
-            realm
-          );
-        })();
+        const exceptionText = await LogManager.#getExceptionText(params, realm);
 
         await this.#eventManager.sendEvent(
           new Log.LogEntryAddedEvent({
@@ -136,7 +125,7 @@ export class LogManager {
               realm: realm?.realmId ?? 'UNKNOWN',
               context: realm?.browsingContextId ?? 'UNKNOWN',
             },
-            text,
+            text: exceptionText,
             timestamp: Math.round(params.timestamp),
             stackTrace: LogManager.#getBidiStackTrace(
               params.exceptionDetails.stackTrace
@@ -146,6 +135,64 @@ export class LogManager {
           realm?.browsingContextId ?? 'UNKNOWN'
         );
       }
+    );
+  }
+
+  /**
+   * Heuristic to get the exception description without extra CDP round trip to
+   * avoid BiDi message delay.
+   * @param params CDP exception details has the following format:
+   *   // {
+   *   //   "method": "Runtime.exceptionThrown",
+   *   //   "params": {
+   *   //     "exceptionDetails": {
+   *   //       "text": "Uncaught",
+   *   //       "exception": {
+   *   //         "description": "Error: cached_message\\n    at <anonymous>:1:16\\n...",
+   *   //         "objectId": "-2282565827719730523.1.1",
+   *   //         "preview": {
+   *   //           "description": "Error: cached_message\\n    at <anonymous>:1:16\\n...",
+   *   //           "properties": [
+   *   //             {
+   *   //               "name": "stack",
+   *   //               "type": "string",
+   *   //               "value": "Error: cached_message\\n    at <anonymous>:1:16\\n..."
+   *   //             }, {
+   *   //               "name": "message",
+   *   //               "type": "string",
+   *   //               "value": "cached_message"
+   *   //             }]
+   *   //         }, ...
+   *   //       },  ...
+   *   //     }, ...
+   *   //   }, ...
+   *   // }
+   * @param realm is used in case of the preview is not available, and additional CDP round-trip is required.
+   */
+  static async #getExceptionText(
+    params: Protocol.Runtime.ExceptionThrownEvent,
+    realm: Realm | undefined
+  ): Promise<string> {
+    if (!params.exceptionDetails.exception) {
+      return params.exceptionDetails.text;
+    }
+
+    const previewMessage =
+      params.exceptionDetails.exception.preview?.properties.find(
+        (p) => p.name === 'message'
+      )?.value;
+
+    if (previewMessage !== undefined) {
+      return previewMessage;
+    }
+
+    if (realm === undefined) {
+      return JSON.stringify(params.exceptionDetails.exception);
+    }
+
+    return await realm.stringifyObject(
+      params.exceptionDetails.exception,
+      realm
     );
   }
 
