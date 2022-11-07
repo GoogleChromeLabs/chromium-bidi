@@ -79,7 +79,12 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
     recursive_compare({
         "realm": any_string,
         "exceptionDetails": {
-            "text": "Error: foo",
+            "text": "Error: foo"
+                    "\n    at a (<anonymous>:1:26)"
+                    "\n    at b (<anonymous>:1:59)"
+                    "\n    at c (<anonymous>:2:14)"
+                    "\n    at <anonymous>:2:20"
+                    "\n    at <anonymous>:2:26",
             "columnNumber": 19,
             "lineNumber": 0,
             "exception": {

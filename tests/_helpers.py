@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import asyncio
 import json
 import os
+
 import pytest
 import websockets
 
@@ -170,6 +170,14 @@ def any_timestamp(actual):
     # "2100-01-01 00:00:00" (4102441200000).
     assert 1577833200000 < actual < 4102441200000, \
         f"'{actual}' should be in epoch milliseconds format."
+
+
+def string_starting_with(prefix):
+    def _(actual):
+        assert actual.startswith(prefix), \
+            f'Actual "{actual}" should start with "{prefix}".'
+
+    return _
 
 
 # noinspection PyUnusedLocal

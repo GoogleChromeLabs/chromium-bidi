@@ -247,7 +247,8 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
                     "realm": any_string,
                     "context": context_id
                 },
-                "text": "Error: some error",
+                # Actual text contains stacktrace as well.
+                "text": string_starting_with("Error: some error"),
                 "timestamp": any_timestamp,
                 "stackTrace": {
                     "callFrames": [{
@@ -306,26 +307,24 @@ async def test_buffer_bufferedEventsReturned(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_runtimeException_emitted(websocket, context_id):
+    error_message = "SOME_ERROR_MESSAGE"
+
     await subscribe(websocket, "log.entryAdded")
 
     # Throw JS page error and get expected error message text.
     command_id = await send_JSON_command(websocket, {
         "method": "script.evaluate",
         "params": {
-            "expression": """
-                const error_message = "SOME_ERROR_MESSAGE";
+            "expression": f"""
                 const script = document.createElement("script");
                 script.append(document.createTextNode(
-                    `(() => { throw new Error("${error_message}") })()`
+                    '(() => {{ throw new Error("{error_message}") }})()'
                 ));
-                document.body.append(script);
-                const err = new Error(error_message);
-                err.toString();
-            """,
+                document.body.append(script);""",
             "target": {"context": context_id},
             "awaitPromise": True}})
 
-    # Assert event was emitted before the command is done.
+    # Assert event was emitted before the command is finished.
     resp = await read_JSON_message(websocket)
     recursive_compare({
         "method": "log.entryAdded",
@@ -334,55 +333,47 @@ async def test_runtimeException_emitted(websocket, context_id):
             "source": {
                 "realm": any_string,
                 "context": any_string},
-            "text": any_string,
+            "text": f"Error: {error_message}"
+                    f"\n    at <anonymous>:1:16"
+                    f"\n    at <anonymous>:1:50"
+                    f"\n    at <anonymous>:6:31",
             "timestamp": any_timestamp,
             "stackTrace": any_value,
             "type": "javascript"}},
         resp)
 
-    error_text = resp["params"]["text"]
-
+    # Assert evaluate command is finished after event emitted.
     resp = await read_JSON_message(websocket)
-    # Assert error message is correct.
     recursive_compare({
         "id": command_id,
         "result": {
             'realm': any_string,
-            'result': {
-                'type': 'string',
-                'value': error_text}}},
+            'result': any_value}},
         resp)
 
 
 @pytest.mark.asyncio
 async def test_runtimeException_buffered(websocket, context_id):
+    error_message = "SOME_ERROR_MESSAGE"
     # Throw JS page error and get expected error message text.
     command_id = await send_JSON_command(websocket, {
         "method": "script.evaluate",
         "params": {
-            "expression": """
-                const error_message = "SOME_ERROR_MESSAGE";
+            "expression": f"""
                 const script = document.createElement("script");
                 script.append(document.createTextNode(
-                    `(() => { throw new Error("${error_message}") })()`
+                    '(() => {{ throw new Error("{error_message}") }})()'
                 ));
-                document.body.append(script);
-                const err = new Error(error_message);
-                err.toString();
-            """,
+                document.body.append(script);""",
             "target": {"context": context_id},
             "awaitPromise": True}})
 
+    # Assert evaluate command is finished.
     resp = await read_JSON_message(websocket)
     recursive_compare({
         "id": command_id,
-        "result": {
-            'realm': any_string,
-            'result': {
-                'type': 'string',
-                'value': any_string}}},
+        "result": any_value},
         resp)
-    error_text = resp["result"]["result"]["value"]
 
     # Subscribe to events with buffer.
     subscribe_command_id = await send_JSON_command(websocket, {
@@ -399,7 +390,10 @@ async def test_runtimeException_buffered(websocket, context_id):
             "source": {
                 "realm": any_string,
                 "context": any_string},
-            "text": error_text,
+            "text": f"Error: {error_message}"
+                    f"\n    at <anonymous>:1:16"
+                    f"\n    at <anonymous>:1:50"
+                    f"\n    at <anonymous>:6:31",
             "timestamp": any_timestamp,
             "stackTrace": any_value,
             "type": "javascript"}},

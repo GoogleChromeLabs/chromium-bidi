@@ -183,15 +183,9 @@ export class ScriptEvaluator {
     resultOwnership: Script.OwnershipModel,
     realm: Realm
   ): Promise<Script.ExceptionDetails> {
-    const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
-      (frame) => ({
-        url: frame.url,
-        functionName: frame.functionName,
-        // As `script.evaluate` wraps call into serialization script, so
-        // `lineNumber` should be adjusted.
-        lineNumber: frame.lineNumber - lineOffset,
-        columnNumber: frame.columnNumber,
-      })
+    const stackTrace = this.getBiDiStackTrace(
+      cdpExceptionDetails.stackTrace,
+      lineOffset
     );
 
     const exception = await this.serializeCdpObject(
@@ -201,10 +195,7 @@ export class ScriptEvaluator {
       realm
     );
 
-    const text = await this.stringifyObject(
-      cdpExceptionDetails.exception!,
-      realm
-    );
+    const text = await this.getExceptionText(cdpExceptionDetails, realm);
 
     return {
       exception,
@@ -212,11 +203,68 @@ export class ScriptEvaluator {
       // As `script.evaluate` wraps call into serialization script, so
       // `lineNumber` should be adjusted.
       lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
-      stackTrace: {
-        callFrames: callFrames || [],
-      },
+      stackTrace,
       text: text || cdpExceptionDetails.text,
     };
+  }
+
+  static getBiDiStackTrace(
+    stackTrace: Script.StackTrace | undefined,
+    lineOffset: number
+  ): Script.StackTrace {
+    const callFrames =
+      stackTrace?.callFrames.map((frame) => ({
+        url: frame.url,
+        functionName: frame.functionName,
+        // As `script.evaluate` wraps call into serialization script, so
+        // `lineNumber` should be adjusted.
+        lineNumber: frame.lineNumber - lineOffset,
+        columnNumber: frame.columnNumber,
+      })) || [];
+    return { callFrames };
+  }
+
+  /**
+   * Heuristic to get the exception description without extra CDP round trip to
+   * avoid BiDi message delay.
+   * @param cdpExceptionDetails CDP exception details to be stringified.
+   * @param realm is used in case of the preview is not available, and additional CDP round-trip is required.
+   */
+  static async getExceptionText(
+    cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
+    realm: Realm | undefined
+  ): Promise<string> {
+    let exception = cdpExceptionDetails.exception;
+
+    // Something unexpected happened. Return raw exception details.
+    if (exception === undefined) {
+      return JSON.stringify(cdpExceptionDetails);
+    }
+
+    // Exception has a description.
+    if (exception.description !== undefined) {
+      return exception.description.toString();
+    }
+
+    // Exception is a primitive with value.
+    if (exception.value !== undefined) {
+      return exception.value.toString();
+    }
+
+    // Exception has a handle. Make a CDP call to stringify it.
+    if (
+      realm !== undefined &&
+      exception.objectId !== undefined &&
+      exception.type !== undefined
+    ) {
+      return await realm.stringifyObject(
+        { objectId: exception.objectId, type: exception.type },
+        realm
+      );
+    }
+
+    // Something unexpected happened. Return raw exception details.
+    return JSON.stringify(cdpExceptionDetails);
   }
 
   static async #cdpToBidiValue(

@@ -16,11 +16,12 @@
  */
 
 import { CdpClient } from '../../../cdp';
-import { Log, Script } from '../protocol/bidiProtocolTypes';
+import { Log } from '../protocol/bidiProtocolTypes';
 import { getRemoteValuesText } from './logHelper';
 import { Protocol } from 'devtools-protocol';
 import { Realm } from '../script/realm';
 import { IEventManager } from '../events/EventManager';
+import { ScriptEvaluator } from '../script/scriptEvaluator';
 
 export class LogManager {
   readonly #contextId: string;
@@ -94,7 +95,8 @@ export class LogManager {
             },
             text: getRemoteValuesText(args, true),
             timestamp: Math.round(params.timestamp),
-            stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
+            stackTrace: ScriptEvaluator.getBiDiStackTrace(params.stackTrace, 0),
+
             type: 'console',
             // Console method is `warn`, not `warning`.
             method: params.type === 'warning' ? 'warn' : params.type,
@@ -115,8 +117,10 @@ export class LogManager {
           executionContextId: params.exceptionDetails.executionContextId,
         });
 
-        // Try all the best to get the exception text.
-        const exceptionText = await LogManager.#getExceptionText(params, realm);
+        const exceptionText = await ScriptEvaluator.getExceptionText(
+          params.exceptionDetails,
+          realm
+        );
 
         await this.#eventManager.sendEvent(
           new Log.LogEntryAddedEvent({
@@ -127,73 +131,15 @@ export class LogManager {
             },
             text: exceptionText,
             timestamp: Math.round(params.timestamp),
-            stackTrace: LogManager.#getBidiStackTrace(
-              params.exceptionDetails.stackTrace
+            stackTrace: ScriptEvaluator.getBiDiStackTrace(
+              params.exceptionDetails.stackTrace,
+              0
             ),
             type: 'javascript',
           }),
           realm?.browsingContextId ?? 'UNKNOWN'
         );
       }
-    );
-  }
-
-  /**
-   * Heuristic to get the exception description without extra CDP round trip to
-   * avoid BiDi message delay.
-   * @param params CDP exception details has the following format:
-   *   // {
-   *   //   "method": "Runtime.exceptionThrown",
-   *   //   "params": {
-   *   //     "exceptionDetails": {
-   *   //       "text": "Uncaught",
-   *   //       "exception": {
-   *   //         "className":"Error"
-   *   //         "description": "Error: cached_message\\n    at <anonymous>:1:16\\n...",
-   *   //         "objectId": "-2282565827719730523.1.1",
-   *   //         "preview": {
-   *   //           "description": "Error: cached_message\\n    at <anonymous>:1:16\\n...",
-   *   //           "properties": [
-   *   //             {
-   *   //               "name": "stack",
-   *   //               "type": "string",
-   *   //               "value": "Error: cached_message\\n    at <anonymous>:1:16\\n..."
-   *   //             }, {
-   *   //               "name": "message",
-   *   //               "type": "string",
-   *   //               "value": "cached_message"
-   *   //             }]
-   *   //         }, ...
-   *   //       },  ...
-   *   //     }, ...
-   *   //   }, ...
-   *   // }
-   * @param realm is used in case of the preview is not available, and additional CDP round-trip is required.
-   */
-  static async #getExceptionText(
-    params: Protocol.Runtime.ExceptionThrownEvent,
-    realm: Realm | undefined
-  ): Promise<string> {
-    if (!params.exceptionDetails.exception) {
-      return params.exceptionDetails.text;
-    }
-
-    const previewMessage =
-      params.exceptionDetails.exception.preview?.properties.find(
-        (p) => p.name === 'message'
-      )?.value;
-
-    if (previewMessage !== undefined) {
-      return `${params.exceptionDetails.exception.className}: ${previewMessage}`;
-    }
-
-    if (realm === undefined) {
-      return JSON.stringify(params.exceptionDetails.exception);
-    }
-
-    return await realm.stringifyObject(
-      params.exceptionDetails.exception,
-      realm
     );
   }
 
@@ -208,21 +154,5 @@ export class LogManager {
       return 'warn';
     }
     return 'info';
-  }
-
-  // convert CDP StackTrace object to Bidi StackTrace object
-  static #getBidiStackTrace(
-    cdpStackTrace: Protocol.Runtime.StackTrace | undefined
-  ): Script.StackTrace | undefined {
-    const stackFrames = cdpStackTrace?.callFrames.map((callFrame) => {
-      return {
-        columnNumber: callFrame.columnNumber,
-        functionName: callFrame.functionName,
-        lineNumber: callFrame.lineNumber,
-        url: callFrame.url,
-      };
-    });
-
-    return stackFrames ? { callFrames: stackFrames } : undefined;
   }
 }
