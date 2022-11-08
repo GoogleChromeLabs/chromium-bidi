@@ -41,6 +41,24 @@ export class ScriptEvaluator {
     resultOwnership: Script.OwnershipModel,
     realm: Realm
   ): Promise<CommonDataTypes.RemoteValue> {
+    // First try to parse the CDP RemoteObject without extra CDP call.
+    const parsed = this.#tryParseCdpRemoteValue(cdpObject, 1);
+    if (parsed !== undefined) {
+      if (resultOwnership === 'none') {
+        if (cdpObject.objectId !== undefined) {
+          realm.cdpClient.Runtime.releaseObject({
+            objectId: cdpObject.objectId,
+          });
+        }
+      } else {
+        if (cdpObject.objectId !== undefined) {
+          parsed.handle = cdpObject.objectId;
+        }
+      }
+      return parsed;
+    }
+
+    // Fall back to the serialization via CDP call.
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await realm.cdpClient.Runtime.callFunctionOn({
         functionDeclaration: String((obj: unknown) => obj),
@@ -49,7 +67,7 @@ export class ScriptEvaluator {
         generateWebDriverValue: true,
         executionContextId: realm.executionContextId,
       });
-    return await this.#cdpToBidiValue(
+    return await this.#cdpWebDriverValueToBidi(
       cdpWebDriverValue,
       realm,
       resultOwnership
@@ -145,7 +163,7 @@ export class ScriptEvaluator {
       };
     }
     return {
-      result: await ScriptEvaluator.#cdpToBidiValue(
+      result: await ScriptEvaluator.#cdpWebDriverValueToBidi(
         cdpCallFunctionResult,
         realm,
         resultOwnership
@@ -248,7 +266,7 @@ export class ScriptEvaluator {
 
     // Exception is a primitive with value.
     if (exception.value !== undefined) {
-      return exception.value.toString();
+      return '' + exception.value;
     }
 
     // Exception has a handle. Make a CDP call to stringify it.
@@ -267,7 +285,7 @@ export class ScriptEvaluator {
     return JSON.stringify(cdpExceptionDetails);
   }
 
-  static async #cdpToBidiValue(
+  static async #cdpWebDriverValueToBidi(
     cdpValue:
       | Protocol.Runtime.CallFunctionOnResponse
       | Protocol.Runtime.EvaluateResponse,
@@ -322,7 +340,7 @@ export class ScriptEvaluator {
     }
 
     return {
-      result: await ScriptEvaluator.#cdpToBidiValue(
+      result: await ScriptEvaluator.#cdpWebDriverValueToBidi(
         cdpEvaluateResult,
         realm,
         resultOwnership
@@ -539,5 +557,445 @@ export class ScriptEvaluator {
     }
 
     return result;
+  }
+
+  // Try to parse CDP remote value to avoid CDP round-trips.
+  static #tryParseCdpRemoteValue(
+    cdpObject: Protocol.Runtime.RemoteObject | undefined,
+    maxDepth: number
+  ): CommonDataTypes.RemoteValue | undefined {
+    if (cdpObject === undefined) {
+      return undefined;
+    }
+    switch (cdpObject.type) {
+      case 'undefined':
+        return { type: 'undefined' };
+      case 'string':
+        // Preview value has description instead of value.
+        return {
+          type: 'string',
+          value: cdpObject.value ?? cdpObject.description,
+        };
+      case 'number':
+        let numberValue: string | number | undefined =
+          cdpObject.value ??
+          cdpObject.unserializableValue ??
+          // Preview value has description instead of value and unserializableValue.
+          cdpObject.description;
+
+        if (!isNaN(Number(numberValue))) {
+          numberValue = Number(numberValue);
+        }
+
+        if (numberValue === -0) {
+          numberValue = '-0';
+        }
+        if (numberValue === Infinity) {
+          numberValue = 'Infinity';
+        }
+        if (numberValue === -Infinity) {
+          numberValue = '-Infinity';
+        }
+        if (numberValue === NaN) {
+          numberValue = 'NaN';
+        }
+
+        if (numberValue !== undefined) {
+          return {
+            type: 'number',
+            value: numberValue,
+          };
+        }
+
+      case 'bigint':
+        // Trim last 'n' symbol
+        const value = (
+          cdpObject.unserializableValue ?? cdpObject.value
+        )?.replaceAll('n', '');
+        if (value !== undefined) {
+          return {
+            type: 'bigint',
+            value,
+          };
+        }
+      case 'boolean':
+        return {
+          type: 'boolean',
+          value: cdpObject.value,
+        };
+      case 'function':
+        return {
+          type: 'function',
+        };
+      case 'symbol':
+        return {
+          type: 'symbol',
+        };
+      case 'object':
+        if (maxDepth == 0) {
+          // Object is nested in preview, and no need in serialization.
+          if (
+            cdpObject.value === 'Object' ||
+            cdpObject.description === 'Object'
+          ) {
+            return { type: 'object' };
+          }
+        }
+        // {
+        //   type: 'object',
+        //   className: 'Object',
+        //   description: 'Object',
+        //   objectId: '-6798027118796624854.1.1',
+        //   preview: {
+        //     type: 'object',
+        //     description: 'Object',
+        //     overflow: false,
+        //     properties: [
+        //       {
+        //         name: 'foo',
+        //         type: 'object',
+        //         value: 'Object',
+        //       },
+        //       {
+        //         name: 'qux',
+        //         type: 'string',
+        //         value: 'quux',
+        //       },
+        //     ],
+        //   },
+        // };
+        if (cdpObject.description === 'Object') {
+          const value = cdpObject.preview?.properties?.map((p) => [
+            p.name,
+            this.#tryParseCdpRemoteValue(
+              p as Protocol.Runtime.RemoteObject,
+              maxDepth - 1
+            ),
+          ]);
+          // Check if all the values deserialized.
+          if (
+            value !== undefined &&
+            value.filter(
+              (v) => v === undefined || v[0] === undefined || v[1] === undefined
+            ).length == 0
+          ) {
+            return {
+              type: 'object',
+              value,
+            };
+          }
+        }
+        switch (cdpObject.subtype) {
+          case 'null':
+            return { type: 'null' };
+          case 'promise':
+            return { type: 'promise' };
+          case 'weakmap':
+            return { type: 'weakmap' };
+          case 'weakset':
+            return { type: 'weakset' };
+          case 'proxy':
+            return { type: 'proxy' };
+          case 'typedarray':
+            return { type: 'typedarray' };
+          case 'error':
+            return { type: 'error' };
+          case 'regexp':
+            // {
+            //   type: 'object',
+            //   subtype: 'regexp',
+            //   className: 'RegExp',
+            //   description: '/ab+c/i',
+            //   objectId: '-136234030541836609.1.1',
+            //   preview: {
+            //     type: 'object',
+            //     subtype: 'regexp',
+            //     description: '/ab+c/i',
+            //     overflow: true,
+            //     properties: [
+            //       {
+            //         name: 'lastIndex',
+            //         type: 'number',
+            //         value: '0',
+            //       },
+            //       {
+            //         name: 'dotAll',
+            //         type: 'boolean',
+            //         value: 'false',
+            //       },
+            //       {
+            //         name: 'flags',
+            //         type: 'string',
+            //         value: 'i',
+            //       },
+            //       {
+            //         name: 'global',
+            //         type: 'boolean',
+            //         value: 'false',
+            //       },
+            //       { name: 'hasIndices', type: 'boolean', value: 'false' },
+            //     ],
+            //   },
+            // };
+            if (maxDepth == 0) {
+              return { type: 'regexp' };
+            }
+            if (cdpObject.description !== undefined) {
+              // const regex = new RegExp(cdpObject.description);
+              const firstSlash = cdpObject.description.indexOf('/');
+              const lastSlash = cdpObject.description.lastIndexOf('/');
+              const pattern = cdpObject.description.substring(
+                firstSlash + 1,
+                lastSlash
+              );
+              const flags = cdpObject.description.substring(lastSlash + 1);
+              return {
+                type: 'regexp',
+                value: {
+                  pattern,
+                  ...(flags === '' ? {} : { flags }),
+                },
+              };
+            }
+          case 'array':
+            if (maxDepth == 0) {
+              return { type: 'array' };
+            }
+          // {
+          //   type: 'object',
+          //   subtype: 'map',
+          //   className: 'Map',
+          //   description: 'Map(2)',
+          //   objectId: '-830751083908063883.1.3',
+          //   preview: {
+          //     type: 'object',
+          //     subtype: 'map',
+          //     description: 'Map(2)',
+          //     overflow: false,
+          //     properties: [
+          //       {
+          //         name: 'size',
+          //         type: 'number',
+          //         value: '2',
+          //       },
+          //     ],
+          //     entries: [
+          //       {
+          //         key: {
+          //           type: 'string',
+          //           description: 'foo',
+          //           overflow: false,
+          //           properties: [],
+          //         },
+          //         value: {
+          //           type: 'object',
+          //           description: 'Object',
+          //           overflow: false,
+          //           properties: [],
+          //         },
+          //       },
+          //       {
+          //         key: {
+          //           type: 'string',
+          //           description: 'qux',
+          //           overflow: false,
+          //           properties: [],
+          //         },
+          //         value: {
+          //           type: 'string',
+          //           description: 'quux',
+          //           overflow: false,
+          //           properties: [],
+          //         },
+          //       },
+          //     ],
+          //   },
+          // };
+          case 'map':
+            if (maxDepth == 0) {
+              return { type: 'map' };
+            }
+
+            const value = cdpObject.preview?.entries?.map((e) => {
+              let key = this.#tryParseCdpRemoteValue(
+                e?.key as Protocol.Runtime.RemoteObject,
+                maxDepth - 1
+              );
+              if (key?.type === 'string' || key?.type === 'number') {
+                key = key?.value;
+              }
+              const val = this.#tryParseCdpRemoteValue(
+                e?.value as Protocol.Runtime.RemoteObject,
+                maxDepth - 1
+              );
+              return [key, val];
+            });
+            // Check if all the values deserialized.
+            if (
+              value !== undefined &&
+              value.filter(
+                (v) =>
+                  v === undefined || v[0] === undefined || v[1] === undefined
+              ).length == 0
+            ) {
+              return {
+                type: 'map',
+                value,
+              };
+            }
+
+            // {
+            //   "type": "object",
+            //   "subtype": "array",
+            //   "className": "Array",
+            //   "description": "Array(4)",
+            //   "objectId": "1623266726298348871.1.1",
+            //   "preview": {
+            //     "type": "object",
+            //     "subtype": "array",
+            //     "description": "Array(4)",
+            //     "overflow": false,
+            //     "properties": [
+            //       {
+            //         "name": "0",
+            //         "type": "number",
+            //         "value": "1"
+            //       },
+            //       {
+            //         "name": "1",
+            //         "type": "string",
+            //         "value": "a"
+            //       },
+            //       {
+            //         "name": "2",
+            //         "type": "object",
+            //         "value": "Object"
+            //       },
+            //       {
+            //         "name": "3",
+            //         "type": "object",
+            //         "value": "Array(2)",
+            //         "subtype": "array"
+            //       }
+            //     ]
+            //   }
+            // }
+            if (
+              cdpObject.preview !== undefined &&
+              cdpObject.preview.properties !== undefined
+            ) {
+              const value = cdpObject.preview.properties.map((p) =>
+                this.#tryParseCdpRemoteValue(
+                  p as Protocol.Runtime.RemoteObject,
+                  maxDepth - 1
+                )
+              );
+              // Check if all the values deserialized.
+              if (value.filter((v) => v === undefined).length == 0) {
+                return {
+                  type: 'array',
+                  value,
+                };
+              }
+            }
+          case 'set':
+            if (maxDepth == 0) {
+              return { type: 'set' };
+            }
+            // {
+            //   type: 'object',
+            //   subtype: 'set',
+            //   className: 'Set',
+            //   description: 'Set(4)',
+            //   objectId: '-2164266287133224452.1.1',
+            //   preview: {
+            //     type: 'object',
+            //     subtype: 'set',
+            //     description: 'Set(4)',
+            //     overflow: false,
+            //     properties: [
+            //       {
+            //         name: 'size',
+            //         type: 'number',
+            //         value: '4',
+            //       },
+            //     ],
+            //     entries: [
+            //       {
+            //         value: {
+            //           type: 'number',
+            //           description: '1',
+            //           overflow: false,
+            //           properties: [],
+            //         },
+            //       },
+            //       {
+            //         value: {
+            //           type: 'string',
+            //           description: 'a',
+            //           overflow: false,
+            //           properties: [],
+            //         },
+            //       },
+            //       {
+            //         value: {
+            //           type: 'object',
+            //           description: 'Object',
+            //           overflow: false,
+            //           properties: [
+            //             {
+            //               name: 'foo',
+            //               type: 'string',
+            //               value: 'bar',
+            //             },
+            //           ],
+            //         },
+            //       },
+            //       {
+            //         value: {
+            //           type: 'object',
+            //           subtype: 'array',
+            //           description: 'Array(2)',
+            //           overflow: false,
+            //           properties: [
+            //             {
+            //               name: '0',
+            //               type: 'number',
+            //               value: '2',
+            //             },
+            //             {
+            //               name: '1',
+            //               type: 'object',
+            //               value: 'Array(2)',
+            //               subtype: 'array',
+            //             },
+            //           ],
+            //         },
+            //       },
+            //     ],
+            //   },
+            // };
+            if (
+              cdpObject.preview !== undefined &&
+              cdpObject.preview.entries !== undefined
+            ) {
+              const value = cdpObject.preview.entries.map((p) =>
+                this.#tryParseCdpRemoteValue(
+                  p?.value as Protocol.Runtime.RemoteObject,
+                  maxDepth - 1
+                )
+              );
+              // Check if all the values deserialized.
+              if (value.filter((v) => v === undefined).length == 0) {
+                return {
+                  type: 'set',
+                  value,
+                };
+              }
+            }
+        }
+    }
+
+    return undefined;
   }
 }
