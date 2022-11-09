@@ -26,17 +26,17 @@ const expect = chai.expect;
 describe('test ProcessingQueue', () => {
   it('should wait and call processor in order', async () => {
     const processor = sinon.stub().returns(Promise.resolve());
-    const buffer = new ProcessingQueue<number>(processor);
+    const queue = new ProcessingQueue<number>(processor);
     const deferred1 = new Deferred<number>();
     const deferred2 = new Deferred<number>();
     const deferred3 = new Deferred<number>();
 
-    buffer.add(deferred1);
+    queue.add(deferred1);
     await wait(1);
     sinon.assert.notCalled(processor);
 
-    buffer.add(deferred2);
-    buffer.add(deferred3);
+    queue.add(deferred2);
+    queue.add(deferred3);
     await wait(1);
     sinon.assert.notCalled(processor);
 
@@ -54,13 +54,12 @@ describe('test ProcessingQueue', () => {
   it('rejects should not stop processing', async () => {
     const processor = sinon.stub().returns(Promise.reject('Processor reject'));
     const _catch = sinon.spy();
-    const buffer = new ProcessingQueue<number>(processor, _catch);
+    const queue = new ProcessingQueue<number>(processor, _catch);
     const deferred1 = new Deferred<number>();
     const deferred2 = new Deferred<number>();
 
-    buffer.add(deferred1);
-    buffer.add(deferred2);
-    // await wait(1);
+    queue.add(deferred1);
+    queue.add(deferred2);
 
     deferred1.reject(1);
     deferred2.resolve(2);
@@ -72,6 +71,19 @@ describe('test ProcessingQueue', () => {
     // Assert `_catch` was called for waiting entry and processor call.
     const processedValues = _catch.getCalls().map((c) => c.firstArg);
     expect(processedValues).to.deep.equal([1, 'Processor reject']);
+  });
+  it('processing starts over when new values are added', async () => {
+    const processor = sinon.stub().returns(Promise.resolve());
+    const queue = new ProcessingQueue<number>(processor);
+
+    queue.add(Promise.resolve(1));
+    await wait(1);
+    sinon.assert.calledOnceWithExactly(processor, 1);
+    processor.reset();
+
+    queue.add(Promise.resolve(2));
+    await wait(1);
+    sinon.assert.calledOnceWithExactly(processor, 2);
   });
 });
 

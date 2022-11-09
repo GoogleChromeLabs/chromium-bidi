@@ -54,6 +54,6 @@ export class ProcessingQueue<T> {
       }
     }
 
-    this.#isProcessing = true;
+    this.#isProcessing = false;
   }
 }
