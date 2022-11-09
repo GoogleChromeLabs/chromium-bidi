@@ -49,6 +49,15 @@ export class BiDiMessageEntry {
     this.#channel = channel;
   }
 
+  static createFromPromise(
+    messagePromise: Promise<Message.OutgoingMessage>,
+    channel: string | null
+  ): Promise<BiDiMessageEntry> {
+    return messagePromise.then(
+      (message) => new BiDiMessageEntry(message, channel)
+    );
+  }
+
   static createResolved(
     message: Message.OutgoingMessage,
     channel: string | null

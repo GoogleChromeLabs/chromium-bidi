@@ -85,7 +85,7 @@ export class LogManager {
                 })
               );
 
-        await this.#eventManager.sendEvent(
+        await this.#eventManager.registerEvent(
           new Log.LogEntryAddedEvent({
             level: LogManager.#getLogLevel(params.type),
             source: {
@@ -129,7 +129,7 @@ export class LogManager {
           );
         })();
 
-        await this.#eventManager.sendEvent(
+        await this.#eventManager.registerEvent(
           new Log.LogEntryAddedEvent({
             level: 'error',
             source: {
