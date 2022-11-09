@@ -16,7 +16,7 @@
  */
 
 import {CdpClient} from '../../../cdp';
-import {Log, Script} from '../protocol/bidiProtocolTypes';
+import {CommonDataTypes, Log, Script} from '../protocol/bidiProtocolTypes';
 import {getRemoteValuesText} from './logHelper';
 import {Protocol} from 'devtools-protocol';
 import {Realm} from '../script/realm';
@@ -68,39 +68,45 @@ export class LogManager {
   #initializeLogEntryAddedEventListener() {
     this.#cdpClient.Runtime.on(
       'consoleAPICalled',
-      async (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
+      (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
         const realm: Realm | undefined = Realm.findRealm({
           cdpSessionId: this.#cdpSessionId,
           executionContextId: params.executionContextId,
         });
-        const args =
+        const argsPromise: Promise<CommonDataTypes.RemoteValue[]> =
           realm === undefined
-            ? params.args
+            ? Promise.resolve(params.args)
             : // Properly serialize arguments if possible.
-              await Promise.all(
+              Promise.all(
                 params.args.map(async (arg) => {
                   return realm.serializeCdpObject(arg, 'none');
                 })
               );
 
-        await this.#eventManager.registerEvent(
-          new Log.LogEntryAddedEvent({
-            level: LogManager.#getLogLevel(params.type),
-            source: {
-              realm: realm?.realmId ?? 'UNKNOWN',
-              context: realm?.browsingContextId ?? 'UNKNOWN',
-            },
-            text: getRemoteValuesText(args, true),
-            timestamp: Math.round(params.timestamp),
-            stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
-            type: 'console',
-            // Console method is `warn`, not `warning`.
-            method: params.type === 'warning' ? 'warn' : params.type,
-            args: args,
-          }),
-          realm?.browsingContextId ?? 'UNKNOWN'
+        // No need in waiting for the result, just register the event promise.
+        // noinspection JSIgnoredPromiseFromCall
+        this.#eventManager.registerPromiseEvent(
+          argsPromise.then(
+            (args) =>
+              new Log.LogEntryAddedEvent({
+                level: LogManager.#getLogLevel(params.type),
+                source: {
+                  realm: realm?.realmId ?? 'UNKNOWN',
+                  context: realm?.browsingContextId ?? 'UNKNOWN',
+                },
+                text: getRemoteValuesText(args, true),
+                timestamp: Math.round(params.timestamp),
+                stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
+                type: 'console',
+                // Console method is `warn`, not `warning`.
+                method: params.type === 'warning' ? 'warn' : params.type,
+                args,
+              })
+          ),
+          realm?.browsingContextId ?? 'UNKNOWN',
+          Log.LogEntryAddedEvent.method
         );
       }
     );
