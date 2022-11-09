@@ -16,7 +16,7 @@
  */
 
 import {CommonDataTypes, Message} from '../protocol/bidiProtocolTypes';
-import {IBidiServer} from '../../utils/bidiServer';
+import {BiDiMessageEntry, IBidiServer} from '../../utils/bidiServer';
 import {SubscriptionManager} from './SubscriptionManager';
 import {IdWrapper} from '../../../utils/idWrapper';
 import {Buffer} from '../../../utils/buffer';
@@ -122,7 +122,9 @@ export class EventManager implements IEventManager {
     this.#bufferEvent(eventWrapper);
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {
-      await this.#bidiServer.sendMessage(event, channel);
+      await this.#bidiServer.sendMessage(
+        BiDiMessageEntry.createResolved(event, channel)
+      );
       this.#markEventSent(eventWrapper, channel);
     }
   }
@@ -148,7 +150,9 @@ export class EventManager implements IEventManager {
           channel
         )) {
           // The order of the events is important.
-          await this.#bidiServer.sendMessage(eventWrapper.event, channel);
+          await this.#bidiServer.sendMessage(
+            BiDiMessageEntry.createResolved(eventWrapper.event, channel)
+          );
           this.#markEventSent(eventWrapper, channel);
         }
       }
