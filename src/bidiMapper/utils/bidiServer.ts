@@ -20,6 +20,7 @@ import {EventEmitter} from 'events';
 
 import {ITransport} from '../../utils/transport';
 import {Message} from '../domains/protocol/bidiProtocolTypes';
+import {ProcessingQueue} from '../../utils/processingQueue';
 
 const logBidi = log(LogType.bidi);
 
@@ -41,6 +42,24 @@ interface BidiServerEvents {
   message: Message.RawCommandRequest;
 }
 
+export class BiDiMessageEntry {
+  readonly #message: Message.OutgoingMessage;
+  readonly #channel: string | null;
+
+  constructor(message: Message.OutgoingMessage, channel: string | null) {
+    this.#message = message;
+    this.#channel = channel;
+  }
+
+  get message(): Message.OutgoingMessage {
+    return this.#message;
+  }
+
+  get channel(): string | null {
+    return this.#channel;
+  }
+}
+
 export declare interface BidiServer {
   on<U extends keyof BidiServerEvents>(
     event: U,
@@ -54,24 +73,35 @@ export declare interface BidiServer {
 }
 
 export class BidiServer extends EventEmitter implements IBidiServer {
+  #messageQueue: ProcessingQueue<BiDiMessageEntry>;
+
   constructor(private _transport: ITransport) {
     super();
-
+    this.#messageQueue = new ProcessingQueue<BiDiMessageEntry>((m) =>
+      this.#sendMessage(m)
+    );
     this._transport.setOnMessage(this.#onBidiMessage);
+  }
+
+  async #sendMessage(messageEntry: BiDiMessageEntry) {
+    const message = messageEntry.message as any;
+
+    if (messageEntry.channel !== null) {
+      message['channel'] = messageEntry.channel;
+    }
+
+    const messageStr = JSON.stringify(message);
+    logBidi('sent > ' + messageStr);
+    await this._transport.sendMessage(messageStr);
   }
 
   /**
    * Sends BiDi message.
    */
   async sendMessage(messageObj: any, channel: string | null): Promise<void> {
-    // Add `channel` to response if needed.
-    if (channel !== null) {
-      messageObj['channel'] = channel;
-    }
-
-    const messageStr = JSON.stringify(messageObj);
-    logBidi('sent > ' + messageStr);
-    this._transport.sendMessage(messageStr);
+    this.#messageQueue.add(
+      Promise.resolve(new BiDiMessageEntry(messageObj, channel))
+    );
   }
 
   close(): void {
