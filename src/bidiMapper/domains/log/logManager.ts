@@ -113,7 +113,7 @@ export class LogManager {
 
     this.#cdpClient.Runtime.on(
       'exceptionThrown',
-      async (params: Protocol.Runtime.ExceptionThrownEvent) => {
+      (params: Protocol.Runtime.ExceptionThrownEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
         const realm: Realm | undefined = Realm.findRealm({
@@ -122,7 +122,7 @@ export class LogManager {
         });
 
         // Try all the best to get the exception text.
-        const text = await (async () => {
+        const textPromise = (async () => {
           if (!params.exceptionDetails.exception) {
             return params.exceptionDetails.text;
           }
@@ -135,21 +135,27 @@ export class LogManager {
           );
         })();
 
-        await this.#eventManager.registerEvent(
-          new Log.LogEntryAddedEvent({
-            level: 'error',
-            source: {
-              realm: realm?.realmId ?? 'UNKNOWN',
-              context: realm?.browsingContextId ?? 'UNKNOWN',
-            },
-            text,
-            timestamp: Math.round(params.timestamp),
-            stackTrace: LogManager.#getBidiStackTrace(
-              params.exceptionDetails.stackTrace
-            ),
-            type: 'javascript',
-          }),
-          realm?.browsingContextId ?? 'UNKNOWN'
+        // No need in waiting for the result, just register the event promise.
+        // noinspection JSIgnoredPromiseFromCall
+        this.#eventManager.registerPromiseEvent(
+          textPromise.then(
+            (text) =>
+              new Log.LogEntryAddedEvent({
+                level: 'error',
+                source: {
+                  realm: realm?.realmId ?? 'UNKNOWN',
+                  context: realm?.browsingContextId ?? 'UNKNOWN',
+                },
+                text,
+                timestamp: Math.round(params.timestamp),
+                stackTrace: LogManager.#getBidiStackTrace(
+                  params.exceptionDetails.stackTrace
+                ),
+                type: 'javascript',
+              })
+          ),
+          realm?.browsingContextId ?? 'UNKNOWN',
+          Log.LogEntryAddedEvent.method
         );
       }
     );
