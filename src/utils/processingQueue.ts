@@ -1,3 +1,5 @@
+import {log, LogType} from './log';
+
 /**
  * Copyright 2022 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -14,6 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+const logSystem = log(LogType.system);
 
 export class ProcessingQueue<T> {
   readonly #queue: Promise<T>[] = [];
@@ -48,8 +52,10 @@ export class ProcessingQueue<T> {
       if (entryPromise !== undefined) {
         await entryPromise
           .then((entry) => this.#processor(entry))
-          .catch((e) => this.#catch(e))
-          // Continue processing queue.
+          .catch((e) => {
+            logSystem('Event was not processed! ' + e);
+            this.#catch(e);
+          })
           .finally();
       }
     }
