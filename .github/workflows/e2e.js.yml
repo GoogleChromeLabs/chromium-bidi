@@ -6,6 +6,9 @@ name: e2e tests
 on:
   pull_request:
     branches: '*'
+  push:
+    branches:
+    - main
 
 jobs:
   e2e-headless:
@@ -71,7 +74,7 @@ jobs:
       - name: Install Python dependencies
         run: python -m pip install -r tests/requirements.txt
       - name: Run e2e tests
-        run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run e2e-headful
+        run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run ${{ matrix.headful-argument }}
 
 env:
   FORCE_COLOR: 3

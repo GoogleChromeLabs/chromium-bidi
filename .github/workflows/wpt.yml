@@ -6,6 +6,9 @@ name: web-platform-tests
 on:
   pull_request:
     branches: '*'
+  push:
+    branches:
+    - main
 
 jobs:
   wpt:
