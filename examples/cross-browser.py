@@ -123,7 +123,7 @@ async def main():
     # Puppeteer:
     # await page.goto('https://news.ycombinator.com/');
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L34
-    # To avoid the network dependency in this test, we use a local, static copy.
+    # To avoid network dependency in this test, use a local (static) copy.
     pageUrl = f'file://{Path(__file__).parent.resolve()}/app.html'
     await run_and_wait_command({
         "id": 1001,
@@ -139,7 +139,7 @@ async def main():
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L37
     results_selector = {
         "type": "string",
-        "value": ".titlelink"}
+        "value": ".titleline > a"}
 
     # `script.callFunction` is not implemented by Firefox yet:
     # https://bugzilla.mozilla.org/show_bug.cgi?id=1750541
