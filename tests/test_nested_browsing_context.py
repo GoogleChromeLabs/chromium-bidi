@@ -16,9 +16,10 @@
 from _helpers import *
 
 
+@pytest.mark.parametrize("repeat", range(0, 300))
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(websocket,
-      iframe_id):
+      iframe_id, repeat):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"
 
@@ -44,8 +45,9 @@ async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(w
         result)
 
 
+@pytest.mark.parametrize("repeat", range(0, 300))
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, iframe_id, repeat):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
     # Send command.
@@ -87,8 +89,9 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, ifram
             "url": "data:text/html,<h2>test</h2>"}}
 
 
+@pytest.mark.parametrize("repeat", range(0, 300))
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(websocket, iframe_id, repeat):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
 
@@ -130,8 +133,9 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(websocket
             "url": "data:text/html,<h2>test</h2>"}}
 
 
+@pytest.mark.parametrize("repeat", range(0, 300))
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket, iframe_id, repeat):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
 
@@ -173,9 +177,10 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket, i
             "url": "data:text/html,<h2>test</h2>"}}
 
 
+@pytest.mark.parametrize("repeat", range(0, 300))
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateSameDocumentNavigation_navigated(
-      websocket, iframe_id):
+      websocket, iframe_id,repeat):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"
     url_with_hash_2 = url + "#2"
@@ -305,9 +310,10 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_navigated(
 
 
 # TODO(sadym): make offline.
+@pytest.mark.parametrize("repeat", range(0, 300))
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
-      websocket, iframe_id):
+      websocket, iframe_id, repeat):
     nested_iframe = 'https://example.com/'
     another_nested_iframe = 'https://example.org/'
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
@@ -346,9 +352,10 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
         result)
 
 
+@pytest.mark.parametrize("repeat", range(0, 300))
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedContexts_contextsReturned(
-      websocket, iframe_id):
+      websocket, iframe_id, repeat):
     nested_iframe = 'data:text/html,<h2>IFRAME</h2>'
     another_nested_iframe = 'data:text/html,<h2>ANOTHER_IFRAME</h2>'
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
