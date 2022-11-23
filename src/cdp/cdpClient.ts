@@ -47,7 +47,7 @@ const domainConstructorMap = new Map<
 
 // Base class for all domains.
 class DomainImpl extends EventEmitter {
-  constructor(private _client: CdpClientImpl) {
+  constructor() {
     super();
   }
 }
@@ -56,8 +56,8 @@ for (let domains of browserAndJsProtocolDomains) {
   // Dynamically create a subclass for this domain. Note: This class definition is scoped
   // to this for-loop, so there will be a unique ThisDomain definition for each domain.
   class ThisDomain extends DomainImpl {
-    constructor(_client: CdpClientImpl) {
-      super(_client);
+    constructor() {
+      super();
     }
   }
 
@@ -118,6 +118,9 @@ class CdpClientImpl extends EventEmitter {
 
     // Next, get the correct domain instance and tell it to emit the strongly typed event.
     const [domainName, eventName] = method.split('.');
+    if (!domainName || !eventName) {
+      throw new Error('Malformed message');
+    }
     const domain = this._domains.get(domainName);
     if (domain) {
       domain.emit(eventName, params);
