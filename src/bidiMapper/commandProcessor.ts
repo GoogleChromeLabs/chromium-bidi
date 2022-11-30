@@ -23,7 +23,7 @@ import {
   Script,
   Session,
 } from './domains/protocol/bidiProtocolTypes';
-import {CdpConnection} from '../cdp';
+import {CdpConnection} from './cdp';
 import {BiDiMessageEntry, IBidiServer} from './utils/bidiServer';
 import {IEventManager} from './domains/events/EventManager';
 import {
