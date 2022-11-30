@@ -23,7 +23,7 @@ import {
   Script,
   Session,
 } from './domains/protocol/bidiProtocolTypes';
-import {CDPConnection} from './cdp';
+import {CdpConnection} from './cdp';
 import {BiDiMessageEntry, IBidiServer} from './utils/bidiServer';
 import {IEventManager} from './domains/events/EventManager';
 import {
@@ -38,7 +38,7 @@ export class CommandProcessor {
   #eventManager: IEventManager;
 
   static run(
-    cdpConnection: CDPConnection,
+    cdpConnection: CdpConnection,
     bidiServer: IBidiServer,
     eventManager: IEventManager,
     selfTargetId: string
@@ -54,7 +54,7 @@ export class CommandProcessor {
   }
 
   private constructor(
-    cdpConnection: CDPConnection,
+    cdpConnection: CdpConnection,
     bidiServer: IBidiServer,
     eventManager: IEventManager,
     selfTargetId: string

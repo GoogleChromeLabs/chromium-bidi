@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {CDPClient} from '../../cdp';
+import {CdpClient} from '../../cdp';
 import {CommonDataTypes, Log, Script} from '../protocol/bidiProtocolTypes';
 import {getRemoteValuesText} from './logHelper';
 import {Protocol} from 'devtools-protocol';
@@ -23,12 +23,12 @@ import {Realm} from '../script/realm';
 import {IEventManager} from '../events/EventManager';
 
 export class LogManager {
-  readonly #cdpClient: CDPClient;
+  readonly #cdpClient: CdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
 
   private constructor(
-    cdpClient: CDPClient,
+    cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager
   ) {
@@ -38,7 +38,7 @@ export class LogManager {
   }
 
   public static create(
-    cdpClient: CDPClient,
+    cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager
   ) {

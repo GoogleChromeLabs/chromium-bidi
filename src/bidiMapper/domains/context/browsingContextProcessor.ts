@@ -16,7 +16,7 @@
  */
 
 import {log, LogType} from '../../../utils/log';
-import {CDPClient, CDPConnection} from '../../cdp';
+import {CdpClient, CdpConnection} from '../../cdp';
 import {BrowsingContext, CDP, Script} from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import {IEventManager} from '../events/EventManager';
@@ -29,12 +29,12 @@ const logContext = log(LogType.browsingContexts);
 
 export class BrowsingContextProcessor {
   readonly sessions: Set<string> = new Set();
-  readonly #cdpConnection: CDPConnection;
+  readonly #cdpConnection: CdpConnection;
   readonly #selfTargetId: string;
   readonly #eventManager: IEventManager;
 
   constructor(
-    cdpConnection: CDPConnection,
+    cdpConnection: CdpConnection,
     selfTargetId: string,
     eventManager: IEventManager
   ) {
@@ -45,11 +45,11 @@ export class BrowsingContextProcessor {
     this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
   }
 
-  #setBrowserClientEventListeners(browserClient: CDPClient) {
+  #setBrowserClientEventListeners(browserClient: CdpClient) {
     this.#setTargetEventListeners(browserClient);
   }
 
-  #setTargetEventListeners(cdpClient: CDPClient) {
+  #setTargetEventListeners(cdpClient: CdpClient) {
     cdpClient.on('Target.attachedToTarget', async (params) => {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
@@ -98,7 +98,7 @@ export class BrowsingContextProcessor {
 
   async #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
-    parentSessionCdpClient: CDPClient
+    parentSessionCdpClient: CdpClient
   ) {
     const {sessionId, targetInfo} = params;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC.
+ * Copyright 2022 Google LLC.
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 import {EventEmitter} from '../utils/EventEmitter';
 
-type CDPEvents = {
+type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
 };
 
@@ -26,12 +26,12 @@ type CDPEvents = {
  * CDP interfaces that BiDi Mapper expects.
  */
 
-export interface CDPConnection {
-  browserClient(): CDPClient;
-  getCdpClient(sessionId: string): CDPClient;
+export interface CdpConnection {
+  browserClient(): CdpClient;
+  getCdpClient(sessionId: string): CdpClient;
 }
 
-export interface CDPClient extends EventEmitter<CDPEvents> {
+export interface CdpClient extends EventEmitter<CdpEvents> {
   sendCommand<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...params: ProtocolMapping.Commands[T]['paramsType']
