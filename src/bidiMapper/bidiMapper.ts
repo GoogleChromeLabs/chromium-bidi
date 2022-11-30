@@ -1,9 +1,5 @@
 /**
-<<<<<<< HEAD
  * Copyright 2022 Google LLC.
-=======
- * Copyright 2021 Google LLC.
->>>>>>> be6ad33 (Define CDP interfaces that mapper needs)
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,5 +22,5 @@
  */
 
 export {CommandProcessor} from './commandProcessor';
-export {CDPConnection, CDPClient} from './cdp';
+export {CdpConnection, CdpClient} from './cdp';
 export {IBidiServer} from './bidiServer';
