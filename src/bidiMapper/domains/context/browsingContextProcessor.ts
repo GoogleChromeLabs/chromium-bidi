@@ -16,7 +16,7 @@
  */
 
 import {log, LogType} from '../../../utils/log';
-import {CdpClient, CdpConnection} from '../../../cdp';
+import {CDPClient, CDPConnection} from '../../cdp';
 import {BrowsingContext, CDP, Script} from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import {IEventManager} from '../events/EventManager';
@@ -29,12 +29,12 @@ const logContext = log(LogType.browsingContexts);
 
 export class BrowsingContextProcessor {
   readonly sessions: Set<string> = new Set();
-  readonly #cdpConnection: CdpConnection;
+  readonly #cdpConnection: CDPConnection;
   readonly #selfTargetId: string;
   readonly #eventManager: IEventManager;
 
   constructor(
-    cdpConnection: CdpConnection,
+    cdpConnection: CDPConnection,
     selfTargetId: string,
     eventManager: IEventManager
   ) {
@@ -45,11 +45,11 @@ export class BrowsingContextProcessor {
     this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
   }
 
-  #setBrowserClientEventListeners(browserClient: CdpClient) {
+  #setBrowserClientEventListeners(browserClient: CDPClient) {
     this.#setTargetEventListeners(browserClient);
   }
 
-  #setTargetEventListeners(cdpClient: CdpClient) {
+  #setTargetEventListeners(cdpClient: CDPClient) {
     cdpClient.on('Target.attachedToTarget', async (params) => {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
@@ -98,7 +98,7 @@ export class BrowsingContextProcessor {
 
   async #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
-    parentSessionCdpClient: CdpClient
+    parentSessionCdpClient: CDPClient
   ) {
     const {sessionId, targetInfo} = params;
 
@@ -328,10 +328,12 @@ export class BrowsingContextProcessor {
   }
 
   async process_cdp_sendCommand(params: CDP.SendCommandParams) {
-    const sendCdpCommandResult = await this.#cdpConnection.sendCommand(
-      params.cdpMethod,
-      params.cdpParams,
-      params.cdpSession ?? null
+    const client = params.cdpSession
+      ? this.#cdpConnection.getCdpClient(params.cdpSession)
+      : this.#cdpConnection.browserClient();
+    const sendCdpCommandResult = await client.sendCommand(
+      params.cdpMethod as any,
+      params.cdpParams
     );
     return {
       result: sendCdpCommandResult,

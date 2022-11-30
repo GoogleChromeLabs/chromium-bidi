@@ -20,7 +20,7 @@ import {CommonDataTypes, Script} from '../protocol/bidiProtocolTypes';
 import {ScriptEvaluator} from './scriptEvaluator';
 import {BrowsingContextStorage} from '../context/browsingContextStorage';
 import {NoSuchFrameException} from '../protocol/error';
-import {CdpClient} from '../../../cdp';
+import {CDPClient} from '../../cdp';
 
 export enum RealmType {
   window = 'window',
@@ -37,7 +37,7 @@ export class Realm {
     type: RealmType,
     sandbox: string | undefined,
     cdpSessionId: string,
-    cdpClient: CdpClient
+    cdpClient: CDPClient
   ): Realm {
     const realm = new Realm(
       realmId,
@@ -143,7 +143,7 @@ export class Realm {
   readonly #type: RealmType;
   readonly #sandbox: string | undefined;
   readonly #cdpSessionId: string;
-  readonly #cdpClient: CdpClient;
+  readonly #cdpClient: CDPClient;
 
   private constructor(
     realmId: string,
@@ -153,7 +153,7 @@ export class Realm {
     type: RealmType,
     sandbox: string | undefined,
     cdpSessionId: string,
-    cdpClient: CdpClient
+    cdpClient: CDPClient
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
@@ -195,7 +195,7 @@ export class Realm {
     return this.#type;
   }
 
-  get cdpClient(): CdpClient {
+  get cdpClient(): CDPClient {
     return this.#cdpClient;
   }
 

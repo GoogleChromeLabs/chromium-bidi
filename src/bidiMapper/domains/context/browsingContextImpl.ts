@@ -17,7 +17,7 @@
 
 import {Protocol} from 'devtools-protocol';
 import {BrowsingContext, Script} from '../protocol/bidiProtocolTypes';
-import {CdpClient} from '../../../cdp';
+import {CDPClient} from '../../cdp';
 import {IEventManager} from '../events/EventManager';
 import {Deferred} from '../../../utils/deferred';
 import {UnknownException} from '../protocol/error';
@@ -50,7 +50,7 @@ export class BrowsingContextImpl {
   #url: string = 'about:blank';
   #loaderId: string | null = null;
   #cdpSessionId: string;
-  #cdpClient: CdpClient;
+  #cdpClient: CDPClient;
   #maybeDefaultRealm: Realm | undefined;
 
   get #defaultRealm(): Realm {
@@ -65,7 +65,7 @@ export class BrowsingContextImpl {
   private constructor(
     contextId: string,
     parentId: string | null,
-    cdpClient: CdpClient,
+    cdpClient: CDPClient,
     cdpSessionId: string,
     cdpBrowserContextId: string | null,
     eventManager: IEventManager
@@ -85,7 +85,7 @@ export class BrowsingContextImpl {
   public static async createFrameContext(
     contextId: string,
     parentId: string | null,
-    cdpClient: CdpClient,
+    cdpClient: CDPClient,
     cdpSessionId: string,
     eventManager: IEventManager
   ): Promise<void> {
@@ -108,7 +108,7 @@ export class BrowsingContextImpl {
   public static async createTargetContext(
     contextId: string,
     parentId: string | null,
-    cdpClient: CdpClient,
+    cdpClient: CDPClient,
     cdpSessionId: string,
     cdpBrowserContextId: string | null,
     eventManager: IEventManager
@@ -137,7 +137,7 @@ export class BrowsingContextImpl {
   }
 
   public convertFrameToTargetContext(
-    cdpClient: CdpClient,
+    cdpClient: CDPClient,
     cdpSessionId: string
   ) {
     this.#updateConnection(cdpClient, cdpSessionId);
@@ -166,7 +166,7 @@ export class BrowsingContextImpl {
     await Promise.all(this.children.map((child) => child.delete()));
   }
 
-  #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
+  #updateConnection(cdpClient: CDPClient, cdpSessionId: string) {
     if (!this.#targetDefers.targetUnblocked.isFinished) {
       this.#targetDefers.targetUnblocked.reject('OOPiF');
     }
