@@ -26,3 +26,5 @@
  */
 
 export {CommandProcessor} from './commandProcessor';
+export {CDPConnection, CDPClient} from './cdp';
+export {IBidiServer} from './bidiServer';
