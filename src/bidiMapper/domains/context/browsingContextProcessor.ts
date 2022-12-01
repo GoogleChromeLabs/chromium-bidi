@@ -328,7 +328,7 @@ export class BrowsingContextProcessor {
   }
 
   async process_cdp_sendCommand(params: CDP.SendCommandParams) {
-    const client = params.cdpSession
+    const client = params.cdpSession;
       ? this.#cdpConnection.getCdpClient(params.cdpSession)
       : this.#cdpConnection.browserClient();
     const sendCdpCommandResult = await client.sendCommand(
