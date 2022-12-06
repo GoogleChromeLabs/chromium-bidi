@@ -38,28 +38,24 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
   #transport: ITransport;
   #commandProcessor: CommandProcessor;
-  #eventManager: EventManager;
   #cdpConnection: CdpConnection;
-  #selfTargetId: string;
 
   constructor(
-    transport: ITransport,
+    bidiTransport: ITransport,
     cdpConnection: CdpConnection,
     selfTargetId: string
   ) {
     super();
-    this.#selfTargetId = selfTargetId;
     this.#cdpConnection = cdpConnection;
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
-      this.#processMessageQueue
+      this.#processOutgoingMessage
     );
-    this.#transport = transport;
+    this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
-    this.#eventManager = new EventManager(this);
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
-      this.#eventManager,
-      this.#selfTargetId
+      new EventManager(this),
+      selfTargetId
     );
     this.#commandProcessor.on(
       'response',
@@ -87,7 +83,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     );
   }
 
-  #processMessageQueue = async (messageEntry: OutgoingBidiMessage) => {
+  #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {
     const message = messageEntry.message as any;
 
     if (messageEntry.channel !== null) {
