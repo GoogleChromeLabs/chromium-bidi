@@ -21,7 +21,7 @@ export class OutgoingBidiMessage {
   readonly #message: Message.OutgoingMessage;
   readonly #channel: string | null;
 
-  constructor(message: Message.OutgoingMessage, channel: string | null) {
+  private constructor(message: Message.OutgoingMessage, channel: string | null) {
     this.#message = message;
     this.#channel = channel;
   }
