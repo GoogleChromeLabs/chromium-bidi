@@ -38,15 +38,13 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
   #transport: ITransport;
   #commandProcessor: CommandProcessor;
-  #cdpConnection: CdpConnection;
 
-  constructor(
+  private constructor(
     bidiTransport: ITransport,
     cdpConnection: CdpConnection,
     selfTargetId: string
   ) {
     super();
-    this.#cdpConnection = cdpConnection;
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
       this.#processOutgoingMessage
     );
@@ -65,8 +63,13 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     );
   }
 
-  public async start() {
-    const cdpClient = this.#cdpConnection.browserClient();
+  public static async createAndStart(
+    bidiTransport: ITransport,
+    cdpConnection: CdpConnection,
+    selfTargetId: string
+  ): Promise<BidiServer> {
+    const server = new BidiServer(bidiTransport, cdpConnection, selfTargetId);
+    const cdpClient = cdpConnection.browserClient();
 
     // Needed to get events about new targets.
     await cdpClient.sendCommand('Target.setDiscoverTargets', {discover: true});
@@ -81,6 +84,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     await Promise.all(
       BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
     );
+    return server;
   }
 
   #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {

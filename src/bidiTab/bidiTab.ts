@@ -56,9 +56,7 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await _waitSelfTargetIdPromise;
 
-  const bidiServer = _createBidiServer(selfTargetId);
-
-  await bidiServer.start();
+  const bidiServer = await _createBidiServer(selfTargetId);
 
   logSystem('launched');
 
@@ -98,7 +96,7 @@ function _createCdpConnection() {
   return new CdpConnection(new WindowCdpTransport(), log(LogType.cdp));
 }
 
-function _createBidiServer(selfTargetId: string) {
+async function _createBidiServer(selfTargetId: string) {
   class WindowBidiTransport implements ITransport {
     private _onMessage: ((message: string) => void) | null = null;
 
@@ -124,7 +122,7 @@ function _createBidiServer(selfTargetId: string) {
     }
   }
 
-  return new BidiServer(
+  return await BidiServer.createAndStart(
     new WindowBidiTransport(),
     _createCdpConnection(),
     selfTargetId
