@@ -737,13 +737,6 @@ export namespace BrowsingContext {
     ContextDestroyedEvent = 'browsingContext.contextDestroyed',
   }
 
-  export const EventNamesList = [
-    EventNames.LoadEvent,
-    EventNames.DomContentLoadedEvent,
-    EventNames.ContextCreatedEvent,
-    EventNames.ContextDestroyedEvent,
-  ];
-
   export const AllEvents = 'browsingContext';
 }
 
@@ -785,8 +778,6 @@ export namespace Log {
   export enum EventNames {
     LogEntryAddedEvent = 'log.entryAdded',
   }
-
-  export const EventNamesList = [EventNames.LogEntryAddedEvent];
 }
 
 export namespace CDP {
@@ -834,8 +825,6 @@ export namespace CDP {
   export enum EventNames {
     EventReceivedEvent = 'cdp.eventReceived',
   }
-
-  export const EventNamesList = [EventNames.EventReceivedEvent];
 }
 
 export namespace Session {

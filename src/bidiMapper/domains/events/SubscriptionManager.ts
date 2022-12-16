@@ -16,7 +16,12 @@
  */
 
 import type {CommonDataTypes} from '../../../protocol/protocol.js';
-import {BrowsingContext, CDP, Log, Session} from '../../../protocol/protocol.js';
+import {
+  BrowsingContext,
+  CDP,
+  Log,
+  Session,
+} from '../../../protocol/protocol.js';
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;
@@ -88,19 +93,19 @@ export class SubscriptionManager {
     channel: string | null
   ): void {
     if (event === BrowsingContext.AllEvents) {
-      BrowsingContext.EventNamesList.map((specificEvent) =>
+      Object.values(BrowsingContext.EventNames).map((specificEvent) =>
         this.subscribe(specificEvent, contextId, channel)
       );
       return;
     }
     if (event === CDP.AllEvents) {
-      CDP.EventNamesList.map((specificEvent) =>
+      Object.values(CDP.EventNames).map((specificEvent) =>
         this.subscribe(specificEvent, contextId, channel)
       );
       return;
     }
     if (event === Log.AllEvents) {
-      Log.EventNamesList.map((specificEvent) =>
+      Object.values(Log.EventNames).map((specificEvent) =>
         this.subscribe(specificEvent, contextId, channel)
       );
       return;
@@ -130,19 +135,19 @@ export class SubscriptionManager {
     channel: string | null
   ): void {
     if (event === BrowsingContext.AllEvents) {
-      BrowsingContext.EventNamesList.map((specificEvent) =>
+      Object.values(BrowsingContext.EventNames).map((specificEvent) =>
         this.unsubscribe(specificEvent, contextId, channel)
       );
       return;
     }
     if (event === CDP.AllEvents) {
-      CDP.EventNamesList.map((specificEvent) =>
+      Object.values(CDP.EventNames).map((specificEvent) =>
         this.unsubscribe(specificEvent, contextId, channel)
       );
       return;
     }
     if (event === Log.AllEvents) {
-      Log.EventNamesList.map((specificEvent) =>
+      Object.values(Log.EventNames).map((specificEvent) =>
         this.unsubscribe(specificEvent, contextId, channel)
       );
       return;
