@@ -143,7 +143,7 @@ async def main():
     links = command_result["result"]["result"]
 
     # Assert the result is non-empty
-    assert len(links["value"]) > 0, f"The result should be non-empty."
+    assert len(links["value"]) > 0, "The result should be non-empty."
 
 
     # Puppeteer:
