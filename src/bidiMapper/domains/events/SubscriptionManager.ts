@@ -16,6 +16,7 @@
  */
 
 import type {CommonDataTypes} from '../../../protocol/protocol.js';
+import {BrowsingContext, CDP, Log, Session} from '../../../protocol/protocol.js';
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;
@@ -24,11 +25,14 @@ export class SubscriptionManager {
   // Channel `null` means no `channel` should be added.
   #channelToContextToEventMap: Map<
     string | null,
-    Map<CommonDataTypes.BrowsingContext | null, Map<string, number>>
+    Map<
+      CommonDataTypes.BrowsingContext | null,
+      Map<Session.SubscribeParametersEvent, number>
+    >
   > = new Map();
 
   getChannelsSubscribedToEvent(
-    eventMethod: string,
+    eventMethod: Session.SubscribeParametersEvent,
     contextId: CommonDataTypes.BrowsingContext | null
   ): (string | null)[] {
     const prioritiesAndChannels = Array.from(
@@ -54,7 +58,7 @@ export class SubscriptionManager {
   }
 
   #getEventSubscriptionPriorityForChannel(
-    eventMethod: string,
+    eventMethod: Session.SubscribeParametersEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): null | number {
@@ -79,10 +83,29 @@ export class SubscriptionManager {
   }
 
   subscribe(
-    event: string,
+    event: Session.SubscribeParametersEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): void {
+    if (event === BrowsingContext.AllEvents) {
+      BrowsingContext.EventNamesList.map((specificEvent) =>
+        this.subscribe(specificEvent, contextId, channel)
+      );
+      return;
+    }
+    if (event === CDP.AllEvents) {
+      CDP.EventNamesList.map((specificEvent) =>
+        this.subscribe(specificEvent, contextId, channel)
+      );
+      return;
+    }
+    if (event === Log.AllEvents) {
+      Log.EventNamesList.map((specificEvent) =>
+        this.subscribe(specificEvent, contextId, channel)
+      );
+      return;
+    }
+
     if (!this.#channelToContextToEventMap.has(channel)) {
       this.#channelToContextToEventMap.set(channel, new Map());
     }
@@ -102,10 +125,29 @@ export class SubscriptionManager {
   }
 
   unsubscribe(
-    event: string,
+    event: Session.SubscribeParametersEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): void {
+    if (event === BrowsingContext.AllEvents) {
+      BrowsingContext.EventNamesList.map((specificEvent) =>
+        this.unsubscribe(specificEvent, contextId, channel)
+      );
+      return;
+    }
+    if (event === CDP.AllEvents) {
+      CDP.EventNamesList.map((specificEvent) =>
+        this.unsubscribe(specificEvent, contextId, channel)
+      );
+      return;
+    }
+    if (event === Log.AllEvents) {
+      Log.EventNamesList.map((specificEvent) =>
+        this.unsubscribe(specificEvent, contextId, channel)
+      );
+      return;
+    }
+
     if (!this.#channelToContextToEventMap.has(channel)) {
       return;
     }

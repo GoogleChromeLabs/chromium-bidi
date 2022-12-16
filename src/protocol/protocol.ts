@@ -736,6 +736,15 @@ export namespace BrowsingContext {
     ContextCreatedEvent = 'browsingContext.contextCreated',
     ContextDestroyedEvent = 'browsingContext.contextDestroyed',
   }
+
+  export const EventNamesList = [
+    EventNames.LoadEvent,
+    EventNames.DomContentLoadedEvent,
+    EventNames.ContextCreatedEvent,
+    EventNames.ContextDestroyedEvent,
+  ];
+
+  export const AllEvents = 'browsingContext';
 }
 
 // https://w3c.github.io/webdriver-bidi/#module-log
@@ -771,9 +780,13 @@ export namespace Log {
     LogEntry
   >;
 
+  export const AllEvents = 'log';
+
   export enum EventNames {
     LogEntryAddedEvent = 'log.entryAdded',
   }
+
+  export const EventNamesList = [EventNames.LogEntryAddedEvent];
 }
 
 export namespace CDP {
@@ -816,9 +829,13 @@ export namespace CDP {
     cdpSession: string;
   };
 
+  export const AllEvents = 'cdp';
+
   export enum EventNames {
     EventReceivedEvent = 'cdp.eventReceived',
   }
+
+  export const EventNamesList = [EventNames.EventReceivedEvent];
 }
 
 export namespace Session {
@@ -846,12 +863,20 @@ export namespace Session {
     params: SubscribeParameters;
   };
 
+  export type SubscribeParametersEvent =
+    | BrowsingContext.EventNames
+    | typeof BrowsingContext.AllEvents
+    | Log.EventNames
+    | typeof Log.AllEvents
+    | CDP.EventNames
+    | typeof CDP.AllEvents;
+
   // SessionSubscribeParameters = {
   //   events: [*text],
   //   ?contexts: [*BrowsingContext],
   // }
   export type SubscribeParameters = {
-    events: Array<BrowsingContext.EventNames | Log.EventNames | CDP.EventNames>;
+    events: Array<SubscribeParametersEvent>;
     contexts?: Array<CommonDataTypes.BrowsingContext>;
   };
 
