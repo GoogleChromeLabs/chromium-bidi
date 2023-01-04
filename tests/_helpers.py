@@ -161,6 +161,19 @@ def any_string(actual):
         f"but is {type(actual)} instead."
 
 
+def string_containing(expected_substring):
+    def _(actual):
+        any_string(actual)
+        assert expected_substring in actual, f"'{actual}' should contain " \
+                                             f"{expected_substring}."
+
+    return _
+
+
+def any_share_id(actual):
+    string_containing("_element_")(actual)
+
+
 def not_one_of(not_expected_list):
     def _not_one_of(actual):
         for not_expected in not_expected_list:
@@ -189,14 +202,6 @@ def any_timestamp(actual):
 
 
 def any_value(_):
-    return
-
-
-def any_share_id(actual):
-    any_string(actual)
-    assert "_element_" in actual, \
-        f"'{actual}' should have format " \
-        f"'{{frameId}}_element_{{backendNodeId}}'."
     return
 
 

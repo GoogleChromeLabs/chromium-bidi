@@ -22,8 +22,9 @@ import {Realm} from './realm.js';
 export class ScriptEvaluator {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
-  static readonly #evaluateStacktraceLineOffset = 0;
-  static readonly #callFunctionStacktraceLineOffset = 1;
+  static readonly #EVALUATE_STACKTRACE_LINE_OFFSET = 0;
+  static readonly #CALL_FUNCTION_STACKTRACE_LINE_OFFSET = 1;
+  static readonly #SHARED_ID_DIVIDER = '_element_';
 
   // Keeps track of `handle`s and their realms sent to client.
   static readonly #knownHandlesToRealm: Map<string, string> = new Map();
@@ -156,7 +157,7 @@ export class ScriptEvaluator {
       return {
         exceptionDetails: await this.#serializeCdpExceptionDetails(
           cdpCallFunctionResult.exceptionDetails,
-          this.#callFunctionStacktraceLineOffset,
+          this.#CALL_FUNCTION_STACKTRACE_LINE_OFFSET,
           resultOwnership,
           realm
         ),
@@ -284,7 +285,9 @@ export class ScriptEvaluator {
 
     if (result.type == 'node') {
       if (bidiValue.hasOwnProperty('backendNodeId')) {
-        bidiValue.sharedId = `${realm.navigableId}_element_${bidiValue.backendNodeId}`;
+        bidiValue.sharedId = `${realm.navigableId}${
+          ScriptEvaluator.#SHARED_ID_DIVIDER
+        }${bidiValue.backendNodeId}`;
         delete bidiValue['backendNodeId'];
       }
       if (bidiValue.hasOwnProperty('children')) {
@@ -336,7 +339,7 @@ export class ScriptEvaluator {
       return {
         exceptionDetails: await this.#serializeCdpExceptionDetails(
           cdpEvaluateResult.exceptionDetails,
-          this.#evaluateStacktraceLineOffset,
+          this.#EVALUATE_STACKTRACE_LINE_OFFSET,
           resultOwnership,
           realm
         ),
@@ -360,6 +363,48 @@ export class ScriptEvaluator {
     argumentValue: Script.ArgumentValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument> {
+    if ('sharedId' in argumentValue) {
+      const [navigableId, rawBackendNodeId] = argumentValue.sharedId.split(
+        ScriptEvaluator.#SHARED_ID_DIVIDER
+      );
+
+      const backendNodeId = parseInt(rawBackendNodeId ?? '');
+      if (
+        isNaN(backendNodeId) ||
+        backendNodeId === undefined ||
+        navigableId === undefined
+      ) {
+        throw new Message.InvalidArgumentException(
+          `SharedId "${
+            argumentValue.sharedId
+          }" should have format "{navigableId}${
+            ScriptEvaluator.#SHARED_ID_DIVIDER
+          }{backendNodeId}".`
+        );
+      }
+
+      if (realm.navigableId !== navigableId) {
+        throw new Message.NoSuchNodeException(
+          `SharedId "${argumentValue.sharedId}" belongs to different document.`
+        );
+      }
+
+      try {
+        const obj = await realm.cdpClient.sendCommand('DOM.resolveNode', {
+          backendNodeId,
+          executionContextId: realm.executionContextId,
+        });
+        // TODO: add `obj.object.objectId` to GC.
+        return {objectId: obj.object.objectId};
+      } catch (e: any) {
+        if (e.code === -32000 && e.message === 'No node with given id found') {
+          throw new Message.NoSuchNodeException(
+            `SharedId "${argumentValue.sharedId}" was not found.`
+          );
+        }
+        throw e;
+      }
+    }
     if ('handle' in argumentValue) {
       return {objectId: argumentValue.handle};
     }
