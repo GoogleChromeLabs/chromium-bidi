@@ -188,8 +188,15 @@ def any_timestamp(actual):
         f"'{actual}' should be in epoch milliseconds format."
 
 
-# noinspection PyUnusedLocal
 def any_value(_):
+    return
+
+
+def any_share_id(actual):
+    any_string(actual)
+    assert "_element_" in actual, \
+        f"'{actual}' should have format " \
+        f"'{{frameId}}_element_{{backendNodeId}}'."
     return
 
 

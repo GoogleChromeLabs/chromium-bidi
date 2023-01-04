@@ -249,25 +249,70 @@ export class ScriptEvaluator {
     realm: Realm,
     resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
-    // This relies on the CDP to implement proper BiDi serialization, except
-    // objectIds+handles.
     const cdpWebDriverValue = cdpValue.result.webDriverValue!;
-    if (!cdpValue.result.objectId) {
-      return cdpWebDriverValue as CommonDataTypes.RemoteValue;
-    }
+    const bidiValue = this.webDriverValueToBiDi(cdpWebDriverValue, realm);
 
-    const objectId = cdpValue.result.objectId;
-    const bidiValue = cdpWebDriverValue as any;
-
-    if (resultOwnership === 'root') {
-      bidiValue.handle = objectId;
-      // Remember all the handles sent to client.
-      this.#knownHandlesToRealm.set(objectId, realm.realmId);
-    } else {
-      await realm.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
+    if (cdpValue.result.objectId) {
+      const objectId = cdpValue.result.objectId;
+      if (resultOwnership === 'root') {
+        // Extend BiDi value with `handle` based on required `resultOwnership`
+        // and  CDP response but not on the actual BiDi type.
+        (bidiValue as any).handle = objectId;
+        // Remember all the handles sent to client.
+        this.#knownHandlesToRealm.set(objectId, realm.realmId);
+      } else {
+        // No need in waiting for the object to be released.
+        // noinspection ES6MissingAwait
+        realm.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
+      }
     }
 
     return bidiValue as CommonDataTypes.RemoteValue;
+  }
+
+  static webDriverValueToBiDi(
+    webDriverValue: Protocol.Runtime.WebDriverValue,
+    realm: Realm
+  ): CommonDataTypes.RemoteValue {
+    // This relies on the CDP to implement proper BiDi serialization, except
+    // backendNodeId/sharedId.
+    const result = webDriverValue as any;
+    const bidiValue = result.value;
+    if (bidiValue === undefined) {
+      return result;
+    }
+
+    if (result.type == 'node') {
+      if (bidiValue.hasOwnProperty('backendNodeId')) {
+        bidiValue.sharedId = `${realm.navigableId}_element_${bidiValue.backendNodeId}`;
+        delete bidiValue['backendNodeId'];
+      }
+      if (bidiValue.hasOwnProperty('children')) {
+        for (let i in bidiValue.children) {
+          bidiValue.children[i] = this.webDriverValueToBiDi(
+            bidiValue.children[i],
+            realm
+          );
+        }
+      }
+    }
+
+    // Recursively update the nested values.
+    if (['array', 'set'].includes(webDriverValue.type)) {
+      for (let i in bidiValue) {
+        bidiValue[i] = this.webDriverValueToBiDi(bidiValue[i], realm);
+      }
+    }
+    if (['object', 'map'].includes(webDriverValue.type)) {
+      for (let i in bidiValue) {
+        bidiValue[i] = [
+          this.webDriverValueToBiDi(bidiValue[i][0], realm),
+          this.webDriverValueToBiDi(bidiValue[i][1], realm),
+        ];
+      }
+    }
+
+    return result;
   }
 
   public static async scriptEvaluate(
