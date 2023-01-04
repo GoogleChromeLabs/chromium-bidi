@@ -451,7 +451,7 @@ async def test_serialization_node(websocket, context_id):
             "type": "node",
             "value": {
                 "nodeType": 1,
-                "sharedId": any_share_id,
+                "sharedId": any_shared_id,
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "childNodeCount": 2,
@@ -463,13 +463,13 @@ async def test_serialization_node(websocket, context_id):
                     "value": {
                         "nodeType": 3,
                         "nodeValue": "some text",
-                        "sharedId": any_share_id,
+                        "sharedId": any_shared_id,
                     }
                 }, {
                     "type": "node",
                     "value": {
                         "nodeType": 1,
-                        "sharedId": any_share_id,
+                        "sharedId": any_shared_id,
                         "localName": "h2",
                         "namespaceURI": "http://www.w3.org/1999/xhtml",
                         "childNodeCount": 1,
@@ -535,7 +535,7 @@ async def test_deserialization_node(websocket, context_id):
                     "value": {
                         "nodeType": 3,
                         "nodeValue": "some text",
-                        "sharedId": any_share_id
+                        "sharedId": any_shared_id
                     }
                 },
                 {
@@ -546,7 +546,7 @@ async def test_deserialization_node(websocket, context_id):
                         "namespaceURI": "http://www.w3.org/1999/xhtml",
                         "childNodeCount": 1,
                         "attributes": {},
-                        "sharedId": any_share_id
+                        "sharedId": any_shared_id
                     }
                 }
             ]
@@ -595,7 +595,7 @@ async def test_serialization_nested_node(websocket, context_id,
                 "attributes": {
                     "some_attr_name": "some_attr_value"
                 },
-                "sharedId": any_share_id
+                "sharedId": any_shared_id
             }
         }, extract_delegate(result["result"]))
 

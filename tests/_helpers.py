@@ -170,7 +170,7 @@ def string_containing(expected_substring):
     return _
 
 
-def any_share_id(actual):
+def any_shared_id(actual):
     string_containing("_element_")(actual)
 
 
