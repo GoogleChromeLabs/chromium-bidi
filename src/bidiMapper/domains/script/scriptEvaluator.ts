@@ -291,7 +291,7 @@ export class ScriptEvaluator {
         delete bidiValue['backendNodeId'];
       }
       if (bidiValue.hasOwnProperty('children')) {
-        for (let i in bidiValue.children) {
+        for (const i in bidiValue.children) {
           bidiValue.children[i] = this.webDriverValueToBiDi(
             bidiValue.children[i],
             realm
