@@ -48,7 +48,8 @@ async def test_sharedId_in_same_realm_same_navigable(websocket, context_id):
                     "type": "undefined"
                 },
                 "arguments": [{
-                    "sharedId": shared_id}],
+                    "sharedId": shared_id
+                }],
                 "awaitPromise": False,
                 "target": {
                     "context": context_id
@@ -61,8 +62,8 @@ async def test_sharedId_in_same_realm_same_navigable(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_sharedId_in_different_realm_same_navigable(websocket,
-      context_id):
+async def test_sharedId_in_different_realm_same_navigable(
+        websocket, context_id):
     await goto_url(
         websocket, context_id,
         "data:text/html,<div some_attr_name='some_attr_value' "
@@ -93,7 +94,8 @@ async def test_sharedId_in_different_realm_same_navigable(websocket,
                     "type": "undefined"
                 },
                 "arguments": [{
-                    "sharedId": shared_id}],
+                    "sharedId": shared_id
+                }],
                 "awaitPromise": False,
                 "target": {
                     "context": context_id,
@@ -140,7 +142,8 @@ async def test_sharedId_in_different_navigable(websocket, context_id):
                         "type": "undefined"
                     },
                     "arguments": [{
-                        "sharedId": shared_id}],
+                        "sharedId": shared_id
+                    }],
                     "awaitPromise": False,
                     "target": {
                         "context": context_id
@@ -148,10 +151,11 @@ async def test_sharedId_in_different_navigable(websocket, context_id):
                 }
             })
 
-    recursive_compare({
-        "error": "no such node",
-        "message": string_containing("different document")
-    }, exception_info.value.args[0])
+    recursive_compare(
+        {
+            "error": "no such node",
+            "message": string_containing("different document")
+        }, exception_info.value.args[0])
 
 
 @pytest.mark.asyncio
@@ -185,7 +189,8 @@ async def test_sharedId_not_found(websocket, context_id):
                         "type": "undefined"
                     },
                     "arguments": [{
-                        "sharedId": shared_id}],
+                        "sharedId": shared_id
+                    }],
                     "awaitPromise": False,
                     "target": {
                         "context": context_id
@@ -193,10 +198,12 @@ async def test_sharedId_not_found(websocket, context_id):
                 }
             })
 
-    recursive_compare({
-        "error": "no such node",
-        "message": string_containing("was not found")
-    }, exception_info.value.args[0])
+    recursive_compare(
+        {
+            "error": "no such node",
+            "message": string_containing("was not found")
+        }, exception_info.value.args[0])
+
 
 # TODO
 # test_sharedId_from_same_origin_iframe
