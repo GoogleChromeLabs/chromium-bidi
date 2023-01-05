@@ -302,7 +302,7 @@ export class ScriptEvaluator {
 
     // Recursively update the nested values.
     if (['array', 'set'].includes(webDriverValue.type)) {
-      for (let i in bidiValue) {
+      for (const i in bidiValue) {
         bidiValue[i] = this.webDriverValueToBiDi(bidiValue[i], realm);
       }
     }
