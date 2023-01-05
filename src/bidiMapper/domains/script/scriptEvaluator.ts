@@ -394,9 +394,12 @@ export class ScriptEvaluator {
           backendNodeId,
           executionContextId: realm.executionContextId,
         });
-        // TODO: add `obj.object.objectId` to GC.
+        // TODO: release `obj.object.objectId` after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: obj.object.objectId};
       } catch (e: any) {
+        // Heuristic to detect "no such node" exception. Based on the  specific
+        // CDP implementation.
         if (e.code === -32000 && e.message === 'No node with given id found') {
           throw new Message.NoSuchNodeException(
             `SharedId "${argumentValue.sharedId}" was not found.`
@@ -464,7 +467,7 @@ export class ScriptEvaluator {
       }
       case 'map': {
         // TODO(sadym): if non of the nested keys and values has remote
-        //  reference, serialize to `unserializableValue` without CDP roundtrip.
+        // reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
           argumentValue.value,
           realm
@@ -487,9 +490,8 @@ export class ScriptEvaluator {
             executionContextId: realm.executionContextId,
           }
         );
-
-        // TODO(sadym): dispose nested objects.
-
+        // TODO: release `argEvalResult.result.objectId`  after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: argEvalResult.result.objectId};
       }
       case 'object': {
@@ -524,9 +526,8 @@ export class ScriptEvaluator {
             executionContextId: realm.executionContextId,
           }
         );
-
-        // TODO(sadym): dispose nested objects.
-
+        // TODO: release `argEvalResult.result.objectId`  after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: argEvalResult.result.objectId};
       }
       case 'array': {
@@ -549,9 +550,8 @@ export class ScriptEvaluator {
             executionContextId: realm.executionContextId,
           }
         );
-
-        // TODO(sadym): dispose nested objects.
-
+        // TODO: release `argEvalResult.result.objectId`  after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: argEvalResult.result.objectId};
       }
       case 'set': {
@@ -571,6 +571,8 @@ export class ScriptEvaluator {
             executionContextId: realm.executionContextId,
           }
         );
+        // TODO: release `argEvalResult.result.objectId`  after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: argEvalResult.result.objectId};
       }
 

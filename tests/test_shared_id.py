@@ -20,10 +20,8 @@ from _helpers import *
 
 @pytest.mark.asyncio
 async def test_sharedId_in_same_realm_same_navigable(websocket, context_id):
-    await goto_url(
-        websocket, context_id,
-        "data:text/html,<div some_attr_name='some_attr_value' "
-        ">some text<h2>some another text</h2></div>")
+    await goto_url(websocket, context_id,
+                   "data:text/html,<div>some text</div>")
 
     result = await execute_command(
         websocket, {
@@ -43,7 +41,7 @@ async def test_sharedId_in_same_realm_same_navigable(websocket, context_id):
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration": "(arg)=>{return arg}",
+                "functionDeclaration": "(arg)=>arg",
                 "this": {
                     "type": "undefined"
                 },
@@ -64,10 +62,8 @@ async def test_sharedId_in_same_realm_same_navigable(websocket, context_id):
 @pytest.mark.asyncio
 async def test_sharedId_in_different_realm_same_navigable(
         websocket, context_id):
-    await goto_url(
-        websocket, context_id,
-        "data:text/html,<div some_attr_name='some_attr_value' "
-        ">some text<h2>some another text</h2></div>")
+    await goto_url(websocket, context_id,
+                   "data:text/html,<div>some text</div>")
 
     result = await execute_command(
         websocket, {
@@ -89,7 +85,7 @@ async def test_sharedId_in_different_realm_same_navigable(
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration": "(arg)=>{return arg}",
+                "functionDeclaration": "(arg)=>arg",
                 "this": {
                     "type": "undefined"
                 },
@@ -111,10 +107,8 @@ async def test_sharedId_in_different_realm_same_navigable(
 
 @pytest.mark.asyncio
 async def test_sharedId_in_different_navigable(websocket, context_id):
-    await goto_url(
-        websocket, context_id,
-        "data:text/html,<div some_attr_name='some_attr_value' "
-        ">some text<h2>some another text</h2></div>")
+    await goto_url(websocket, context_id,
+                   "data:text/html,<div>some text</div>")
 
     result = await execute_command(
         websocket, {
@@ -137,7 +131,7 @@ async def test_sharedId_in_different_navigable(websocket, context_id):
             websocket, {
                 "method": "script.callFunction",
                 "params": {
-                    "functionDeclaration": "(arg)=>{return arg}",
+                    "functionDeclaration": "(arg)=>arg",
                     "this": {
                         "type": "undefined"
                     },
@@ -160,10 +154,8 @@ async def test_sharedId_in_different_navigable(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_sharedId_not_found(websocket, context_id):
-    await goto_url(
-        websocket, context_id,
-        "data:text/html,<div some_attr_name='some_attr_value' "
-        ">some text<h2>some another text</h2></div>")
+    await goto_url(websocket, context_id,
+                   "data:text/html,<div>some text</div>")
 
     result = await execute_command(
         websocket, {
@@ -184,7 +176,7 @@ async def test_sharedId_not_found(websocket, context_id):
             websocket, {
                 "method": "script.callFunction",
                 "params": {
-                    "functionDeclaration": "(arg)=>{return arg}",
+                    "functionDeclaration": "(arg)=>arg",
                     "this": {
                         "type": "undefined"
                     },
@@ -203,10 +195,3 @@ async def test_sharedId_not_found(websocket, context_id):
             "error": "no such node",
             "message": string_containing("was not found")
         }, exception_info.value.args[0])
-
-
-# TODO
-# test_sharedId_from_same_origin_iframe
-# test_sharedId_from_cross_origin_iframe
-# test_sharedId_from_same_origin_parent_frame
-# test_sharedId_from_cross_origin_parent_frame
