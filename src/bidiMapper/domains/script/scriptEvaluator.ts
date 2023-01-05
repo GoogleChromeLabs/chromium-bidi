@@ -307,7 +307,7 @@ export class ScriptEvaluator {
       }
     }
     if (['object', 'map'].includes(webDriverValue.type)) {
-      for (let i in bidiValue) {
+      for (const i in bidiValue) {
         bidiValue[i] = [
           this.webDriverValueToBiDi(bidiValue[i][0], realm),
           this.webDriverValueToBiDi(bidiValue[i][1], realm),
