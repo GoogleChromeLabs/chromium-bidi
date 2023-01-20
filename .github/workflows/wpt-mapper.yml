@@ -11,6 +11,9 @@ on:
 jobs:
   wpt:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        head: [wpt, wpt-headful]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,14 +47,28 @@ jobs:
           sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
           sudo apt-get update
           sudo apt-get install -y google-chrome-unstable
-      - name: Run tests
+      - name: Run tests (headless)
+        if: ${{ matrix.head == 'wpt' }}
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
           ./wpt/wpt run
           --webdriver-binary ./runBiDiServer.sh
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper
+          --metadata ./${{ matrix.head }}-metadata/mapper
+          --log-wptreport out/wptreport-mapper.json
+          chromium
+          webdriver/tests/bidi/
+      - name: Run tests (headful)
+        if: ${{ matrix.head == 'wpt-headful' }}
+        run: >
+          xvfb-run --auto-servernum
+          ./wpt/wpt run
+          --webdriver-binary ./runBiDiServer.sh
+          --webdriver-arg="--headless=false"
+          --binary /usr/bin/google-chrome-unstable
+          --manifest MANIFEST.json
+          --metadata ./${{ matrix.head }}-metadata/mapper
           --log-wptreport out/wptreport-mapper.json
           chromium
           webdriver/tests/bidi/
@@ -69,15 +86,15 @@ jobs:
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper
+          --metadata ./${{ matrix.head }}-metadata/mapper
           out/wptreport-mapper.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-metadata-mapper
-          path: wpt-metadata/mapper
+          name: ${{ matrix.head }}-metadata-mapper
+          path: ${{ matrix.head }}-metadata/mapper
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -87,5 +104,6 @@ jobs:
           path: |
             out
             logs
+
 env:
   FORCE_COLOR: 3
