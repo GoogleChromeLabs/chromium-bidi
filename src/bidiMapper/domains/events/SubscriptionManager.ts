@@ -22,7 +22,7 @@ import {
   Log,
   Session,
 } from '../../../protocol/protocol.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {findContext} from '../context/browsingContextStorage.js';
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;
@@ -96,7 +96,7 @@ export class SubscriptionManager {
     const result: (CommonDataTypes.BrowsingContext | null)[] = [null];
     while (contextId !== null) {
       result.push(contextId);
-      const maybeParentContext = BrowsingContextStorage.findContext(contextId);
+      const maybeParentContext = findContext(contextId);
       contextId = maybeParentContext?.parentId ?? null;
     }
     return result;

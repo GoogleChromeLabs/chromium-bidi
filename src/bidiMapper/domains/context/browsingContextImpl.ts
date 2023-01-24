@@ -22,7 +22,11 @@ import {IEventManager} from '../events/EventManager.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {LogManager} from '../log/logManager.js';
 import {Realm, RealmType} from '../script/realm.js';
-import {BrowsingContextStorage} from './browsingContextStorage.js';
+import {
+  addContext,
+  getKnownContext,
+  removeContext,
+} from './browsingContextStorage.js';
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {
@@ -77,7 +81,7 @@ export class BrowsingContextImpl {
 
     this.#initListeners();
 
-    BrowsingContextStorage.addContext(this);
+    addContext(this);
   }
 
   public static async createFrameContext(
@@ -164,7 +168,7 @@ export class BrowsingContextImpl {
 
     // Remove context from the parent.
     if (this.parentId !== null) {
-      const parent = BrowsingContextStorage.getKnownContext(this.parentId);
+      const parent = getKnownContext(this.parentId);
       parent.#children.delete(this.contextId);
     }
 
@@ -175,7 +179,7 @@ export class BrowsingContextImpl {
       },
       this.contextId
     );
-    BrowsingContextStorage.removeContext(this.contextId);
+    removeContext(this.contextId);
   }
 
   async #removeChildContexts() {

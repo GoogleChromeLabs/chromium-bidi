@@ -27,7 +27,12 @@ import Protocol from 'devtools-protocol';
 import {IEventManager} from '../events/EventManager.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {Realm} from '../script/realm.js';
-import {BrowsingContextStorage} from './browsingContextStorage.js';
+import {getKnownContext} from './browsingContextStorage.js';
+import {
+  findContext,
+  getTopLevelContexts,
+  hasKnownContext,
+} from './browsingContextStorage.js';
 
 const logContext = log(LogType.browsingContexts);
 
@@ -124,11 +129,12 @@ export class BrowsingContextProcessor {
 
     this.#setSessionEventListeners(sessionId);
 
-    if (BrowsingContextStorage.hasKnownContext(targetInfo.targetId)) {
+    if (hasKnownContext(targetInfo.targetId)) {
       // OOPiF.
-      BrowsingContextStorage.getKnownContext(
-        targetInfo.targetId
-      ).convertFrameToTargetContext(targetSessionCdpClient, sessionId);
+      getKnownContext(targetInfo.targetId).convertFrameToTargetContext(
+        targetSessionCdpClient,
+        sessionId
+      );
     } else {
       await BrowsingContextImpl.createTargetContext(
         targetInfo.targetId,
@@ -152,7 +158,7 @@ export class BrowsingContextProcessor {
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;
-    await BrowsingContextStorage.findContext(contextId)?.delete();
+    await findContext(contextId)?.delete();
   }
 
   async process_browsingContext_getTree(
@@ -160,8 +166,8 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.GetTreeResult> {
     const resultContexts =
       params.root === undefined
-        ? BrowsingContextStorage.getTopLevelContexts()
-        : [BrowsingContextStorage.getKnownContext(params.root)];
+        ? getTopLevelContexts()
+        : [getKnownContext(params.root)];
 
     return {
       result: {
@@ -178,9 +184,7 @@ export class BrowsingContextProcessor {
     const browserCdpClient = this.#cdpConnection.browserClient();
     let referenceContext = undefined;
     if (params.referenceContext !== undefined) {
-      referenceContext = BrowsingContextStorage.getKnownContext(
-        params.referenceContext
-      );
+      referenceContext = getKnownContext(params.referenceContext);
       if (referenceContext.parentId !== null) {
         throw new Message.InvalidArgumentException(
           `referenceContext should be a top-level context`
@@ -202,7 +206,7 @@ export class BrowsingContextProcessor {
     // are emitted after the next navigation is started.
     // Details: https://github.com/web-platform-tests/wpt/issues/35846
     const contextId = result.targetId;
-    const context = BrowsingContextStorage.getKnownContext(contextId);
+    const context = getKnownContext(contextId);
     await context.awaitLoaded();
 
     return {
@@ -213,7 +217,7 @@ export class BrowsingContextProcessor {
   async process_browsingContext_navigate(
     params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
-    const context = BrowsingContextStorage.getKnownContext(params.context);
+    const context = getKnownContext(params.context);
 
     return await context.navigate(
       params.url,
@@ -225,7 +229,7 @@ export class BrowsingContextProcessor {
     if ('realm' in target) {
       return Realm.getRealm({realmId: target.realm});
     }
-    const context = BrowsingContextStorage.getKnownContext(target.context);
+    const context = getKnownContext(target.context);
     return await context.getOrCreateSandbox(target.sandbox);
   }
 
@@ -245,7 +249,7 @@ export class BrowsingContextProcessor {
   ): Script.GetRealmsResult {
     if (params.context !== undefined) {
       // Make sure the context is known.
-      BrowsingContextStorage.getKnownContext(params.context);
+      getKnownContext(params.context);
     }
     const realms = Realm.findRealms({
       browsingContextId: params.context,
@@ -282,9 +286,7 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.CloseResult> {
     const browserCdpClient = this.#cdpConnection.browserClient();
 
-    const context = BrowsingContextStorage.getKnownContext(
-      commandParams.context
-    );
+    const context = getKnownContext(commandParams.context);
     if (context.parentId !== null) {
       throw new Message.InvalidArgumentException(
         'Not a top-level browsing context cannot be closed.'
@@ -340,8 +342,7 @@ export class BrowsingContextProcessor {
 
   async process_cdp_getSession(params: CDP.GetSessionParams) {
     const context = params.context;
-    const sessionId =
-      BrowsingContextStorage.getKnownContext(context).cdpSessionId;
+    const sessionId = getKnownContext(context).cdpSessionId;
     if (sessionId === undefined) {
       return {result: {cdpSession: null}};
     }

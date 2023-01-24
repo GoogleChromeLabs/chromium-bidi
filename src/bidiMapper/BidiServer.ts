@@ -24,7 +24,7 @@ import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
 import {EventManager} from './domains/events/EventManager.js';
 import {BidiParser, CommandProcessor} from './CommandProcessor.js';
 import {CdpConnection} from './CdpConnection.js';
-import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
+import {getTopLevelContexts} from './domains/context/browsingContextStorage.js';
 
 type BidiServerEvents = {
   message: Message.RawCommandRequest;
@@ -85,9 +85,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
       flatten: true,
     });
 
-    await Promise.all(
-      BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
-    );
+    await Promise.all(getTopLevelContexts().map((c) => c.awaitLoaded()));
     return server;
   }
 

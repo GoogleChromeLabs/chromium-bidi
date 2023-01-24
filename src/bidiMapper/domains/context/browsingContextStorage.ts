@@ -18,41 +18,37 @@
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {Message} from '../../../protocol/protocol.js';
 
-export class BrowsingContextStorage {
-  static #contexts: Map<string, BrowsingContextImpl> = new Map();
+const contexts = new Map<string, BrowsingContextImpl>();
 
-  static getTopLevelContexts(): BrowsingContextImpl[] {
-    return Array.from(BrowsingContextStorage.#contexts.values()).filter(
-      (c) => c.parentId === null
-    );
+export function removeContext(contextId: string) {
+  contexts.delete(contextId);
+}
+
+export function findContext(
+  contextId: string
+): BrowsingContextImpl | undefined {
+  return contexts.get(contextId);
+}
+
+export function hasKnownContext(contextId: string): boolean {
+  return contexts.has(contextId);
+}
+
+export function getTopLevelContexts(): BrowsingContextImpl[] {
+  return Array.from(contexts.values()).filter((c) => c.parentId === null);
+}
+
+export function getKnownContext(contextId: string): BrowsingContextImpl {
+  const result = findContext(contextId);
+  if (result === undefined) {
+    throw new Message.NoSuchFrameException(`Context ${contextId} not found`);
   }
+  return result;
+}
 
-  static removeContext(contextId: string) {
-    BrowsingContextStorage.#contexts.delete(contextId);
-  }
-
-  static addContext(context: BrowsingContextImpl) {
-    BrowsingContextStorage.#contexts.set(context.contextId, context);
-    if (context.parentId !== null) {
-      BrowsingContextStorage.getKnownContext(context.parentId).addChild(
-        context
-      );
-    }
-  }
-
-  static hasKnownContext(contextId: string): boolean {
-    return BrowsingContextStorage.#contexts.has(contextId);
-  }
-
-  static findContext(contextId: string): BrowsingContextImpl | undefined {
-    return BrowsingContextStorage.#contexts.get(contextId)!;
-  }
-
-  static getKnownContext(contextId: string): BrowsingContextImpl {
-    const result = BrowsingContextStorage.findContext(contextId);
-    if (result === undefined) {
-      throw new Message.NoSuchFrameException(`Context ${contextId} not found`);
-    }
-    return result;
+export function addContext(context: BrowsingContextImpl) {
+  contexts.set(context.contextId, context);
+  if (context.parentId !== null) {
+    getKnownContext(context.parentId).addChild(context);
   }
 }

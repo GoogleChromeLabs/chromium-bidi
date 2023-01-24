@@ -25,7 +25,7 @@ import {OutgoingBidiMessage} from '../../OutgoindBidiMessage.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
 import {IdWrapper} from '../../../utils/idWrapper.js';
 import {Buffer} from '../../../utils/buffer.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {hasKnownContext} from '../context/browsingContextStorage.js';
 
 class EventWrapper extends IdWrapper {
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
@@ -159,10 +159,7 @@ export class EventManager implements IEventManager {
   ): Promise<void> {
     for (let eventName of events) {
       for (let contextId of contextIds) {
-        if (
-          contextId !== null &&
-          !BrowsingContextStorage.hasKnownContext(contextId)
-        ) {
+        if (contextId !== null && !hasKnownContext(contextId)) {
           // Unknown context. Do nothing.
           continue;
         }

@@ -18,7 +18,7 @@
 import {Protocol} from 'devtools-protocol';
 import {CommonDataTypes, Script, Message} from '../../../protocol/protocol.js';
 import {ScriptEvaluator} from './scriptEvaluator.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {getKnownContext} from '../context/browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
 
 export enum RealmType {
@@ -221,9 +221,7 @@ export class Realm {
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
-    const context = BrowsingContextStorage.getKnownContext(
-      this.browsingContextId
-    );
+    const context = getKnownContext(this.browsingContextId);
     await context.awaitUnblocked();
 
     return {
@@ -243,9 +241,7 @@ export class Realm {
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
-    const context = BrowsingContextStorage.getKnownContext(
-      this.browsingContextId
-    );
+    const context = getKnownContext(this.browsingContextId);
     await context.awaitUnblocked();
 
     return {

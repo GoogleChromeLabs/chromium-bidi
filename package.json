@@ -22,7 +22,8 @@
     "server-no-build": "node lib/cjs/bidiServer/index.js",
     "server": "npm run build && npm run server-no-build --",
     "test": "npm run build && npm run unit",
-    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha"
+    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
+    "watch": "tsc -b src/tsconfig.json --watch & rollup --config configs/rollup.config.js --watch"
   },
   "files": [
     "lib"
