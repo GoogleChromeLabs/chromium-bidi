@@ -92,7 +92,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     return server;
   }
 
-  async awaitLoadTopLevelContexts() {
+  async topLevelContextsLoaded() {
     await Promise.all(
       this.#browsingContextStorage
         .getTopLevelContexts()
