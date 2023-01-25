@@ -14,17 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {EventEmitter} from '../utils/EventEmitter.js';
-
-import {BidiTransport} from './BidiTransport.js';
 import type {Message} from '../protocol/protocol.js';
+import {EventEmitter} from '../utils/EventEmitter.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
-import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
-import {EventManager} from './domains/events/EventManager.js';
-import {BidiParser, CommandProcessor} from './CommandProcessor.js';
+import {BidiTransport} from './BidiTransport.js';
 import {CdpConnection} from './CdpConnection.js';
+import {BidiParser, CommandProcessor} from './CommandProcessor.js';
+import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
+import {EventManager} from './domains/events/EventManager.js';
 
 type BidiServerEvents = {
   message: Message.RawCommandRequest;
@@ -34,11 +32,13 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
   #transport: BidiTransport;
   #commandProcessor: CommandProcessor;
+  #browsingContextStorage: BrowsingContextStorage;
 
   private constructor(
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
     selfTargetId: string,
+    browsingContextStorage: BrowsingContextStorage,
     parser?: BidiParser
   ) {
     super();
@@ -59,6 +59,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
         this.emitOutgoingMessage(response);
       }
     );
+    this.#browsingContextStorage = browsingContextStorage;
   }
 
   public static async createAndStart(
@@ -67,10 +68,12 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     selfTargetId: string,
     parser?: BidiParser
   ): Promise<BidiServer> {
+    const browsingContextStorage = new BrowsingContextStorage();
     const server = new BidiServer(
       bidiTransport,
       cdpConnection,
       selfTargetId,
+      browsingContextStorage,
       parser
     );
     const cdpClient = cdpConnection.browserClient();
@@ -85,10 +88,16 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
       flatten: true,
     });
 
-    await Promise.all(
-      BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
-    );
+    await server.awaitLoadTopLevelContexts();
     return server;
+  }
+
+  async awaitLoadTopLevelContexts() {
+    await Promise.all(
+      this.#browsingContextStorage
+        .getTopLevelContexts()
+        .map((c) => c.awaitLoaded())
+    );
   }
 
   #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {
@@ -115,4 +124,8 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #handleIncomingMessage = async (message: Message.RawCommandRequest) => {
     this.#commandProcessor.processCommand(message);
   };
+
+  public getBrowsingContextStorage(): BrowsingContextStorage {
+    return this.#browsingContextStorage;
+  }
 }

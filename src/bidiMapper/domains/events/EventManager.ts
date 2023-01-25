@@ -14,18 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import type {
   CommonDataTypes,
   Message,
   Session,
 } from '../../../protocol/protocol.js';
+import {Buffer} from '../../../utils/buffer.js';
+import {IdWrapper} from '../../../utils/idWrapper.js';
 import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingBidiMessage} from '../../OutgoindBidiMessage.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
-import {IdWrapper} from '../../../utils/idWrapper.js';
-import {Buffer} from '../../../utils/buffer.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 class EventWrapper extends IdWrapper {
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
@@ -161,7 +159,9 @@ export class EventManager implements IEventManager {
       for (let contextId of contextIds) {
         if (
           contextId !== null &&
-          !BrowsingContextStorage.hasKnownContext(contextId)
+          !this.#bidiServer
+            .getBrowsingContextStorage()
+            .hasKnownContext(contextId)
         ) {
           // Unknown context. Do nothing.
           continue;
