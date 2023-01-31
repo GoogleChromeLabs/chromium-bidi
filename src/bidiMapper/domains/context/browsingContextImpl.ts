@@ -21,7 +21,7 @@ import {CdpClient} from '../../CdpConnection.js';
 import {IEventManager} from '../events/EventManager.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {LogManager} from '../log/logManager.js';
-import {Realm, RealmType} from '../script/realm.js';
+import {Realm, RealmStorage, RealmType} from '../script/realm.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 
 export class BrowsingContextImpl {
@@ -41,9 +41,9 @@ export class BrowsingContextImpl {
   readonly #contextId: string;
   readonly #parentId: string | null;
   readonly #cdpBrowserContextId: string | null;
-
   readonly #eventManager: IEventManager;
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
+  readonly #realmStorage: RealmStorage;
 
   #url = 'about:blank';
   #loaderId: string | null = null;
@@ -62,6 +62,7 @@ export class BrowsingContextImpl {
   }
 
   private constructor(
+    realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
@@ -77,6 +78,7 @@ export class BrowsingContextImpl {
     this.#eventManager = eventManager;
     this.#cdpSessionId = cdpSessionId;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#realmStorage = realmStorage;
 
     this.#initListeners();
 
@@ -84,6 +86,7 @@ export class BrowsingContextImpl {
   }
 
   public static async createFrameContext(
+    realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
@@ -92,6 +95,7 @@ export class BrowsingContextImpl {
     browsingContextStorage: BrowsingContextStorage
   ): Promise<void> {
     const context = new BrowsingContextImpl(
+      realmStorage,
       contextId,
       parentId,
       cdpClient,
@@ -112,6 +116,7 @@ export class BrowsingContextImpl {
   }
 
   public static async createTargetContext(
+    realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
@@ -121,6 +126,7 @@ export class BrowsingContextImpl {
     browsingContextStorage: BrowsingContextStorage
   ): Promise<void> {
     const context = new BrowsingContextImpl(
+      realmStorage,
       contextId,
       parentId,
       cdpClient,
@@ -377,7 +383,8 @@ export class BrowsingContextImpl {
         if (!['default', 'isolated'].includes(params.context.auxData.type)) {
           return;
         }
-        const realm = Realm.create(
+        const realm = new Realm(
+          this.#realmStorage,
           params.context.uniqueId,
           this.contextId,
           this.navigableId ?? 'UNKNOWN',

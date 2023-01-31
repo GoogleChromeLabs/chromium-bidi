@@ -28,17 +28,21 @@ export enum RealmType {
 export class RealmStorage {
   /** Keeps track of handles and their realms sent to client. */
   readonly #knownHandlesToRealm = new Map<string, string>();
+  readonly #realmMap: Map<string, Realm> = new Map();
 
   get knownHandlesToRealm() {
     return this.#knownHandlesToRealm;
   }
-}
 
-const scriptEvaluator = new ScriptEvaluator(new RealmStorage());
+  get realmMap() {
+    return this.#realmMap;
+  }
+}
 
 export class Realm {
   static readonly #realmMap: Map<string, Realm> = new Map();
 
+  readonly #realmStorage: RealmStorage;
   readonly #realmId: string;
   readonly #browsingContextId: string;
   readonly #navigableId: string;
@@ -49,7 +53,10 @@ export class Realm {
   readonly #cdpSessionId: string;
   readonly #cdpClient: CdpClient;
 
-  static create(
+  readonly #scriptEvaluator: ScriptEvaluator;
+
+  constructor(
+    realmStorage: RealmStorage,
     realmId: string,
     browsingContextId: string,
     navigableId: string,
@@ -59,20 +66,20 @@ export class Realm {
     sandbox: string | undefined,
     cdpSessionId: string,
     cdpClient: CdpClient
-  ): Realm {
-    const realm = new Realm(
-      realmId,
-      browsingContextId,
-      navigableId,
-      executionContextId,
-      origin,
-      type,
-      sandbox,
-      cdpSessionId,
-      cdpClient
-    );
-    Realm.#realmMap.set(realm.realmId, realm);
-    return realm;
+  ) {
+    this.#realmStorage = realmStorage;
+    this.#realmId = realmId;
+    this.#browsingContextId = browsingContextId;
+    this.#navigableId = navigableId;
+    this.#executionContextId = executionContextId;
+    this.#sandbox = sandbox;
+    this.#origin = origin;
+    this.#type = type;
+    this.#cdpSessionId = cdpSessionId;
+    this.#cdpClient = cdpClient;
+
+    this.#realmStorage.realmMap.set(this.#realmId, this);
+    this.#scriptEvaluator = new ScriptEvaluator(this.#realmStorage);
   }
 
   static findRealms(
@@ -162,29 +169,7 @@ export class Realm {
 
   delete() {
     Realm.#realmMap.delete(this.realmId);
-    scriptEvaluator.realmDestroyed(this);
-  }
-
-  private constructor(
-    realmId: string,
-    browsingContextId: string,
-    navigableId: string,
-    executionContextId: Protocol.Runtime.ExecutionContextId,
-    origin: string,
-    type: RealmType,
-    sandbox: string | undefined,
-    cdpSessionId: string,
-    cdpClient: CdpClient
-  ) {
-    this.#realmId = realmId;
-    this.#browsingContextId = browsingContextId;
-    this.#navigableId = navigableId;
-    this.#executionContextId = executionContextId;
-    this.#sandbox = sandbox;
-    this.#origin = origin;
-    this.#type = type;
-    this.#cdpSessionId = cdpSessionId;
-    this.#cdpClient = cdpClient;
+    this.#scriptEvaluator.realmDestroyed(this);
   }
 
   toBiDi(): Script.RealmInfo {
@@ -239,7 +224,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await scriptEvaluator.callFunction(
+      result: await this.#scriptEvaluator.callFunction(
         this,
         functionDeclaration,
         _this,
@@ -262,7 +247,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await scriptEvaluator.scriptEvaluate(
+      result: await this.#scriptEvaluator.scriptEvaluate(
         this,
         expression,
         awaitPromise,
@@ -272,7 +257,7 @@ export class Realm {
   }
 
   async disown(handle: string): Promise<void> {
-    await scriptEvaluator.disown(this, handle);
+    await this.#scriptEvaluator.disown(this, handle);
   }
 
   /**
@@ -285,7 +270,7 @@ export class Realm {
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
-    return await scriptEvaluator.serializeCdpObject(
+    return await this.#scriptEvaluator.serializeCdpObject(
       cdpObject,
       resultOwnership,
       this

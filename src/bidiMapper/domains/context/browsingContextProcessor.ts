@@ -26,7 +26,7 @@ import {
 import Protocol from 'devtools-protocol';
 import {IEventManager} from '../events/EventManager.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
-import {Realm} from '../script/realm.js';
+import {Realm, RealmStorage} from '../script/realm.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 
 const logContext = log(LogType.browsingContexts);
@@ -37,8 +37,10 @@ export class BrowsingContextProcessor {
   readonly #selfTargetId: string;
   readonly #eventManager: IEventManager;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #realmStorage: RealmStorage;
 
   constructor(
+    realmStorage: RealmStorage,
     cdpConnection: CdpConnection,
     selfTargetId: string,
     eventManager: IEventManager,
@@ -48,6 +50,7 @@ export class BrowsingContextProcessor {
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#realmStorage = realmStorage;
 
     this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
   }
@@ -93,6 +96,7 @@ export class BrowsingContextProcessor {
       'Page.frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
         await BrowsingContextImpl.createFrameContext(
+          this.#realmStorage,
           params.frameId,
           params.parentFrameId,
           sessionCdpClient,
@@ -135,6 +139,7 @@ export class BrowsingContextProcessor {
         .convertFrameToTargetContext(targetSessionCdpClient, sessionId);
     } else {
       await BrowsingContextImpl.createTargetContext(
+        this.#realmStorage,
         targetInfo.targetId,
         null,
         targetSessionCdpClient,
