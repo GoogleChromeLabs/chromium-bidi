@@ -1,4 +1,4 @@
 [style]
 based_on_style = pep8
-INDENT_DICTIONARY_VALUE=True
-ALLOW_SPLIT_BEFORE_DICT_VALUE=False
+indent_dictionary_value = True
+allow_split_before_dict_value = False
