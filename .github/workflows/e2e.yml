@@ -1,0 +1,45 @@
+# This workflow will run headful and headless e2e tests.
+
+name: E2E tests
+
+on:
+  pull_request:
+  push:
+    branches: 'main'
+
+jobs:
+  e2e:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        headful-argument: [headful, headless]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install chrome-dev
+        run: |
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-unstable
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+          cache: 'pip'
+      - name: Install Python dependencies
+        run: pip install -r tests/requirements.txt
+      - name: Run e2e tests
+        run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run e2e-${{ matrix.headful-argument }}
+
+env:
+  FORCE_COLOR: 3
