@@ -23,94 +23,94 @@ from test_helpers import *
 
 @pytest.mark.asyncio
 async def test_binary(websocket):
-    # session.status is used in this test, but any simple command without side
-    # effects would work. It is first sent as text, which should work, and then
-    # sent again as binary, which should get an error response instead.
-    command = {"id": 1, "method": "session.status", "params": {}}
+  # session.status is used in this test, but any simple command without side
+  # effects would work. It is first sent as text, which should work, and then
+  # sent again as binary, which should get an error response instead.
+  command = {"id": 1, "method": "session.status", "params": {}}
 
-    text_msg = json.dumps(command)
-    await websocket.send(text_msg)
-    resp = await read_JSON_message(websocket)
-    assert resp['id'] == 1
+  text_msg = json.dumps(command)
+  await websocket.send(text_msg)
+  resp = await read_JSON_message(websocket)
+  assert resp['id'] == 1
 
-    binary_msg = b'text_msg'
-    await websocket.send(binary_msg)
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "error": "invalid argument",
-        "message": "not supported type (binary)"
-    }
+  binary_msg = b'text_msg'
+  await websocket.send(binary_msg)
+  resp = await read_JSON_message(websocket)
+  assert resp == {
+      "error": "invalid argument",
+      "message": "not supported type (binary)"
+  }
 
 
 @pytest.mark.asyncio
 async def test_invalid_json(websocket):
-    message = 'this is not json'
-    await websocket.send(message)
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "error": "invalid argument",
-        "message": "Cannot parse data as JSON"
-    }
+  message = 'this is not json'
+  await websocket.send(message)
+  resp = await read_JSON_message(websocket)
+  assert resp == {
+      "error": "invalid argument",
+      "message": "Cannot parse data as JSON"
+  }
 
 
 @pytest.mark.asyncio
 async def test_empty_object(websocket):
-    command = {}
-    await websocket.send(json.dumps(command))
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "error": "invalid argument",
-        "message": "Expected unsigned integer but got undefined"
-    }
+  command = {}
+  await websocket.send(json.dumps(command))
+  resp = await read_JSON_message(websocket)
+  assert resp == {
+      "error": "invalid argument",
+      "message": "Expected unsigned integer but got undefined"
+  }
 
 
 @pytest.mark.asyncio
 async def test_session_status(websocket):
-    command = {"id": 5, "method": "session.status", "params": {}}
-    await send_JSON_command(websocket, command)
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 5,
-        "result": {
-            "ready": False,
-            "message": "already connected"
-        }
-    }
+  command = {"id": 5, "method": "session.status", "params": {}}
+  await send_JSON_command(websocket, command)
+  resp = await read_JSON_message(websocket)
+  assert resp == {
+      "id": 5,
+      "result": {
+          "ready": False,
+          "message": "already connected"
+      }
+  }
 
 
 @pytest.mark.asyncio
 async def test_channel_non_empty(websocket):
-    await send_JSON_command(
-        websocket, {
-            "id": 6000,
-            "method": "session.status",
-            "params": {},
-            "channel": "SOME_CHANNEL"
-        })
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 6000,
-        "channel": "SOME_CHANNEL",
-        "result": {
-            "ready": False,
-            "message": "already connected"
-        }
-    }
+  await send_JSON_command(
+      websocket, {
+          "id": 6000,
+          "method": "session.status",
+          "params": {},
+          "channel": "SOME_CHANNEL"
+      })
+  resp = await read_JSON_message(websocket)
+  assert resp == {
+      "id": 6000,
+      "channel": "SOME_CHANNEL",
+      "result": {
+          "ready": False,
+          "message": "already connected"
+      }
+  }
 
 
 @pytest.mark.asyncio
 async def test_channel_empty(websocket):
-    await send_JSON_command(websocket, {
-        "id": 7000,
-        "method": "session.status",
-        "params": {},
-        "channel": ""
-    })
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 7000,
-        "result": {
-            "ready": False,
-            "message": "already connected"
-        }
-    }
+  await send_JSON_command(websocket, {
+      "id": 7000,
+      "method": "session.status",
+      "params": {},
+      "channel": ""
+  })
+  resp = await read_JSON_message(websocket)
+  assert resp == {
+      "id": 7000,
+      "result": {
+          "ready": False,
+          "message": "already connected"
+      }
+  }

@@ -31,126 +31,128 @@ logging.basicConfig(
 
 
 async def main():
-    # const browser = await puppeteer.launch();
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L29
-    websocket = await get_websocket()
-    await run_and_wait_command({
-        "id": 0,
-        "method": "session.new",
-        "params": {}
-    }, websocket)
+  # const browser = await puppeteer.launch();
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L29
+  websocket = await get_websocket()
+  await run_and_wait_command({
+      "id": 0,
+      "method": "session.new",
+      "params": {}
+  }, websocket)
 
-    # Not implemented:
-    # await browser.version();
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L32
+  # Not implemented:
+  # await browser.version();
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L32
 
-    # Puppeteer:
-    # const page = await browser.newPage();
-    #
-    # Part 1. Execute BiDi command and wait for result.
-    # await browser.newPage();
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
-    command_result = await run_and_wait_command(
-        {
-            "id": 1000,
-            "method": "browsingContext.create",
-            "params": {
-                "type": "tab"
-            }
-        }, websocket)
+  # Puppeteer:
+  # const page = await browser.newPage();
+  #
+  # Part 1. Execute BiDi command and wait for result.
+  # await browser.newPage();
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
+  command_result = await run_and_wait_command(
+      {
+          "id": 1000,
+          "method": "browsingContext.create",
+          "params": {
+              "type": "tab"
+          }
+      }, websocket)
 
-    # Puppeteer:
-    # Part 2. Get the command result.
-    # const page = ...;
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
-    # `command_result` should be like this:
-    # {
-    #     "id": 1000,
-    #     "result": {
-    #         "context": "__SOME_CONTEXT_ID__",
-    #         "url": "",
-    #         "children": []
-    #     }
-    # }
-    context_id = command_result['result']['context']
+  # Puppeteer:
+  # Part 2. Get the command result.
+  # const page = ...;
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
+  # `command_result` should be like this:
+  # {
+  #     "id": 1000,
+  #     "result": {
+  #         "context": "__SOME_CONTEXT_ID__",
+  #         "url": "",
+  #         "children": []
+  #     }
+  # }
+  context_id = command_result['result']['context']
 
-    # Puppeteer:
-    # await page.goto('https://news.ycombinator.com/');
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L34
-    # To avoid network dependency in this test, use a local (static) copy.
-    pageUrl = f'file://{Path(__file__).parent.resolve()}/app.html'
-    await run_and_wait_command(
-        {
-            "id": 1001,
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": pageUrl,
-                "context": context_id,
-                "wait": "complete"
-            }
-        }, websocket)
+  # Puppeteer:
+  # await page.goto('https://news.ycombinator.com/');
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L34
+  # To avoid network dependency in this test, use a local (static) copy.
+  pageUrl = f'file://{Path(__file__).parent.resolve()}/app.html'
+  await run_and_wait_command(
+      {
+          "id": 1001,
+          "method": "browsingContext.navigate",
+          "params": {
+              "url": pageUrl,
+              "context": context_id,
+              "wait": "complete"
+          }
+      }, websocket)
 
-    # Puppeteer:
-    # const resultsSelector = '.titlelink';
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L37
-    results_selector = {"type": "string", "value": ".titleline > a"}
+  # Puppeteer:
+  # const resultsSelector = '.titlelink';
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L37
+  results_selector = {"type": "string", "value": ".titleline > a"}
 
-    # Puppeteer:
-    # const links = await page.evaluate((resultsSelector) => {...}, resultsSelector);
-    #
-    # Part 1. Execute BiDi command.
-    # await page.evaluate((resultsSelector) => {...}, resultsSelector);
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
-    command_result = await run_and_wait_command(
-        {
-            "id": 1002,
-            "method": "script.callFunction",
-            "params": {
-                "functionDeclaration": """(resultsSelector) => {
+  # Puppeteer:
+  # const links = await page.evaluate((resultsSelector) => {...}, resultsSelector);
+  #
+  # Part 1. Execute BiDi command.
+  # await page.evaluate((resultsSelector) => {...}, resultsSelector);
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
+  command_result = await run_and_wait_command(
+      {
+          "id": 1002,
+          "method": "script.callFunction",
+          "params": {
+              "functionDeclaration":
+                  """(resultsSelector) => {
                 const anchors = Array.from(document.querySelectorAll(resultsSelector));
                 return anchors.map((anchor) => {
                     const title = anchor.textContent.trim();
                     return `${title} - ${anchor.href}`;
                 });
             }""",
-                "arguments": [results_selector],
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        }, websocket)
+              "arguments": [results_selector],
+              "target": {
+                  "context": context_id
+              },
+              "awaitPromise":
+                  True
+          }
+      }, websocket)
 
-    # Part 2. Get the command result.
-    # const links = ...;
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
-    # `command_result` should be like this:
-    # {
-    #     "id": 1002,
-    #     "result": {
-    #         "result": {
-    #             "handle": "__SOME_OBJECT_ID__",
-    #             "type": "array",
-    #             "value": [
-    #                 {
-    #                     "type": "string",
-    #                     "value": "__SOME_STRING_VALUE__"
-    #                 },
-    #                 ... // other values
-    #             ]
-    #         }
-    #     }
-    # }
-    links = command_result["result"]["result"]
+  # Part 2. Get the command result.
+  # const links = ...;
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
+  # `command_result` should be like this:
+  # {
+  #     "id": 1002,
+  #     "result": {
+  #         "result": {
+  #             "handle": "__SOME_OBJECT_ID__",
+  #             "type": "array",
+  #             "value": [
+  #                 {
+  #                     "type": "string",
+  #                     "value": "__SOME_STRING_VALUE__"
+  #                 },
+  #                 ... // other values
+  #             ]
+  #         }
+  #     }
+  # }
+  links = command_result["result"]["result"]
 
-    # Assert the result is non-empty
-    assert len(links["value"]) > 0, "The result should be non-empty."
+  # Assert the result is non-empty
+  assert len(links["value"]) > 0, "The result should be non-empty."
 
-    # Puppeteer:
-    # console.log(links.join('\n'));
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L45
-    for item in links["value"]:
-        print(item["value"])
+  # Puppeteer:
+  # console.log(links.join('\n'));
+  # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L45
+  for item in links["value"]:
+    print(item["value"])
 
 
 loop = asyncio.new_event_loop()

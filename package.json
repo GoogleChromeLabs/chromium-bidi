@@ -19,7 +19,7 @@
     "test": "npm run build && npm run unit",
     "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
     "watch": "tsc -b src/tsconfig.json --watch & rollup -c --watch",
-    "yapf": "yapf --in-place --parallel --recursive --exclude=wpt examples/ tests/"
+    "yapf": "yapf --style chromium --in-place --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "files": [
     "lib"
