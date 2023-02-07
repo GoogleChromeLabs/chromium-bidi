@@ -43,7 +43,7 @@ repos:
     rev: v0.32.0
     hooks:
       - id: yapf
-        args: ['--in-place', '--parallel', '--recursive']
+        args: ['--in-place', '--parallel']
   - repo: https://github.com/PyCQA/isort
     rev: 5.11.4
     hooks:
