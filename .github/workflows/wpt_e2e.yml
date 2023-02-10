@@ -23,8 +23,6 @@ jobs:
           cache: npm
       - name: Install and build npm dependencies
         run: npm ci
-      - name: Build mapper
-        run: npm run build
       - name: Setup dirs
         run: |
           mkdir -p logs
@@ -50,18 +48,18 @@ jobs:
           sudo apt-get install -y google-chrome-unstable
       - name: Run tests
         run: >
-          ./wpt run 
+          ./wpt/wpt run 
           --binary-arg="--headless=new" 
-          --webdriver-arg="--bidi-mapper-path=../lib/iife/mapperTab.js"  
-          --webdriver-arg="--log-path=../logs/chromeDriver.log" 
+          --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"  
+          --webdriver-arg="--log-path=logs/chromeDriver.log" 
           --webdriver-arg="--verbose" 
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json 
-          --metadata ../wpt-metadata/chromeDriver  
-          --log-wptreport wptreport.json 
+          --metadata wpt-metadata/chromeDriver  
+          --log-wptreport wpt/wptreport.json 
           chrome 
           webdriver/tests/bidi/session/status/status.py
-        working-directory: wpt
+#        working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
         run: ./wpt update-expectations --product chromium --manifest MANIFEST.json --metadata ../wpt-metadata/chromeDriver wptreport.json
