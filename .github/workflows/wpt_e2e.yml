@@ -46,7 +46,8 @@ jobs:
         # For verbose logging, add --log-mach - --log-mach-level info
 #        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary /usr/bin/google-chrome-unstable --manifest MANIFEST.json --metadata ../wpt-metadata --log-wptreport wptreport.json chromium webdriver/tests/bidi/session/status/status.py
 #        run: ./wpt run --binary /usr/bin/google-chrome-unstable chrome webdriver/tests/bidi/session/status/status.py  --install-webdriver --channel=dev -y
-        run: ./wpt run --binary /usr/bin/google-chrome-unstable --install-webdriver --channel=dev -y chrome webdriver/tests/bidi/session/status/status.py
+#        run: ./wpt run --binary /usr/bin/google-chrome-unstable --install-webdriver --channel=dev -y chrome webdriver/tests/bidi/session/status/status.py
+        run: ./wpt run --install-webdriver --channel=dev -y chrome webdriver/tests/bidi/session/status/status.py
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
