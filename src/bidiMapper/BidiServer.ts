@@ -27,6 +27,7 @@ import {ProcessingQueue} from '../utils/processingQueue.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
 type BidiServerEvents = {
+  log: unknown[];
   message: Message.RawCommandRequest;
 };
 
@@ -47,7 +48,11 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     this.#browsingContextStorage = new BrowsingContextStorage();
     this.#realmStorage = new RealmStorage();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
-      this.#processOutgoingMessage
+      this.#processOutgoingMessage,
+      undefined,
+      (...messages: unknown[]) => {
+        this.emit('log', messages);
+      }
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
