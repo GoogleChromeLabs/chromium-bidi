@@ -23,7 +23,7 @@ export enum LogType {
   system = 'System',
 }
 
-export function log(logType: LogType): (...message: unknown[]) => void {
+export function log(logType: LogType): (...messages: unknown[]) => void {
   return (...messages: unknown[]) => {
     console.log(logType, ...messages);
   };

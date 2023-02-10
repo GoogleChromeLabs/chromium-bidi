@@ -56,6 +56,7 @@ export function generatePage() {
     return;
   }
   window.document.documentElement.innerHTML = mapperPageSource;
+
   // Create main log containers in proper order.
   findOrCreateTypeLogContainer(LogType.system);
   findOrCreateTypeLogContainer(LogType.bidi);
@@ -69,14 +70,13 @@ export function log(logType: LogType, ...messages: unknown[]) {
   if (!globalThis.document?.documentElement) {
     return;
   }
+
   const typeLogContainer = findOrCreateTypeLogContainer(logType);
 
   // This piece of HTML should be added:
-  /*
-    <div class="pre">...log message...</div>
-  */
+  // <div class="pre">...log message...</div>
   const lineElement = document.createElement('div');
   lineElement.className = 'pre';
-  lineElement.textContent = messages.join(', ');
+  lineElement.textContent = messages.join(' ');
   typeLogContainer.appendChild(lineElement);
 }
