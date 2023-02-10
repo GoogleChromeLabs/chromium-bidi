@@ -23,6 +23,10 @@ jobs:
           cache: npm
       - name: Install and build npm dependencies
         run: npm ci
+      - name: Setup dirs
+        run: |
+          mkdir -p logs
+          mkdir -p wpt-metadata/chromeDriver
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -47,6 +51,8 @@ jobs:
           ./wpt run 
           --binary-arg="--headless=new" 
           --webdriver-arg="bidi-mapper-path=../lib/iife/mapperTab.js"  
+          --webdriver-arg="--log-path=../logs/chromeDriver.log" 
+          --webdriver-arg="--verbose" 
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json 
           --metadata ../wpt-metadata/chromeDriver  
