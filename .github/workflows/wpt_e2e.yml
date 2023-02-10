@@ -54,7 +54,10 @@ jobs:
         # run: ./wpt run --install-webdriver --channel=dev -y chrome webdriver/tests/bidi/session/status/status.py
         # The process started from chrome location /usr/bin/google-chrome-unstable is no longer running, so ChromeDriver is assuming that Chrome has crashed.
 
-        run: ./wpt run --binary-arg="--headless=new" --install-webdriver --channel=dev -y chrome webdriver/tests/bidi/session/status/status.py
+#        run: ./wpt run --binary-arg="--headless=new" --install-webdriver --channel=dev -y chrome webdriver/tests/bidi/session/status/status.py
+
+
+        run: ./wpt run --binary-arg="--headless=new" --webdriver-arg="bidi-mapper-path=../lib/iife/mapperTab.js" --install-webdriver --channel=dev -y chrome webdriver/tests/bidi/session/status/status.py
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
