@@ -49,9 +49,7 @@ jobs:
           --webdriver-arg="bidi-mapper-path=../lib/iife/mapperTab.js"  
           --webdriver-arg="--log-path=../log/chromeDriver.log" 
           --webdriver-arg="--verbose" 
-          --install-webdriver 
-          --channel=dev 
-          -y 
+          --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json 
           --metadata ../wpt-metadata/chromeDriver  
           --log-wptreport wptreport.json 
