@@ -47,8 +47,6 @@ jobs:
           ./wpt run 
           --binary-arg="--headless=new" 
           --webdriver-arg="bidi-mapper-path=../lib/iife/mapperTab.js"  
-          --webdriver-arg="--log-path=../logs/chromeDriver.log" 
-          --webdriver-arg="--verbose" 
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json 
           --metadata ../wpt-metadata/chromeDriver  
