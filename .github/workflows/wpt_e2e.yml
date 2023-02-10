@@ -57,17 +57,8 @@ jobs:
 #        run: ./wpt run --binary-arg="--headless=new" --install-webdriver --channel=dev -y chrome webdriver/tests/bidi/session/status/status.py
 
 
-        run: ./wpt run \
-          --binary-arg="--headless=new" \ 
-          --webdriver-arg="bidi-mapper-path=../lib/iife/mapperTab.js" \ 
-          --install-webdriver  \
-          --channel=dev  \
-          -y  \
-          --manifest MANIFEST.json \ 
-          --metadata ../wpt-metadata/chromeDriver \ 
-          --log-wptreport wptreport.json  \
-          chrome  \
-          webdriver/tests/bidi/session/status/status.py
+        run: ./wpt run --binary-arg="--headless=new" --webdriver-arg="bidi-mapper-path=../lib/iife/mapperTab.js" --install-webdriver --channel=dev -y --manifest MANIFEST.json --metadata ../wpt-metadata/chromeDriver --log-wptreport wptreport.json chrome webdriver/tests/bidi/session/status/status.py
+
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
