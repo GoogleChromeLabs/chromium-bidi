@@ -58,7 +58,7 @@ jobs:
           --metadata wpt-metadata/chromeDriver  
           --log-wptreport wpt/wptreport.json 
           chrome 
-          webdriver/tests/bidi/session/status/status.py
+          webdriver/tests/bidi/
       - name: Update expectations
         if: ${{ always() }}
         run: ./wpt update-expectations --product chromium --manifest MANIFEST.json --metadata ../wpt-metadata/chromeDriver wptreport.json
