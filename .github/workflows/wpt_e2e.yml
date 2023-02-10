@@ -44,7 +44,8 @@ jobs:
           sudo apt-get install -y google-chrome-unstable
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary /usr/bin/google-chrome-unstable --manifest MANIFEST.json --metadata ../wpt-metadata --log-wptreport wptreport.json chromium webdriver/tests/bidi/session/status/status.py
+#        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary /usr/bin/google-chrome-unstable --manifest MANIFEST.json --metadata ../wpt-metadata --log-wptreport wptreport.json chromium webdriver/tests/bidi/session/status/status.py
+        run: ./wpt run --binary /usr/bin/google-chrome-unstable chrome webdriver/tests/bidi/session/status/status.py  --install-webdriver --channel=dev -y
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
