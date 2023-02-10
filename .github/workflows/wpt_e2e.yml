@@ -47,7 +47,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y google-chrome-unstable
       - name: qwe
-        run: pwd
+        run: |
+          pwd
+          find . -name "mapperTab.js"
       - name: Run tests
         run: >
           ./wpt/wpt run 
