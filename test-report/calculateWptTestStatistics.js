@@ -24,8 +24,8 @@ function readReport(filePath) {
 
 function calculate(report) {
   const result = {all: 0, pass: 0, fail: 0};
-  for (let r of report.results) {
-    for (let s of r.subtests) {
+  for (const r of report.results) {
+    for (const s of r.subtests) {
       result.all++;
       if (s.status === 'PASS') {
         result.pass++;

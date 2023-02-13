@@ -54,7 +54,7 @@ jobs:
           chromium
           webdriver/tests/bidi/
       - name: Calculate test statistics
-        run: node calculateWptTestStatistics.ts wptreport-mapper.json
+        run: node calculateWptTestStatistics.js wptreport-mapper.json
       - name: Update expectations
         if: ${{ always() }}
         run: >
