@@ -45,21 +45,21 @@ jobs:
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
-          ./wpt run 
-          --webdriver-binary ../runBiDiServer.sh 
-          --binary /usr/bin/google-chrome-unstable 
-          --manifest MANIFEST.json 
-          --metadata ../wpt-metadata/mapper 
-          --log-wptreport wptreport.json 
-          chromium 
+          ./wpt run
+          --webdriver-binary ../runBiDiServer.sh
+          --binary /usr/bin/google-chrome-unstable
+          --manifest MANIFEST.json
+          --metadata ../wpt-metadata/mapper
+          --log-wptreport wptreport.json
+          chromium
           webdriver/tests/bidi/
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
         run: >
-          ./wpt update-expectations 
-          --product chromium 
-          --manifest MANIFEST.json 
+          ./wpt update-expectations
+          --product chromium
+          --manifest MANIFEST.json
           --metadata ../wpt-metadata/mapper wptreport.json
         working-directory: wpt
       - name: Upload expectations
