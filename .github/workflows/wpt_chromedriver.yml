@@ -49,12 +49,12 @@ jobs:
         run: >
           ./wpt/wpt run
           --binary-arg="--headless=new"
-          --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js" 
+          --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
           --webdriver-arg="--log-path=logs/chromedriver.log"
           --webdriver-arg="--verbose"
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
-          --metadata wpt-metadata/chromedriver 
+          --metadata wpt-metadata/chromedriver
           --log-wptreport wpt/wptreport.json
           chrome
           webdriver/tests/bidi/
