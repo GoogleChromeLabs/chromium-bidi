@@ -56,7 +56,7 @@ jobs:
       - name: Update expectations
         if: ${{ always() }}
         run: >
-          ./wpt update-expectations
+          ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper wptreport.json
@@ -76,7 +76,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: logs
+          name: mapper.log
           # Note: runBiDiServer.sh will be run multiple times and log.txt will be
           # overwritten. The problem might not be in the log.txt written last.
           path: logs
