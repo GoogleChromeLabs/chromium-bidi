@@ -67,6 +67,12 @@ jobs:
           --metadata ../wpt-metadata/chromedriver
           wptreport.json
         working-directory: wpt
+      - name: Upload WPT run report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport
+          path: wptreport-chromedriver.json
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
