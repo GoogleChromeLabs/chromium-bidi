@@ -50,16 +50,18 @@ jobs:
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper
-          --log-wptreport wptreport.json
+          --log-wptreport wptreport-mapper.json
           chromium
           webdriver/tests/bidi/
+      - name: Calculate test statistics
+        run: node calculateWptTestStatistics.ts wptreport-mapper.json
       - name: Update expectations
         if: ${{ always() }}
         run: >
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper wptreport.json
+          --metadata ./wpt-metadata/mapper wptreport-mapper.json
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
@@ -71,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: wptreport-mapper
-          path: wptreport.json
+          path: wptreport-mapper.json
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
