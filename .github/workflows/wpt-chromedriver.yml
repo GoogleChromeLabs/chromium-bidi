@@ -55,7 +55,7 @@ jobs:
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
           --metadata wpt-metadata/chromedriver
-          --log-wptreport wpt/wptreport.json
+          --log-wptreport wptreport.json
           chrome
           webdriver/tests/bidi/
       - name: Update expectations
