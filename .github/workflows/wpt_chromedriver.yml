@@ -61,7 +61,7 @@ jobs:
       - name: Update expectations
         if: ${{ always() }}
         run: >
-          ./wpt update-expectations
+          ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/chromedriver
