@@ -68,6 +68,12 @@ jobs:
         with:
           name: wpt-metadata-mapper
           path: wpt-metadata/mapper
+      - name: Upload WPT run report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport
+          path: wptreport-mapper.json
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
