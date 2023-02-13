@@ -25,7 +25,7 @@ jobs:
         run: npm ci
       - name: Setup dirs
         run: |
-          mkdir -p logs wpt-metadata/chromeDriver
+          mkdir -p logs wpt-metadata/chromedriver
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -50,11 +50,11 @@ jobs:
           ./wpt/wpt run 
           --binary-arg="--headless=new" 
           --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"  
-          --webdriver-arg="--log-path=logs/chromeDriver.log" 
+          --webdriver-arg="--log-path=logs/chromedriver.log" 
           --webdriver-arg="--verbose" 
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json 
-          --metadata wpt-metadata/chromeDriver  
+          --metadata wpt-metadata/chromedriver  
           --log-wptreport wpt/wptreport.json 
           chrome 
           webdriver/tests/bidi/
@@ -64,15 +64,15 @@ jobs:
           ./wpt update-expectations 
           --product chromium 
           --manifest MANIFEST.json 
-          --metadata ../wpt-metadata/chromeDriver 
+          --metadata ../wpt-metadata/chromedriver 
           wptreport.json
         working-directory: wpt
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-metadata-chromeDriver
-          path: wpt-metadata/chromeDriver
+          name: wpt-metadata-chromedriver
+          path: wpt-metadata/chromedriver
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
