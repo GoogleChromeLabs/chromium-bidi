@@ -1,0 +1,39 @@
+name: Publish on tag
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+          cache: 'pip'
+      - name: Install Python dependencies
+        run: pip install -r tests/requirements.txt
+      - name: Test
+        run: npm test
+      - name: Publish
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: |
+          npm config set registry 'https://wombat-dressing-room.appspot.com/'
+          npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
+          npm publish
+
+env:
+  FORCE_COLOR: 3

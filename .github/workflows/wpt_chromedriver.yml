@@ -25,8 +25,7 @@ jobs:
         run: npm ci
       - name: Setup dirs
         run: |
-          mkdir -p logs
-          mkdir -p wpt-metadata/chromeDriver
+          mkdir -p logs wpt-metadata/chromeDriver
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -61,7 +60,12 @@ jobs:
           webdriver/tests/bidi/
       - name: Update expectations
         if: ${{ always() }}
-        run: ./wpt update-expectations --product chromium --manifest MANIFEST.json --metadata ../wpt-metadata/chromeDriver wptreport.json
+        run: >
+          ./wpt update-expectations 
+          --product chromium 
+          --manifest MANIFEST.json 
+          --metadata ../wpt-metadata/chromeDriver 
+          wptreport.json
         working-directory: wpt
       - name: Upload expectations
         if: ${{ always() }}
