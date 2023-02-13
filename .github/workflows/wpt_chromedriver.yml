@@ -47,24 +47,24 @@ jobs:
           sudo apt-get install -y google-chrome-unstable
       - name: Run tests
         run: >
-          ./wpt/wpt run 
-          --binary-arg="--headless=new" 
-          --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"  
-          --webdriver-arg="--log-path=logs/chromedriver.log" 
-          --webdriver-arg="--verbose" 
+          ./wpt/wpt run
+          --binary-arg="--headless=new"
+          --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js" 
+          --webdriver-arg="--log-path=logs/chromedriver.log"
+          --webdriver-arg="--verbose"
           --install-webdriver --channel=dev --yes
-          --manifest MANIFEST.json 
-          --metadata wpt-metadata/chromedriver  
-          --log-wptreport wpt/wptreport.json 
-          chrome 
+          --manifest MANIFEST.json
+          --metadata wpt-metadata/chromedriver 
+          --log-wptreport wpt/wptreport.json
+          chrome
           webdriver/tests/bidi/
       - name: Update expectations
         if: ${{ always() }}
         run: >
-          ./wpt update-expectations 
-          --product chromium 
-          --manifest MANIFEST.json 
-          --metadata ../wpt-metadata/chromedriver 
+          ./wpt update-expectations
+          --product chromium
+          --manifest MANIFEST.json
+          --metadata ../wpt-metadata/chromedriver
           wptreport.json
         working-directory: wpt
       - name: Upload expectations
