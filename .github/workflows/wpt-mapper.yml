@@ -72,8 +72,8 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wptreport
-          path: wptreport-mapper.json
+          name: wptreport-mapper
+          path: wptreport.json
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
