@@ -93,5 +93,12 @@ jobs:
         with:
           name: wptreport-chromedriver.html
           path: wptreport-chromedriver.html
+      - name: Update nightly release
+        uses: eine/tip@master
+        with:
+          tag: nightly
+          rm: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./wptreport-chromedriver.html
 env:
   FORCE_COLOR: 3
