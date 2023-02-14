@@ -34,7 +34,7 @@ jobs:
         run: npm ci
       - name: Setup dirs
         run: |
-          mkdir -p wpt-metadata/chromedriver
+          mkdir -p out
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -59,39 +59,43 @@ jobs:
           ./wpt/wpt run
           --binary-arg="--headless=new"
           --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
-          --webdriver-arg="--log-path=chromedriver.log"
+          --webdriver-arg="--log-path=out/chromedriver.log"
           --webdriver-arg="--verbose"
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
           --metadata wpt-metadata/chromedriver
-          --log-wptreport wptreport-chromedriver.json
+          --log-wptreport out/wptreport-chromedriver.json
           chrome
           webdriver/tests/bidi/
       - name: Generate HTML test report
-        run: node test-report/htmlWptReport.js wptreport-chromedriver.json wptreport-chromedriver.html
+        if: ${{ always() }}
+        run: node test-report/htmlWptReport.js out/wptreport-chromedriver.json out/wptreport-chromedriver.html
       - name: Update expectations
+        if: ${{ always() }}
         run: >
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/chromedriver
-          wptreport-chromedriver.json
+          out/wptreport-chromedriver.json
       - name: Upload artifacts
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: wpt-chromedriver-artifacts
           path: |
-            wptreport-chromedriver.json
-            wptreport-chromedriver.html
+            out
             wpt-metadata/chromedriver
-            chromedriver.log
       - name: Setup Pages
+        if: ${{ always() }}
         uses: actions/configure-pages@v3
       - name: Upload artifact
+        if: ${{ always() }}
         uses: actions/upload-pages-artifact@v1
         with:
           path: wptreport-chromedriver.html
       - name: Deploy to GitHub Pages
+        if: ${{ always() }}
         id: deployment
         uses: actions/deploy-pages@v1
 
