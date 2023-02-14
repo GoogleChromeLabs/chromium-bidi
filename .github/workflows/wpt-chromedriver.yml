@@ -80,15 +80,20 @@ jobs:
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/chromedriver
           out/report/wptreport-chromedriver.json
+      - name: Upload expectations
+        # Force run task even if the previous tasks failed.
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wpt-metadata-chromedriver
+          path: wpt-metadata/chromedriver
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: wpt-chromedriver-artifacts
-          path: |
-            out
-            wpt-metadata/chromedriver
+          path: out
       - name: Setup Pages
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}

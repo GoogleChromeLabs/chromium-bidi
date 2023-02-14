@@ -69,6 +69,13 @@ jobs:
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper
           out/wptreport-mapper.json
+      - name: Upload expectations
+        # Force run task even if the previous tasks failed.
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wpt-metadata-mapper
+          path: wpt-metadata/mapper
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -77,7 +84,6 @@ jobs:
           name: wpt-mapper-artifacts
           path: |
             out
-            wpt-metadata/mapper
             logs
 env:
   FORCE_COLOR: 3
