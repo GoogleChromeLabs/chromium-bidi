@@ -1,0 +1,85 @@
+# This workflow will check out wpt and run the WebDriver BiDi tests against our
+# implementation.
+
+name: Web platform tests with Mapper
+
+on:
+  pull_request:
+  push:
+    branches: 'main'
+
+jobs:
+  wpt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+          cache: 'pip'
+      - name: Set up virtualenv
+        run: pip install virtualenv
+      - name: Set up hosts
+        run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
+        working-directory: wpt
+      # TODO: Install a pinned version of Chromium. This may become possible
+      # after https://github.com/web-platform-tests/wpt/issues/28970.
+      - name: Install Chromium
+        # This installs dev chrome to `/usr/bin/google-chrome-unstable`.
+        run: |
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-unstable
+      - name: Run tests
+        # For verbose logging, add --log-mach - --log-mach-level info
+        run: >
+          ./wpt/wpt run
+          --webdriver-binary ./runBiDiServer.sh
+          --binary /usr/bin/google-chrome-unstable
+          --manifest MANIFEST.json
+          --metadata ./wpt-metadata/mapper
+          --log-wptreport wptreport-mapper.json
+          chromium
+          webdriver/tests/bidi/
+      - name: Calculate test statistics
+        run: node test-report/calculateWptTestStatistics.js wptreport-mapper.json
+      - name: Update expectations
+        if: ${{ always() }}
+        run: >
+          ./wpt/wpt update-expectations
+          --product chromium
+          --manifest MANIFEST.json
+          --metadata ./wpt-metadata/mapper 
+          wptreport-mapper.json
+      - name: Upload expectations
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wpt-metadata-mapper
+          path: wpt-metadata/mapper
+      - name: Upload WPT run report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport-mapper
+          path: wptreport-mapper.json
+      - name: Upload logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: mapper.log
+          path: logs
+env:
+  FORCE_COLOR: 3
