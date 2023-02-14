@@ -70,6 +70,9 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
         this.emitOutgoingMessage(response);
       }
     );
+    this.#commandProcessor.on('log', (messages: unknown[]) => {
+      this.emit('log', messages);
+    });
   }
 
   public static async createAndStart(
@@ -135,9 +138,5 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
 
   getBrowsingContextStorage(): BrowsingContextStorage {
     return this.#browsingContextStorage;
-  }
-
-  getCommandProcessor(): CommandProcessor {
-    return this.#commandProcessor;
   }
 }

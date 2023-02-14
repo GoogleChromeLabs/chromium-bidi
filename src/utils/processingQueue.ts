@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {LogType} from './log.js';
+
 export class ProcessingQueue<T> {
   readonly #catch: (error: unknown) => Promise<void>;
   readonly #log: (...messages: unknown[]) => void;
@@ -51,7 +54,7 @@ export class ProcessingQueue<T> {
         await entryPromise
           .then((entry) => this.#processor(entry))
           .catch((e) => {
-            this.#log('Event was not processed:', e);
+            this.#log(LogType.system, 'Event was not processed:', e);
             this.#catch(e);
           })
           .finally();
