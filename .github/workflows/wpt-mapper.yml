@@ -51,7 +51,6 @@ jobs:
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper
           --log-wptreport wptreport-mapper.json
-#          --log-html wptreport-mapper.html
           chromium
           webdriver/tests/bidi/
       - name: Calculate test statistics
