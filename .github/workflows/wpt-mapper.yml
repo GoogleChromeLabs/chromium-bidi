@@ -45,36 +45,54 @@ jobs:
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
-          ./wpt run
-          --webdriver-binary ../runBiDiServer.sh
+          ./wpt/wpt run
+          --webdriver-binary ./runBiDiServer.sh
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
-          --metadata ../wpt-metadata/mapper
-          --log-wptreport wptreport.json
+          --metadata ./wpt-metadata/mapper
+          --log-wptreport wptreport-mapper.json
+          --log-html wptreport-mapper.html
           chromium
           webdriver/tests/bidi/
-        working-directory: wpt
+      - name: Calculate test statistics
+        run: node test-report/calculateWptTestStatistics.js wptreport-mapper.json
       - name: Update expectations
         if: ${{ always() }}
         run: >
-          ./wpt update-expectations
+          ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ../wpt-metadata/mapper wptreport.json
-        working-directory: wpt
+          --metadata ./wpt-metadata/mapper wptreport-mapper.json
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: wpt-metadata-mapper
           path: wpt-metadata/mapper
+      - name: Upload WPT run report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport-mapper
+          path: wptreport-mapper.json
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: logs
-          # Note: runBiDiServer.sh will be run multiple times and log.txt will be
-          # overwritten. The problem might not be in the log.txt written last.
+          name: mapper.log
           path: logs
+      - name: Upload logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport-mapper.html
+          path: wptreport-mapper.html
+      - name: Update nightly release
+        uses: eine/tip@master
+        with:
+          tag: nightly
+          rm: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./wptreport-mapper.html
 env:
   FORCE_COLOR: 3

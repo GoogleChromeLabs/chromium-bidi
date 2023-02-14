@@ -25,7 +25,7 @@ jobs:
         run: npm ci
       - name: Setup dirs
         run: |
-          mkdir -p logs wpt-metadata/chromedriver
+          mkdir -p wpt-metadata/chromedriver
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -50,23 +50,31 @@ jobs:
           ./wpt/wpt run
           --binary-arg="--headless=new"
           --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
-          --webdriver-arg="--log-path=logs/chromedriver.log"
+          --webdriver-arg="--log-path=chromedriver.log"
           --webdriver-arg="--verbose"
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
           --metadata wpt-metadata/chromedriver
-          --log-wptreport wpt/wptreport.json
+          --log-wptreport wptreport-chromedriver.json
+          --log-html wptreport-chromedriver.html
           chrome
           webdriver/tests/bidi/
+      - name: Calculate test statistics
+        run: node test-report/calculateWptTestStatistics.js wptreport-chromedriver.json
       - name: Update expectations
         if: ${{ always() }}
         run: >
-          ./wpt update-expectations
+          ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ../wpt-metadata/chromedriver
-          wptreport.json
-        working-directory: wpt
+          --metadata ./wpt-metadata/chromedriver
+          wptreport-chromedriver.json
+      - name: Upload WPT run report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport-chromedriver
+          path: wptreport-chromedriver.json
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
@@ -77,7 +85,20 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: logs
-          path: logs
+          name: chromedriver.log
+          path: chromedriver.log
+      - name: Upload html report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport-chromedriver.html
+          path: wptreport-chromedriver.html
+      - name: Update nightly release
+        uses: eine/tip@master
+        with:
+          tag: nightly
+          rm: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./wptreport-chromedriver.html
 env:
   FORCE_COLOR: 3
