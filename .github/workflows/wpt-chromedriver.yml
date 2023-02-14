@@ -57,8 +57,7 @@ jobs:
           --metadata wpt-metadata/chromedriver
           --log-wptreport wptreport-chromedriver.json
           chrome
-          webdriver/tests/bidi/session/status/status.py
-#          webdriver/tests/bidi/
+          webdriver/tests/bidi/
       - name: Generate HTML test report
         run: node test-report/htmlWptReport.js wptreport-chromedriver.json docs/wptreport-chromedriver.html
       - name: Update expectations
