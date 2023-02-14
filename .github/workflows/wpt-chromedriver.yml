@@ -82,6 +82,7 @@ jobs:
           name: wpt-chromedriver-artifacts
           path: |
             wptreport-chromedriver.json
+            wptreport-chromedriver.html
             wpt-metadata/chromedriver
             chromedriver.log
       - name: Setup Pages

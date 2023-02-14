@@ -53,8 +53,8 @@ jobs:
           --log-wptreport wptreport-mapper.json
           chromium
           webdriver/tests/bidi/
-      - name: Calculate test statistics
-        run: node test-report/calculateWptTestStatistics.js wptreport-mapper.json
+      - name: Generate HTML test report
+        run: node test-report/htmlWptReport.js wptreport-mapper.json wptreport-mapper.html
       - name: Update expectations
         run: >
           ./wpt/wpt update-expectations
@@ -67,8 +67,9 @@ jobs:
         with:
           name: wpt-mapper-artifacts
           path: |
-            wpt-metadata/mapper
             wptreport-mapper.json
+            wptreport-mapper.html
+            wpt-metadata/mapper
             logs
 env:
   FORCE_COLOR: 3
