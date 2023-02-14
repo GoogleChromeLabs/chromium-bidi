@@ -21,7 +21,6 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {CdpClient, CdpConnection} from '../../CdpConnection.js';
-import {LogType, log} from '../../../utils/log.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {IEventManager} from '../events/EventManager.js';
@@ -33,6 +32,7 @@ export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #cdpConnection: CdpConnection;
   readonly #eventManager: IEventManager;
+  readonly #log: (...messages: unknown[]) => void;
   readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
   readonly #sessions: Set<string>;
@@ -42,11 +42,13 @@ export class BrowsingContextProcessor {
     cdpConnection: CdpConnection,
     selfTargetId: string,
     eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    log: (...messages: unknown[]) => void = () => {}
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#cdpConnection = cdpConnection;
     this.#eventManager = eventManager;
+    this.#log = log;
     this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
     this.#sessions = new Set();
@@ -127,7 +129,7 @@ export class BrowsingContextProcessor {
       return;
     }
 
-    log(LogType.browsingContexts)(
+    this.#log(
       'AttachedToTarget event received:',
       JSON.stringify(params, null, 2)
     );
