@@ -8,8 +8,17 @@ on:
   push:
     branches: 'main'
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   wpt:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,7 +34,7 @@ jobs:
         run: npm ci
       - name: Setup dirs
         run: |
-          mkdir -p wpt-metadata/chromedriver docs
+          mkdir -p wpt-metadata/chromedriver
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -59,7 +68,7 @@ jobs:
           chrome
           webdriver/tests/bidi/
       - name: Generate HTML test report
-        run: node test-report/htmlWptReport.js wptreport-chromedriver.json docs/wptreport-chromedriver.html
+        run: node test-report/htmlWptReport.js wptreport-chromedriver.json wptreport-chromedriver.html
       - name: Update expectations
         if: ${{ always() }}
         run: >
@@ -92,15 +101,16 @@ jobs:
           tag: wptTestReport
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./docs/wptreport-chromedriver.html
-      - name: Fetch data
-        run: |
-          git branch test_report
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "username@users.noreply.github.com"
-          git add docs/wptreport-chromedriver.html
-          git commit -a -m "Test results obtained via GitHub Actions"
-          git push -f
+          files: wptreport-chromedriver.html
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: wptreport-chromedriver.html
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
 
 env:
   FORCE_COLOR: 3
