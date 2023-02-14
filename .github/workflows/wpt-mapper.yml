@@ -57,9 +57,11 @@ jobs:
           chromium
           webdriver/tests/bidi/
       - name: Generate HTML test report
+        # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         run: node test-report/htmlWptReport.js out/wptreport-mapper.json out/wptreport-mapper.html
       - name: Update expectations
+        # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         run: >
           ./wpt/wpt update-expectations
@@ -68,6 +70,7 @@ jobs:
           --metadata ./wpt-metadata/mapper 
           out/wptreport-mapper.json
       - name: Upload artifacts
+        # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
