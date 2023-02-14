@@ -65,6 +65,10 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   const bidiServer = await _createBidiServer(selfTargetId);
 
+  bidiServer.getCommandProcessor().on('log', (...messages: unknown[]) => {
+    log(LogType.browsingContexts, ...messages);
+  });
+
   log(LogType.system, 'Launched');
 
   bidiServer.on('log', (...messages: unknown[]) => {
@@ -75,7 +79,7 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   );
 })();
 
-function _createCdpConnection() {
+function createCdpConnection() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
   class WindowCdpTransport implements ITransport {
@@ -266,7 +270,7 @@ async function _createBidiServer(selfTargetId: string) {
 
   return await BidiServer.createAndStart(
     new WindowBidiTransport(),
-    _createCdpConnection(),
+    createCdpConnection(),
     selfTargetId,
     new BidiParserImpl()
   );

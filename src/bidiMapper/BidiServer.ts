@@ -136,4 +136,8 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   getBrowsingContextStorage(): BrowsingContextStorage {
     return this.#browsingContextStorage;
   }
+
+  getCommandProcessor(): CommandProcessor {
+    return this.#commandProcessor;
+  }
 }

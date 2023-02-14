@@ -31,6 +31,7 @@ import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
 type CommandProcessorEvents = {
+  log: unknown[];
   response: Promise<OutgoingBidiMessage>;
 };
 
@@ -104,7 +105,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       cdpConnection,
       selfTargetId,
       eventManager,
-      browsingContextStorage
+      browsingContextStorage,
+      (...messages: unknown[]) => {
+        this.emit('log', messages);
+      }
     );
     this.#parser = parser;
   }
