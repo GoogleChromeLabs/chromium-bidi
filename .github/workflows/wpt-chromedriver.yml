@@ -95,5 +95,12 @@ jobs:
         with:
           name: chromedriver.log
           path: chromedriver.log
+      - name: Publish WPT test report
+        uses: eine/tip@master
+        with:
+          tag: wptTestReport
+          rm: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./docs/wptreport-chromedriver.html
 env:
   FORCE_COLOR: 3
