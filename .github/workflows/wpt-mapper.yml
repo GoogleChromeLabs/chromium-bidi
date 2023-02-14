@@ -87,5 +87,12 @@ jobs:
         with:
           name: wptreport-mapper.html
           path: wptreport-mapper.html
+      - name: Update nightly release
+        uses: eine/tip@master
+        with:
+          tag: nightly
+          rm: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./wptreport-mapper.html
 env:
   FORCE_COLOR: 3
