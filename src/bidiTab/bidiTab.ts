@@ -65,14 +65,10 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   const bidiServer = await _createBidiServer(selfTargetId);
 
-  bidiServer.getCommandProcessor().on('log', (...messages: unknown[]) => {
-    log(LogType.browsingContexts, ...messages);
-  });
-
   log(LogType.system, 'Launched');
 
-  bidiServer.on('log', (...messages: unknown[]) => {
-    log(LogType.bidi, ...messages);
+  bidiServer.on('log', (messages: unknown[]) => {
+    log(messages[0] as LogType, ...messages);
   });
   bidiServer.emitOutgoingMessage(
     OutgoingBidiMessage.createResolved({launched: true}, null)

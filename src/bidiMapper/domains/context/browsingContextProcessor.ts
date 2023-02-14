@@ -24,6 +24,7 @@ import {CdpClient, CdpConnection} from '../../CdpConnection.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {IEventManager} from '../events/EventManager.js';
+import {LogType} from '../../../utils/log.js';
 import Protocol from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
@@ -130,6 +131,7 @@ export class BrowsingContextProcessor {
     }
 
     this.#log(
+      LogType.browsingContexts,
       'AttachedToTarget event received:',
       JSON.stringify(params, null, 2)
     );
