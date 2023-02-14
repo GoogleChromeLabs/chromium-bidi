@@ -98,7 +98,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-pages-artifact@v1
         with:
-          path: wptreport-chromedriver.html
+          path: out/wptreport-chromedriver.html
       - name: Deploy to GitHub Pages
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
