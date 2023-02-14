@@ -56,30 +56,19 @@ jobs:
       - name: Calculate test statistics
         run: node test-report/calculateWptTestStatistics.js wptreport-mapper.json
       - name: Update expectations
-        if: ${{ always() }}
         run: >
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper 
           wptreport-mapper.json
-      - name: Upload expectations
-        if: ${{ always() }}
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-metadata-mapper
-          path: wpt-metadata/mapper
-      - name: Upload WPT run report
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: wptreport-mapper
-          path: wptreport-mapper.json
-      - name: Upload logs
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: mapper.log
-          path: logs
+          name: wpt-mapper-artifacts
+          path: |
+            wpt-metadata/mapper
+            wptreport-mapper.json
+            logs
 env:
   FORCE_COLOR: 3
