@@ -93,7 +93,7 @@ jobs:
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/configure-pages@v3
-      - name: Upload artifact
+      - name: Upload Pages artifact
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-pages-artifact@v1
