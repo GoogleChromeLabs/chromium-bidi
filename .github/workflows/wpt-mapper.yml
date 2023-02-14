@@ -51,6 +51,7 @@ jobs:
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper
           --log-wptreport wptreport-mapper.json
+          --log-html wptreport-mapper.html
           chromium
           webdriver/tests/bidi/
       - name: Calculate test statistics
@@ -79,8 +80,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: mapper.log
-          # Note: runBiDiServer.sh will be run multiple times and log.txt will be
-          # overwritten. The problem might not be in the log.txt written last.
           path: logs
+      - name: Upload logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport-mapper.html
+          path: wptreport-mapper.html
 env:
   FORCE_COLOR: 3
