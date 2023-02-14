@@ -61,14 +61,6 @@ jobs:
 #          webdriver/tests/bidi/
       - name: Generate HTML test report
         run: node test-report/htmlWptReport.js wptreport-chromedriver.json docs/wptreport-chromedriver.html
-      - name: Fetch data
-        run: |
-          git branch test_report
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "username@users.noreply.github.com"
-          git add docs/wptreport-chromedriver.html
-          git commit -a -m "Test results obtained via GitHub Actions"
-          git push -f
       - name: Update expectations
         if: ${{ always() }}
         run: >
@@ -102,5 +94,14 @@ jobs:
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: ./docs/wptreport-chromedriver.html
+      - name: Fetch data
+        run: |
+          git branch test_report
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "username@users.noreply.github.com"
+          git add docs/wptreport-chromedriver.html
+          git commit -a -m "Test results obtained via GitHub Actions"
+          git push -f
+
 env:
   FORCE_COLOR: 3
