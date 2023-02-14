@@ -25,7 +25,7 @@ jobs:
         run: npm ci
       - name: Setup dirs
         run: |
-          mkdir -p wpt-metadata/chromedriver
+          mkdir -p wpt-metadata/chromedriver docs
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -58,8 +58,16 @@ jobs:
           --log-wptreport wptreport-chromedriver.json
           chrome
           webdriver/tests/bidi/
-      - name: Calculate test statistics
-        run: node test-report/calculateWptTestStatistics.js wptreport-chromedriver.json
+      - name: Generate HTML test report
+        run: node test-report/htmlWptReport.js wptreport-chromedriver.json docs/wptreport-chromedriver.html
+      - name: Fetch data
+        run: |
+          git branch --force test_report
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "username@users.noreply.github.com"
+          git add docs/wptreport-chromedriver.html
+          git commit -a -m "Test results obtained via GitHub Actions"
+          git push -f
       - name: Update expectations
         if: ${{ always() }}
         run: >
