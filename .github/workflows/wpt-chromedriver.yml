@@ -71,7 +71,7 @@ jobs:
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         run: >
-          node test-report/htmlWptReport.js
+          node test-report/htmlWptReport.mjs
           out/wptreport-chromedriver.json
           out/wptreport-chromedriver.html
       - name: Update expectations
@@ -99,18 +99,21 @@ jobs:
           path: out
       # The following steps should be done only for merges in `main`.
       - name: Prepare Pages
-        if: github.ref == 'refs/heads/main'
+        #        if: github.ref == 'refs/heads/main'
+        if: ${{ always() }}
         run: mkdir -p out/site; cp out/wptreport-chromedriver.html out/site/index.html
       - name: Setup Pages
         if: github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v3
       - name: Upload Pages artifact
-        if: github.ref == 'refs/heads/main'
+        #        if: github.ref == 'refs/heads/main'
+        if: ${{ always() }}
         uses: actions/upload-pages-artifact@v1
         with:
           path: out/site
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
+        #        if: github.ref == 'refs/heads/main'
+        if: ${{ always() }}
         id: deployment
         uses: actions/deploy-pages@v1
 

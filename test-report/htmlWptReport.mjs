@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
+import fs from 'fs';
 
 function readReport(filePath) {
   const rawReport = fs.readFileSync(filePath);

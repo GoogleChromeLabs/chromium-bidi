@@ -59,7 +59,10 @@ jobs:
       - name: Generate HTML test report
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
-        run: node test-report/htmlWptReport.js out/wptreport-mapper.json out/wptreport-mapper.html
+        run: >
+          node test-report/htmlWptReport.mjs
+          out/wptreport-mapper.json
+          out/wptreport-mapper.html
       - name: Update expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
