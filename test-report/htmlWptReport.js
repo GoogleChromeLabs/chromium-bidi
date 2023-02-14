@@ -83,18 +83,18 @@ function generateTestReport(test) {
   }
 
   return `
-      <div class="divider"></div>
-      <div class="test-card">
-        <details>
-          <summary class="path ${
-            stat.all === stat.pass ? 'pass' : stat.pass === 0 ? 'fail' : 'part'
-          }">
-            ${test.test}
-            <span class="stat" ><b>${stat.pass}/${stat.all}</b></span>
-          </summary>
-          ${test.subtests.map(generateSubtestReport).join('')}
-        </details>
-      </div>`;
+    <div class="divider"></div>
+    <div class="test-card">
+      <details>
+        <summary class="path ${
+          stat.all === stat.pass ? 'pass' : stat.pass === 0 ? 'fail' : 'part'
+        }">
+          ${test.test}
+          <span class="stat" ><b>${stat.pass}/${stat.all}</b></span>
+        </summary>
+        ${test.subtests.map(generateSubtestReport).join('')}
+      </details>
+    </div>`;
 }
 
 function generateSubtestReport(subtest) {
@@ -114,4 +114,3 @@ function generateSubtestReport(subtest) {
 const result = generateHtml(readReport(getReportPath()));
 
 fs.writeFileSync(getOutputPath(), result);
-console.log(result);
