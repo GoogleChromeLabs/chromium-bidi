@@ -71,8 +71,8 @@ jobs:
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         run: >
-          node test-report/htmlWptReport.js 
-          out/wptreport-chromedriver.json 
+          node test-report/htmlWptReport.js
+          out/wptreport-chromedriver.json
           out/wptreport-chromedriver.html
       - name: Update expectations
         # Force run task even if the previous tasks failed.
