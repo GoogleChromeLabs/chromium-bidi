@@ -62,7 +62,6 @@ jobs:
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper 
-          --log-html wptreport-chromedriver.html
           wptreport-mapper.json
       - name: Upload expectations
         if: ${{ always() }}
@@ -82,18 +81,5 @@ jobs:
         with:
           name: mapper.log
           path: logs
-      - name: Upload logs
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: wptreport-mapper.html
-          path: wptreport-mapper.html
-      - name: Update nightly release
-        uses: eine/tip@master
-        with:
-          tag: nightly
-          rm: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./wptreport-mapper.html
 env:
   FORCE_COLOR: 3
