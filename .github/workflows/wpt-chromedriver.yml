@@ -1,7 +1,7 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation.
 
-name: Web platform tests with Mapper
+name: Web platform tests with ChromeDriver
 
 on:
   pull_request:
@@ -23,6 +23,9 @@ jobs:
           cache: npm
       - name: Install and build npm dependencies
         run: npm ci
+      - name: Setup dirs
+        run: |
+          mkdir -p wpt-metadata/chromedriver docs
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -43,38 +46,61 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y google-chrome-unstable
       - name: Run tests
-        # For verbose logging, add --log-mach - --log-mach-level info
         run: >
-          ./wpt run
-          --webdriver-binary ../runBiDiServer.sh
-          --binary /usr/bin/google-chrome-unstable
+          ./wpt/wpt run
+          --binary-arg="--headless=new"
+          --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
+          --webdriver-arg="--log-path=chromedriver.log"
+          --webdriver-arg="--verbose"
+          --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
-          --metadata ../wpt-metadata/mapper
-          --log-wptreport wptreport.json
-          chromium
+          --metadata wpt-metadata/chromedriver
+          --log-wptreport wptreport-chromedriver.json
+          chrome
           webdriver/tests/bidi/
-        working-directory: wpt
+      - name: Generate HTML test report
+        run: node test-report/htmlWptReport.js wptreport-chromedriver.json docs/wptreport-chromedriver.html
       - name: Update expectations
         if: ${{ always() }}
         run: >
-          ./wpt update-expectations
+          ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ../wpt-metadata/mapper wptreport.json
-        working-directory: wpt
+          --metadata ./wpt-metadata/chromedriver
+          wptreport-chromedriver.json
+      - name: Upload WPT run report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: wptreport-chromedriver
+          path: wptreport-chromedriver.json
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-metadata-mapper
-          path: wpt-metadata/mapper
+          name: wpt-metadata-chromedriver
+          path: wpt-metadata/chromedriver
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: logs
-          # Note: runBiDiServer.sh will be run multiple times and log.txt will be
-          # overwritten. The problem might not be in the log.txt written last.
-          path: logs
+          name: chromedriver.log
+          path: chromedriver.log
+      - name: Publish WPT test report
+        uses: eine/tip@master
+        with:
+          tag: wptTestReport
+          rm: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./docs/wptreport-chromedriver.html
+      - name: Fetch data
+        run: |
+          git branch test_report
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "username@users.noreply.github.com"
+          git add docs/wptreport-chromedriver.html
+          git commit -a -m "Test results obtained via GitHub Actions"
+          git push -f
+
 env:
   FORCE_COLOR: 3
