@@ -70,38 +70,20 @@ jobs:
       - name: Generate HTML test report
         run: node test-report/htmlWptReport.js wptreport-chromedriver.json wptreport-chromedriver.html
       - name: Update expectations
-        if: ${{ always() }}
         run: >
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/chromedriver
           wptreport-chromedriver.json
-      - name: Upload WPT run report
-        if: ${{ always() }}
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: wptreport-chromedriver
-          path: wptreport-chromedriver.json
-      - name: Upload expectations
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: wpt-metadata-chromedriver
-          path: wpt-metadata/chromedriver
-      - name: Upload logs
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: chromedriver.log
-          path: chromedriver.log
-      - name: Publish WPT test report
-        uses: eine/tip@master
-        with:
-          tag: wptTestReport
-          rm: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: wptreport-chromedriver.html
+          name: artifacts
+          path: |
+            wptreport-chromedriver.json
+            wpt-metadata/chromedriver
+            chromedriver.log
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
