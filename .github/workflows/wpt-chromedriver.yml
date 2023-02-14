@@ -34,7 +34,7 @@ jobs:
         run: npm ci
       - name: Setup dirs
         run: |
-          mkdir -p out/report
+          mkdir -p out
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -64,13 +64,16 @@ jobs:
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
           --metadata wpt-metadata/chromedriver
-          --log-wptreport out/report/wptreport-chromedriver.json
+          --log-wptreport out/wptreport-chromedriver.json
           chrome
           webdriver/tests/bidi/
       - name: Generate HTML test report
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
-        run: node test-report/htmlWptReport.js out/report/wptreport-chromedriver.json out/report/wptreport-chromedriver.html
+        run: >
+          node test-report/htmlWptReport.js 
+          out/wptreport-chromedriver.json 
+          out/wptreport-chromedriver.html
       - name: Update expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -79,7 +82,7 @@ jobs:
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/chromedriver
-          out/report/wptreport-chromedriver.json
+          out/wptreport-chromedriver.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -94,6 +97,10 @@ jobs:
         with:
           name: wpt-chromedriver-artifacts
           path: out
+      - name: Prepare Pages
+        # Force run task even if the previous tasks failed.
+        if: ${{ always() }}
+        run: mkdir -p out/site; cp out/wptreport-chromedriver.html out/site/index.html
       - name: Setup Pages
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -103,7 +110,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-pages-artifact@v1
         with:
-          path: out/report
+          path: out/site
       - name: Deploy to GitHub Pages
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
