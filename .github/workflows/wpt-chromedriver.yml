@@ -56,7 +56,7 @@ jobs:
           --manifest MANIFEST.json
           --metadata wpt-metadata/chromedriver
           --log-wptreport wptreport-chromedriver.json
-          --log-html wptreport-chromedriver.html
+#          --log-html wptreport-chromedriver.html
           chrome
           webdriver/tests/bidi/
       - name: Calculate test statistics
@@ -68,6 +68,7 @@ jobs:
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/chromedriver
+          --log-html wptreport-chromedriver.html
           wptreport-chromedriver.json
       - name: Upload WPT run report
         if: ${{ always() }}

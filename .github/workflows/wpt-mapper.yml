@@ -51,7 +51,7 @@ jobs:
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper
           --log-wptreport wptreport-mapper.json
-          --log-html wptreport-mapper.html
+#          --log-html wptreport-mapper.html
           chromium
           webdriver/tests/bidi/
       - name: Calculate test statistics
@@ -62,7 +62,9 @@ jobs:
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper wptreport-mapper.json
+          --metadata ./wpt-metadata/mapper 
+          --log-html wptreport-chromedriver.html
+          wptreport-mapper.json
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
