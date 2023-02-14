@@ -67,7 +67,7 @@ jobs:
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper 
+          --metadata ./wpt-metadata/mapper
           out/wptreport-mapper.json
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.

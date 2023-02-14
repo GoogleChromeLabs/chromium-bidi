@@ -104,7 +104,7 @@ function generateSubtestReport(subtest) {
         <p class="non-collapsible-item path ${
           subtest.status === 'PASS' ? 'pass' : 'fail'
         }">
-          ${subtest.name} 
+          ${subtest.name}
           <span class="stat"><b>${subtest.status}</b></span>
         </p>
       </div>

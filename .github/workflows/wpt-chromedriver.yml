@@ -34,7 +34,7 @@ jobs:
         run: npm ci
       - name: Setup dirs
         run: |
-          mkdir -p out
+          mkdir -p out/report
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -64,13 +64,13 @@ jobs:
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
           --metadata wpt-metadata/chromedriver
-          --log-wptreport out/wptreport-chromedriver.json
+          --log-wptreport out/report/wptreport-chromedriver.json
           chrome
           webdriver/tests/bidi/
       - name: Generate HTML test report
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
-        run: node test-report/htmlWptReport.js out/wptreport-chromedriver.json out/wptreport-chromedriver.html
+        run: node test-report/htmlWptReport.js out/report/wptreport-chromedriver.json out/report/wptreport-chromedriver.html
       - name: Update expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -79,7 +79,7 @@ jobs:
           --product chromium
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/chromedriver
-          out/wptreport-chromedriver.json
+          out/report/wptreport-chromedriver.json
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -98,7 +98,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-pages-artifact@v1
         with:
-          path: out/wptreport-chromedriver.html
+          path: out/report
       - name: Deploy to GitHub Pages
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
