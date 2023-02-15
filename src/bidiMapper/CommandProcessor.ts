@@ -32,7 +32,6 @@ import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
 type CommandProcessorEvents = {
-  log: unknown[];
   response: Promise<OutgoingBidiMessage>;
 };
 
