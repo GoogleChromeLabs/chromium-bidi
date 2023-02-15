@@ -739,7 +739,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated(
+async def test_browsingContext_navigateSameDocumentNavigation_navigated(
         websocket, context_id):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"
@@ -756,6 +756,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated
             }
         })
 
+    # Navigate back and forth in the same document with `wait:none`.
     resp = await execute_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -778,25 +779,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated
         })
     assert resp == {'navigation': None, 'url': url_with_hash_2}
 
-
-@pytest.mark.asyncio
-async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_navigated(
-        websocket, context_id):
-    url = "data:text/html,<h2>test</h2>"
-    url_with_hash_1 = url + "#1"
-    url_with_hash_2 = url + "#2"
-
-    # Initial navigation.
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": url,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
-
+    # Navigate back and forth in the same document with `wait:interactive`.
     resp = await execute_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -853,25 +836,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
             }]
         }, result)
 
-
-@pytest.mark.asyncio
-async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navigated(
-        websocket, context_id):
-    url = "data:text/html,<h2>test</h2>"
-    url_with_hash_1 = url + "#1"
-    url_with_hash_2 = url + "#2"
-
-    # Initial navigation.
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": url,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
-
+    # Navigate back and forth in the same document with `wait:complete`.
     resp = await execute_command(
         websocket, {
             "method": "browsingContext.navigate",

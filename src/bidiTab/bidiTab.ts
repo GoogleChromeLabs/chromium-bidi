@@ -143,9 +143,8 @@ async function _createBidiServer(selfTargetId: string) {
 
     async sendMessage(message: Message.OutgoingMessage): Promise<void> {
       const messageStr = JSON.stringify(message);
-      const messagePretty = JSON.stringify(message, null, 2);
       window.sendBidiResponse(messageStr);
-      log(LogType.bidi, 'sent ▸', messagePretty);
+      log(LogType.bidi, 'sent ▸', messageStr);
     }
 
     close() {
