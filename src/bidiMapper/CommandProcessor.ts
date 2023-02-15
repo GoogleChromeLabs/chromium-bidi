@@ -27,6 +27,7 @@ import {BrowsingContextStorage} from './domains/context/browsingContextStorage.j
 import {CdpConnection} from './CdpConnection.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {IEventManager} from './domains/events/EventManager.js';
+import {LoggerFn} from '../utils/log.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
@@ -96,7 +97,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     eventManager: IEventManager,
     selfTargetId: string,
     parser: BidiParser = new BidiNoOpParser(),
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    logger?: LoggerFn
   ) {
     super();
     this.#eventManager = eventManager;
@@ -106,9 +108,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       selfTargetId,
       eventManager,
       browsingContextStorage,
-      (...messages: unknown[]) => {
-        this.emit('log', messages);
-      }
+      logger
     );
     this.#parser = parser;
   }

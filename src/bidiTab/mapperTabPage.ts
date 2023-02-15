@@ -62,7 +62,6 @@ export function generatePage() {
   findOrCreateTypeLogContainer(LogType.bidi);
   findOrCreateTypeLogContainer(LogType.browsingContexts);
   findOrCreateTypeLogContainer(LogType.cdp);
-  findOrCreateTypeLogContainer(LogType.commandParser);
 }
 
 export function log(logType: LogType, ...messages: unknown[]) {

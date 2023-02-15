@@ -67,9 +67,6 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   log(LogType.system, 'Launched');
 
-  bidiServer.on('log', (messages: unknown[]) => {
-    log(messages[0] as LogType, ...messages);
-  });
   bidiServer.emitOutgoingMessage(
     OutgoingBidiMessage.createResolved({launched: true}, null)
   );
@@ -268,7 +265,8 @@ async function _createBidiServer(selfTargetId: string) {
     new WindowBidiTransport(),
     createCdpConnection(),
     selfTargetId,
-    new BidiParserImpl()
+    new BidiParserImpl(),
+    log
   );
 }
 
