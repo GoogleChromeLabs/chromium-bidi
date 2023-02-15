@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import {LogType} from './log.js';
+import {LogType, LoggerFn} from './log.js';
 
 export class ProcessingQueue<T> {
   readonly #catch: (error: unknown) => Promise<void>;
-  readonly #log: (...messages: unknown[]) => void;
+  readonly #logger?: LoggerFn;
   readonly #processor: (arg: T) => Promise<void>;
   readonly #queue: Promise<T>[] = [];
 
@@ -29,11 +29,11 @@ export class ProcessingQueue<T> {
   constructor(
     processor: (arg: T) => Promise<void>,
     _catch: (error: unknown) => Promise<void> = () => Promise.resolve(),
-    log: (...messages: unknown[]) => void = () => {}
+    logger?: LoggerFn
   ) {
     this.#catch = _catch;
     this.#processor = processor;
-    this.#log = log;
+    this.#logger = logger;
   }
 
   add(entry: Promise<T>) {
@@ -54,7 +54,7 @@ export class ProcessingQueue<T> {
         await entryPromise
           .then((entry) => this.#processor(entry))
           .catch((e) => {
-            this.#log(LogType.system, 'Event was not processed:', e);
+            this.#logger?.(LogType.system, 'Event was not processed:', e);
             this.#catch(e);
           })
           .finally();

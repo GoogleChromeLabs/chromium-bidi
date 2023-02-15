@@ -21,10 +21,10 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {CdpClient, CdpConnection} from '../../CdpConnection.js';
+import {LogType, LoggerFn} from '../../../utils/log.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {IEventManager} from '../events/EventManager.js';
-import {LogType} from '../../../utils/log.js';
 import Protocol from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
@@ -33,7 +33,7 @@ export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #cdpConnection: CdpConnection;
   readonly #eventManager: IEventManager;
-  readonly #log: (...messages: unknown[]) => void;
+  readonly #logger?: LoggerFn;
   readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
   readonly #sessions: Set<string>;
@@ -44,12 +44,12 @@ export class BrowsingContextProcessor {
     selfTargetId: string,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
-    log: (...messages: unknown[]) => void = () => {}
+    logger?: LoggerFn
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#cdpConnection = cdpConnection;
     this.#eventManager = eventManager;
-    this.#log = log;
+    this.#logger = logger;
     this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
     this.#sessions = new Set();
@@ -130,7 +130,7 @@ export class BrowsingContextProcessor {
       return;
     }
 
-    this.#log(
+    this.#logger?.(
       LogType.browsingContexts,
       'AttachedToTarget event received:',
       JSON.stringify(params, null, 2)

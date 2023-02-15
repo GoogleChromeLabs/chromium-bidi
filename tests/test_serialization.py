@@ -80,9 +80,7 @@ async def assert_serialization(websocket, context_id, js_str_object,
 
 
 async def assert_callFunction_deserialization_serialization(
-        websocket,
-        context_id,
-        serialized_object,
+        websocket, context_id, serialized_object,
         expected_serialized_object=None):
     if expected_serialized_object is None:
         expected_serialized_object = serialized_object
