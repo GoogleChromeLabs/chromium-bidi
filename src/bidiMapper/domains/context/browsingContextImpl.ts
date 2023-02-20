@@ -330,7 +330,7 @@ export class BrowsingContextImpl {
         }
 
         if (params.name === 'init') {
-          this.#documentMaybeChanged(params.loaderId);
+          this.#documentChanged(params.loaderId);
           this.#targetDefers.documentInitialized.resolve();
         }
 
@@ -435,13 +435,13 @@ export class BrowsingContextImpl {
       : params.context.origin;
   }
 
-  #documentMaybeChanged(loaderId?: string) {
-    if (this.#targetDefers.Page.navigatedWithinDocument.isFinished) {
-      this.#targetDefers.Page.navigatedWithinDocument =
-        new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
-    }
-
-    if (this.#loaderId === loaderId || loaderId === undefined) {
+  #documentChanged(loaderId?: string) {
+    // Same document navigation.
+    if (loaderId === undefined || this.#loaderId === loaderId) {
+      if (this.#targetDefers.Page.navigatedWithinDocument.isFinished) {
+        this.#targetDefers.Page.navigatedWithinDocument =
+          new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
+      }
       return;
     }
 
@@ -486,7 +486,7 @@ export class BrowsingContextImpl {
       throw new Message.UnknownException(cdpNavigateResult.errorText);
     }
 
-    this.#documentMaybeChanged(cdpNavigateResult.loaderId);
+    this.#documentChanged(cdpNavigateResult.loaderId);
 
     // Wait for `wait` condition.
     switch (wait) {
