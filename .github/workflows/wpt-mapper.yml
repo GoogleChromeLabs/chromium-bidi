@@ -55,7 +55,7 @@ jobs:
           --webdriver-binary ./runBiDiServer.sh
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
-          --metadata ./${{ matrix.head }}-metadata/mapper
+          --metadata ./wpt-metadata/mapper/${{ matrix.head }}
           --log-wptreport out/wptreport-mapper.json
           chromium
           webdriver/tests/bidi/
@@ -68,7 +68,7 @@ jobs:
           --webdriver-arg="--headless=false"
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
-          --metadata ./${{ matrix.head }}-metadata/mapper
+          --metadata ./wpt-metadata/mapper/${{ matrix.head }}
           --log-wptreport out/wptreport-mapper.json
           --timeout-multiplier 8
           chromium
@@ -87,15 +87,15 @@ jobs:
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ./${{ matrix.head }}-metadata/mapper
+          --metadata ./wpt-metadata/mapper/${{ matrix.head }}
           out/wptreport-mapper.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.head }}-metadata-mapper
-          path: ${{ matrix.head }}-metadata/mapper
+          name: wpt-metadata-mapper-${{ matrix.head }}
+          path: wpt-metadata/mapper/${{ matrix.head }}
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
