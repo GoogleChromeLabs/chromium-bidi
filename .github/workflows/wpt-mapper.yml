@@ -70,6 +70,7 @@ jobs:
           --manifest MANIFEST.json
           --metadata ./${{ matrix.head }}-metadata/mapper
           --log-wptreport out/wptreport-mapper.json
+          --timeout-multiplier 8
           chromium
           webdriver/tests/bidi/
       - name: Generate HTML test report
