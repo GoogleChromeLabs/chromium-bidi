@@ -101,7 +101,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-mapper-artifacts
+          name: ${{ matrix.head }}-artifacts
           path: |
             out
             logs
