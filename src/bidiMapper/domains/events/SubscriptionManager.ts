@@ -80,11 +80,8 @@ export class SubscriptionManager {
 
     const maybeTopLevelContextId = this.#findTopLevelContextId(contextId);
 
-    const relevantContexts = [
-      // `null` covers global subscription.
-      null,
-      ...(maybeTopLevelContextId === null ? [] : [maybeTopLevelContextId]),
-    ];
+    // `null` covers global subscription.
+    const relevantContexts = [...new Set([null, maybeTopLevelContextId])];
 
     // Get all the subscription priorities.
     const priorities: number[] = relevantContexts
