@@ -167,11 +167,11 @@ export class EventManager implements IEventManager {
       }
     }
 
-    for (const event of events) {
+    for (const eventName of events) {
       for (const contextId of contextIds) {
-        this.#subscriptionManager.subscribe(event, contextId, channel);
+        this.#subscriptionManager.subscribe(eventName, contextId, channel);
         for (const eventWrapper of this.#getBufferedEvents(
-          event,
+          eventName,
           contextId,
           channel
         )) {
@@ -179,7 +179,7 @@ export class EventManager implements IEventManager {
           this.#bidiServer.emitOutgoingMessage(
             OutgoingBidiMessage.createFromPromise(eventWrapper.event, channel)
           );
-          this.#markEventSent(eventWrapper, channel, event);
+          this.#markEventSent(eventWrapper, channel, eventName);
         }
       }
     }
