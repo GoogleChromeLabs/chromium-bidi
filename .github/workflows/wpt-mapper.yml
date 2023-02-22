@@ -13,10 +13,10 @@ jobs:
       matrix:
         include:
           - head: headless
-            command_prefix: ''
+            headless_command_prefix: ''
             wpt_headless_argument: --webdriver-arg="--headless=true"
           - head: headful
-            command_prefix: xvfb-run --auto-servernum
+            headless_command_prefix: xvfb-run --auto-servernum
             wpt_headless_argument: --webdriver-arg="--headless=false"
     name: Web platform tests with Mapper (${{ matrix.head }})
     steps:
@@ -55,7 +55,7 @@ jobs:
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
-          ${{ matrix.command_prefix }}
+          ${{ matrix.headless_command_prefix }}
           ./wpt/wpt run
           --webdriver-binary ./runBiDiServer.sh
           ${{ matrix.wpt_headless_argument }}
