@@ -13,7 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        head: [wpt, wpt-headful]
+        include:
+          - head: headless
+            command_prefix: ''
+            wpt_argument: --webdriver-arg="--headless=true"
+          - head: headful
+            command_prefix: xvfb-run --auto-servernum
+            wpt_argument: --webdriver-arg="--headless=false"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,25 +53,13 @@ jobs:
           sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
           sudo apt-get update
           sudo apt-get install -y google-chrome-unstable
-      - name: Run tests (headless)
-        if: ${{ matrix.head == 'wpt' }}
+      - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
+          ${{ matrix.command_prefix }}
           ./wpt/wpt run
           --webdriver-binary ./runBiDiServer.sh
-          --binary /usr/bin/google-chrome-unstable
-          --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper/${{ matrix.head }}
-          --log-wptreport out/wptreport-mapper.json
-          chromium
-          webdriver/tests/bidi/
-      - name: Run tests (headful)
-        if: ${{ matrix.head == 'wpt-headful' }}
-        run: >
-          xvfb-run --auto-servernum
-          ./wpt/wpt run
-          --webdriver-binary ./runBiDiServer.sh
-          --webdriver-arg="--headless=false"
+          ${{ matrix.wpt_argument }}
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper/${{ matrix.head }}
