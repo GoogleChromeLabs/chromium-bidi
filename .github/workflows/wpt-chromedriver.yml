@@ -71,7 +71,7 @@ jobs:
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/chromedriver/headless
+          --metadata wpt-metadata/chromedriver/headless
           out/wptreport-chromedriver.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.

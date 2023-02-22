@@ -59,11 +59,11 @@ jobs:
         run: >
           ${{ matrix.headless_command_prefix }}
           ./wpt/wpt run
-          --webdriver-binary ./runBiDiServer.sh
+          --webdriver-binary runBiDiServer.sh
           ${{ matrix.wpt_headless_argument }}
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper/${{ matrix.head }}
+          --metadata wpt-metadata/mapper/${{ matrix.head }}
           --log-wptreport out/wptreport-mapper.json
           --timeout-multiplier 8
           chromium
@@ -82,7 +82,7 @@ jobs:
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper/${{ matrix.head }}
+          --metadata wpt-metadata/mapper/${{ matrix.head }}
           out/wptreport-mapper.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.
