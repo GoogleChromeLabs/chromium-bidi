@@ -20,6 +20,7 @@ jobs:
           - head: headful
             command_prefix: xvfb-run --auto-servernum
             wpt_argument: --webdriver-arg="--headless=false"
+    name: Web platform tests with Mapper (${{ matrix.head }})
     steps:
       - name: Checkout
         uses: actions/checkout@v3

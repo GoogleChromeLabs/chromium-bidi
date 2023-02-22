@@ -305,7 +305,7 @@ export WPT_BROWSER_PATH="/Applications/Microsoft Edge.app/Contents/MacOS/Microso
 
 https://www.google.com/chrome/dev/
 
-#### 2. Build ChromeDriver BiDi
+#### 2. Build Chromedriver BiDi
 
 Oneshot:
 

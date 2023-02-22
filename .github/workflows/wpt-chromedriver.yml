@@ -1,7 +1,7 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation.
 
-name: Web platform tests with ChromeDriver
+name: Web platform tests with Chromedriver (headless)
 
 on:
   pull_request:
