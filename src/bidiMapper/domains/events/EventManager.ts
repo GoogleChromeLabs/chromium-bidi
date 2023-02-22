@@ -267,8 +267,15 @@ export class EventManager implements IEventManager {
     if (contextId === null) {
       // For global subscriptions, events buffered in each context should be sent back.
       Array.from(this.#eventToContextsMap.get(eventName)?.keys() ?? [])
-        // Events without context are already in the result.
-        .filter((_contextId) => _contextId !== null)
+        .filter(
+          (_contextId) =>
+            // Events without context are already in the result.
+            _contextId !== null &&
+            // Events from deleted contexts should not be sent.
+            this.#bidiServer
+              .getBrowsingContextStorage()
+              .hasKnownContext(_contextId)
+        )
         .map((_contextId) =>
           this.#getBufferedEvents(eventName, _contextId, channel)
         )
