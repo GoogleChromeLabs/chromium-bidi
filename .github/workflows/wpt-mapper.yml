@@ -1,6 +1,8 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation.
 
+name: Web platform tests with Mapper
+
 on:
   pull_request:
   push:
@@ -18,7 +20,7 @@ jobs:
           - head: headful
             headless_command_prefix: xvfb-run --auto-servernum
             wpt_headless_argument: --webdriver-arg="--headless=false"
-    name: Web platform tests with Mapper (${{ matrix.head }})
+    name: (${{ matrix.head }})
     steps:
       - name: Checkout
         uses: actions/checkout@v3
