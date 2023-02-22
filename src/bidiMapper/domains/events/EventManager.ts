@@ -159,17 +159,16 @@ export class EventManager implements IEventManager {
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
-    for (const eventName of events) {
-      for (const contextId of contextIds) {
-        if (
-          contextId !== null &&
-          !this.#bidiServer
-            .getBrowsingContextStorage()
-            .hasKnownContext(contextId)
-        ) {
-          // Unknown context. Do nothing.
-          continue;
-        }
+    // First check if all the contexts are known.
+    for (const contextId of contextIds) {
+      if (contextId !== null) {
+        // Assert the context is known. Throw exception otherwise.
+        this.#bidiServer.getBrowsingContextStorage().getKnownContext(contextId);
+      }
+    }
+
+    for (const contextId of contextIds) {
+      for (const eventName of events) {
         this.#subscriptionManager.subscribe(eventName, contextId, channel);
         for (const eventWrapper of this.#getBufferedEvents(
           eventName,
