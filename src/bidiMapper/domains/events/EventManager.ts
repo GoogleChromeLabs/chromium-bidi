@@ -155,7 +155,7 @@ export class EventManager implements IEventManager {
   }
 
   async subscribe(
-    events: Session.SubscribeParametersEvent[],
+    eventNames: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
@@ -167,7 +167,7 @@ export class EventManager implements IEventManager {
       }
     }
 
-    for (const eventName of events) {
+    for (const eventName of eventNames) {
       for (const contextId of contextIds) {
         this.#subscriptionManager.subscribe(eventName, contextId, channel);
         for (const eventWrapper of this.#getBufferedEvents(
@@ -186,7 +186,7 @@ export class EventManager implements IEventManager {
   }
 
   async unsubscribe(
-    events: Session.SubscribeParametersEvent[],
+    eventNames: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
@@ -198,9 +198,9 @@ export class EventManager implements IEventManager {
       }
     }
 
-    for (const event of events) {
+    for (const eventName of eventNames) {
       for (const contextId of contextIds) {
-        this.#subscriptionManager.unsubscribe(event, contextId, channel);
+        this.#subscriptionManager.unsubscribe(eventName, contextId, channel);
       }
     }
   }
