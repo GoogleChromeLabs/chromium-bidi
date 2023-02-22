@@ -110,6 +110,127 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
 
 
 @pytest.mark.asyncio
+async def test_subscribeToNestedContext_subscribesToTopLevelContext(
+        websocket, context_id, iframe_id):
+    await subscribe(websocket, "log.entryAdded", iframe_id)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert event received in `CHANNEL_2`.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "method": "log.entryAdded",
+        "params": any_value,
+    }, resp)
+
+
+@pytest.mark.asyncio
+async def test_subscribeToNestedContextAndUnsubscribeFromTopLevelContext_unsubscribedFromTopLevelContext(
+        websocket, context_id, iframe_id):
+    await subscribe(websocket, "log.entryAdded", iframe_id)
+    await execute_command(
+        websocket, {
+            "method": "session.unsubscribe",
+            "params": {
+                "events": ["log.entryAdded"],
+                "contexts": [context_id]
+            }
+        })
+
+    # Assert unsubscribed from top level context.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script is ended without any events before.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
+
+    # Assert unsubscribed from nested context.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": iframe_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script is ended without any events before.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
+
+
+@pytest.mark.asyncio
+async def test_subscribeToTopLevelContextAndUnsubscribeFromNestedContext_unsubscribedFromTopLevelContext(
+        websocket, context_id, iframe_id):
+    await subscribe(websocket, "log.entryAdded", context_id)
+    await execute_command(
+        websocket, {
+            "method": "session.unsubscribe",
+            "params": {
+                "events": ["log.entryAdded"],
+                "contexts": [iframe_id]
+            }
+        })
+
+    # Assert unsubscribed from top level context.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script is ended without any events before.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
+
+    # Assert unsubscribed from nested context.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": iframe_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script is ended without any events before.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
+
+
+@pytest.mark.asyncio
 async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
         websocket, context_id):
     # 1. Get 2 contexts.
