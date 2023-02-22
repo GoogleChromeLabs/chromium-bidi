@@ -14,13 +14,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - head: headless
-            headless_command_prefix: ''
-            wpt_headless_argument: --webdriver-arg="--headless=true"
           - head: headful
             headless_command_prefix: xvfb-run --auto-servernum
             wpt_headless_argument: --webdriver-arg="--headless=false"
-    name: (${{ matrix.head }})
+          - head: headless
+            headless_command_prefix: ''
+            wpt_headless_argument: --webdriver-arg="--headless=true"
+    name: ${{ matrix.head }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
