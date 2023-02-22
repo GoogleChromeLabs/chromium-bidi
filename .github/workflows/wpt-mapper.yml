@@ -16,10 +16,10 @@ jobs:
         include:
           - head: headless
             command_prefix: ''
-            wpt_argument: --webdriver-arg="--headless=true"
+            wpt_headless_argument: --webdriver-arg="--headless=true"
           - head: headful
             command_prefix: xvfb-run --auto-servernum
-            wpt_argument: --webdriver-arg="--headless=false"
+            wpt_headless_argument: --webdriver-arg="--headless=false"
     name: Web platform tests with Mapper (${{ matrix.head }})
     steps:
       - name: Checkout
@@ -60,7 +60,7 @@ jobs:
           ${{ matrix.command_prefix }}
           ./wpt/wpt run
           --webdriver-binary ./runBiDiServer.sh
-          ${{ matrix.wpt_argument }}
+          ${{ matrix.wpt_headless_argument }}
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
           --metadata ./wpt-metadata/mapper/${{ matrix.head }}
