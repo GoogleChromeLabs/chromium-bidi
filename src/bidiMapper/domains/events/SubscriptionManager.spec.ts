@@ -195,7 +195,17 @@ describe('test SubscriptionManager', () => {
       ).to.deep.equal([]);
     });
     it('should unsubscribe the domain', () => {
-      subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
+      subscriptionManager.subscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
+      subscriptionManager.unsubscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          SOME_EVENT,
+          SOME_CONTEXT
+        )
+      ).to.deep.equal([]);
+    });
+    it('should not unsubscribe the domain if not subscribed', () => {
+      subscriptionManager.subscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.unsubscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
@@ -292,11 +302,14 @@ describe('test SubscriptionManager', () => {
     });
     it('should not unsubscribe from top-level context when unsubscribed from nested context in different channel', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
-      subscriptionManager.unsubscribe(
-        SOME_EVENT,
-        SOME_NESTED_CONTEXT,
-        ANOTHER_CHANNEL
-      );
+      expect(() => {
+        subscriptionManager.unsubscribe(
+          SOME_EVENT,
+          SOME_NESTED_CONTEXT,
+          ANOTHER_CHANNEL
+        );
+      }).to.throw();
+
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,

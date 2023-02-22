@@ -20,9 +20,11 @@ import {
   CDP,
   CommonDataTypes,
   Log,
+  Message,
   Session,
 } from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import InvalidArgumentException = Message.InvalidArgumentException;
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;
@@ -184,14 +186,24 @@ export class SubscriptionManager {
     }
 
     if (!this.#channelToContextToEventMap.has(channel)) {
-      return;
+      throw new InvalidArgumentException(
+        `Cannot unsubscribe from ${event}, ${contextId} as not subscribed.`
+      );
     }
     const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
 
     if (!contextToEventMap.has(contextId)) {
-      return;
+      throw new InvalidArgumentException(
+        `Cannot unsubscribe from ${event}, ${contextId} as not subscribed.`
+      );
     }
     const eventMap = contextToEventMap.get(contextId)!;
+
+    if (!eventMap.has(event)) {
+      throw new InvalidArgumentException(
+        `Cannot unsubscribe from ${event}, ${contextId} as not subscribed.`
+      );
+    }
 
     eventMap.delete(event);
 

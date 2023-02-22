@@ -18,6 +18,24 @@ from test_helpers import *
 
 
 @pytest.mark.asyncio
+async def test_subscribeForUnknownContext_exceptionReturned(websocket):
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {
+                "method": "session.subscribe",
+                "params": {
+                    "events": ["browsingContext.load"],
+                    "contexts": ["UNKNOWN_CONTEXT_ID"]
+                }
+            })
+    recursive_compare(
+        {
+            'error': 'no such frame',
+            'message': 'Context UNKNOWN_CONTEXT_ID not found'
+        }, exception_info.value.args[0])
+
+
+@pytest.mark.asyncio
 async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
         websocket, context_id):
     result = await execute_command(

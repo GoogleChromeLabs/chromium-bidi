@@ -167,11 +167,11 @@ export class EventManager implements IEventManager {
       }
     }
 
-    for (const contextId of contextIds) {
-      for (const eventName of events) {
-        this.#subscriptionManager.subscribe(eventName, contextId, channel);
+    for (const event of events) {
+      for (const contextId of contextIds) {
+        this.#subscriptionManager.subscribe(event, contextId, channel);
         for (const eventWrapper of this.#getBufferedEvents(
-          eventName,
+          event,
           contextId,
           channel
         )) {
@@ -179,7 +179,7 @@ export class EventManager implements IEventManager {
           this.#bidiServer.emitOutgoingMessage(
             OutgoingBidiMessage.createFromPromise(eventWrapper.event, channel)
           );
-          this.#markEventSent(eventWrapper, channel, eventName);
+          this.#markEventSent(eventWrapper, channel, event);
         }
       }
     }
@@ -190,6 +190,14 @@ export class EventManager implements IEventManager {
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
+    // First check if all the contexts are known.
+    for (const contextId of contextIds) {
+      if (contextId !== null) {
+        // Assert the context is known. Throw exception otherwise.
+        this.#bidiServer.getBrowsingContextStorage().getKnownContext(contextId);
+      }
+    }
+
     for (const event of events) {
       for (const contextId of contextIds) {
         this.#subscriptionManager.unsubscribe(event, contextId, channel);
