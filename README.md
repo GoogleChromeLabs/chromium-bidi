@@ -326,7 +326,7 @@ npm run watch
   --webdriver-binary runBiDiServer.sh \
   --binary "$WPT_BROWSER_PATH" \
   --manifest wpt/MANIFEST.json \
-  --metadata wpt-metadata \
+  --metadata wpt-metadata/mapper/headless \
   chromium \
   webdriver/tests/bidi/
 ```
@@ -340,7 +340,7 @@ npm run watch
   --webdriver-binary runBiDiServer.sh \
   --binary "$WPT_BROWSER_PATH" \
   --manifest wpt/MANIFEST.json \
-  --metadata wpt-metadata \
+  --metadata wpt-metadata/mapper/headless \
   --log-wptreport wptreport.json \
   chromium \
   webdriver/tests/bidi/
@@ -352,7 +352,7 @@ npm run watch
 ./wpt/wpt update-expectations \
   --product chromium \
   --manifest wpt/MANIFEST.json \
-  --metadata wpt-metadata \
+  --metadata wpt-metadata/mapper/headless \
   wptreport.json
 ```
 
