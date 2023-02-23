@@ -187,21 +187,21 @@ export class SubscriptionManager {
 
     if (!this.#channelToContextToEventMap.has(channel)) {
       throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${contextId} as not subscribed.`
+        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
       );
     }
     const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
 
     if (!contextToEventMap.has(contextId)) {
       throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${contextId} as not subscribed.`
+        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
       );
     }
     const eventMap = contextToEventMap.get(contextId)!;
 
     if (!eventMap.has(event)) {
       throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${contextId} as not subscribed.`
+        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
       );
     }
 
