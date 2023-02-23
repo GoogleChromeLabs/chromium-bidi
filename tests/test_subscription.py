@@ -144,7 +144,7 @@ async def test_subscribeToNestedContext_subscribesToTopLevelContext(
             }
         })
 
-    # Assert event received in `CHANNEL_2`.
+    # Assert event received.
     resp = await read_JSON_message(websocket)
     recursive_compare({
         "method": "log.entryAdded",
