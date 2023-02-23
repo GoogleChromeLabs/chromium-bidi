@@ -17,7 +17,7 @@ npm run build && \
   --webdriver-arg="--headless=true" \
   --log-wptreport wptreport.json \
   --manifest wpt/MANIFEST.json \
-  --metadata wpt-metadata/mapper \
+  --metadata wpt-metadata/mapper/headless \
   --timeout-multiplier 8 \
   chromium \
   "$@")
