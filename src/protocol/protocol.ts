@@ -143,7 +143,6 @@ export namespace CommonDataTypes {
     type: 'undefined';
   };
 
-  //
   // NullValue = {
   //   type: "null",
   // }
@@ -163,7 +162,6 @@ export namespace CommonDataTypes {
   // SpecialNumber = "NaN" / "-0" / "Infinity" / "-Infinity";
   export type SpecialNumber = 'NaN' | '-0' | 'Infinity' | '-Infinity';
 
-  //
   // NumberValue = {
   //   type: "number",
   //   value: number / SpecialNumber,
@@ -531,7 +529,6 @@ export namespace Script {
     realm: string;
   };
 
-  //
   // Target = (
   //   RealmTarget //
   //   ContextTarget
