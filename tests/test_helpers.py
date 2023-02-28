@@ -15,7 +15,7 @@
 
 import json
 
-_command_counter = 1
+_command_counter = 0
 
 
 def get_next_command_id():
