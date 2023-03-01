@@ -90,6 +90,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -101,6 +102,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -133,6 +135,7 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -144,6 +147,7 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -186,6 +190,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -207,6 +212,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
