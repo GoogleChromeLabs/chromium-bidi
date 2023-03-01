@@ -14,112 +14,16 @@
 # limitations under the License.
 
 import json
-import os
 
-import pytest_asyncio
-import websockets
+from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT
 
-_command_counter = 1
+_command_counter = 0
 
 
 def get_next_command_id():
     global _command_counter
     _command_counter += 1
     return _command_counter
-
-
-@pytest_asyncio.fixture
-async def websocket():
-    port = os.getenv("PORT", 8080)
-    url = f"ws://localhost:{port}"
-    async with websockets.connect(url) as connection:
-        yield connection
-
-
-@pytest_asyncio.fixture
-async def default_realm(context_id, websocket):
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "globalThis",
-                "target": {
-                    "context": context_id,
-                },
-                "awaitPromise": True
-            }
-        })
-
-    return result["realm"]
-
-
-@pytest_asyncio.fixture
-async def sandbox_realm(context_id, websocket):
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "globalThis",
-                "target": {
-                    "context": context_id,
-                    "sandbox": 'some_sandbox'
-                },
-                "awaitPromise": True
-            }
-        })
-
-    return result["realm"]
-
-
-@pytest_asyncio.fixture
-async def context_id(websocket):
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
-    return result["contexts"][0]["context"]
-
-
-@pytest_asyncio.fixture
-async def another_context_id(websocket):
-    result = await execute_command(websocket, {
-        "method": "browsingContext.create",
-        "params": {
-            "type": "tab"
-        }
-    })
-    return result['context']
-
-
-@pytest_asyncio.fixture
-async def page_with_nested_iframe_url():
-    return f'data:text/html,<h1>MAIN_PAGE</h1>' \
-           f'<iframe src="about:blank" />'
-
-
-@pytest_asyncio.fixture
-async def iframe_id(context_id, websocket, page_with_nested_iframe_url):
-    await goto_url(websocket, context_id, page_with_nested_iframe_url)
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id
-        }
-    })
-
-    iframe_id = result["contexts"][0]["children"][0]["context"]
-
-    # To avoid issue with the events order in headful mode, navigate to some
-    # page: https://crbug.com/1353719
-    await goto_url(websocket, iframe_id, "data:text/html,<h1>FRAME</h1>")
-
-    return iframe_id
-
-
-@pytest_asyncio.fixture(autouse=True)
-async def before_each_test(websocket):
-    # This method can be used for browser state preparation.
-    assert True
 
 
 async def subscribe(websocket, event_names, context_ids=None, channel=None):
@@ -142,81 +46,12 @@ async def subscribe(websocket, event_names, context_ids=None, channel=None):
     await execute_command(websocket, command)
 
 
-# Compares 2 objects recursively.
-# Expected value can be a callable delegate, asserting the value.
-def recursive_compare(expected, actual):
-    if callable(expected):
-        return expected(actual)
-    assert type(expected) == type(actual)
-    if type(expected) is list:
-        assert len(expected) == len(actual)
-        for index, val in enumerate(expected):
-            recursive_compare(expected[index], actual[index])
-        return
+ANY_SHARED_ID = ANY_STR & AnyContains("_element_")
 
-    if type(expected) is dict:
-        assert expected.keys() == actual.keys(), \
-            f"Key sets should be the same: " \
-            f"\nNot present: {set(expected.keys()) - set(actual.keys())}" \
-            f"\nUnexpected: {set(actual.keys()) - set(expected.keys())}"
-        for index, val in enumerate(expected):
-            recursive_compare(expected[val], actual[val])
-        return
-
-    assert expected == actual
-
-
-def any_string(actual):
-    assert isinstance(actual, str), \
-        f"'{actual}' should be string, " \
-        f"but is {type(actual)} instead."
-
-
-def string_containing(expected_substring):
-
-    def _(actual):
-        any_string(actual)
-        assert expected_substring in actual, f"'{actual}' should contain " \
-                                             f"{expected_substring}."
-
-    return _
-
-
-def any_shared_id(actual):
-    string_containing("_element_")(actual)
-
-
-def not_one_of(not_expected_list):
-
-    def _not_one_of(actual):
-        for not_expected in not_expected_list:
-            assert actual != not_expected
-
-    return _not_one_of
-
-
-def compare_sorted(key_name, expected):
-
-    def _compare_sorted(actual):
-        recursive_compare(sorted(expected, key=lambda x: x[key_name]),
-                          sorted(actual, key=lambda x: x[key_name]))
-
-    return _compare_sorted
-
-
-def any_timestamp(actual):
-    assert isinstance(actual, int), \
-        f"'{actual}' should be an integer, " \
-        f"but is {type(actual)} instead."
-    # Check if the timestamp has the proper order of magnitude between
-    # "2020-01-01 00:00:00" (1577833200000) and
-    # "2100-01-01 00:00:00" (4102441200000).
-    assert 1577833200000 < actual < 4102441200000, \
-        f"'{actual}' should be in epoch milliseconds format."
-
-
-def any_value(_):
-    return
+# Check if the timestamp has the proper order of magnitude between
+# "2020-01-01 00:00:00" (1577833200000) and
+# "2100-01-01 00:00:00" (4102441200000).
+ANY_TIMESTAMP = ANY_NUMBER & AnyGT(1577833200000) & AnyLT(4102441200000)
 
 
 async def send_JSON_command(websocket, command):
