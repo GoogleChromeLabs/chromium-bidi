@@ -17,7 +17,7 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_STR
-from test_helpers import *
+from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio
@@ -605,38 +605,6 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
         "result": {
             "type": "string",
             "value": "Number"
-        }
-    } == result
-
-
-@pytest.mark.asyncio
-@pytest.mark.skip(
-    reason="TODO(sadym): Serialize Number, String etc classes properly.")
-async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
-        websocket, context_id):
-    result = await execute_command(
-        websocket, {
-            "method": "script.callFunction",
-            "params": {
-                "functionDeclaration": "function(){return this}",
-                "this": {
-                    "type": "number",
-                    "value": 42
-                },
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
-
-    assert {
-        "type": "success",
-        "realm": ANY_STR,
-        "result": {
-            "type": "number",
-            "value": 42
         }
     } == result
 
