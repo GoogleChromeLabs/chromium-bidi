@@ -45,52 +45,52 @@ export function parseObject<T extends ZodType>(
 }
 
 export namespace CommonDataTypes {
-  export const SharedReferenceSchema = zod.object({
+  export const SharedReference = zod.object({
     sharedId: zod.string().min(1),
   });
-  export type SharedReference = zod.infer<typeof SharedReferenceSchema>;
+  export type SharedReference = zod.infer<typeof SharedReference>;
 
-  export const RemoteReferenceSchema = zod.object({
+  export const RemoteReference = zod.object({
     handle: zod.string().min(1),
   });
-  export type RemoteReference = zod.infer<typeof RemoteReferenceSchema>;
+  export type RemoteReference = zod.infer<typeof RemoteReference>;
 
   // UndefinedValue = {
   //   type: "undefined",
   // }
-  const UndefinedValueSchema = zod.object({type: zod.literal('undefined')});
+  const UndefinedValue = zod.object({type: zod.literal('undefined')});
 
   // NullValue = {
   //   type: "null",
   // }
-  const NullValueSchema = zod.object({type: zod.literal('null')});
+  const NullValue = zod.object({type: zod.literal('null')});
 
   // StringValue = {
   //   type: "string",
   //   value: text,
   // }
-  const StringValueSchema = zod.object({
+  const StringValue = zod.object({
     type: zod.literal('string'),
     value: zod.string(),
   });
 
   // SpecialNumber = "NaN" / "-0" / "Infinity" / "-Infinity";
-  const SpecialNumberSchema = zod.enum(['NaN', '-0', 'Infinity', '-Infinity']);
+  const SpecialNumber = zod.enum(['NaN', '-0', 'Infinity', '-Infinity']);
 
   // NumberValue = {
   //   type: "number",
   //   value: number / SpecialNumber,
   // }
-  const NumberValueSchema = zod.object({
+  const NumberValue = zod.object({
     type: zod.literal('number'),
-    value: zod.union([SpecialNumberSchema, zod.number()]),
+    value: zod.union([SpecialNumber, zod.number()]),
   });
 
   // BooleanValue = {
   //   type: "boolean",
   //   value: bool,
   // }
-  const BooleanValueSchema = zod.object({
+  const BooleanValue = zod.object({
     type: zod.literal('boolean'),
     value: zod.boolean(),
   });
@@ -99,23 +99,21 @@ export namespace CommonDataTypes {
   //   type: "bigint",
   //   value: text,
   // }
-  const BigIntValueSchema = zod.object({
+  const BigIntValue = zod.object({
     type: zod.literal('bigint'),
     value: zod.string(),
   });
 
-  const PrimitiveProtocolValueSchema = zod.union([
-    UndefinedValueSchema,
-    NullValueSchema,
-    StringValueSchema,
-    NumberValueSchema,
-    BooleanValueSchema,
-    BigIntValueSchema,
+  const PrimitiveProtocolValue = zod.union([
+    UndefinedValue,
+    NullValue,
+    StringValue,
+    NumberValue,
+    BooleanValue,
+    BigIntValue,
   ]);
 
-  export type PrimitiveProtocolValue = zod.infer<
-    typeof PrimitiveProtocolValueSchema
-  >;
+  export type PrimitiveProtocolValue = zod.infer<typeof PrimitiveProtocolValue>;
 
   // LocalValue = {
   //   PrimitiveProtocolValue //
@@ -138,56 +136,56 @@ export namespace CommonDataTypes {
     | RegExpLocalValue
     | SetLocalValue;
 
-  export const LocalValueSchema: zod.ZodType<LocalValue> = zod.lazy(() =>
+  export const LocalValue: zod.ZodType<LocalValue> = zod.lazy(() =>
     zod.union([
-      PrimitiveProtocolValueSchema,
-      ArrayLocalValueSchema,
-      DateLocalValueSchema,
-      MapLocalValueSchema,
-      ObjectLocalValueSchema,
-      RegExpLocalValueSchema,
-      SetLocalValueSchema,
+      PrimitiveProtocolValue,
+      ArrayLocalValue,
+      DateLocalValue,
+      MapLocalValue,
+      ObjectLocalValue,
+      RegExpLocalValue,
+      SetLocalValue,
     ])
   );
 
   // Order is important, as `parse` is processed in the same order.
-  // `SharedReferenceSchema`->`RemoteReferenceSchema`->`LocalValueSchema`.
-  const LocalOrRemoteValueSchema = zod.union([
-    SharedReferenceSchema,
-    RemoteReferenceSchema,
-    LocalValueSchema,
+  // `SharedReference`->`RemoteReference`->`LocalValue`.
+  const LocalOrRemoteValue = zod.union([
+    SharedReference,
+    RemoteReference,
+    LocalValue,
   ]);
 
   // ListLocalValue = [*LocalValue];
-  const ListLocalValueSchema = zod.array(LocalOrRemoteValueSchema);
+  const ListLocalValue = zod.array(LocalOrRemoteValue);
 
   // ArrayLocalValue = {
   //   type: "array",
   //   value: ListLocalValue,
   // }
-  const ArrayLocalValueSchema: zod.ZodType = zod.lazy(() =>
+  const ArrayLocalValue: zod.ZodType = zod.lazy(() =>
     zod.object({
       type: zod.literal('array'),
-      value: ListLocalValueSchema,
+      value: ListLocalValue,
     })
   );
-  export type ArrayLocalValue = zod.infer<typeof ArrayLocalValueSchema>;
+  export type ArrayLocalValue = zod.infer<typeof ArrayLocalValue>;
 
   // DateLocalValue = {
   //   type: "date",
   //   value: text
   // }
-  const DateLocalValueSchema = zod.object({
+  const DateLocalValue = zod.object({
     type: zod.literal('date'),
     value: zod.string().min(1),
   });
-  export type DateLocalValue = zod.infer<typeof DateLocalValueSchema>;
+  export type DateLocalValue = zod.infer<typeof DateLocalValue>;
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
-  const MappingLocalValueSchema: zod.ZodType = zod.lazy(() =>
+  const MappingLocalValue: zod.ZodType = zod.lazy(() =>
     zod.tuple([
-      zod.union([zod.string(), LocalOrRemoteValueSchema]),
-      LocalOrRemoteValueSchema,
+      zod.union([zod.string(), LocalOrRemoteValue]),
+      LocalOrRemoteValue,
     ])
   );
 
@@ -195,27 +193,27 @@ export namespace CommonDataTypes {
   //   type: "map",
   //   value: MappingLocalValue,
   // }
-  const MapLocalValueSchema = zod.object({
+  const MapLocalValue = zod.object({
     type: zod.literal('map'),
-    value: zod.array(MappingLocalValueSchema),
+    value: zod.array(MappingLocalValue),
   });
-  export type MapLocalValue = zod.infer<typeof MapLocalValueSchema>;
+  export type MapLocalValue = zod.infer<typeof MapLocalValue>;
 
   // ObjectLocalValue = {
   //   type: "object",
   //   value: MappingLocalValue,
   // }
-  const ObjectLocalValueSchema = zod.object({
+  const ObjectLocalValue = zod.object({
     type: zod.literal('object'),
-    value: zod.array(MappingLocalValueSchema),
+    value: zod.array(MappingLocalValue),
   });
-  export type ObjectLocalValue = zod.infer<typeof ObjectLocalValueSchema>;
+  export type ObjectLocalValue = zod.infer<typeof ObjectLocalValue>;
 
   // RegExpLocalValue = {
   //   type: "regexp",
   //   value: RegExpValue,
   // }
-  const RegExpLocalValueSchema: zod.ZodType = zod.lazy(() =>
+  const RegExpLocalValue: zod.ZodType = zod.lazy(() =>
     zod.object({
       type: zod.literal('regexp'),
       value: zod.object({
@@ -224,19 +222,19 @@ export namespace CommonDataTypes {
       }),
     })
   );
-  export type RegExpLocalValue = zod.infer<typeof RegExpLocalValueSchema>;
+  export type RegExpLocalValue = zod.infer<typeof RegExpLocalValue>;
 
   // SetLocalValue = {
   //   type: "set",
   //   value: ListLocalValue,
   // }
-  const SetLocalValueSchema: zod.ZodType = zod.lazy(() =>
+  const SetLocalValue: zod.ZodType = zod.lazy(() =>
     zod.object({
       type: zod.literal('set'),
-      value: ListLocalValueSchema,
+      value: ListLocalValue,
     })
   );
-  export type SetLocalValue = zod.infer<typeof SetLocalValueSchema>;
+  export type SetLocalValue = zod.infer<typeof SetLocalValue>;
 
   export type RemoteValue =
     | PrimitiveProtocolValue
@@ -354,8 +352,8 @@ export namespace CommonDataTypes {
   };
 
   // BrowsingContext = text;
-  export const BrowsingContextSchema = zod.string();
-  export type BrowsingContext = zod.infer<typeof BrowsingContextSchema>;
+  export const BrowsingContext = zod.string();
+  export type BrowsingContext = zod.infer<typeof BrowsingContext>;
 }
 
 export namespace Script {
@@ -442,7 +440,7 @@ export namespace Script {
     type: 'worklet';
   };
 
-  const RealmTypeSchema = zod.enum([
+  const RealmType = zod.enum([
     'window',
     'dedicated-worker',
     'shared-worker',
@@ -453,15 +451,15 @@ export namespace Script {
     'worklet',
   ]);
 
-  export const GetRealmsParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema.optional(),
-    type: RealmTypeSchema.optional(),
+  export const GetRealmsParameters = zod.object({
+    context: CommonDataTypes.BrowsingContext.optional(),
+    type: RealmType.optional(),
   });
 
-  export type GetRealmsParameters = zod.infer<typeof GetRealmsParametersSchema>;
+  export type GetRealmsParameters = zod.infer<typeof GetRealmsParameters>;
 
   export function parseGetRealmsParams(params: unknown): GetRealmsParameters {
-    return parseObject(params, GetRealmsParametersSchema);
+    return parseObject(params, GetRealmsParameters);
   }
 
   export type GetRealmsCommand = {
@@ -482,13 +480,13 @@ export namespace Script {
   //   context: BrowsingContext,
   //   ?sandbox: text
   // }
-  const ContextTargetSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
+  const ContextTarget = zod.object({
+    context: CommonDataTypes.BrowsingContext,
     sandbox: zod.string().optional(),
   });
 
   // RealmTarget = {realm: Realm};
-  const RealmTargetSchema = zod.object({
+  const RealmTarget = zod.object({
     realm: zod.string().min(1),
   });
 
@@ -497,10 +495,10 @@ export namespace Script {
   //   ContextTarget
   // );
   // Order is important, as `parse` is processed in the same order.
-  // `RealmTargetSchema` has higher priority.
-  const TargetSchema = zod.union([RealmTargetSchema, ContextTargetSchema]);
+  // `RealmTarget` has higher priority.
+  const Target = zod.union([RealmTarget, ContextTarget]);
 
-  const OwnershipModelSchema = zod.enum(['root', 'none']);
+  const OwnershipModel = zod.enum(['root', 'none']);
 
   // ScriptEvaluateParameters = {
   //   expression: text;
@@ -508,16 +506,16 @@ export namespace Script {
   //   ?awaitPromise: bool;
   //   ?resultOwnership: OwnershipModel;
   // }
-  const EvaluateParametersSchema = zod.object({
+  const EvaluateParameters = zod.object({
     expression: zod.string(),
     awaitPromise: zod.boolean(),
-    target: TargetSchema,
-    resultOwnership: OwnershipModelSchema.optional(),
+    target: Target,
+    resultOwnership: OwnershipModel.optional(),
   });
-  export type EvaluateParameters = zod.infer<typeof EvaluateParametersSchema>;
+  export type EvaluateParameters = zod.infer<typeof EvaluateParameters>;
 
   export function parseEvaluateParams(params: unknown): EvaluateParameters {
-    return parseObject(params, EvaluateParametersSchema);
+    return parseObject(params, EvaluateParameters);
   }
 
   export type EvaluateResult = {
@@ -529,15 +527,15 @@ export namespace Script {
     params: EvaluateParameters;
   };
 
-  const DisownParametersSchema = zod.object({
-    target: TargetSchema,
+  const DisownParameters = zod.object({
+    target: Target,
     handles: zod.array(zod.string()),
   });
 
-  export type DisownParameters = zod.infer<typeof DisownParametersSchema>;
+  export type DisownParameters = zod.infer<typeof DisownParameters>;
 
   export function parseDisownParams(params: unknown): DisownParameters {
-    return parseObject(params, DisownParametersSchema);
+    return parseObject(params, DisownParameters);
   }
 
   export type DisownResult = {result: {}};
@@ -547,29 +545,29 @@ export namespace Script {
     params: CallFunctionParameters;
   };
 
-  const ArgumentValueSchema = zod.union([
-    CommonDataTypes.RemoteReferenceSchema,
-    CommonDataTypes.SharedReferenceSchema,
-    CommonDataTypes.LocalValueSchema,
+  const ArgumentValue = zod.union([
+    CommonDataTypes.RemoteReference,
+    CommonDataTypes.SharedReference,
+    CommonDataTypes.LocalValue,
   ]);
 
-  const ScriptCallFunctionParametersSchema = zod.object({
+  const ScriptCallFunctionParameters = zod.object({
     functionDeclaration: zod.string(),
-    target: TargetSchema,
-    arguments: zod.array(ArgumentValueSchema).optional(),
-    this: ArgumentValueSchema.optional(),
+    target: Target,
+    arguments: zod.array(ArgumentValue).optional(),
+    this: ArgumentValue.optional(),
     awaitPromise: zod.boolean(),
-    resultOwnership: OwnershipModelSchema.optional(),
+    resultOwnership: OwnershipModel.optional(),
   });
 
   export type CallFunctionParameters = zod.infer<
-    typeof ScriptCallFunctionParametersSchema
+    typeof ScriptCallFunctionParameters
   >;
 
   export function parseCallFunctionParams(
     params: unknown
   ): CallFunctionParameters {
-    return parseObject(params, ScriptCallFunctionParametersSchema);
+    return parseObject(params, ScriptCallFunctionParameters);
   }
 
   export type CallFunctionResult = {
@@ -618,14 +616,14 @@ export namespace BrowsingContext {
     params: GetTreeParameters;
   };
 
-  const GetTreeParametersSchema = zod.object({
+  const GetTreeParameters = zod.object({
     maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
-    root: CommonDataTypes.BrowsingContextSchema.optional(),
+    root: CommonDataTypes.BrowsingContext.optional(),
   });
-  export type GetTreeParameters = zod.infer<typeof GetTreeParametersSchema>;
+  export type GetTreeParameters = zod.infer<typeof GetTreeParameters>;
 
   export function parseGetTreeParams(params: unknown): GetTreeParameters {
-    return parseObject(params, GetTreeParametersSchema);
+    return parseObject(params, GetTreeParameters);
   }
 
   export type GetTreeResult = {
@@ -648,7 +646,7 @@ export namespace BrowsingContext {
     params: NavigateParameters;
   };
 
-  const ReadinessStateSchema = zod.enum(['none', 'interactive', 'complete']);
+  const ReadinessState = zod.enum(['none', 'interactive', 'complete']);
 
   // BrowsingContextNavigateParameters = {
   //   context: BrowsingContext,
@@ -656,15 +654,15 @@ export namespace BrowsingContext {
   //   ?wait: ReadinessState,
   // }
   // ReadinessState = "none" / "interactive" / "complete"
-  const NavigateParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
+  const NavigateParameters = zod.object({
+    context: CommonDataTypes.BrowsingContext,
     url: zod.string().url(),
-    wait: ReadinessStateSchema.optional(),
+    wait: ReadinessState.optional(),
   });
-  export type NavigateParameters = zod.infer<typeof NavigateParametersSchema>;
+  export type NavigateParameters = zod.infer<typeof NavigateParameters>;
 
   export function parseNavigateParams(params: unknown): NavigateParameters {
-    return parseObject(params, NavigateParametersSchema);
+    return parseObject(params, NavigateParameters);
   }
 
   export type NavigateResult = {
@@ -684,14 +682,14 @@ export namespace BrowsingContext {
   // BrowsingContextCreateParameters = {
   //   type: BrowsingContextCreateType
   // }
-  const CreateParametersSchema = zod.object({
+  const CreateParameters = zod.object({
     type: zod.enum(['tab', 'window']),
-    referenceContext: CommonDataTypes.BrowsingContextSchema.optional(),
+    referenceContext: CommonDataTypes.BrowsingContext.optional(),
   });
-  export type CreateParameters = zod.infer<typeof CreateParametersSchema>;
+  export type CreateParameters = zod.infer<typeof CreateParameters>;
 
   export function parseCreateParams(params: unknown): CreateParameters {
-    return parseObject(params, CreateParametersSchema);
+    return parseObject(params, CreateParameters);
   }
 
   export type CreateResult = {
@@ -706,13 +704,13 @@ export namespace BrowsingContext {
   // BrowsingContextCloseParameters = {
   //   context: BrowsingContext
   // }
-  const CloseParametersSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
+  const CloseParameters = zod.object({
+    context: CommonDataTypes.BrowsingContext,
   });
-  export type CloseParameters = zod.infer<typeof CloseParametersSchema>;
+  export type CloseParameters = zod.infer<typeof CloseParameters>;
 
   export function parseCloseParams(params: unknown): CloseParameters {
-    return parseObject(params, CloseParametersSchema);
+    return parseObject(params, CloseParameters);
   }
 
   export type CloseResult = {result: {}};
@@ -800,17 +798,17 @@ export namespace CDP {
     params: SendCommandParams;
   };
 
-  const SendCommandParamsSchema = zod.object({
+  const SendCommandParams = zod.object({
     cdpMethod: zod.string(),
     // `passthrough` allows object to have any fields.
     // https://github.com/colinhacks/zod#passthrough
     cdpParams: zod.object({}).passthrough(),
     cdpSession: zod.string().optional(),
   });
-  export type SendCommandParams = zod.infer<typeof SendCommandParamsSchema>;
+  export type SendCommandParams = zod.infer<typeof SendCommandParams>;
 
   export function parseSendCommandParams(params: unknown): SendCommandParams {
-    return parseObject(params, SendCommandParamsSchema);
+    return parseObject(params, SendCommandParams);
   }
 
   export type SendCommandResult = {result: unknown};
@@ -820,13 +818,13 @@ export namespace CDP {
     params: GetSessionParams;
   };
 
-  const GetSessionParamsSchema = zod.object({
-    context: CommonDataTypes.BrowsingContextSchema,
+  const GetSessionParams = zod.object({
+    context: CommonDataTypes.BrowsingContext,
   });
-  export type GetSessionParams = zod.infer<typeof GetSessionParamsSchema>;
+  export type GetSessionParams = zod.infer<typeof GetSessionParams>;
 
   export function parseGetSessionParams(params: unknown): GetSessionParams {
-    return parseObject(params, GetSessionParamsSchema);
+    return parseObject(params, GetSessionParams);
   }
 
   export type GetSessionResult = {result: {session: string}};
@@ -874,7 +872,7 @@ export namespace Session {
     params: SubscribeParameters;
   };
 
-  const SubscribeParametersEventSchema = zod.enum([
+  const SubscribeParametersEvent = zod.enum([
     BrowsingContext.AllEvents,
     BrowsingContext.EventNames.ContextCreatedEvent,
     BrowsingContext.EventNames.ContextDestroyedEvent,
@@ -890,14 +888,14 @@ export namespace Session {
   //   events: [*text],
   //   ?contexts: [*BrowsingContext],
   // }
-  const SubscribeParametersSchema = zod.object({
-    events: zod.array(SubscribeParametersEventSchema),
-    contexts: zod.array(CommonDataTypes.BrowsingContextSchema).optional(),
+  const SubscribeParameters = zod.object({
+    events: zod.array(SubscribeParametersEvent),
+    contexts: zod.array(CommonDataTypes.BrowsingContext).optional(),
   });
-  export type SubscribeParameters = zod.infer<typeof SubscribeParametersSchema>;
+  export type SubscribeParameters = zod.infer<typeof SubscribeParameters>;
 
   export function parseSubscribeParams(params: unknown): SubscribeParameters {
-    return parseObject(params, SubscribeParametersSchema);
+    return parseObject(params, SubscribeParameters);
   }
 
   export type SubscribeResult = {result: {}};
