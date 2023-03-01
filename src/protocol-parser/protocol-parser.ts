@@ -20,8 +20,6 @@
  * Parser types should match the `../protocol` types.
  */
 
-const MAX_INT = 9007199254740991 as const;
-
 import {EventResponse, Message} from '../protocol/protocol.js';
 import {ZodType, z as zod} from 'zod';
 
@@ -617,7 +615,12 @@ export namespace BrowsingContext {
   };
 
   const GetTreeParameters = zod.object({
-    maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
+    maxDepth: zod
+      .number()
+      .int()
+      .nonnegative()
+      .max(Number.MAX_SAFE_INTEGER)
+      .optional(),
     root: CommonDataTypes.BrowsingContext.optional(),
   });
   export type GetTreeParameters = zod.infer<typeof GetTreeParameters>;
