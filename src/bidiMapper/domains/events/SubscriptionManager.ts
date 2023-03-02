@@ -198,11 +198,11 @@ export class SubscriptionManager {
   /**
    * Unsubscribes atomically from all events in the given contexts and channel.
    */
-  async unsubscribeAll(
-    eventNames: Session.SubscribeParametersEvent[],
+  unsubscribeAll(
+    events: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
-  ): Promise<void> {
+  ) {
     // Assert all contexts are known.
     for (const contextId of contextIds) {
       if (contextId !== null) {
@@ -215,39 +215,34 @@ export class SubscriptionManager {
         eventName: Session.SubscribeParametersEvent,
         contextId: CommonDataTypes.BrowsingContext | null
       ]
-    > = cartesianProduct(unrollEvents(eventNames), contextIds);
+    > = cartesianProduct(unrollEvents(events), contextIds);
 
     // Assert all unsubscriptions are valid.
     // If any of the unsubscriptions are invalid, do not unsubscribe from anything.
-    const unsubscribes: Array<Function> = await Promise.all(
-      eventContextPairs.map(([eventName, contextId]) =>
-        this.#checkUnsubscribe(eventName, contextId, channel)
+    eventContextPairs
+      .map(([event, contextId]) =>
+        this.#checkUnsubscribe(event, contextId, channel)
       )
-    );
-
-    // Unsubscribe from all.
-    for (const unsubscribe of unsubscribes) {
-      unsubscribe();
-    }
+      .forEach((unsubscribe) => unsubscribe());
   }
 
   /**
    * Unsubscribes from the event in the given context and channel.
    * Syntactic sugar for "unsubscribeAll".
    */
-  async unsubscribe(
+  unsubscribe(
     eventName: Session.SubscribeParametersEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
-  ): Promise<void> {
-    return this.unsubscribeAll([eventName], [contextId], channel);
+  ) {
+    this.unsubscribeAll([eventName], [contextId], channel);
   }
 
-  async #checkUnsubscribe(
+  #checkUnsubscribe(
     event: Session.SubscribeParametersEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
-  ): Promise<Function> {
+  ): Function {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#findTopLevelContextId(contextId);
 

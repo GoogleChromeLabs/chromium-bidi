@@ -190,11 +190,7 @@ export class EventManager implements IEventManager {
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
-    await this.#subscriptionManager.unsubscribeAll(
-      eventNames,
-      contextIds,
-      channel
-    );
+    this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
   }
 
   /**
