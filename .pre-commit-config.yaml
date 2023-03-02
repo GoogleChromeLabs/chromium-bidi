@@ -33,9 +33,6 @@ repos:
     rev: 6.0.0
     hooks:
       - id: flake8
-        args:
-          # https://flake8.pycqa.org/en/latest/user/error-codes.html
-          - '--ignore=E121,E126,E501'
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.34.0
     hooks:
