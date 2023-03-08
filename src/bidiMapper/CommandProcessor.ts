@@ -234,7 +234,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         );
       } else {
         const error = e as Error;
-        console.error(error);
         this.emit(
           'response',
           OutgoingBidiMessage.createResolved(
