@@ -112,7 +112,7 @@ export class CdpTarget {
     this.#cdpClient.on(
       'Page.frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
-        await BrowsingContextImpl.createBrowsingContext(
+        await BrowsingContextImpl.create(
           this,
           this.#realmStorage,
           params.frameId,

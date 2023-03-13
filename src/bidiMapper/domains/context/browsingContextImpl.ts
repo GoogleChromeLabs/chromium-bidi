@@ -81,11 +81,9 @@ export class BrowsingContextImpl {
     this.#logger = logger;
 
     this.#initListeners();
-
-    this.#browsingContextStorage.addContext(this);
   }
 
-  static async createBrowsingContext(
+  static async create(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
     contextId: string,
@@ -104,7 +102,9 @@ export class BrowsingContextImpl {
       logger
     );
 
-    await eventManager.registerEvent(
+    browsingContextStorage.addContext(context);
+
+    void eventManager.registerEvent(
       {
         method: BrowsingContext.EventNames.ContextCreatedEvent,
         params: context.serializeToBidiValue(),

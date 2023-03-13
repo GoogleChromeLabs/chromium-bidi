@@ -113,7 +113,7 @@ export class BrowsingContextProcessor {
         .getKnownContext(targetInfo.targetId)
         .updateCdpTarget(cdpTarget);
     } else {
-      await BrowsingContextImpl.createBrowsingContext(
+      await BrowsingContextImpl.create(
         cdpTarget,
         this.#realmStorage,
         targetInfo.targetId,
