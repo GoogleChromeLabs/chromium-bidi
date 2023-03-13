@@ -39,7 +39,6 @@ export class BrowsingContextProcessor {
   readonly #logger?: LoggerFn;
   readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
-  readonly #sessions: Set<string>;
 
   constructor(
     realmStorage: RealmStorage,
@@ -55,7 +54,6 @@ export class BrowsingContextProcessor {
     this.#logger = logger;
     this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
-    this.#sessions = new Set();
 
     this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
   }
@@ -71,44 +69,6 @@ export class BrowsingContextProcessor {
     cdpClient.on('Target.detachedFromTarget', async (params) => {
       await this.#handleDetachedFromTargetEvent(params);
     });
-  }
-
-  #setSessionEventListeners(target: CdpTarget) {
-    if (this.#sessions.has(target.cdpSessionId)) {
-      return;
-    }
-    this.#sessions.add(target.cdpSessionId);
-
-    this.#setTargetEventListeners(target.cdpClient);
-
-    target.cdpClient.on('*', async (method, params) => {
-      await this.#eventManager.registerEvent(
-        {
-          method: CDP.EventNames.EventReceivedEvent,
-          params: {
-            cdpMethod: method,
-            cdpParams: params || {},
-            cdpSession: target.cdpSessionId,
-          },
-        },
-        null
-      );
-    });
-
-    target.cdpClient.on(
-      'Page.frameAttached',
-      async (params: Protocol.Page.FrameAttachedEvent) => {
-        await BrowsingContextImpl.createFrameContext(
-          target,
-          this.#realmStorage,
-          params.frameId,
-          params.parentFrameId,
-          this.#eventManager,
-          this.#browsingContextStorage,
-          this.#logger
-        );
-      }
-    );
   }
 
   async #handleAttachedToTargetEvent(
@@ -129,21 +89,22 @@ export class BrowsingContextProcessor {
       return;
     }
 
-    const cdpTarget = new CdpTarget(
-      targetInfo.targetId,
-      targetCdpClient,
-      sessionId,
-      this.#realmStorage,
-      this.#eventManager
-    );
-
     this.#logger?.(
       LogType.browsingContexts,
       'AttachedToTarget event received:',
       JSON.stringify(params, null, 2)
     );
 
-    this.#setSessionEventListeners(cdpTarget);
+    const cdpTarget = new CdpTarget(
+      targetInfo.targetId,
+      targetCdpClient,
+      sessionId,
+      this.#realmStorage,
+      this.#eventManager,
+      this.#browsingContextStorage,
+      this.#logger
+    );
+
     this.#setTargetEventListeners(cdpTarget.cdpClient);
 
     if (this.#browsingContextStorage.hasKnownContext(targetInfo.targetId)) {
@@ -152,7 +113,7 @@ export class BrowsingContextProcessor {
         .getKnownContext(targetInfo.targetId)
         .updateCdpTarget(cdpTarget);
     } else {
-      await BrowsingContextImpl.createTargetContext(
+      await BrowsingContextImpl.createBrowsingContext(
         cdpTarget,
         this.#realmStorage,
         targetInfo.targetId,

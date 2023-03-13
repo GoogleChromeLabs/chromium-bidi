@@ -19,7 +19,7 @@ import {Protocol} from 'devtools-protocol';
 
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {BrowsingContext, Message} from '../../../protocol/protocol.js';
-import {LogType, LoggerFn} from '../../../utils/log.js';
+import {LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
@@ -31,7 +31,6 @@ import {CdpTarget} from './cdpTarget';
 export class BrowsingContextImpl {
   readonly #defers = {
     documentInitialized: new Deferred<void>(),
-    targetUnblocked: new Deferred<void>(),
     Page: {
       navigatedWithinDocument:
         new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>(),
@@ -86,7 +85,7 @@ export class BrowsingContextImpl {
     this.#browsingContextStorage.addContext(this);
   }
 
-  static async createFrameContext(
+  static async createBrowsingContext(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
     contextId: string,
@@ -104,38 +103,6 @@ export class BrowsingContextImpl {
       browsingContextStorage,
       logger
     );
-    context.#defers.targetUnblocked.resolve();
-
-    await eventManager.registerEvent(
-      {
-        method: BrowsingContext.EventNames.ContextCreatedEvent,
-        params: context.serializeToBidiValue(),
-      },
-      context.contextId
-    );
-  }
-
-  static async createTargetContext(
-    cdpTarget: CdpTarget,
-    realmStorage: RealmStorage,
-    contextId: string,
-    parentId: string | null,
-    eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage,
-    logger?: LoggerFn
-  ): Promise<void> {
-    const context = new BrowsingContextImpl(
-      cdpTarget,
-      realmStorage,
-      contextId,
-      parentId,
-      eventManager,
-      browsingContextStorage,
-      logger
-    );
-
-    // No need in awaiting for target to be unblocked.
-    context.#unblockAttachedTarget();
 
     await eventManager.registerEvent(
       {
@@ -152,9 +119,8 @@ export class BrowsingContextImpl {
   }
 
   updateCdpTarget(cdpTarget: CdpTarget) {
-    this.#updateConnection(cdpTarget);
-    // No need in awaiting for target to be unblocked.
-    void this.#unblockAttachedTarget();
+    this.#cdpTarget = cdpTarget;
+    this.#initListeners();
   }
 
   async delete() {
@@ -185,27 +151,6 @@ export class BrowsingContextImpl {
   async #removeChildContexts() {
     await Promise.all(this.children.map((child) => child.delete()));
   }
-
-  #updateConnection(cdpTarget: CdpTarget) {
-    if (this.#defers.targetUnblocked.isFinished) {
-      this.#defers.targetUnblocked = new Deferred<void>();
-    } else {
-      this.#logger?.(
-        LogType.browsingContexts,
-        'targetUnblocked postponed because of OOPiF'
-      );
-    }
-
-    this.#cdpTarget = cdpTarget;
-
-    this.#initListeners();
-  }
-
-  async #unblockAttachedTarget() {
-    await this.#cdpTarget.unblock();
-    this.#defers.targetUnblocked.resolve();
-  }
-
   get contextId(): string {
     return this.#contextId;
   }
@@ -235,7 +180,7 @@ export class BrowsingContextImpl {
   }
 
   async awaitUnblocked(): Promise<void> {
-    await this.#defers.targetUnblocked;
+    return this.#cdpTarget.targetUnblocked;
   }
 
   serializeToBidiValue(
@@ -452,7 +397,7 @@ export class BrowsingContextImpl {
     url: string,
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
-    await this.#defers.targetUnblocked;
+    await this.awaitUnblocked();
 
     // TODO: handle loading errors.
     const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(

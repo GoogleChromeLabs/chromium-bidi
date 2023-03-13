@@ -17,10 +17,10 @@
 import {Protocol} from 'devtools-protocol';
 
 import {CommonDataTypes, Log, Script} from '../../../protocol/protocol.js';
-import {CdpClient} from '../../CdpConnection.js';
 import {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
+import {CdpTarget} from '../context/cdpTarget';
 
 import {getRemoteValuesText} from './logHelper.js';
 
@@ -54,35 +54,26 @@ function getLogLevel(consoleApiType: string): Log.LogLevel {
 }
 
 export class LogManager {
-  readonly #cdpClient: CdpClient;
-  readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
   readonly #realmStorage: RealmStorage;
+  readonly #cdpTarget: CdpTarget;
 
   private constructor(
+    cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    cdpClient: CdpClient,
-    cdpSessionId: string,
     eventManager: IEventManager
   ) {
+    this.#cdpTarget = cdpTarget;
     this.#realmStorage = realmStorage;
-    this.#cdpSessionId = cdpSessionId;
-    this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
   }
 
   static create(
+    cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    cdpClient: CdpClient,
-    cdpSessionId: string,
     eventManager: IEventManager
   ) {
-    const logManager = new LogManager(
-      realmStorage,
-      cdpClient,
-      cdpSessionId,
-      eventManager
-    );
+    const logManager = new LogManager(cdpTarget, realmStorage, eventManager);
 
     logManager.#initialize();
     return logManager;
@@ -93,13 +84,13 @@ export class LogManager {
   }
 
   #initializeLogEntryAddedEventListener() {
-    this.#cdpClient.on(
+    this.#cdpTarget.cdpClient.on(
       'Runtime.consoleAPICalled',
       (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
         const realm: Realm | undefined = this.#realmStorage.findRealm({
-          cdpSessionId: this.#cdpSessionId,
+          cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.executionContextId,
         });
         const argsPromise: Promise<CommonDataTypes.RemoteValue[]> =
@@ -137,13 +128,13 @@ export class LogManager {
       }
     );
 
-    this.#cdpClient.on(
+    this.#cdpTarget.cdpClient.on(
       'Runtime.exceptionThrown',
       (params: Protocol.Runtime.ExceptionThrownEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
         const realm: Realm | undefined = this.#realmStorage.findRealm({
-          cdpSessionId: this.#cdpSessionId,
+          cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.exceptionDetails.executionContextId,
         });
 
