@@ -51,8 +51,8 @@ export class BrowsingContextImpl {
   #loaderId: string | null = null;
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm: Realm | undefined;
-  #browsingContextStorage: BrowsingContextStorage;
-  #logger?: LoggerFn;
+  readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #logger?: LoggerFn;
 
   get #defaultRealm(): Realm {
     if (this.#maybeDefaultRealm === undefined) {
@@ -104,7 +104,7 @@ export class BrowsingContextImpl {
 
     browsingContextStorage.addContext(context);
 
-    void eventManager.registerEvent(
+    eventManager.registerEvent(
       {
         method: BrowsingContext.EventNames.ContextCreatedEvent,
         params: context.serializeToBidiValue(),
@@ -151,6 +151,7 @@ export class BrowsingContextImpl {
   async #removeChildContexts() {
     await Promise.all(this.children.map((child) => child.delete()));
   }
+
   get contextId(): string {
     return this.#contextId;
   }
@@ -159,8 +160,8 @@ export class BrowsingContextImpl {
     return this.#parentId;
   }
 
-  get cdpTarget(): CdpTarget {
-    return this.#cdpTarget;
+  get cdpSessionId(): string {
+    return this.#cdpTarget.cdpSessionId;
   }
 
   get children(): BrowsingContextImpl[] {
