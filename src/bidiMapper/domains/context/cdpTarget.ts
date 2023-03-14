@@ -38,7 +38,7 @@ export class CdpTarget {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #logger?: LoggerFn;
 
-  static async create(
+  static create(
     targetId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
@@ -56,7 +56,8 @@ export class CdpTarget {
       browsingContextStorage,
       logger
     );
-    await cdpTarget.unblock();
+    // No need in waiting. Deferred will be resolved when the target is unblocked.
+    void cdpTarget.unblock();
     return cdpTarget;
   }
 

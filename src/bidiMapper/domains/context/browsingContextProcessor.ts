@@ -97,7 +97,7 @@ export class BrowsingContextProcessor {
 
     this.#setTargetEventListeners(targetCdpClient);
 
-    const cdpTarget = await CdpTarget.create(
+    const cdpTarget = CdpTarget.create(
       targetInfo.targetId,
       targetCdpClient,
       sessionId,
