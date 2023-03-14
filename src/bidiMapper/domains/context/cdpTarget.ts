@@ -57,7 +57,7 @@ export class CdpTarget {
       logger
     );
     // No need in waiting. Deferred will be resolved when the target is unblocked.
-    void cdpTarget.unblock();
+    void cdpTarget.#unblock();
     return cdpTarget;
   }
 
@@ -100,6 +100,9 @@ export class CdpTarget {
     return this.#cdpClient;
   }
 
+  /**
+   * Needed for CDP escape path.
+   */
   get cdpSessionId(): string {
     return this.#cdpSessionId;
   }
@@ -107,7 +110,7 @@ export class CdpTarget {
   /**
    * Enables all the required CDP domains and unblocks the target.
    */
-  async unblock() {
+  async #unblock() {
     await this.#cdpClient.sendCommand('Runtime.enable');
     await this.#cdpClient.sendCommand('Page.enable');
     await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
