@@ -23,7 +23,7 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {CdpClient, CdpConnection} from '../../CdpConnection.js';
-import {LogType, LoggerFn} from '../../../utils/log.js';
+import {LoggerFn, LogType} from '../../../utils/log.js';
 import {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
@@ -55,13 +55,14 @@ export class BrowsingContextProcessor {
     this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
 
-    this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
+    this.#setTargetEventListeners(this.#cdpConnection.browserClient());
   }
 
-  #setBrowserClientEventListeners(browserClient: CdpClient) {
-    this.#setTargetEventListeners(browserClient);
-  }
-
+  /**
+   * `BrowsingContextProcessor` is responsible for creating and destroying all
+   * the targets and browsing contexts. This method is called for each CDP
+   * session.
+   */
   #setTargetEventListeners(cdpClient: CdpClient) {
     cdpClient.on('Target.attachedToTarget', async (params) => {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
