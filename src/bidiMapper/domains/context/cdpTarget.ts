@@ -36,7 +36,7 @@ export class CdpTarget {
   readonly #cdpSessionId: string;
   readonly #realmStorage: RealmStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #logger: LoggerFn | undefined;
+  readonly #logger?: LoggerFn;
 
   constructor(
     targetId: string,
