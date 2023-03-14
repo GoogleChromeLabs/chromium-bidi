@@ -56,6 +56,11 @@ export class CdpTarget {
       browsingContextStorage,
       logger
     );
+
+    LogManager.create(cdpTarget, realmStorage, eventManager);
+
+    cdpTarget.#setEventListeners();
+
     // No need in waiting. Deferred will be resolved when the target is unblocked.
     void cdpTarget.#unblock();
     return cdpTarget;
@@ -79,10 +84,6 @@ export class CdpTarget {
     this.#logger = logger;
 
     this.#targetUnblocked = new Deferred();
-
-    LogManager.create(this, this.#realmStorage, this.#eventManager);
-
-    this.#setEventListeners();
   }
 
   /**
