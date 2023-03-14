@@ -62,6 +62,9 @@ export class CdpTarget {
     this.#setEventListeners();
   }
 
+  /**
+   * Returns a promise that resolves when the target is unblocked.
+   */
   get targetUnblocked(): Deferred<void> {
     return this.#targetUnblocked;
   }
@@ -78,6 +81,9 @@ export class CdpTarget {
     return this.#cdpSessionId;
   }
 
+  /**
+   * Enables all the required CDP domains and unblocks the target.
+   */
   async unblock() {
     await this.#cdpClient.sendCommand('Runtime.enable');
     await this.#cdpClient.sendCommand('Page.enable');
