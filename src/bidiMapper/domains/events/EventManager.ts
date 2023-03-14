@@ -65,13 +65,13 @@ export interface IEventManager {
     events: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
-  ): void;
+  ): Promise<void>;
 
   unsubscribe(
     events: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
-  ): void;
+  ): Promise<void>;
 }
 
 /**
@@ -151,11 +151,11 @@ export class EventManager implements IEventManager {
     }
   }
 
-  subscribe(
+  async subscribe(
     eventNames: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
-  ): void {
+  ): Promise<void> {
     // First check if all the contexts are known.
     for (const contextId of contextIds) {
       if (contextId !== null) {
@@ -182,11 +182,11 @@ export class EventManager implements IEventManager {
     }
   }
 
-  unsubscribe(
+  async unsubscribe(
     eventNames: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
-  ): void {
+  ): Promise<void> {
     this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
   }
 
