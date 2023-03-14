@@ -95,7 +95,9 @@ export class BrowsingContextProcessor {
       JSON.stringify(params, null, 2)
     );
 
-    const cdpTarget = new CdpTarget(
+    this.#setTargetEventListeners(targetCdpClient);
+
+    const cdpTarget = await CdpTarget.create(
       targetInfo.targetId,
       targetCdpClient,
       sessionId,
@@ -104,8 +106,6 @@ export class BrowsingContextProcessor {
       this.#browsingContextStorage,
       this.#logger
     );
-
-    this.#setTargetEventListeners(cdpTarget.cdpClient);
 
     if (this.#browsingContextStorage.hasKnownContext(targetInfo.targetId)) {
       // OOPiF.

@@ -38,7 +38,29 @@ export class CdpTarget {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #logger?: LoggerFn;
 
-  constructor(
+  static async create(
+    targetId: string,
+    cdpClient: CdpClient,
+    cdpSessionId: string,
+    realmStorage: RealmStorage,
+    eventManager: IEventManager,
+    browsingContextStorage: BrowsingContextStorage,
+    logger?: LoggerFn
+  ) {
+    const cdpTarget = new CdpTarget(
+      targetId,
+      cdpClient,
+      cdpSessionId,
+      realmStorage,
+      eventManager,
+      browsingContextStorage,
+      logger
+    );
+    await cdpTarget.unblock();
+    return cdpTarget;
+  }
+
+  private constructor(
     targetId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
