@@ -522,7 +522,7 @@ export class BrowsingContextImpl {
       printToPdfCdpParams.paperWidth = inchesFromCm(params.page.width);
     }
 
-    const result = await this.#cdpClient.sendCommand(
+    const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.printToPDF',
       printToPdfCdpParams
     );
