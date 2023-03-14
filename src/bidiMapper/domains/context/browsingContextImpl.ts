@@ -138,7 +138,7 @@ export class BrowsingContextImpl {
       parent.#children.delete(this.contextId);
     }
 
-    await this.#eventManager.registerEvent(
+    this.#eventManager.registerEvent(
       {
         method: BrowsingContext.EventNames.ContextDestroyedEvent,
         params: this.serializeToBidiValue(),
@@ -272,7 +272,7 @@ export class BrowsingContextImpl {
         switch (params.name) {
           case 'DOMContentLoaded':
             this.#defers.Page.lifecycleEvent.DOMContentLoaded.resolve(params);
-            await this.#eventManager.registerEvent(
+            this.#eventManager.registerEvent(
               {
                 method: BrowsingContext.EventNames.DomContentLoadedEvent,
                 params: {
@@ -288,7 +288,7 @@ export class BrowsingContextImpl {
 
           case 'load':
             this.#defers.Page.lifecycleEvent.load.resolve(params);
-            await this.#eventManager.registerEvent(
+            this.#eventManager.registerEvent(
               {
                 method: BrowsingContext.EventNames.LoadEvent,
                 params: {

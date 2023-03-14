@@ -128,7 +128,7 @@ export class CdpTarget {
 
   #setEventListeners() {
     this.#cdpClient.on('*', async (method, params) => {
-      await this.#eventManager.registerEvent(
+      this.#eventManager.registerEvent(
         {
           method: CDP.EventNames.EventReceivedEvent,
           params: {

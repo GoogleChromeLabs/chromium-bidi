@@ -135,7 +135,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     params: Session.SubscribeParameters,
     channel: string | null
   ): Promise<Session.SubscribeResult> {
-    await this.#eventManager.subscribe(
+    this.#eventManager.subscribe(
       params.events,
       params.contexts ?? [null],
       channel
@@ -147,7 +147,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     params: Session.SubscribeParameters,
     channel: string | null
   ): Promise<Session.UnsubscribeResult> {
-    await this.#eventManager.unsubscribe(
+    this.#eventManager.unsubscribe(
       params.events,
       params.contexts ?? [null],
       channel

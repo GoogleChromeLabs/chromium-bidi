@@ -103,7 +103,6 @@ export class LogManager {
                 })
               );
 
-        // No need in awaiting for the result, just register the event promise.
         this.#eventManager.registerPromiseEvent(
           argsPromise.then((args) => ({
             method: Log.EventNames.LogEntryAddedEvent,
@@ -149,7 +148,6 @@ export class LogManager {
           return realm.stringifyObject(params.exceptionDetails.exception);
         })();
 
-        // No need in awaiting for the result, just register the event promise.
         this.#eventManager.registerPromiseEvent(
           textPromise.then((text) => ({
             method: Log.EventNames.LogEntryAddedEvent,
