@@ -84,7 +84,7 @@ const eventBufferLength: ReadonlyMap<string, number> = new Map([
 ]);
 
 export class EventManager implements IEventManager {
-  readonly NETWORK_DOMAIN_PREFIX = 'network.';
+  static readonly #NETWORK_DOMAIN_PREFIX = 'network.';
   /**
    * Maps event name to a set of contexts where this event already happened.
    * Needed for getting buffered events from all the contexts in case of
@@ -201,7 +201,7 @@ export class EventManager implements IEventManager {
     contextId: CommonDataTypes.BrowsingContext | null
   ) {
     // Enable network domain if user subscribed to any of network events.
-    if (eventName.startsWith(this.NETWORK_DOMAIN_PREFIX)) {
+    if (eventName.startsWith(EventManager.#NETWORK_DOMAIN_PREFIX)) {
       // Enable for all the contexts.
       if (contextId === null) {
         await Promise.all(
