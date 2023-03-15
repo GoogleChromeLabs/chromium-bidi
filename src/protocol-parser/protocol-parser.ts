@@ -27,7 +27,6 @@ import {
   Script as ScriptTypes,
   Log as LogTypes,
   CDP as CdpTypes,
-  Network as NetworkTypes,
   Message as MessageTypes,
   Session as SessionTypes,
   CommonDataTypes as CommonDataTypesTypes,
@@ -454,7 +453,7 @@ export namespace BrowsingContext {
     .refine((pageRanges: string[]) => {
       return pageRanges.every((pageRange: string) =>
         // matches: '2' | '2-' | '-2' | '2-4'
-        pageRange.match(/^(,(?:\d+)|(?:\d+[-])|(?:[-]\d+)|(?:\d+[-]\d+))$/)
+        pageRange.match(/^((?:\d+)|(?:\d+[-])|(?:[-]\d+)|(?:\d+[-]\d+))$/)
       );
     });
 
@@ -531,9 +530,6 @@ export namespace Session {
     LogTypes.EventNames.LogEntryAddedEvent,
     CdpTypes.AllEvents,
     CdpTypes.EventNames.EventReceivedEvent,
-    NetworkTypes.AllEvents,
-    NetworkTypes.EventNames.BeforeRequestSentEvent,
-    NetworkTypes.EventNames.ResponseCompletedEvent,
   ]);
 
   // SessionSubscribeParameters = {
