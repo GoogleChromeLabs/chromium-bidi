@@ -84,7 +84,7 @@ const eventBufferLength: ReadonlyMap<string, number> = new Map([
 ]);
 
 export class EventManager implements IEventManager {
-  static readonly #NETWORK_DOMAIN_PREFIX = 'network.';
+  static readonly #NETWORK_DOMAIN_PREFIX = 'network';
   /**
    * Maps event name to a set of contexts where this event already happened.
    * Needed for getting buffered events from all the contexts in case of
