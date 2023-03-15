@@ -48,20 +48,9 @@ export class NetworkRequest {
     this.#eventManager = eventManager;
     this.#beforeRequestSentDeferred = new Deferred<void>();
     this.#responseReceivedDeferred = new Deferred<void>();
-
-    this.#beforeRequestSentDeferred.then(() => {
-      if (!this.#isIgnoredEvent()) {
-        this.#sendBeforeRequestEvent();
-      }
-    });
-    this.#responseReceivedDeferred.then(() => {
-      if (!this.#isIgnoredEvent()) {
-        this.#sendResponseReceivedEvent();
-      }
-    });
   }
 
-  setRequestWillBeSentEvent(
+  onRequestWillBeSentEvent(
     requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent
   ) {
     if (this.#requestWillBeSentEvent !== undefined) {
@@ -71,9 +60,10 @@ export class NetworkRequest {
     if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
       this.#beforeRequestSentDeferred.resolve();
     }
+    this.#sendBeforeRequestEvent();
   }
 
-  setRequestWillBeSentExtraInfoEvent(
+  onRequestWillBeSentExtraInfoEvent(
     requestWillBeSentExtraInfoEvent: Protocol.Network.RequestWillBeSentExtraInfoEvent
   ) {
     if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
@@ -85,7 +75,7 @@ export class NetworkRequest {
     }
   }
 
-  setResponseReceivedEvent(
+  onResponseReceivedEvent(
     responseReceivedEvent: Protocol.Network.ResponseReceivedEvent
   ) {
     if (this.#responseReceivedEvent !== undefined) {
@@ -95,9 +85,10 @@ export class NetworkRequest {
     if (this.#responseReceivedExtraInfoEvent !== undefined) {
       this.#responseReceivedDeferred.resolve();
     }
+    this.#sendResponseReceivedEvent();
   }
 
-  setResponseReceivedEventExtraInfo(
+  onResponseReceivedEventExtraInfo(
     responseReceivedExtraInfoEvent: Protocol.Network.ResponseReceivedExtraInfoEvent
   ) {
     if (this.#responseReceivedExtraInfoEvent !== undefined) {
@@ -110,10 +101,15 @@ export class NetworkRequest {
   }
 
   #sendBeforeRequestEvent() {
-    this.#eventManager.registerEvent(
-      this.#getBeforeRequestEvent(),
-      this.#requestWillBeSentEvent?.frameId ?? null
-    );
+    if (!this.#isIgnoredEvent()) {
+      this.#eventManager.registerPromiseEvent(
+        this.#beforeRequestSentDeferred.then(() =>
+          this.#getBeforeRequestEvent()
+        ),
+        this.#requestWillBeSentEvent?.frameId ?? null,
+        Network.EventNames.BeforeRequestSentEvent
+      );
+    }
   }
 
   #getBeforeRequestEvent(): Network.BeforeRequestSentEvent {
@@ -250,10 +246,16 @@ export class NetworkRequest {
   }
 
   #sendResponseReceivedEvent() {
-    this.#eventManager.registerEvent(
-      this.#getResponseReceivedEvent(),
-      this.#responseReceivedEvent?.frameId ?? null
-    );
+    if (!this.#isIgnoredEvent()) {
+      // Wait for both ResponseReceived and ResponseReceivedExtraInfo events.
+      this.#eventManager.registerPromiseEvent(
+        this.#responseReceivedDeferred.then(() =>
+          this.#getResponseReceivedEvent()
+        ),
+        this.#responseReceivedEvent?.frameId ?? null,
+        Network.EventNames.ResponseCompletedEvent
+      );
+    }
   }
 
   #getResponseReceivedEvent(): Network.ResponseCompletedEvent {

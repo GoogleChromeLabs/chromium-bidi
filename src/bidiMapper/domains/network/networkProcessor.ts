@@ -51,7 +51,7 @@ export class NetworkProcessor {
       (params: Protocol.Network.RequestWillBeSentEvent) => {
         networkProcessor
           .#getOrCreateNetworkRequest(params.requestId)
-          .setRequestWillBeSentEvent(params);
+          .onRequestWillBeSentEvent(params);
       }
     );
 
@@ -60,7 +60,7 @@ export class NetworkProcessor {
       (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
         networkProcessor
           .#getOrCreateNetworkRequest(params.requestId)
-          .setRequestWillBeSentExtraInfoEvent(params);
+          .onRequestWillBeSentExtraInfoEvent(params);
       }
     );
 
@@ -69,7 +69,7 @@ export class NetworkProcessor {
       (params: Protocol.Network.ResponseReceivedEvent) => {
         networkProcessor
           .#getOrCreateNetworkRequest(params.requestId)
-          .setResponseReceivedEvent(params);
+          .onResponseReceivedEvent(params);
       }
     );
 
@@ -78,7 +78,7 @@ export class NetworkProcessor {
       (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
         networkProcessor
           .#getOrCreateNetworkRequest(params.requestId)
-          .setResponseReceivedEventExtraInfo(params);
+          .onResponseReceivedEventExtraInfo(params);
       }
     );
 
