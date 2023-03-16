@@ -72,6 +72,8 @@ export function log(logType: LogType, ...messages: unknown[]) {
 
   const typeLogContainer = findOrCreateTypeLogContainer(logType);
 
+  console.log(logType, ...messages);
+
   // This piece of HTML should be added:
   // <div class="pre">...log message...</div>
   const lineElement = document.createElement('div');
