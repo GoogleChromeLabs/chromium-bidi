@@ -302,14 +302,29 @@ export namespace Script {
     return parseObject(params, DisownParametersSchema);
   }
 
+  const ChannelIdSchema = zod.string();
+
+  const ChannelPropertiesSchema = zod.object({
+    channel: ChannelIdSchema,
+    maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
+    ownership: ResultOwnershipSchema.optional(),
+  });
+
+  export const ChannelSchema = zod.object({
+    type: zod.literal('channel'),
+    value: ChannelPropertiesSchema,
+  });
+
   // ArgumentValue = (
   //   RemoteReference //
-  //   LocalValue
+  //   LocalValue //
+  //   script.Channel
   // );
   const ArgumentValueSchema = zod.union([
     CommonDataTypes.RemoteReferenceSchema,
     CommonDataTypes.SharedReferenceSchema,
     CommonDataTypes.LocalValueSchema,
+    Script.ChannelSchema,
   ]);
 
   // CallFunctionParameters = {
@@ -334,19 +349,6 @@ export namespace Script {
   ): ScriptTypes.CallFunctionParameters {
     return parseObject(params, CallFunctionParametersSchema);
   }
-
-  const ChannelIdSchema = zod.string();
-
-  const ChannelPropertiesSchema = zod.object({
-    channel: ChannelIdSchema,
-    maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
-    ownership: ResultOwnershipSchema.optional(),
-  });
-
-  export const ChannelSchema = zod.object({
-    type: zod.literal('channel'),
-    value: ChannelPropertiesSchema,
-  });
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-browsingContext */
@@ -356,7 +358,9 @@ export namespace BrowsingContext {
   //   ?root: browsingContext.BrowsingContext,
   // }
   const GetTreeParametersSchema = zod.object({
-    maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
+    // TODO(##294): maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
+    // See: https://github.com/w3c/webdriver-bidi/pull/361/files#r1141961142
+    maxDepth: zod.number().int().min(1).max(1).optional(),
     root: CommonDataTypes.BrowsingContextSchema.optional(),
   });
 
