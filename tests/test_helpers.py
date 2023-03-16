@@ -89,7 +89,7 @@ async def set_html_content(websocket, context_id, html_content):
 async def get_tree(websocket, context_id=None):
     params = {}
     if context_id is not None:
-        params["context"] = context_id
+        params["root"] = context_id
     return await execute_command(websocket, {
         "method": "browsingContext.getTree",
         "params": params
