@@ -335,16 +335,16 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(
         websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
     # Send command.
-    command = {
-        "id": 14,
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": "data:text/html,<script>throw new Error('some error')</script>",
-            "wait": "interactive",
-            "context": context_id
-        }
-    }
-    await send_JSON_command(websocket, command)
+    await send_JSON_command(
+        websocket, {
+            "id": 14,
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "data:text/html,<script>throw new Error('some error')</script>",
+                "wait": "interactive",
+                "context": context_id
+            }
+        })
 
     # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")

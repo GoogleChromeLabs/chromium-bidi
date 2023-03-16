@@ -15,8 +15,8 @@
 #
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, execute_command, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -63,15 +63,9 @@ async def test_network_before_request_sent_event_emitted(
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_with_cookies_emitted(
         websocket, context_id):
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": "http://example.com",
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+
+    # Navigate to the page to be able to set cookies.
+    await goto_url(websocket, context_id, "http://example.com")
 
     await execute_command(
         websocket, {
