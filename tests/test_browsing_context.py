@@ -15,7 +15,7 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree, goto_url,
+from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree,
                           read_JSON_message, send_JSON_command, subscribe,
                           wait_for_event)
 
@@ -148,7 +148,15 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
     url_with_hash_1 = url + "#1"
 
     # Initial navigation.
-    await goto_url(websocket, context_id, url_with_hash_1)
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_1,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
     result = await get_tree(websocket)
 
@@ -171,7 +179,15 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
         websocket, context_id, nested_iframe):
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
                               f'<iframe src="{nested_iframe}" />'
-    await goto_url(websocket, context_id, page_with_nested_iframe)
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": page_with_nested_iframe,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
     result = await get_tree(websocket)
 
@@ -180,8 +196,7 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
             "context": context_id,
             "children": [{
                 "context": ANY_STR,
-                # At this point the nested iframe may not be navigated yet.
-                "url": ANY_STR,
+                "url": nested_iframe,
                 "children": []
             }],
             "parent": None,
@@ -225,8 +240,25 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginConte
     another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
                                       f'<iframe src="{another_nested_iframe}" />'
 
-    await goto_url(websocket, context_id, page_with_nested_iframe)
-    await goto_url(websocket, context_id, another_page_with_nested_iframe)
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": page_with_nested_iframe,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": another_page_with_nested_iframe,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
     result = await get_tree(websocket)
 
@@ -254,7 +286,15 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
     another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
                                       f'<iframe src="{another_nested_iframe}" />'
 
-    await goto_url(websocket, context_id, page_with_nested_iframe)
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": page_with_nested_iframe,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
     result = await get_tree(websocket)
 
@@ -271,7 +311,15 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
         }]
     } == result
 
-    await goto_url(websocket, context_id, another_page_with_nested_iframe)
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": another_page_with_nested_iframe,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
     result = await get_tree(websocket)
 
@@ -384,15 +432,15 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
 
     await subscribe(websocket, ["browsingContext.contextCreated"])
 
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": top_level_page,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    command = {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": top_level_page,
+            "wait": "complete",
+            "context": context_id
+        }
+    }
+    await send_JSON_command(websocket, command)
 
     events = []
     while len(events) < 2:
@@ -548,16 +596,16 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
     # Send command.
-    await send_JSON_command(
-        websocket, {
-            "id": 14,
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": "data:text/html,<h2>test</h2>",
-                "wait": "interactive",
-                "context": context_id
-            }
-        })
+    command = {
+        "id": 14,
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": "data:text/html,<h2>test</h2>",
+            "wait": "interactive",
+            "context": context_id
+        }
+    }
+    await send_JSON_command(websocket, command)
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
@@ -603,15 +651,16 @@ async def test_browsingContext_navigateWaitComplete_navigated(
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
     # Send command.
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": "data:text/html,<h2>test</h2>",
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    command = {
+        "id": 15,
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": "data:text/html,<h2>test</h2>",
+            "wait": "complete",
+            "context": context_id
+        }
+    }
+    await send_JSON_command(websocket, command)
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
@@ -657,12 +706,36 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated
     url_with_hash_2 = url + "#2"
 
     # Initial navigation.
-    await goto_url(websocket, context_id, url)
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
-    resp = await goto_url(websocket, context_id, url_with_hash_1)
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_1,
+                "wait": "none",
+                "context": context_id
+            }
+        })
     assert resp == {'navigation': None, 'url': url_with_hash_1}
 
-    resp = await goto_url(websocket, context_id, url_with_hash_2)
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_2,
+                "wait": "none",
+                "context": context_id
+            }
+        })
     assert resp == {'navigation': None, 'url': url_with_hash_2}
 
 
@@ -674,9 +747,25 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
     url_with_hash_2 = url + "#2"
 
     # Initial navigation.
-    await goto_url(websocket, context_id, url)
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
-    resp = await goto_url(websocket, context_id, url_with_hash_1)
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_1,
+                "wait": "interactive",
+                "context": context_id
+            }
+        })
     assert resp == {'navigation': None, 'url': url_with_hash_1}
 
     result = await get_tree(websocket, context_id)
@@ -690,7 +779,15 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
         }]
     } == result
 
-    resp = await goto_url(websocket, context_id, url_with_hash_2)
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_2,
+                "wait": "interactive",
+                "context": context_id
+            }
+        })
     assert resp == {'navigation': None, 'url': url_with_hash_2}
 
     result = await get_tree(websocket, context_id)
@@ -713,9 +810,25 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
     url_with_hash_2 = url + "#2"
 
     # Initial navigation.
-    await goto_url(websocket, context_id, url)
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
-    resp = await goto_url(websocket, context_id, url_with_hash_1)
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_1,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
     assert resp == {'navigation': None, 'url': url_with_hash_1}
 
     result = await get_tree(websocket, context_id)
@@ -729,7 +842,15 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
         }]
     } == result
 
-    resp = await goto_url(websocket, context_id, url_with_hash_2)
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_2,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
     assert resp == {'navigation': None, 'url': url_with_hash_2}
 
     result = await get_tree(websocket, context_id)
