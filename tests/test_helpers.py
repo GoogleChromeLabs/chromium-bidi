@@ -104,7 +104,7 @@ async def goto_url(websocket, context_id, url):
             "params": {
                 "url": url,
                 "context": context_id,
-                "wait": "interactive"
+                "wait": "complete"
             }
         })
 
