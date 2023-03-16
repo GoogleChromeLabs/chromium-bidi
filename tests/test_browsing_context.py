@@ -15,8 +15,9 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, execute_command, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -183,118 +184,16 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
     }
 
 
-@pytest.mark.asyncio
-async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsReturned(
-        websocket, context_id):
-    nested_iframe = 'data:text/html,<h1>CHILD_PAGE</h1>'
-    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
-                              f'<iframe src="{nested_iframe}" />'
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": page_with_nested_iframe,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
-
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
-
-    assert {
-        "contexts": [{
-            "context": context_id,
-            "children": [{
-                "context": ANY_STR,
-                "url": nested_iframe,
-                "children": []
-            }],
-            "parent": None,
-            "url": page_with_nested_iframe
-        }]
-    } == result
-
-
-@pytest.mark.asyncio
-async def test_browsingContext_addAndRemoveNestedSameOriginContext_contextsNotReturned(
-        websocket, context_id):
-    nested_iframe = 'data:text/html,<h1>CHILD_PAGE</h1>'
-    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
-                              f'<iframe src="{nested_iframe}" />'
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": page_with_nested_iframe,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
-
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
-
-    assert {
-        "contexts": [{
-            "context": context_id,
-            "children": [{
-                "context": ANY_STR,
-                "url": nested_iframe,
-                "children": []
-            }],
-            "parent": None,
-            "url": page_with_nested_iframe
-        }]
-    } == result
-
-    await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "document.querySelector('iframe').remove()",
-                "awaitPromise": True,
-                "target": {
-                    "context": context_id,
-                }
-            }
-        })
-
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
-
-    assert {
-        "contexts": [{
-            "context": context_id,
-            "children": [],
-            "parent": None,
-            "url": page_with_nested_iframe
-        }]
-    } == result
-
-
 # TODO(sadym): make offline.
+@pytest.mark.parametrize(
+    "nested_iframe",
+    ['https://example.com/', 'data:text/html,<h1>CHILD_PAGE</h1>'])
 @pytest.mark.asyncio
-async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsReturned(
-        websocket, context_id):
-    nested_iframe = 'https://example.com/'
+async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
+        websocket, context_id, nested_iframe):
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
                               f'<iframe src="{nested_iframe}" />'
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": page_with_nested_iframe,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, page_with_nested_iframe)
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
@@ -314,41 +213,7 @@ async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsRetu
         }]
     } == result
 
-
-@pytest.mark.asyncio
-async def test_browsingContext_addAndRemoveNestedCrossOriginContext_contextsNotReturned(
-        websocket, context_id):
-    nested_iframe = 'https://example.com/'
-    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
-                              f'<iframe src="{nested_iframe}" />'
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": page_with_nested_iframe,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
-
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
-
-    assert {
-        "contexts": [{
-            "context": context_id,
-            "children": [{
-                "context": ANY_STR,
-                "url": nested_iframe,
-                "children": []
-            }],
-            "parent": None,
-            "url": page_with_nested_iframe
-        }]
-    } == result
-
+    # Remove nested iframe.
     await execute_command(
         websocket, {
             "method": "script.evaluate",
