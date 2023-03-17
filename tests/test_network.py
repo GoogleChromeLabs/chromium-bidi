@@ -14,7 +14,7 @@
 #  limitations under the License.
 #
 import pytest
-from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR, AnyWithEntries
 from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
                           send_JSON_command, subscribe)
 
@@ -58,6 +58,30 @@ async def test_network_before_request_sent_event_emitted(
             "timestamp": ANY_TIMESTAMP
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_network_global_subscription_and_new_context(
+        websocket, create_context):
+    await subscribe(websocket, "network.beforeRequestSent")
+
+    new_context_id = await create_context()
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "http://example.com",
+                "wait": "complete",
+                "context": new_context_id
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+
+    assert resp == AnyWithEntries({
+        "method": "network.beforeRequestSent",
+        "params": AnyWithEntries({"context": new_context_id})
+    })
 
 
 @pytest.mark.asyncio
