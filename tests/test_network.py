@@ -14,9 +14,9 @@
 #  limitations under the License.
 #
 import pytest
-from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR, AnyWithEntries
-from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe)
+from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -78,9 +78,11 @@ async def test_network_global_subscription_and_new_context(
 
     resp = await read_JSON_message(websocket)
 
-    assert resp == AnyWithEntries({
+    assert resp == AnyExtending({
         "method": "network.beforeRequestSent",
-        "params": AnyWithEntries({"context": new_context_id})
+        "params": {
+            "context": new_context_id
+        }
     })
 
 
