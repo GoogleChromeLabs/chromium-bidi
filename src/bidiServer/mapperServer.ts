@@ -24,7 +24,7 @@ import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
 const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');
 const cdpLog = debug('bidiMapper:cdp');
-const MAPPER_CHANNEL = 'MAPPER_CHANNEL';
+const MAPPER_DEBUG_CHANNEL = 'MAPPER_DEBUG_CHANNEL';
 
 export class MapperServer {
   #handlers: ((message: string) => void)[] = [];
@@ -108,7 +108,7 @@ export class MapperServer {
     // Messages in MAPPER_CHANNEL are for debug output and should not be forwarded to users.
     try {
       const message = JSON.parse(bidiMessage);
-      if (message.channel === MAPPER_CHANNEL) {
+      if (message.channel === MAPPER_DEBUG_CHANNEL) {
         cdpLog(bidiMessage);
         return;
       }
@@ -185,7 +185,7 @@ export class MapperServer {
                     params: {
                       events: ['cdp'],
                     },
-                    channel: MAPPER_CHANNEL,
+                    channel: MAPPER_DEBUG_CHANNEL,
                   }),
                   mapperCdpClient
                 );
