@@ -23,7 +23,7 @@ import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
 
 const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');
-const cdpLog = debug('bidiMapper:cdp');
+const mapperDebugLog = debug('bidiMapper:mapperDebug');
 const MAPPER_DEBUG_CHANNEL = 'MAPPER_DEBUG_CHANNEL';
 
 export class MapperServer {
@@ -35,14 +35,14 @@ export class MapperServer {
   static async create(
     cdpUrl: string,
     mapperContent: string,
-    cdpOutput: boolean
+    verbose: boolean
   ): Promise<MapperServer> {
     const cdpConnection = await this.#establishCdpConnection(cdpUrl);
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
         mapperContent,
-        cdpOutput
+        verbose
       );
       return new MapperServer(cdpConnection, mapperCdpClient);
     } catch (e) {
@@ -109,7 +109,10 @@ export class MapperServer {
     try {
       const message = JSON.parse(bidiMessage);
       if (message.channel === MAPPER_DEBUG_CHANNEL) {
-        cdpLog(bidiMessage);
+        mapperDebugLog(
+          message?.params?.logType ?? 'no type',
+          ...(message?.params?.messages ?? 'no message')
+        );
         return;
       }
     } catch {}
@@ -133,7 +136,7 @@ export class MapperServer {
   static async #initMapper(
     cdpConnection: CdpConnection,
     mapperContent: string,
-    cdpOutput: boolean
+    verbose: boolean
   ): Promise<CdpClient> {
     debugInternal('Connection opened.');
 
@@ -177,20 +180,6 @@ export class MapperServer {
             if (parsed.launched) {
               mapperCdpClient.off('Runtime.bindingCalled', onBindingCalled);
               // Subscribe to CDP events in a dedicated channel if needed for debugging.
-              if (cdpOutput) {
-                await this.#sendBidiMessage(
-                  JSON.stringify({
-                    id: 1002,
-                    method: 'session.subscribe',
-                    params: {
-                      events: ['cdp'],
-                    },
-                    channel: MAPPER_DEBUG_CHANNEL,
-                  }),
-                  mapperCdpClient
-                );
-              }
-
               resolve();
             }
           } catch (e) {
@@ -205,6 +194,15 @@ export class MapperServer {
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: mapperContent,
     });
+
+    if (verbose) {
+      // Needed to request verbose logs from Mapper.
+      await mapperCdpClient.sendCommand('Runtime.evaluate', {
+        expression: `window.verboseDebugChannel=${JSON.stringify(
+          MAPPER_DEBUG_CHANNEL
+        )}`,
+      });
+    }
 
     // Let Mapper know what is it's TargetId to filter out related targets.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
