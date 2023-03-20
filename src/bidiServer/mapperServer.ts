@@ -19,11 +19,14 @@ import Protocol from 'devtools-protocol';
 import WebSocket from 'ws';
 import debug from 'debug';
 
-import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
+import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp';
+import {LogType} from '../utils/log';
 
 const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');
-const mapperDebugLog = debug('bidiMapper:mapperDebug');
+const mapperDebugLogOthers = debug('bidiMapper:mapperDebug:others');
+
+const bidiMapperMapperDebugPrefix = 'bidiMapper:mapperDebug:';
 
 export class MapperServer {
   #handlers: ((message: string) => void)[] = [];
@@ -62,14 +65,21 @@ export class MapperServer {
       'Runtime.consoleAPICalled',
       this.#onConsoleAPICalled
     );
+    // Catch unhandled exceptions in the mapper.
+    this.#mapperCdpClient.on(
+      'Runtime.exceptionThrown',
+      this.#onRuntimeExceptionThrown
+    );
   }
 
   setOnMessage(handler: (message: string) => void): void {
     this.#handlers.push(handler);
   }
+
   sendMessage(messageJson: string): Promise<void> {
     return this.#sendBidiMessage(messageJson);
   }
+
   close() {
     this.#cdpConnection.close();
   }
@@ -111,13 +121,31 @@ export class MapperServer {
     }
   };
 
-  #onDebugMessage = (debugMessage: string) => {
+  #onDebugMessage = (debugMessageStr: string) => {
     try {
-      const params = JSON.parse(debugMessage);
-      mapperDebugLog(params);
-    } catch {
-      mapperDebugLog(debugMessage);
-    }
+      const debugMessage = JSON.parse(debugMessageStr) as {
+        logType: string;
+        messages: any[];
+      };
+
+      // BiDi traffic is logged in `bidiServer:SEND ▸`
+      if (debugMessage.logType === LogType.bidi) {
+        return;
+      }
+
+      if (
+        debugMessage.logType !== undefined &&
+        debugMessage.messages !== undefined
+      ) {
+        debug(bidiMapperMapperDebugPrefix + debugMessage.logType)(
+          '',
+          ...debugMessage.messages
+        );
+        return;
+      }
+    } catch {}
+    // Fall back to raw log in case of unknown
+    mapperDebugLogOthers(debugMessageStr);
   };
 
   #onConsoleAPICalled = (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
@@ -126,6 +154,12 @@ export class MapperServer {
       params.type,
       params.args.map((arg) => arg.value)
     );
+  };
+
+  #onRuntimeExceptionThrown = (
+    params: Protocol.Runtime.ExceptionThrownEvent
+  ) => {
+    debugLog('exceptionThrown', params);
   };
 
   static async #initMapper(
