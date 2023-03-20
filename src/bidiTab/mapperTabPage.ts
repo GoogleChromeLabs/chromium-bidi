@@ -71,9 +71,7 @@ export function log(logType: LogType, ...messages: unknown[]) {
   }
 
   // If `sendDebugMessage` is defined, send the log message there.
-  (globalThis as unknown as Window).sendDebugMessage?.(
-    JSON.stringify({logType, messages})
-  );
+  global.window?.sendDebugMessage?.(JSON.stringify({logType, messages}));
 
   const typeLogContainer = findOrCreateTypeLogContainer(logType);
 
