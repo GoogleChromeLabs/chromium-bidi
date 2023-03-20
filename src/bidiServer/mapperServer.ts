@@ -19,8 +19,8 @@ import Protocol from 'devtools-protocol';
 import WebSocket from 'ws';
 import debug from 'debug';
 
-import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp';
-import {LogType} from '../utils/log';
+import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
+import {LogType} from '../utils/log.js';
 
 const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');
