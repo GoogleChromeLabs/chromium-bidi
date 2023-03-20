@@ -53,9 +53,7 @@ export namespace Message {
   export type OutgoingMessage =
     | CommandResponse
     | EventMessage
-    | {launched: true}
-    // TODO: add proper verbose debug type
-    | any;
+    | {launched: true};
 
   export type RawCommandRequest = {
     id: number;

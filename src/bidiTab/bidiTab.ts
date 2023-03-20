@@ -33,8 +33,7 @@ import {ITransport} from '../utils/transport.js';
 import {LogType} from '../utils/log.js';
 import {OutgoingBidiMessage} from '../bidiMapper/OutgoingBidiMessage.js';
 
-import {generatePage} from './mapperTabPage.js';
-import {Logger} from './logger';
+import {generatePage, log} from './mapperTabPage.js';
 
 declare global {
   interface Window {
@@ -51,17 +50,16 @@ declare global {
     // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
     onBidiMessage: ((message: string) => void) | null;
 
+    // Set from the server side if verbose logging is required.
+    sendDebugMessage?: ((message: string) => void) | null;
+
     // `window.setSelfTargetId` is called via `Runtime.evaluate` from the server side.
     setSelfTargetId: (targetId: string) => void;
-
-    // `window.verboseDebug` is set via `Runtime.evaluate` in case of verbose debugging mode.
-    verboseDebugChannel: string | undefined;
   }
 }
 
 // Initiate `setSelfTargetId` as soon as possible to prevent race condition.
 const waitSelfTargetIdPromise = waitSelfTargetId();
-const logger = new Logger();
 
 (async () => {
   generatePage();
@@ -69,12 +67,9 @@ const logger = new Logger();
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await waitSelfTargetIdPromise;
 
-  const bidiServer = await createBidiServer(selfTargetId, logger);
+  const bidiServer = await createBidiServer(selfTargetId);
 
-  logger.setBiDiServer(bidiServer);
-  logger.setVerboseDebugChannel(window.verboseDebugChannel);
-
-  logger.log(LogType.system, 'Launched');
+  log(LogType.system, 'Launched');
 
   bidiServer.emitOutgoingMessage(
     OutgoingBidiMessage.createResolved({launched: true}, null)
@@ -112,18 +107,18 @@ function createCdpConnection() {
   return new CdpConnection(
     new WindowCdpTransport(),
     (...messages: unknown[]) => {
-      logger.log(LogType.cdp, ...messages);
+      log(LogType.cdp, ...messages);
     }
   );
 }
 
-async function createBidiServer(selfTargetId: string, logger: Logger) {
+async function createBidiServer(selfTargetId: string) {
   class WindowBidiTransport implements BidiTransport {
     #onMessage: ((message: Message.RawCommandRequest) => void) | null = null;
 
     constructor() {
       window.onBidiMessage = (messageStr: string) => {
-        logger.log(LogType.bidi, 'received ◂', messageStr);
+        log(LogType.bidi, 'received ◂', messageStr);
         let messageObject: Message.RawCommandRequest;
         try {
           messageObject = WindowBidiTransport.#parseBidiMessage(messageStr);
@@ -150,7 +145,7 @@ async function createBidiServer(selfTargetId: string, logger: Logger) {
     async sendMessage(message: Message.OutgoingMessage): Promise<void> {
       const messageStr = JSON.stringify(message);
       window.sendBidiResponse(messageStr);
-      logger.log(LogType.bidi, 'sent ▸', messageStr);
+      log(LogType.bidi, 'sent ▸', messageStr);
     }
 
     close() {
@@ -271,7 +266,7 @@ async function createBidiServer(selfTargetId: string, logger: Logger) {
     createCdpConnection(),
     selfTargetId,
     new BidiParserImpl(),
-    logger.log
+    log
   );
 }
 
@@ -279,53 +274,41 @@ class BidiParserImpl implements BidiParser {
   parseGetRealmsParams(params: object): Script.GetRealmsParameters {
     return Parser.Script.parseGetRealmsParams(params);
   }
-
   parseCallFunctionParams(params: object): Script.CallFunctionParameters {
     return Parser.Script.parseCallFunctionParams(params);
   }
-
   parseEvaluateParams(params: object): Script.EvaluateParameters {
     return Parser.Script.parseEvaluateParams(params);
   }
-
   parseDisownParams(params: object): Script.DisownParameters {
     return Parser.Script.parseDisownParams(params);
   }
-
   parseSendCommandParams(params: object): CDP.SendCommandParams {
     return Parser.CDP.parseSendCommandParams(params) as CDP.SendCommandParams;
   }
-
   parseGetSessionParams(params: object): CDP.GetSessionParams {
     return Parser.CDP.parseGetSessionParams(params);
   }
-
   parseSubscribeParams(params: object): Session.SubscribeParameters {
     return Parser.Session.parseSubscribeParams(params);
   }
-
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
     return Parser.BrowsingContext.parseNavigateParams(params);
   }
-
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
     return Parser.BrowsingContext.parseGetTreeParams(params);
   }
-
   parseCreateParams(params: object): BrowsingContext.CreateParameters {
     return Parser.BrowsingContext.parseCreateParams(params);
   }
-
   parseCloseParams(params: object): BrowsingContext.CloseParameters {
     return Parser.BrowsingContext.parseCloseParams(params);
   }
-
   parseCaptureScreenshotParams(
     params: object
   ): BrowsingContext.CaptureScreenshotParameters {
     return Parser.BrowsingContext.parseCaptureScreenshotParams(params);
   }
-
   parsePrintParams(params: object): BrowsingContext.PrintParameters {
     return Parser.BrowsingContext.parsePrintParams(params);
   }
@@ -335,7 +318,7 @@ class BidiParserImpl implements BidiParser {
 async function waitSelfTargetId(): Promise<string> {
   return new Promise((resolve) => {
     window.setSelfTargetId = (targetId) => {
-      logger.log(LogType.system, 'Current target ID:', targetId);
+      log(LogType.system, 'Current target ID:', targetId);
       resolve(targetId);
     };
   });

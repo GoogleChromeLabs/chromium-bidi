@@ -62,9 +62,7 @@ function parseArguments() {
   });
 
   parser.add_argument('-v', '--verbose', {
-    help:
-      'If present, the Mapper log, including CDP commands and events will be ' +
-      'logged into the server output.',
+    help: 'If present, the Mapper debug log, including CDP commands and events will be logged into the server output.',
     action: 'store_true',
   });
 
