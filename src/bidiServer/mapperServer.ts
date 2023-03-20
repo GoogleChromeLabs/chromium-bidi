@@ -138,6 +138,8 @@ export class MapperServer {
         debugMessage.messages !== undefined
       ) {
         debug(bidiMapperMapperDebugPrefix + debugMessage.logType)(
+          // No formatter is needed as the messages will be formatted
+          // automatically.
           '',
           ...debugMessage.messages
         );
