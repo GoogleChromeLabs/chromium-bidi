@@ -125,7 +125,7 @@ export class MapperServer {
     try {
       const debugMessage = JSON.parse(debugMessageStr) as {
         logType: string;
-        messages: any[];
+        messages: unknown[];
       };
 
       // BiDi traffic is logged in `bidiServer:SEND ▸`
