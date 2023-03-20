@@ -137,6 +137,9 @@ async def wait_for_event(websocket, event_method):
             return event_response
 
 
+# When compared to an actual value, `AnyExtending` will verify that the expected
+# object is a subset of the actual object, except the arrays, which should be
+# equal.
 def AnyExtending(expected):
     if type(expected) is list:
         result = []
