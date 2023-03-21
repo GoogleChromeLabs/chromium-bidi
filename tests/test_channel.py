@@ -15,15 +15,14 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import execute_command, read_JSON_message, subscribe
+from test_helpers import (execute_command, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
-# TODO(#294): Implement E2E tests.
 @pytest.mark.asyncio
-async def test_channel(websocket, context_id):
+async def test_channel_twoMessageEvents(websocket, context_id):
     await subscribe(websocket, "script.message")
 
-    # The channel was successfully created if there's no thrown exception.
     await execute_command(
         websocket,
         {
@@ -52,7 +51,6 @@ async def test_channel(websocket, context_id):
         })
 
     resp = await read_JSON_message(websocket)
-
     assert resp == {
         "method": "script.message",
         "params": {
@@ -69,7 +67,6 @@ async def test_channel(websocket, context_id):
     }
 
     resp = await read_JSON_message(websocket)
-
     assert resp == {
         "method": "script.message",
         "params": {
@@ -77,6 +74,74 @@ async def test_channel(websocket, context_id):
             "data": {
                 "type": "string",
                 "value": "MY_MESSAGE2"
+            },
+            "source": {
+                "context": context_id,
+                "realm": ANY_STR,
+            }
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
+    await subscribe(websocket, "script.message")
+
+    command_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "script.callFunction",
+            "params": {
+                # A small delay is needed to avoid a race condition.
+                "functionDeclaration": """(binding) => {
+                    binding('MESSAGE_BEFORE_EXEC_FINISHED');
+                    setTimeout(() => {
+                        binding('MESSAGE_AFTER_EXEC_FINISHED');
+                    }, 1);
+                }""",
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "MY_CHANNEL",
+                        "ownership": "root",
+                    },
+                }],
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+                "resultOwnership": "root"
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "script.message",
+        "params": {
+            "channel": "MY_CHANNEL",
+            "data": {
+                "type": "string",
+                "value": "MESSAGE_BEFORE_EXEC_FINISHED"
+            },
+            "source": {
+                "context": context_id,
+                "realm": ANY_STR,
+            }
+        }
+    }
+
+    # Assert the command execution finished.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == command_id
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "script.message",
+        "params": {
+            "channel": "MY_CHANNEL",
+            "data": {
+                "type": "string",
+                "value": "MESSAGE_AFTER_EXEC_FINISHED"
             },
             "source": {
                 "context": context_id,

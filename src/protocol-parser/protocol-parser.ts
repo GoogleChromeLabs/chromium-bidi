@@ -217,6 +217,8 @@ export namespace CommonDataTypes {
 
   // BrowsingContext = text;
   export const BrowsingContextSchema = zod.string();
+
+  export const MaxDepthSchema = zod.number().int().nonnegative().max(MAX_INT);
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-script */
@@ -306,7 +308,9 @@ export namespace Script {
 
   const ChannelPropertiesSchema = zod.object({
     channel: ChannelIdSchema,
-    maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
+    // TODO(#294): maxDepth: CommonDataTypes.MaxDepthSchema.optional(),
+    // See: https://github.com/w3c/webdriver-bidi/pull/361/files#r1141961142
+    maxDepth: zod.number().int().min(1).max(1).optional(),
     ownership: ResultOwnershipSchema.optional(),
   });
 
@@ -358,9 +362,7 @@ export namespace BrowsingContext {
   //   ?root: browsingContext.BrowsingContext,
   // }
   const GetTreeParametersSchema = zod.object({
-    // TODO(##294): maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
-    // See: https://github.com/w3c/webdriver-bidi/pull/361/files#r1141961142
-    maxDepth: zod.number().int().min(1).max(1).optional(),
+    maxDepth: CommonDataTypes.MaxDepthSchema.optional(),
     root: CommonDataTypes.BrowsingContextSchema.optional(),
   });
 
