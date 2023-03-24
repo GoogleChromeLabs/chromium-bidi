@@ -91,11 +91,18 @@ export namespace Message {
   // keep-sorted end;
 
   export type ErrorCode =
-    | 'unknown error'
-    | 'unknown command'
+    // keep-sorted start
     | 'invalid argument'
+    | 'invalid session id'
+    | 'no such alert'
     | 'no such frame'
-    | 'no such node';
+    | 'no such node'
+    | 'no such script'
+    | 'session not created'
+    | 'unknown command'
+    | 'unknown error'
+    | 'unsupported operation';
+  // keep-sorted end
 
   export type ErrorResult = {
     readonly error: ErrorCode;
@@ -137,21 +144,27 @@ export namespace Message {
     }
   }
 
-  export class UnknownException extends ErrorResponseClass {
-    constructor(message: string, stacktrace?: string) {
-      super('unknown error', message, stacktrace);
-    }
-  }
-
-  export class UnknownCommandException extends ErrorResponseClass {
-    constructor(message: string, stacktrace?: string) {
-      super('unknown command', message, stacktrace);
-    }
-  }
-
   export class InvalidArgumentException extends ErrorResponseClass {
     constructor(message: string, stacktrace?: string) {
       super('invalid argument', message, stacktrace);
+    }
+  }
+
+  export class InvalidSessionIdException extends ErrorResponseClass {
+    constructor(message: string, stacktrace?: string) {
+      super('invalid session id', message, stacktrace);
+    }
+  }
+
+  export class NoSuchAlertException extends ErrorResponseClass {
+    constructor(message: string, stacktrace?: string) {
+      super('no such alert', message, stacktrace);
+    }
+  }
+
+  export class NoSuchFrameException extends ErrorResponseClass {
+    constructor(message: string) {
+      super('no such frame', message);
     }
   }
 
@@ -161,9 +174,33 @@ export namespace Message {
     }
   }
 
-  export class NoSuchFrameException extends ErrorResponseClass {
-    constructor(message: string) {
-      super('no such frame', message);
+  export class NoSuchScriptException extends ErrorResponseClass {
+    constructor(message: string, stacktrace?: string) {
+      super('no such script', message, stacktrace);
+    }
+  }
+
+  export class SessionNotCreatedException extends ErrorResponseClass {
+    constructor(message: string, stacktrace?: string) {
+      super('session not created', message, stacktrace);
+    }
+  }
+
+  export class UnknownCommandException extends ErrorResponseClass {
+    constructor(message: string, stacktrace?: string) {
+      super('unknown command', message, stacktrace);
+    }
+  }
+
+  export class UnknownErrorException extends ErrorResponseClass {
+    constructor(message: string, stacktrace?: string) {
+      super('unknown error', message, stacktrace);
+    }
+  }
+
+  export class UnsupportedOperationException extends ErrorResponseClass {
+    constructor(message: string, stacktrace?: string) {
+      super('unsupported operation', message, stacktrace);
     }
   }
 }
