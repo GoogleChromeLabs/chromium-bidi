@@ -291,6 +291,7 @@ export class BrowsingContextProcessor {
     return context.getOrCreateSandbox(target.sandbox);
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async process_script_addPreloadScript(
     _params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
