@@ -307,6 +307,7 @@ export namespace Script {
   export const AddPreloadScriptParametersSchema = zod.object({
     expression: zod.string(),
     sandbox: zod.string().optional(),
+    context: CommonDataTypes.BrowsingContextSchema.optional(),
   });
 
   export function parseAddPreloadScriptParams(
