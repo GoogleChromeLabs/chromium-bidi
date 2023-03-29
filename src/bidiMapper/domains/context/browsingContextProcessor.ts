@@ -291,15 +291,27 @@ export class BrowsingContextProcessor {
     return context.getOrCreateSandbox(target.sandbox);
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async process_script_addPreloadScript(
-    _params: Script.AddPreloadScriptParameters
+    params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    throw new Message.UnknownErrorException('Not implemented.');
+    const contexts: BrowsingContextImpl[] = [];
+    const scripts: Script.AddPreloadScriptResult[] = [];
 
-    return {
-      script: '', // TODO(#293): Populate script.
-    };
+    if (params.context) {
+      contexts.push(
+        this.#browsingContextStorage.getKnownContext(params.context)
+      );
+    } else {
+      // Add all contexts.
+      contexts.push(...this.#browsingContextStorage.getAllContexts());
+    }
+
+    for (const context of contexts) {
+      scripts.push(await context.addPreloadScript(params));
+    }
+
+    // TODO(thiagowfx): What to return whenever there are multiple contexts?
+    return scripts[0]!;
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -387,11 +399,9 @@ export class BrowsingContextProcessor {
       browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
     });
 
-    await this.#cdpConnection
-      .browserClient()
-      .sendCommand('Target.closeTarget', {
-        targetId: commandParams.context,
-      });
+    await browserCdpClient.sendCommand('Target.closeTarget', {
+      targetId: commandParams.context,
+    });
 
     // Sometimes CDP command finishes before `detachedFromTarget` event,
     // sometimes after. Wait for the CDP command to be finished, and then wait
