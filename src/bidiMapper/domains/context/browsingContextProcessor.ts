@@ -306,9 +306,11 @@ export class BrowsingContextProcessor {
       contexts.push(...this.#browsingContextStorage.getAllContexts());
     }
 
-    for (const context of contexts) {
-      scripts.push(await context.addPreloadScript(params));
-    }
+    scripts.push(
+      ...(await Promise.all(
+        contexts.map((context) => context.addPreloadScript(params))
+      ))
+    );
 
     // TODO(thiagowfx): What to return whenever there are multiple contexts?
     return scripts[0]!;
