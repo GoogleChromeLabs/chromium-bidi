@@ -14,25 +14,32 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import (execute_command, read_JSON_message,
-                          send_JSON_command, subscribe, wait_for_event)
+from anys import ANY_DICT, ANY_STR
+from test_helpers import (AnyExtending, execute_command, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
 async def test_addPreloadScript_setGlobalVariable(websocket, context_id):
-    await send_JSON_command(
+    result = await execute_command(
         websocket, {
-            "id": 1,
             "method": "script.addPreloadScript",
             "params": {
                 "expression": "() => { window.foo='bar'; }",
                 "context": context_id,
             }
         })
+    assert result == {'script': ANY_STR}
 
-    resp = await read_JSON_message(websocket)
-
-    assert resp == {'id': 1, 'script': '1'}
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "data:text/html,<h2>test</h2>",
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
     result = await execute_command(
         websocket, {
@@ -46,32 +53,45 @@ async def test_addPreloadScript_setGlobalVariable(websocket, context_id):
                 "resultOwnership": "root"
             }
         })
-
-    assert result == {
-        'type': "success",
-        "result": {
-            "type": "string",
-            "value": 'bar'
-        }
-    }
+    assert result["result"] == {"type": "string", "value": 'bar'}
 
 
 @pytest.mark.asyncio
 async def test_addPreloadScript_logging(websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
 
-    await send_JSON_command(
+    result = await execute_command(
         websocket, {
-            "id": 1,
             "method": "script.addPreloadScript",
             "params": {
-                "expression": "() => console.log('my preload script');",
+                "expression": "() => console.log('my preload script')",
                 "context": context_id,
             }
         })
+    assert result == {'script': ANY_STR}
 
-    resp = await read_JSON_message(websocket)
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "data:text/html,<h2>test</h2>",
+                "wait": "complete",
+                "context": context_id
+            }
+        })
 
-    assert resp == {'id': 1, 'script': '1'}
+    # Log event should happen before navigation.
+    result = await read_JSON_message(websocket)
+    assert result == AnyExtending({
+        "method": "log.entryAdded",
+        "params": {
+            "args": [{
+                "type": "string",
+                "value": "my preload script"
+            }]
+        }
+    })
 
-    await wait_for_event(websocket, "log.entryAdded")
+    # Assert navigation is finished.
+    result = await read_JSON_message(websocket)
+    assert result == {"id": command_id, "result": ANY_DICT}

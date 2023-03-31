@@ -537,13 +537,16 @@ export class BrowsingContextImpl {
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.addScriptToEvaluateOnNewDocument',
       {
-        source: params.expression,
+        // The spec provides a function, and CDP expects an evaluation.
+        source: `(${params.expression})();`,
         worldName: params.sandbox,
       }
     );
 
     return {
-      script: result.identifier,
+      result: {
+        script: result.identifier,
+      },
     };
   }
 }

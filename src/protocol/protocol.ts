@@ -698,7 +698,9 @@ export namespace Script {
   };
 
   export type AddPreloadScriptResult = {
-    script: PreloadScript;
+    result: {
+      script: PreloadScript;
+    };
   };
 
   export type RemovePreloadScriptCommand = {

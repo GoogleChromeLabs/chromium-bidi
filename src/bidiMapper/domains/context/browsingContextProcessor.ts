@@ -298,11 +298,14 @@ export class BrowsingContextProcessor {
     const scripts: Script.AddPreloadScriptResult[] = [];
 
     if (params.context) {
+      // TODO(#293): Handle edge case with OOPiF. Whenever a frame is moved out
+      // of process, we have to add those scripts as well.
       contexts.push(
         this.#browsingContextStorage.getKnownContext(params.context)
       );
     } else {
       // Add all contexts.
+      // TODO(#293): Add preload scripts to all new browsing contexts as well.
       contexts.push(...this.#browsingContextStorage.getAllContexts());
     }
 
@@ -312,7 +315,7 @@ export class BrowsingContextProcessor {
       ))
     );
 
-    // TODO(thiagowfx): What to return whenever there are multiple contexts?
+    // TODO(#293): What to return whenever there are multiple contexts?
     return scripts[0]!;
   }
 
