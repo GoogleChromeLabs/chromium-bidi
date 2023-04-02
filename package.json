@@ -48,7 +48,7 @@
     "@types/node": "18.11.14",
     "@types/sinon": "10.0.11",
     "@types/websocket": "1.0.5",
-    "@types/ws": "8.5.3",
+    "@types/ws": "8.5.4",
     "@typescript-eslint/eslint-plugin": "5.38.0",
     "@typescript-eslint/parser": "5.38.0",
     "argparse": "2.0.1",
@@ -58,7 +58,7 @@
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1007249",
     "eslint": "8.24.0",
-    "eslint-config-prettier": "8.5.0",
+    "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-mocha": "10.1.0",
     "eslint-plugin-prettier": "4.2.1",
@@ -68,14 +68,14 @@
     "prettier": "2.8.4",
     "rimraf": "3.0.2",
     "rollup": "2.74.1",
-    "sinon": "14.0.0",
+    "sinon": "15.0.3",
     "source-map-support": "^0.5.21",
     "terser": "5.14.2",
-    "tslib": "2.4.0",
+    "tslib": "2.5.0",
     "typescript": "4.7.4",
     "websocket": "1.0.34",
-    "ws": "8.6.0",
-    "zod": "3.17.3"
+    "ws": "8.13.0",
+    "zod": "3.21.4"
   },
   "dependencies": {
     "mitt": "3.0.0"
