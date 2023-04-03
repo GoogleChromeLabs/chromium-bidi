@@ -31,7 +31,4 @@ function getOutputPath() {
   return process.argv.slice(2)[1];
 }
 
-const rawReport = readReport(getReportPath());
-const result = generateReport(rawReport);
-
-fs.writeFileSync(getOutputPath(), result);
+fs.writeFileSync(getOutputPath(), generateReport(readReport(getReportPath())));
