@@ -28,6 +28,7 @@ import {IEventManager} from '../events/EventManager';
 import {Network} from '../../../protocol/protocol';
 
 export class NetworkRequest {
+  static #unknown = 'UNKNOWN';
   requestId: string;
   #eventManager: IEventManager;
   #requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent | undefined;
@@ -168,9 +169,11 @@ export class NetworkRequest {
             this.#requestWillBeSentExtraInfoEvent.associatedCookies
           );
     return {
-      request: this.#requestWillBeSentEvent?.requestId ?? 'UNKNOWN',
-      url: this.#requestWillBeSentEvent?.request.url ?? 'UNKNOWN',
-      method: this.#requestWillBeSentEvent?.request.method ?? 'UNKNOWN',
+      request:
+        this.#requestWillBeSentEvent?.requestId ?? NetworkRequest.#unknown,
+      url: this.#requestWillBeSentEvent?.request.url ?? NetworkRequest.#unknown,
+      method:
+        this.#requestWillBeSentEvent?.request.method ?? NetworkRequest.#unknown,
       headers: Object.keys(
         this.#requestWillBeSentEvent?.request.headers ?? []
       ).map((key) => ({
