@@ -171,7 +171,7 @@ export class ScriptEvaluator {
           'Argument should belong to the same JavaScript world as target object',
         ].includes(e.message)
       ) {
-        throw new Message.InvalidArgumentException('Handle was not found.');
+        throw new Message.NoSuchHandleException('Handle was not found.');
       }
       throw e;
     }
