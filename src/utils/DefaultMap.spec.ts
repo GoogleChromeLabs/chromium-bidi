@@ -23,7 +23,7 @@ const expect = chai.expect;
 
 describe.only('DefaultMap', () => {
   it('returns the default value when key does not exist', () => {
-    const defaultValue = 0;
+    const defaultValue = 42;
 
     const cutenessMap = new DefaultMap<string, number>(
       () => defaultValue,
@@ -32,6 +32,9 @@ describe.only('DefaultMap', () => {
 
     expect(cutenessMap.get('dog')).to.deep.equal(100);
     expect(cutenessMap.get('cat')).to.deep.equal(defaultValue);
+
+    expect(Array.from(cutenessMap.keys())).to.deep.equal(['dog', 'cat']);
+    expect(Array.from(cutenessMap.values())).to.deep.equal([100, defaultValue]);
   });
 
   it('sets and gets properly', () => {
@@ -39,5 +42,8 @@ describe.only('DefaultMap', () => {
 
     cutenessMap.set('cat', 50);
     expect(cutenessMap.get('cat')).to.deep.equal(50);
+
+    expect(Array.from(cutenessMap.keys())).to.deep.equal(['cat']);
+    expect(Array.from(cutenessMap.values())).to.deep.equal([50]);
   });
 });
