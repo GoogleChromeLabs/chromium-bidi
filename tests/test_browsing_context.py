@@ -15,9 +15,9 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe,
-                          wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_tree, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -730,6 +730,30 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "url": url_with_hash_2
         }]
     } == result
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_logAfterNavigation(websocket,
+                                                  another_context_id, html):
+    await subscribe(websocket, "log.entryAdded")
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html("<script>console.log('mylog');</script>"),
+                "context": another_context_id,
+                "wait": "complete"
+            }
+        })
+
+    result = await wait_for_event(websocket, "log.entryAdded")
+    assert result == {
+        "method": "log.entryAdded",
+        "params": AnyExtending({
+            "text": "mylog",
+        })
+    }
 
 
 @pytest.mark.asyncio
