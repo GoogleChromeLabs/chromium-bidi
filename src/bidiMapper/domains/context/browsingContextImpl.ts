@@ -130,8 +130,8 @@ export class BrowsingContextImpl {
     return this.#loaderId;
   }
 
-  async delete() {
-    await this.#deleteChildren();
+  delete() {
+    this.#deleteChildren();
 
     this.#realmStorage.deleteRealms({
       browsingContextId: this.contextId,
@@ -272,7 +272,7 @@ export class BrowsingContextImpl {
 
     this.#cdpTarget.cdpClient.on(
       'Page.frameNavigated',
-      async (params: Protocol.Page.FrameNavigatedEvent) => {
+      (params: Protocol.Page.FrameNavigatedEvent) => {
         if (this.contextId !== params.frame.id) {
           return;
         }
@@ -281,7 +281,7 @@ export class BrowsingContextImpl {
         // At the point the page is initiated, all the nested iframes from the
         // previous page are detached and realms are destroyed.
         // Remove context's children.
-        await this.#deleteChildren();
+        this.#deleteChildren();
       }
     );
 
