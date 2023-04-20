@@ -180,8 +180,8 @@ export class BrowsingContextImpl {
     this.#children.set(child.contextId, child);
   }
 
-  async #deleteChildren() {
-    await Promise.all(this.children.map((child) => child.delete()));
+  #deleteChildren() {
+    this.children.map((child) => child.delete());
   }
 
   get #defaultRealm(): Realm {
