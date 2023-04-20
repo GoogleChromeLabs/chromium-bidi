@@ -282,9 +282,6 @@ export class BrowsingContextImpl {
         // previous page are detached and realms are destroyed.
         // Remove context's children.
         await this.#deleteChildren();
-
-        // Remove all the already created realms.
-        this.#realmStorage.deleteRealms({browsingContextId: this.contextId});
       }
     );
 
@@ -406,6 +403,12 @@ export class BrowsingContextImpl {
         });
       }
     );
+
+    this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
+      this.#realmStorage.deleteRealms({
+        cdpSessionId: this.#cdpTarget.cdpSessionId,
+      });
+    });
   }
 
   #getOrigin(params: Protocol.Runtime.ExecutionContextCreatedEvent) {
