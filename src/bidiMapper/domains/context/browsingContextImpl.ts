@@ -138,8 +138,8 @@ export class BrowsingContextImpl {
     });
 
     // Remove context from the parent.
-    if (this.parentId !== null) {
-      const parent = this.#browsingContextStorage.getContext(this.parentId);
+    if (!this.isTopLevelContext()) {
+      const parent = this.#browsingContextStorage.getContext(this.parentId!);
       parent.#children.delete(this.contextId);
     }
 
@@ -278,9 +278,9 @@ export class BrowsingContextImpl {
         }
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
 
-        // At the point the page is initiated, all the nested iframes from the
+        // At the point the page is initialized, all the nested iframes from the
         // previous page are detached and realms are destroyed.
-        // Remove context's children.
+        // Remove children from context.
         this.#deleteChildren();
       }
     );
@@ -564,15 +564,21 @@ export class BrowsingContextImpl {
     };
   }
 
+  /**
+   * Issues `Page.addScriptToEvaluateOnNewDocument` CDP command with the given
+   * script source in evaluated form and world name / sandbox.
+   *
+   * @return The CDP preload script ID.
+   */
   async addPreloadScript(
-    params: Script.AddPreloadScriptParameters
+    scriptSource: string,
+    sandbox?: string
   ): Promise<Script.AddPreloadScriptResult> {
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.addScriptToEvaluateOnNewDocument',
       {
-        // The spec provides a function, and CDP expects an evaluation.
-        source: `(${params.expression})();`,
-        worldName: params.sandbox,
+        source: scriptSource,
+        worldName: sandbox,
       }
     );
 
@@ -581,5 +587,22 @@ export class BrowsingContextImpl {
         script: result.identifier,
       },
     };
+  }
+
+  /**
+   * Issues `Page.removeScriptToEvaluateOnNewDocument` CDP command with the
+   * given CDP preload script ID.
+   */
+  async removePreloadScript(
+    cdpPreloadScriptId: string
+  ): Promise<Script.RemovePreloadScriptResult> {
+    await this.#cdpTarget.cdpClient.sendCommand(
+      'Page.removeScriptToEvaluateOnNewDocument',
+      {
+        identifier: cdpPreloadScriptId,
+      }
+    );
+
+    return {};
   }
 }

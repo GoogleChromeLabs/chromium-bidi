@@ -31,6 +31,7 @@ import {RealmStorage} from '../script/realmStorage.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {CdpTarget} from './cdpTarget.js';
+import {PreloadScriptIdStorage} from './PreloadScriptIdStorage.js';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -39,6 +40,7 @@ export class BrowsingContextProcessor {
   readonly #logger?: LoggerFn;
   readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
+  readonly #preloadScriptIdStorage: PreloadScriptIdStorage;
 
   constructor(
     realmStorage: RealmStorage,
@@ -54,6 +56,7 @@ export class BrowsingContextProcessor {
     this.#logger = logger;
     this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
+    this.#preloadScriptIdStorage = new PreloadScriptIdStorage();
 
     this.#setEventListeners(this.#cdpConnection.browserClient());
   }
@@ -286,34 +289,62 @@ export class BrowsingContextProcessor {
   async process_script_addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    const contexts: BrowsingContextImpl[] = [];
-    const scripts: Script.AddPreloadScriptResult[] = [];
+    const contexts: BrowsingContextImpl[] =
+      params.context === null
+        ? this.#browsingContextStorage.getAllContexts()
+        : [this.#browsingContextStorage.getContext(params.context)];
 
-    if (params.context) {
-      // TODO(#293): Handle edge case with OOPiF. Whenever a frame is moved out
-      // of process, we have to add those scripts as well.
-      contexts.push(this.#browsingContextStorage.getContext(params.context));
-    } else {
-      // Add all contexts.
-      // TODO(#293): Add preload scripts to all new browsing contexts as well.
-      contexts.push(...this.#browsingContextStorage.getAllContexts());
-    }
-
-    scripts.push(
-      ...(await Promise.all(
-        contexts.map((context) => context.addPreloadScript(params))
-      ))
+    const addPreloadScriptResults = await Promise.all(
+      contexts.map((context) =>
+        context.addPreloadScript(
+          // The spec provides a function, and CDP expects an evaluation.
+          `(${params.expression})();`,
+          params.sandbox
+        )
+      )
     );
 
-    // TODO(#293): What to return whenever there are multiple contexts?
-    return scripts[0]!;
+    const cdpPreloadScriptIds: string[] = addPreloadScriptResults.map(
+      (addPreloadScriptResult) => addPreloadScriptResult.result.script
+    );
+
+    return {
+      result: {
+        script: this.#preloadScriptIdStorage.addPreloadScripts(
+          params.context,
+          cdpPreloadScriptIds,
+          params.expression
+        ),
+      },
+    };
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async process_script_removePreloadScript(
-    _params: Script.RemovePreloadScriptParameters
+    params: Script.RemovePreloadScriptParameters
   ): Promise<Script.RemovePreloadScriptResult> {
-    throw new Message.UnknownErrorException('Not implemented.');
+    const bidiPreloadScriptId = params.script;
+
+    const scriptIdEntries = this.#preloadScriptIdStorage.findEntries({
+      bidiPreloadScriptId,
+    });
+
+    if (scriptIdEntries.length === 0) {
+      throw new Message.NoSuchScriptException('No such preload script ID');
+    }
+
+    for (const scriptIdEntry of scriptIdEntries) {
+      const contextId = scriptIdEntry.contextId;
+      const cdpPreloadScriptId = scriptIdEntry.cdpPreloadScriptId;
+
+      if (contextId !== null) {
+        const context = this.#browsingContextStorage.getContext(contextId);
+        await context.removePreloadScript(cdpPreloadScriptId);
+      }
+    }
+
+    this.#preloadScriptIdStorage.removePreloadScript({
+      bidiPreloadScriptId,
+    });
 
     return {};
   }
