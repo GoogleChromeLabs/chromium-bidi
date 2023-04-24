@@ -41,7 +41,11 @@ else
   readonly WPT_METADATA="wpt-metadata/mapper/headful"
 fi
 
-log "Running WPT in headless=$HEADLESS mode..."
+if [[ "$HEADLESS" == "true" ]]; then
+  log "Running WPT in headless mode..."
+else
+  log "Running WPT in headful mode..."
+fi
 
 # Go to the project root folder.
 (cd "$(dirname "$0")/" && \
