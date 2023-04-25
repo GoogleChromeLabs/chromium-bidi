@@ -51,5 +51,4 @@ DEBUG="$DEBUG" \
 DEBUG_COLORS="$DEBUG_COLORS" \
 NODE_OPTIONS="$NODE_OPTIONS" \
 PORT="$PORT" \
-["$CHROME_BIN"] && CHROME_BIN="$CHROME_BIN" \
 node lib/cjs/bidiServer/index.js --channel="$CHANNEL" --headless="$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")
