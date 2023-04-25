@@ -130,12 +130,12 @@ async function onNewBidiConnectionOpen(
     'about:blank',
   ];
 
-  const executablePath = chromeChannel
-    ? computeSystemExecutablePath({
-        browser: Browser.CHROME,
-        channel: chromeChannel,
-      })
-    : process.env['CHROME_BIN'];
+  const executablePath =
+    process.env['CHROME_BIN'] ??
+    computeSystemExecutablePath({
+      browser: Browser.CHROME,
+      channel: chromeChannel || ChromeReleaseChannel.DEV,
+    });
 
   if (!executablePath) {
     throw new Error('Could not find Chrome binary');
