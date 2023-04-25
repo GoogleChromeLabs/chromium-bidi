@@ -135,7 +135,7 @@ async function onNewBidiConnectionOpen(
     process.env['CHROME_BIN'] ??
     computeSystemExecutablePath({
       browser: Browser.CHROME,
-      channel: chromeChannel || ChromeReleaseChannel.DEV,
+      channel: chromeChannel ?? ChromeReleaseChannel.DEV,
     });
 
   if (!executablePath) {
