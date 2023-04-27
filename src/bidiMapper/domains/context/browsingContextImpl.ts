@@ -488,7 +488,6 @@ export class BrowsingContextImpl {
 
     this.#documentChanged(cdpNavigateResult.loaderId);
 
-    // Wait for `wait` condition.
     switch (wait) {
       case 'none':
         break;
@@ -518,6 +517,28 @@ export class BrowsingContextImpl {
         url,
       },
     };
+  }
+
+  async reload(
+    ignoreCache: boolean,
+    wait: BrowsingContext.ReadinessState
+  ): Promise<Message.EmptyResult> {
+    await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
+      ignoreCache,
+    });
+
+    switch (wait) {
+      case 'none':
+        break;
+      // TODO: handle interactive.
+      case 'interactive':
+        break;
+      // TODO: handle complete.
+      case 'complete':
+        break;
+    }
+
+    return {result: {}};
   }
 
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {
