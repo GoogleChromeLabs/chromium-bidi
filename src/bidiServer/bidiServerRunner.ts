@@ -178,6 +178,7 @@ export class BidiServerRunner {
       debugInternal(
         `cannot send message, as connection is closed. ${messageStr}`
       );
+    return Promise.resolve();
   }
 
   #sendClientMessage(
