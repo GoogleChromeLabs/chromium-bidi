@@ -173,8 +173,11 @@ export class BidiServerRunner {
     connection: websocket.connection
   ): Promise<void> {
     debugSend(messageStr);
-    connection.sendUTF(messageStr);
-    return Promise.resolve();
+    if (connection.connected) connection.sendUTF(messageStr);
+    else
+      debugInternal(
+        `cannot send message, as connection is closed. ${messageStr}`
+      );
   }
 
   #sendClientMessage(
