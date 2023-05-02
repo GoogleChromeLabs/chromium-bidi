@@ -175,6 +175,6 @@ async function onNewBidiConnectionOpen(
   // Return delegate to be called when the connection is closed.
   return async () => {
     // Client disconnected. Close browser.
-    await browser.close();
+    await browser.kill();
   };
 }
