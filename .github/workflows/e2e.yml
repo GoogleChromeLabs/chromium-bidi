@@ -48,7 +48,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless') }}
         timeout-minutes: 20
         run: npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
+        # For verbose logging, set `DEBUG: 'bidiServer:log,bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ env.chrome_binary }}
       - name: Upload artifacts

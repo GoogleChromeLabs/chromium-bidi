@@ -18,12 +18,12 @@ if [[ $# -gt 0 && ("$1" == "-h" || "$1" == "--help") ]]; then
   exit 0
 fi
 
-# The chrome release channel to use: `stable`, `beta`, `canary`, `dev`.
-readonly CHANNEL="${CHANNEL:-dev}"
+# The path to the browser binary.
+export BROWSER_BIN="${BROWSER_BIN:-/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev}"
 
 # Options from npm 'debug' package. DEBUG= (empty) is allowed, hence no colon below.
-readonly DEBUG="${DEBUG-*}"
-readonly DEBUG_COLORS="${DEBUG_COLORS:-yes}"
+export DEBUG="${DEBUG-*}"
+export DEBUG_COLORS="${DEBUG_COLORS:-yes}"
 
 # Whether to start the server in headless or headful mode.
 readonly HEADLESS="${HEADLESS:-true}"
@@ -33,18 +33,16 @@ readonly LOG_DIR="${LOG_DIR:-logs}"
 readonly LOG_FILE="$LOG_DIR/$(date '+%Y-%m-%d-%H-%M-%S').log"
 
 # Node.JS options
-readonly NODE_OPTIONS="${NODE_OPTIONS:---unhandled-rejections=strict}"
+export NODE_OPTIONS="${NODE_OPTIONS:---unhandled-rejections=strict}"
 
 # The port on which to start the BiDi server.
-readonly PORT="${PORT:-8080}"
+export PORT="${PORT:-8080}"
+
+# Activate CDP Verbose logging.
+export VERBOSE="${VERBOSE:-false}"
 
 log "Starting BiDi Server with DEBUG='$DEBUG'..."
 
 (cd "$(dirname "$0")/" && \
 mkdir -p "$LOG_DIR" && \
-env \
-DEBUG="$DEBUG" \
-DEBUG_COLORS="$DEBUG_COLORS" \
-NODE_OPTIONS="$NODE_OPTIONS" \
-PORT="$PORT" \
-node lib/cjs/bidiServer/index.js --channel "$CHANNEL" --headless "$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")
+node lib/cjs/bidiServer/index.js --headless "$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")

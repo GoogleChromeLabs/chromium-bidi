@@ -79,7 +79,6 @@ if [[ "$CHROMEDRIVER" == "true" ]]; then
     --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
     --webdriver-arg="--log-path=out/chromedriver.log"
     --webdriver-arg="--verbose"
-    --channel=dev
     --yes
   )
 else
@@ -91,12 +90,12 @@ WPT_RUN_ARGS+=(
   "$@"
 )
 
-(cd "$(dirname "$0")/" && ./wpt/wpt run "${WPT_RUN_ARGS[@]}")
+(cd "$(dirname "$0")/" && wpt/wpt run "${WPT_RUN_ARGS[@]}")
 
 if [[ "$UPDATE_EXPECTATIONS" == "true" ]]; then
   log "Updating WPT expectations..."
 
-  ./wpt/wpt update-expectations \
+  wpt/wpt update-expectations \
     --product "$PRODUCT" \
     --manifest "$MANIFEST" \
     --metadata "$WPT_METADATA" \

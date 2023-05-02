@@ -337,7 +337,7 @@ npm run build --watch
 #### 3. Run
 
 ```sh
-./wpt/wpt run \
+wpt/wpt run \
   --webdriver-binary runBiDiServer.sh \
   --binary "$BROWSER_BIN" \
   --manifest wpt/MANIFEST.json \
@@ -351,7 +351,7 @@ npm run build --watch
 #### 1. Run WPT tests with custom `log-wptreport`:
 
 ```sh
-./wpt/wpt run \
+wpt/wpt run \
   --webdriver-binary runBiDiServer.sh \
   --binary "$BROWSER_BIN" \
   --manifest wpt/MANIFEST.json \
@@ -364,7 +364,7 @@ npm run build --watch
 #### 2. Update expectations based on the previous test run:
 
 ```sh
-./wpt/wpt update-expectations \
+wpt/wpt update-expectations \
   --product chromium \
   --manifest wpt/MANIFEST.json \
   --metadata wpt-metadata/mapper/headless \
