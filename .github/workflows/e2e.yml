@@ -21,6 +21,9 @@ jobs:
             headless,
             headless,
             headless,
+            headless,
+            headless,
+            headless,
           ] # headful
     runs-on: ${{ matrix.os }}
     steps:
