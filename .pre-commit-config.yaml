@@ -74,6 +74,13 @@ repos:
         args: [--skip=package-lock.json, --skip=tests/test_screenshot.py]
   - repo: local
     hooks:
+      - id: puppeteer-devtools-protocol
+        name: check devtools-protocol in package.json matches the one used by puppeteer
+        files: ^package.json$
+        language: system
+        entry: bash -c '[[ "$(npm list devtools-protocol | grep devtools-protocol | cut -d "@" -f2)" == "$(npx npm-remote-ls puppeteer@latest | grep devtools-protocol | cut -d "@" -f2)" ]]'
+  - repo: local
+    hooks:
       - id: copyright
         name: check copyright
         entry: |-
