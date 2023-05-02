@@ -51,7 +51,7 @@ jobs:
         # For verbose logging, set `DEBUG: 'bidiServer:log,bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
-          DEBUG: 'bidiServer:log,bidiMapper:mapperDebug:*'
+          DEBUG: '*'
           VERBOSE: true
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
