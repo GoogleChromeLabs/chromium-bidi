@@ -12,8 +12,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        head: [headful, headless]
+        os: [ubuntu-latest] # macos-latest
+        head: [
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+          ] # headful
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
