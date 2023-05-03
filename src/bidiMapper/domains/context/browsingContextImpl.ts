@@ -130,7 +130,7 @@ export class BrowsingContextImpl {
   }
 
   delete() {
-    this.#deleteChildren();
+    this.#deleteAllChildren();
 
     this.#realmStorage.deleteRealms({
       browsingContextId: this.id,
@@ -180,7 +180,7 @@ export class BrowsingContextImpl {
     this.#children.add(childId);
   }
 
-  #deleteChildren() {
+  #deleteAllChildren() {
     this.directChildren.map((child) => child.delete());
   }
 
@@ -279,7 +279,7 @@ export class BrowsingContextImpl {
         // At the point the page is initialized, all the nested iframes from the
         // previous page are detached and realms are destroyed.
         // Remove children from context.
-        this.#deleteChildren();
+        this.#deleteAllChildren();
       }
     );
 
