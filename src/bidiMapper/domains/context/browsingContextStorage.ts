@@ -29,7 +29,9 @@ export class BrowsingContextStorage {
 
   /** Gets all top-level contexts, i.e. those with no parent. */
   getTopLevelContexts(): BrowsingContextImpl[] {
-    return this.getAllContexts().filter((c) => c.isTopLevelContext());
+    return this.getAllContexts().filter((context) =>
+      context.isTopLevelContext()
+    );
   }
 
   /** Gets all contexts. */
@@ -38,16 +40,18 @@ export class BrowsingContextStorage {
   }
 
   /** Deletes the context with the given ID. */
-  deleteContext(contextId: CommonDataTypes.BrowsingContext) {
+  deleteContextById(contextId: CommonDataTypes.BrowsingContext) {
     this.#contexts.delete(contextId);
   }
 
-  /** Adds the given context. */
+  /** Deletes the given context. */
+  deleteContext(context: BrowsingContextImpl) {
+    this.#contexts.delete(context.contextId);
+  }
+
+  /** Tracks the given context. */
   addContext(context: BrowsingContextImpl) {
     this.#contexts.set(context.contextId, context);
-    if (!context.isTopLevelContext()) {
-      this.getContext(context.parentId!).addChild(context);
-    }
   }
 
   /** Returns true whether there is an existing context with the given ID. */
@@ -75,6 +79,17 @@ export class BrowsingContextStorage {
       return contextId;
     }
     return this.findTopLevelContextId(parentId);
+  }
+
+  /** Returns the top-level context of the given context, if any. */
+  findTopLevelContext(
+    contextId: CommonDataTypes.BrowsingContext | null
+  ): BrowsingContextImpl | null | undefined {
+    const topLevelContextId = this.findTopLevelContextId(contextId);
+    if (topLevelContextId === null) {
+      return null;
+    }
+    return this.findContext(topLevelContextId);
   }
 
   /** Gets the context with the given ID, if any, otherwise throws. */

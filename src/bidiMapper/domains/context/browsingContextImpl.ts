@@ -110,6 +110,9 @@ export class BrowsingContextImpl {
     );
 
     browsingContextStorage.addContext(context);
+    if (!context.isTopLevelContext()) {
+      browsingContextStorage.getContext(context.parentId!).addChild(context);
+    }
 
     eventManager.registerEvent(
       {
@@ -149,7 +152,7 @@ export class BrowsingContextImpl {
       },
       this.contextId
     );
-    this.#browsingContextStorage.deleteContext(this.contextId);
+    this.#browsingContextStorage.deleteContextById(this.contextId);
   }
 
   /** Returns the ID of this context. */
@@ -162,11 +165,10 @@ export class BrowsingContextImpl {
     return this.#parentId;
   }
 
-  /** Returns all children contexts. */
-  get children(): BrowsingContextImpl[] {
+  /** Returns all direct children contexts. */
+  get directChildren(): BrowsingContextImpl[] {
     return Array.from(this.#children.values());
   }
-
   /**
    * Returns true if this is a top-level context.
    * This is the case whenever the parent context ID is null.
@@ -180,7 +182,7 @@ export class BrowsingContextImpl {
   }
 
   #deleteChildren() {
-    this.children.map((child) => child.delete());
+    this.directChildren.map((child) => child.delete());
   }
 
   get #defaultRealm(): Realm {
@@ -250,7 +252,7 @@ export class BrowsingContextImpl {
       url: this.url,
       children:
         maxDepth > 0
-          ? this.children.map((c) =>
+          ? this.directChildren.map((c) =>
               c.serializeToBidiValue(maxDepth - 1, false)
             )
           : null,
