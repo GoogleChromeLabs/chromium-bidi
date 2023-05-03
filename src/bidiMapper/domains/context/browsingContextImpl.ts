@@ -33,20 +33,17 @@ import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextImpl {
-  /** The ID of the current context. */
+  /** The ID of this browsing context. */
   readonly #id: CommonDataTypes.BrowsingContext;
 
   /**
-   * The ID of the parent context.
+   * The ID of the parent browsing context.
    * If null, this is a top-level context.
    */
   readonly #parentId: CommonDataTypes.BrowsingContext | null;
 
-  /**
-   * Children contexts.
-   * Map from children context ID to context implementation.
-   */
-  readonly #children = new Map<string, BrowsingContextImpl>();
+  /** Direct children browsing contexts. */
+  readonly #children = new Set<CommonDataTypes.BrowsingContext>();
 
   readonly #browsingContextStorage: BrowsingContextStorage;
 
@@ -111,7 +108,7 @@ export class BrowsingContextImpl {
 
     browsingContextStorage.addContext(context);
     if (!context.isTopLevelContext()) {
-      browsingContextStorage.getContext(context.parentId!).addChild(context);
+      browsingContextStorage.getContext(context.parentId!).addChild(context.id);
     }
 
     eventManager.registerEvent(
@@ -167,7 +164,9 @@ export class BrowsingContextImpl {
 
   /** Returns all direct children contexts. */
   get directChildren(): BrowsingContextImpl[] {
-    return Array.from(this.#children.values());
+    return [...this.#children].map((id) =>
+      this.#browsingContextStorage.getContext(id)
+    );
   }
   /**
    * Returns true if this is a top-level context.
@@ -177,8 +176,8 @@ export class BrowsingContextImpl {
     return this.#parentId === null;
   }
 
-  addChild(child: BrowsingContextImpl) {
-    this.#children.set(child.id, child);
+  addChild(childId: CommonDataTypes.BrowsingContext) {
+    this.#children.add(childId);
   }
 
   #deleteChildren() {
