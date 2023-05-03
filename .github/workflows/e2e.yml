@@ -60,6 +60,7 @@ jobs:
           path: logs
 
 env:
-  DEBUG: bidiServer:log
+  DEBUG: 'bidiServer:log,bidiMapper:mapperDebug:*'
   FORCE_COLOR: 3
   PIP_DISABLE_PIP_VERSION_CHECK: 1
+  VERBOSE: true
