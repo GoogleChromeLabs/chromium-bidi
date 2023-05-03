@@ -108,7 +108,7 @@ export class BrowsingContextImpl {
 
     browsingContextStorage.addContext(context);
     if (!context.isTopLevelContext()) {
-      browsingContextStorage.getContext(context.parentId!).addChild(context.id);
+      context.parent!.addChild(context.id);
     }
 
     eventManager.registerEvent(
@@ -138,8 +138,7 @@ export class BrowsingContextImpl {
 
     // Remove context from the parent.
     if (!this.isTopLevelContext()) {
-      const parent = this.#browsingContextStorage.getContext(this.parentId!);
-      parent.#children.delete(this.id);
+      this.parent!.#children.delete(this.id);
     }
 
     this.#eventManager.registerEvent(
@@ -160,6 +159,14 @@ export class BrowsingContextImpl {
   /** Returns the parent context ID. */
   get parentId(): CommonDataTypes.BrowsingContext | null {
     return this.#parentId;
+  }
+
+  /** Returns the parent context. */
+  get parent(): BrowsingContextImpl | null {
+    if (this.parentId === null) {
+      return null;
+    }
+    return this.#browsingContextStorage.getContext(this.parentId);
   }
 
   /** Returns all direct children contexts. */
