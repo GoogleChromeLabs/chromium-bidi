@@ -83,8 +83,6 @@ export class BrowsingContextImpl {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#logger = logger;
-
-    this.#initListeners();
   }
 
   static create(
@@ -105,6 +103,8 @@ export class BrowsingContextImpl {
       browsingContextStorage,
       logger
     );
+
+    context.#initListeners();
 
     browsingContextStorage.addContext(context);
     if (!context.isTopLevelContext()) {
