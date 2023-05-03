@@ -14,6 +14,8 @@
 # limitations under the License.
 from __future__ import annotations
 
+import traceback
+import sys
 import itertools
 import json
 from typing import Literal
@@ -86,6 +88,9 @@ async def execute_command(websocket, command: dict) -> dict:
 
 async def get_tree(websocket, context_id: str | None = None) -> dict:
     """Get the tree of browsing contexts."""
+    print('XXX get_tree was called')
+    traceback.print_tb(sys.exc_info()[2])
+
     params = {}
     if context_id is not None:
         params["root"] = context_id
