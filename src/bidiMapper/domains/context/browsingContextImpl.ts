@@ -175,6 +175,13 @@ export class BrowsingContextImpl {
       this.#browsingContextStorage.getContext(id)
     );
   }
+
+  /** Returns all children contexts, flattened. */
+  get allChildren(): BrowsingContextImpl[] {
+    const children = this.directChildren;
+    return children.concat(...children.map((child) => child.allChildren));
+  }
+
   /**
    * Returns true if this is a top-level context.
    * This is the case whenever the parent context ID is null.
