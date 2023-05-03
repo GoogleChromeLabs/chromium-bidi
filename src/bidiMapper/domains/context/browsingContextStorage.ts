@@ -40,52 +40,52 @@ export class BrowsingContextStorage {
   }
 
   /** Deletes the context with the given ID. */
-  deleteContextById(contextId: CommonDataTypes.BrowsingContext) {
-    this.#contexts.delete(contextId);
+  deleteContextById(id: CommonDataTypes.BrowsingContext) {
+    this.#contexts.delete(id);
   }
 
   /** Deletes the given context. */
   deleteContext(context: BrowsingContextImpl) {
-    this.#contexts.delete(context.contextId);
+    this.#contexts.delete(context.id);
   }
 
   /** Tracks the given context. */
   addContext(context: BrowsingContextImpl) {
-    this.#contexts.set(context.contextId, context);
+    this.#contexts.set(context.id, context);
   }
 
   /** Returns true whether there is an existing context with the given ID. */
-  hasContext(contextId: CommonDataTypes.BrowsingContext): boolean {
-    return this.#contexts.has(contextId);
+  hasContext(id: CommonDataTypes.BrowsingContext): boolean {
+    return this.#contexts.has(id);
   }
 
   /** Gets the context with the given ID, if any. */
   findContext(
-    contextId: CommonDataTypes.BrowsingContext
+    id: CommonDataTypes.BrowsingContext
   ): BrowsingContextImpl | undefined {
-    return this.#contexts.get(contextId);
+    return this.#contexts.get(id);
   }
 
   /** Returns the top-level context ID of the given context, if any. */
   findTopLevelContextId(
-    contextId: CommonDataTypes.BrowsingContext | null
+    id: CommonDataTypes.BrowsingContext | null
   ): CommonDataTypes.BrowsingContext | null {
-    if (contextId === null) {
+    if (id === null) {
       return null;
     }
-    const maybeContext = this.findContext(contextId);
+    const maybeContext = this.findContext(id);
     const parentId = maybeContext?.parentId ?? null;
     if (parentId === null) {
-      return contextId;
+      return id;
     }
     return this.findTopLevelContextId(parentId);
   }
 
   /** Returns the top-level context of the given context, if any. */
   findTopLevelContext(
-    contextId: CommonDataTypes.BrowsingContext | null
+    id: CommonDataTypes.BrowsingContext | null
   ): BrowsingContextImpl | null | undefined {
-    const topLevelContextId = this.findTopLevelContextId(contextId);
+    const topLevelContextId = this.findTopLevelContextId(id);
     if (topLevelContextId === null) {
       return null;
     }
@@ -93,10 +93,10 @@ export class BrowsingContextStorage {
   }
 
   /** Gets the context with the given ID, if any, otherwise throws. */
-  getContext(contextId: CommonDataTypes.BrowsingContext): BrowsingContextImpl {
-    const result = this.findContext(contextId);
+  getContext(id: CommonDataTypes.BrowsingContext): BrowsingContextImpl {
+    const result = this.findContext(id);
     if (result === undefined) {
-      throw new Message.NoSuchFrameException(`Context ${contextId} not found`);
+      throw new Message.NoSuchFrameException(`Context ${id} not found`);
     }
     return result;
   }

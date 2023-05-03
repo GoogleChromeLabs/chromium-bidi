@@ -34,7 +34,7 @@ import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextImpl {
   /** The ID of the current context. */
-  readonly #contextId: CommonDataTypes.BrowsingContext;
+  readonly #id: CommonDataTypes.BrowsingContext;
 
   /**
    * The ID of the parent context.
@@ -73,7 +73,7 @@ export class BrowsingContextImpl {
   private constructor(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    contextId: CommonDataTypes.BrowsingContext,
+    id: CommonDataTypes.BrowsingContext,
     parentId: CommonDataTypes.BrowsingContext | null,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
@@ -81,7 +81,7 @@ export class BrowsingContextImpl {
   ) {
     this.#cdpTarget = cdpTarget;
     this.#realmStorage = realmStorage;
-    this.#contextId = contextId;
+    this.#id = id;
     this.#parentId = parentId;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
@@ -93,7 +93,7 @@ export class BrowsingContextImpl {
   static create(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    contextId: CommonDataTypes.BrowsingContext,
+    id: CommonDataTypes.BrowsingContext,
     parentId: CommonDataTypes.BrowsingContext | null,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
@@ -102,7 +102,7 @@ export class BrowsingContextImpl {
     const context = new BrowsingContextImpl(
       cdpTarget,
       realmStorage,
-      contextId,
+      id,
       parentId,
       eventManager,
       browsingContextStorage,
@@ -119,7 +119,7 @@ export class BrowsingContextImpl {
         method: BrowsingContext.EventNames.ContextCreatedEvent,
         params: context.serializeToBidiValue(),
       },
-      context.contextId
+      context.id
     );
 
     return context;
@@ -136,13 +136,13 @@ export class BrowsingContextImpl {
     this.#deleteChildren();
 
     this.#realmStorage.deleteRealms({
-      browsingContextId: this.contextId,
+      browsingContextId: this.id,
     });
 
     // Remove context from the parent.
     if (!this.isTopLevelContext()) {
       const parent = this.#browsingContextStorage.getContext(this.parentId!);
-      parent.#children.delete(this.contextId);
+      parent.#children.delete(this.id);
     }
 
     this.#eventManager.registerEvent(
@@ -150,14 +150,14 @@ export class BrowsingContextImpl {
         method: BrowsingContext.EventNames.ContextDestroyedEvent,
         params: this.serializeToBidiValue(),
       },
-      this.contextId
+      this.id
     );
-    this.#browsingContextStorage.deleteContextById(this.contextId);
+    this.#browsingContextStorage.deleteContextById(this.id);
   }
 
   /** Returns the ID of this context. */
-  get contextId(): CommonDataTypes.BrowsingContext {
-    return this.#contextId;
+  get id(): CommonDataTypes.BrowsingContext {
+    return this.#id;
   }
 
   /** Returns the parent context ID. */
@@ -178,7 +178,7 @@ export class BrowsingContextImpl {
   }
 
   addChild(child: BrowsingContextImpl) {
-    this.#children.set(child.contextId, child);
+    this.#children.set(child.id, child);
   }
 
   #deleteChildren() {
@@ -187,9 +187,7 @@ export class BrowsingContextImpl {
 
   get #defaultRealm(): Realm {
     if (this.#maybeDefaultRealm === undefined) {
-      throw new Error(
-        `No default realm for browsing context ${this.#contextId}`
-      );
+      throw new Error(`No default realm for browsing context ${this.#id}`);
     }
     return this.#maybeDefaultRealm;
   }
@@ -221,19 +219,19 @@ export class BrowsingContextImpl {
     }
 
     let maybeSandboxes = this.#realmStorage.findRealms({
-      browsingContextId: this.contextId,
+      browsingContextId: this.id,
       sandbox,
     });
 
     if (maybeSandboxes.length === 0) {
       await this.#cdpTarget.cdpClient.sendCommand('Page.createIsolatedWorld', {
-        frameId: this.contextId,
+        frameId: this.id,
         worldName: sandbox,
       });
       // `Runtime.executionContextCreated` should be emitted by the time the
       // previous command is done.
       maybeSandboxes = this.#realmStorage.findRealms({
-        browsingContextId: this.contextId,
+        browsingContextId: this.id,
         sandbox,
       });
     }
@@ -248,7 +246,7 @@ export class BrowsingContextImpl {
     addParentFiled = true
   ): BrowsingContext.Info {
     return {
-      context: this.#contextId,
+      context: this.#id,
       url: this.url,
       children:
         maxDepth > 0
@@ -264,7 +262,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on(
       'Target.targetInfoChanged',
       (params: Protocol.Target.TargetInfoChangedEvent) => {
-        if (this.contextId !== params.targetInfo.targetId) {
+        if (this.id !== params.targetInfo.targetId) {
           return;
         }
         this.#url = params.targetInfo.url;
@@ -274,7 +272,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on(
       'Page.frameNavigated',
       (params: Protocol.Page.FrameNavigatedEvent) => {
-        if (this.contextId !== params.frame.id) {
+        if (this.id !== params.frame.id) {
           return;
         }
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
@@ -289,7 +287,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on(
       'Page.navigatedWithinDocument',
       (params: Protocol.Page.NavigatedWithinDocumentEvent) => {
-        if (this.contextId !== params.frameId) {
+        if (this.id !== params.frameId) {
           return;
         }
 
@@ -301,7 +299,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on(
       'Page.lifecycleEvent',
       (params: Protocol.Page.LifecycleEventEvent) => {
-        if (this.contextId !== params.frameId) {
+        if (this.id !== params.frameId) {
           return;
         }
 
@@ -332,13 +330,13 @@ export class BrowsingContextImpl {
               {
                 method: BrowsingContext.EventNames.DomContentLoadedEvent,
                 params: {
-                  context: this.contextId,
+                  context: this.id,
                   navigation: this.#loaderId,
                   timestamp,
                   url: this.#url,
                 },
               },
-              this.contextId
+              this.id
             );
             break;
 
@@ -348,13 +346,13 @@ export class BrowsingContextImpl {
               {
                 method: BrowsingContext.EventNames.LoadEvent,
                 params: {
-                  context: this.contextId,
+                  context: this.id,
                   navigation: this.#loaderId,
                   timestamp,
                   url: this.#url,
                 },
               },
-              this.contextId
+              this.id
             );
             break;
         }
@@ -364,7 +362,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextCreated',
       (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
-        if (params.context.auxData.frameId !== this.contextId) {
+        if (params.context.auxData.frameId !== this.id) {
           return;
         }
         // Only this execution contexts are supported for now.
@@ -375,7 +373,7 @@ export class BrowsingContextImpl {
           this.#realmStorage,
           this.#browsingContextStorage,
           params.context.uniqueId,
-          this.contextId,
+          this.id,
           params.context.id,
           this.#getOrigin(params),
           // TODO: differentiate types.
@@ -467,7 +465,7 @@ export class BrowsingContextImpl {
     const cdpNavigateResult: Protocol.Page.NavigateResponse =
       await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
         url,
-        frameId: this.contextId,
+        frameId: this.id,
       });
 
     if (cdpNavigateResult.errorText) {
