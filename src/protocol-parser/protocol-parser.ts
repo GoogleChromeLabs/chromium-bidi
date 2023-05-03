@@ -323,17 +323,17 @@ export namespace Script {
     return parseObject(params, RemovePreloadScriptParametersSchema);
   }
 
-  const ChannelIdSchema = zod.string();
+  const ChannelSchema = zod.string();
 
   const ChannelPropertiesSchema = zod.object({
-    channel: ChannelIdSchema,
+    channel: ChannelSchema,
     // TODO(#294): maxDepth: CommonDataTypes.MaxDepthSchema.optional(),
     // See: https://github.com/w3c/webdriver-bidi/pull/361/files#r1141961142
     maxDepth: zod.number().int().min(1).max(1).optional(),
     ownership: ResultOwnershipSchema.optional(),
   });
 
-  export const ChannelSchema = zod.object({
+  export const ChannelValueSchema = zod.object({
     type: zod.literal('channel'),
     value: ChannelPropertiesSchema,
   });
@@ -347,7 +347,7 @@ export namespace Script {
     CommonDataTypes.RemoteReferenceSchema,
     CommonDataTypes.SharedReferenceSchema,
     CommonDataTypes.LocalValueSchema,
-    Script.ChannelSchema,
+    Script.ChannelValueSchema,
   ]);
 
   // CallFunctionParameters = {
