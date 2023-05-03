@@ -17,6 +17,7 @@
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {ITransport} from '../utils/transport.js';
+import {IdWrapper} from '../utils/idWrapper.js';
 
 import {CdpClient} from './cdpClient.js';
 import {CdpMessage} from './cdpMessage.js';
@@ -37,8 +38,7 @@ export class CdpConnection {
   readonly #sessionCdpClients = new Map<string, CdpClient>();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #log: (...messages: unknown[]) => void;
-
-  #nextId = 0;
+  readonly #idWrapper: IdWrapper = new IdWrapper();
 
   constructor(
     transport: ITransport,
@@ -88,7 +88,7 @@ export class CdpConnection {
     sessionId: string | null
   ): Promise<object> {
     return new Promise((resolve, reject) => {
-      const id = this.#nextId++;
+      const id = this.#idWrapper.id;
       this.#commandCallbacks.set(id, {resolve, reject});
       const messageObj: CdpMessage<CdpMethod> = {id, method, params};
       if (sessionId) {
