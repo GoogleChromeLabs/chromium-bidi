@@ -14,10 +14,10 @@
 # limitations under the License.
 from __future__ import annotations
 
-import traceback
-import sys
 import itertools
 import json
+import sys
+import traceback
 from typing import Literal
 
 from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT, AnyWithEntries
@@ -88,16 +88,20 @@ async def execute_command(websocket, command: dict) -> dict:
 
 async def get_tree(websocket, context_id: str | None = None) -> dict:
     """Get the tree of browsing contexts."""
-    print('XXX get_tree was called')
+    print('XXX get_tree was called: BEFORE')
     traceback.print_tb(sys.exc_info()[2])
 
     params = {}
     if context_id is not None:
         params["root"] = context_id
-    return await execute_command(websocket, {
+    get_tree_result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
         "params": params
     })
+
+    print('XXX get_tree was called: AFTER')
+
+    return get_tree_result
 
 
 async def goto_url(
