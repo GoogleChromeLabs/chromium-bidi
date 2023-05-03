@@ -174,7 +174,7 @@ async function onNewBidiConnectionOpen(
 
   // Return delegate to be called when the connection is closed.
   return async () => {
-    // Disconnect CDP connection.
+    // Close the mapper server.
     mapperServer.close();
 
     // Close browser.

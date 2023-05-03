@@ -22,7 +22,6 @@ from test_helpers import execute_command, get_tree, goto_url
 
 
 @pytest_asyncio.fixture
-@pytest.mark.asyncio
 async def websocket():
     """Return a websocket connection to the browser on localhost."""
     port = os.getenv("PORT", 8080)

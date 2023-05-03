@@ -132,6 +132,7 @@ export class CdpConnection {
     if (parsed.id !== undefined) {
       // Handle command response.
       const callbacks = this.#commandCallbacks.get(parsed.id);
+      this.#commandCallbacks.delete(parsed.id);
       if (callbacks) {
         if (parsed.result) {
           callbacks.resolve(parsed.result);
