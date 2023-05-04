@@ -124,6 +124,7 @@ async function onNewBidiConnectionOpen(
     '--enable-logging',
     '--no-default-browser-check',
     '--no-first-run',
+    '--no-sandbox',
     '--password-store=basic',
     '--remote-debugging-port=9222',
     '--use-mock-keychain',
