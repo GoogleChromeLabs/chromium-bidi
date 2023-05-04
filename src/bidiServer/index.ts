@@ -145,6 +145,7 @@ async function onNewBidiConnectionOpen(
   const browser = launch({
     executablePath,
     args: chromeArguments,
+    dumpio: true,
   });
 
   const wsEndpoint = await browser.waitForLineOutput(
