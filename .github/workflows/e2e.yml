@@ -59,11 +59,11 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless') }}
         timeout-minutes: 20
         run: npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
+        # For verbose logging, set `DEBUG: 'bidiServer:log,bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ env.chrome_binary }}
-          DEBUG: 'puppeteer:browsers:*,bidiMapper:mapperDebug:*'
-      #          VERBOSE: true
+          DEBUG: '*'
+          VERBOSE: true
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
