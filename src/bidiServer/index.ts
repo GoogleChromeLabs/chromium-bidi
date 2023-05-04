@@ -182,6 +182,6 @@ async function onNewBidiConnectionOpen(
     mapperServer.close();
 
     // Close browser.
-    await browser.close();
+    browser.kill();
   };
 }
