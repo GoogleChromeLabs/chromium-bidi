@@ -121,11 +121,13 @@ async function onNewBidiConnectionOpen(
     '--disable-component-update',
     '--disable-popup-blocking',
     '--enable-automation',
+    '--enable-logging',
     '--no-default-browser-check',
     '--no-first-run',
     '--password-store=basic',
     '--remote-debugging-port=9222',
     '--use-mock-keychain',
+    '--v=1',
     `--user-data-dir=${profileDir}`,
     // keep-sorted end
     'about:blank',
