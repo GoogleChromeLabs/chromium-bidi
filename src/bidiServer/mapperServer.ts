@@ -117,11 +117,15 @@ export class MapperServer {
   }
 
   #onBindingCalled = (params: Protocol.Runtime.BindingCalledEvent) => {
-    if (params.name === 'sendBidiResponse') {
-      this.#onBidiMessage(params.payload);
-    }
-    if (params.name === 'sendDebugMessage') {
-      this.#onDebugMessage(params.payload);
+    try {
+      if (params.name === 'sendBidiResponse') {
+        this.#onBidiMessage(params.payload);
+      }
+      if (params.name === 'sendDebugMessage') {
+        this.#onDebugMessage(params.payload);
+      }
+    } catch (error) {
+      debugInternal('onBindingCalled failed', error);
     }
   };
 
