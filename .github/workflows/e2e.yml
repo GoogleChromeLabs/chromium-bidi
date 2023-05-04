@@ -62,7 +62,7 @@ jobs:
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ env.chrome_binary }}
-      #          DEBUG: 'puppeteer:browsers:*'
+          DEBUG: 'puppeteer:browsers:*,bidiMapper:mapperDebug:*'
       #          VERBOSE: true
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
