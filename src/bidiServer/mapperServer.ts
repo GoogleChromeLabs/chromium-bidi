@@ -39,7 +39,12 @@ export class MapperServer {
     mapperContent: string,
     verbose: boolean
   ): Promise<MapperServer> {
-    const cdpConnection = await this.#establishCdpConnection(cdpUrl);
+    const cdpConnection = await this.#establishCdpConnection(cdpUrl).catch(
+      (e) => {
+        debugInternal('establishCdpConnection failed', e);
+        throw e;
+      }
+    );
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
@@ -113,7 +118,11 @@ export class MapperServer {
   }
 
   #onBidiMessage(bidiMessage: string): void {
-    for (const handler of this.#handlers) handler(bidiMessage);
+    try {
+      for (const handler of this.#handlers) handler(bidiMessage);
+    } catch (error) {
+      debugInternal('onBidiMessage failed', error);
+    }
   }
 
   #onBindingCalled = (params: Protocol.Runtime.BindingCalledEvent) => {
@@ -177,71 +186,81 @@ export class MapperServer {
     mapperContent: string,
     verbose: boolean
   ): Promise<CdpClient> {
-    debugInternal('Connection opened.');
+    try {
+      debugInternal('Connection opened.');
 
-    const browserClient = cdpConnection.browserClient();
+      const browserClient = cdpConnection.browserClient();
 
-    const {targetId} = await browserClient.sendCommand('Target.createTarget', {
-      url: 'about:blank',
-    });
-    const {sessionId: mapperSessionId} = await browserClient.sendCommand(
-      'Target.attachToTarget',
-      {targetId, flatten: true}
-    );
-
-    const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
-
-    await mapperCdpClient.sendCommand('Runtime.enable');
-
-    await browserClient.sendCommand('Target.exposeDevToolsProtocol', {
-      bindingName: 'cdp',
-      targetId,
-    });
-
-    await mapperCdpClient.sendCommand('Runtime.addBinding', {
-      name: 'sendBidiResponse',
-    });
-
-    if (verbose) {
-      // Needed to request verbose logs from Mapper.
-      await mapperCdpClient.sendCommand('Runtime.addBinding', {
-        name: 'sendDebugMessage',
-      });
-    }
-
-    const launchedPromise = new Promise<void>((resolve, reject) => {
-      const onBindingCalled = ({
-        name,
-        payload,
-      }: Protocol.Runtime.BindingCalledEvent) => {
-        // Needed to check when Mapper is launched on the frontend.
-        if (name === 'sendBidiResponse') {
-          try {
-            const parsed = JSON.parse(payload);
-            if (parsed.launched) {
-              mapperCdpClient.off('Runtime.bindingCalled', onBindingCalled);
-              resolve();
-            }
-          } catch (e) {
-            reject(new Error('Could not parse initial bidi response as JSON'));
-          }
+      const {targetId} = await browserClient.sendCommand(
+        'Target.createTarget',
+        {
+          url: 'about:blank',
         }
-      };
+      );
+      const {sessionId: mapperSessionId} = await browserClient.sendCommand(
+        'Target.attachToTarget',
+        {targetId, flatten: true}
+      );
 
-      mapperCdpClient.on('Runtime.bindingCalled', onBindingCalled);
-    });
+      const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
 
-    await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: mapperContent,
-    });
+      await mapperCdpClient.sendCommand('Runtime.enable');
 
-    // Let Mapper know what is it's TargetId to filter out related targets.
-    await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `window.setSelfTargetId(${JSON.stringify(targetId)})`,
-    });
+      await browserClient.sendCommand('Target.exposeDevToolsProtocol', {
+        bindingName: 'cdp',
+        targetId,
+      });
 
-    await launchedPromise;
-    debugInternal('Launched!');
-    return mapperCdpClient;
+      await mapperCdpClient.sendCommand('Runtime.addBinding', {
+        name: 'sendBidiResponse',
+      });
+
+      if (verbose) {
+        // Needed to request verbose logs from Mapper.
+        await mapperCdpClient.sendCommand('Runtime.addBinding', {
+          name: 'sendDebugMessage',
+        });
+      }
+
+      const launchedPromise = new Promise<void>((resolve, reject) => {
+        const onBindingCalled = ({
+          name,
+          payload,
+        }: Protocol.Runtime.BindingCalledEvent) => {
+          // Needed to check when Mapper is launched on the frontend.
+          if (name === 'sendBidiResponse') {
+            try {
+              const parsed = JSON.parse(payload);
+              if (parsed.launched) {
+                mapperCdpClient.off('Runtime.bindingCalled', onBindingCalled);
+                resolve();
+              }
+            } catch (e) {
+              reject(
+                new Error('Could not parse initial bidi response as JSON')
+              );
+            }
+          }
+        };
+
+        mapperCdpClient.on('Runtime.bindingCalled', onBindingCalled);
+      });
+
+      await mapperCdpClient.sendCommand('Runtime.evaluate', {
+        expression: mapperContent,
+      });
+
+      // Let Mapper know what is it's TargetId to filter out related targets.
+      await mapperCdpClient.sendCommand('Runtime.evaluate', {
+        expression: `window.setSelfTargetId(${JSON.stringify(targetId)})`,
+      });
+
+      await launchedPromise;
+      debugInternal('Launched!');
+      return mapperCdpClient;
+    } catch (error) {
+      debugInternal('initMapper failed', error);
+      throw error;
+    }
   }
 }
