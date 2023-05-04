@@ -12,18 +12,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04] # macos-latest
+        os: [ubuntu-latest] # macos-latest
         head: [
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
+            headless_1,
+            headless_2,
+            headless_3,
+            headless_4,
+            headless_5,
+            headless_6,
+            headless_7,
+            headless_8,
+            headless_9,
+            headless_10,
           ] # headful
     runs-on: ${{ matrix.os }}
     steps:
@@ -48,7 +48,7 @@ jobs:
         run: pip install -r tests/requirements.txt
       - name: Run E2E tests
         timeout-minutes: 20
-        run: npm run e2e-${{ matrix.head }}
+        run: npm run e2e-headless
         env:
           BROWSER_BIN: ${{ env.chrome_binary }}
           DEBUG: '*'
