@@ -121,11 +121,14 @@ async function onNewBidiConnectionOpen(
     '--disable-component-update',
     '--disable-popup-blocking',
     '--enable-automation',
+    '--enable-logging',
     '--no-default-browser-check',
     '--no-first-run',
+    '--no-sandbox',
     '--password-store=basic',
     '--remote-debugging-port=9222',
     '--use-mock-keychain',
+    '--v=1',
     `--user-data-dir=${profileDir}`,
     // keep-sorted end
     'about:blank',
@@ -145,6 +148,7 @@ async function onNewBidiConnectionOpen(
   const browser = launch({
     executablePath,
     args: chromeArguments,
+    dumpio: true,
   });
 
   const wsEndpoint = await browser.waitForLineOutput(
