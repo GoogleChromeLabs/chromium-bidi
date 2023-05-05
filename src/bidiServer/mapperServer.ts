@@ -39,6 +39,7 @@ export class MapperServer {
     mapperContent: string,
     verbose: boolean
   ): Promise<MapperServer> {
+    await new Promise((r) => setTimeout(r, 1000));
     const cdpConnection = await this.#establishCdpConnection(cdpUrl).catch(
       (e) => {
         debugInternal('establishCdpConnection failed', e);
