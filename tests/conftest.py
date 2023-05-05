@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import os
 
 import pytest
@@ -21,16 +22,29 @@ import websockets
 from test_helpers import execute_command, get_tree, goto_url
 
 
-@pytest_asyncio.fixture
+@pytest.fixture(scope="function")
+def event_loop():
+    """Overrides pytest default function scoped event loop"""
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    loop.close()
+
+
+# function, class, module, package or session.
+@pytest_asyncio.fixture(scope="function")
 async def websocket():
     """Return a websocket connection to the browser on localhost."""
     port = os.getenv("PORT", 8080)
     url = f"ws://localhost:{port}"
-    try:
-        async with websockets.connect(url) as connection:
-            yield connection
-    except Exception:
-        print(f"XXX Failed to connect to {url}")
+    while True:
+        try:
+            async with websockets.connect(url) as connection:
+                yield connection
+                break
+        except ConnectionRefusedError:
+            print(f"XXX Failed to connect to {url}")
+            await asyncio.sleep(1)
 
 
 @pytest_asyncio.fixture
