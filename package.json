@@ -17,7 +17,7 @@
     "prepare": "wireit",
     "prettier": "prettier --write .",
     "rollup": "wireit",
-    "server": "npm run server-headless --",
+    "server": "wireit",
     "server-headful": "wireit",
     "server-headless": "wireit",
     "test": "wireit",
@@ -71,8 +71,22 @@
         "lib/iife/mapperTab.js"
       ]
     },
+    "server": {
+      "command": "node lib/cjs/bidiServer/index.js",
+      "files": [
+        "lib/cjs/bidiServer/index.js"
+      ],
+      "service": {
+        "readyWhen": {
+          "lineMatches": "Server is listening on port \\d+"
+        }
+      },
+      "dependencies": [
+        "build"
+      ]
+    },
     "server-headful": {
-      "command": "./runBiDiServer.sh --headless=false",
+      "command": "node lib/cjs/bidiServer/index.js --headless=false",
       "files": [
         "lib/cjs/bidiServer/index.js"
       ],
@@ -86,7 +100,7 @@
       ]
     },
     "server-headless": {
-      "command": "./runBiDiServer.sh --headless=true",
+      "command": "node lib/cjs/bidiServer/index.js --headless=true",
       "files": [
         "lib/cjs/bidiServer/index.js"
       ],
