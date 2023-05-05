@@ -12,49 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest] # macos-latest
-        head: [
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-          ] # headful
+        os: [ubuntu-latest, macos-latest]
+        head: [headful, headless]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -68,9 +27,7 @@ jobs:
       - name: Install and build npm dependencies
         run: npm ci
       - name: Install Chromium
-        run: |
-          # browsers from @puppeteer/browsers
-          echo "chromium_binary=$(npx browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
+        run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -93,7 +50,7 @@ jobs:
         run: npm run e2e-${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
-          BROWSER_BIN: ${{ env.chrome_binary }}
+          BROWSER_BIN: ${{ env.chromium_binary }}
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
