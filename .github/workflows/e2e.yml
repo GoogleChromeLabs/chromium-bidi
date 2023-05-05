@@ -63,8 +63,6 @@ jobs:
         run: npm run e2e-headless
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
-          DEBUG: '*'
-          VERBOSE: true
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
