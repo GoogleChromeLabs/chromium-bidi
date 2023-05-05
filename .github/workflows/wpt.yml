@@ -61,6 +61,7 @@ jobs:
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
           HEADLESS: false
+          UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests (mapper, headless)
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headless' && matrix.kind == 'mapper' }}
@@ -70,6 +71,7 @@ jobs:
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
           HEADLESS: true
+          UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests (chromedriver, new headless)
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headless' && matrix.kind == 'chromedriver' }}
@@ -79,6 +81,7 @@ jobs:
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
           CHROMEDRIVER: true
+          UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
         # Force run task even if the previous tasks failed.
@@ -87,15 +90,6 @@ jobs:
           node test-report/htmlWptReport.mjs
           out/wptreport.json
           out/wptreport.html
-      - name: Update expectations
-        # Force run task even if the previous tasks failed.
-        if: ${{ always() }}
-        run: >
-          ./wpt/wpt update-expectations
-          --product chrome
-          --manifest MANIFEST.json
-          --metadata wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
-          out/wptreport.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
