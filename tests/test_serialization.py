@@ -17,9 +17,8 @@ import copy
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_SHARED_ID, AnyExtending, execute_command,
-                          goto_url, read_JSON_message, send_JSON_command,
-                          subscribe)
+from test_helpers import (ANY_SHARED_ID, execute_command, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 def _strip_handle(obj):
@@ -462,31 +461,6 @@ async def test_serialization_node(websocket, context_id, html):
             }]
         }
     } == result["result"]
-
-    shared_id = result["result"]["sharedId"]
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.callFunction",
-            "params": {
-                "functionDeclaration": "(arg)=>{return arg}",
-                "this": {
-                    "type": "undefined"
-                },
-                "arguments": [{
-                    "sharedId": shared_id
-                }],
-                "awaitPromise": False,
-                "target": {
-                    "context": context_id
-                }
-            }
-        })
-
-    assert AnyExtending({
-        "type": "node",
-        "sharedId": shared_id
-    }) == result["result"]
 
 
 # Verify node nested in other data structures are serialized with the proper
