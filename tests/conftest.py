@@ -26,8 +26,11 @@ async def websocket():
     """Return a websocket connection to the browser on localhost."""
     port = os.getenv("PORT", 8080)
     url = f"ws://localhost:{port}"
-    async with websockets.connect(url) as connection:
-        yield connection
+    try:
+        async with websockets.connect(url) as connection:
+            yield connection
+    except Exception:
+        print(f"XXX Failed to connect to {url}")
 
 
 @pytest_asyncio.fixture

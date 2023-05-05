@@ -53,7 +53,7 @@ function parseArguments() {
   parser.add_argument('-p', '--port', {
     help: 'Port that BiDi server should listen to. Default is to pick an unused port.',
     type: 'int',
-    default: process.env['PORT'] || 0,
+    default: process.env['PORT'] || 8080,
   });
 
   parser.add_argument('-hl', '--headless', {
