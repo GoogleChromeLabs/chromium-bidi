@@ -14,45 +14,46 @@ jobs:
       matrix:
         os: [ubuntu-latest] # macos-latest
         head: [
-            headless_1,
-            headless_2,
-            headless_3,
-            headless_4,
-            headless_5,
-            headless_6,
-            headless_7,
-            headless_8,
-            headless_9,
-            headless_10,
-            headless_11,
-            headless_12,
-            headless_13,
-            headless_14,
-            headless_15,
-            headless_16,
-            headless_17,
-            headless_18,
-            headless_19,
-            headless_20,
-            headless_21,
-            headless_22,
-            headless_23,
-            headless_24,
-            headless_25,
-            headless_26,
-            headless_27,
-            headless_28,
-            headless_29,
-            headless_30,
-            headless_31,
-            headless_32,
-            headless_33,
-            headless_34,
-            headless_35,
-            headless_36,
-            headless_37,
-            headless_38,
-            headless_39,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
+            headless,
           ] # headful
     runs-on: ${{ matrix.os }}
     steps:
@@ -78,10 +79,21 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
       - name: Run E2E tests
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' }}
         timeout-minutes: 20
-        run: npm run e2e-headless
+        run: >
+          xvfb-run --auto-servernum
+          npm run e2e-${{ matrix.head }}
+        # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
+      - name: Run E2E tests
+        if: ${{ matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless') }}
+        timeout-minutes: 20
+        run: npm run e2e-${{ matrix.head }}
+        # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
+        env:
+          BROWSER_BIN: ${{ env.chrome_binary }}
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
