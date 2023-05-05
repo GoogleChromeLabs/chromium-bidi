@@ -730,3 +730,19 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "url": url_with_hash_2
         }]
     } == result
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_reload(websocket, context_id, html):
+    url = html()
+
+    await goto_url(websocket, context_id, url)
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.reload",
+        "params": {
+            "context": context_id
+        }
+    })
+
+    assert result == {}
