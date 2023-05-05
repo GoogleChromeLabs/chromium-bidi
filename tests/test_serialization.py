@@ -17,8 +17,9 @@ import copy
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_SHARED_ID, execute_command, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (ANY_SHARED_ID, AnyExtending, execute_command,
+                          goto_url, read_JSON_message, send_JSON_command,
+                          subscribe)
 
 
 def _strip_handle(obj):
@@ -432,9 +433,9 @@ async def test_serialization_node(websocket, context_id, html):
 
     assert {
         "type": "node",
+        "sharedId": ANY_SHARED_ID,
         "value": {
             "nodeType": 1,
-            "sharedId": ANY_SHARED_ID,
             "localName": "div",
             "namespaceURI": "http://www.w3.org/1999/xhtml",
             "childNodeCount": 2,
@@ -443,16 +444,16 @@ async def test_serialization_node(websocket, context_id, html):
             },
             "children": [{
                 "type": "node",
+                "sharedId": ANY_SHARED_ID,
                 "value": {
                     "nodeType": 3,
                     "nodeValue": "some text",
-                    "sharedId": ANY_SHARED_ID,
                 }
             }, {
                 "type": "node",
+                "sharedId": ANY_SHARED_ID,
                 "value": {
                     "nodeType": 1,
-                    "sharedId": ANY_SHARED_ID,
                     "localName": "h2",
                     "namespaceURI": "http://www.w3.org/1999/xhtml",
                     "childNodeCount": 1,
@@ -461,6 +462,31 @@ async def test_serialization_node(websocket, context_id, html):
             }]
         }
     } == result["result"]
+
+    shared_id = result["result"]["sharedId"]
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": "(arg)=>{return arg}",
+                "this": {
+                    "type": "undefined"
+                },
+                "arguments": [{
+                    "sharedId": shared_id
+                }],
+                "awaitPromise": False,
+                "target": {
+                    "context": context_id
+                }
+            }
+        })
+
+    assert AnyExtending({
+        "type": "node",
+        "sharedId": shared_id
+    }) == result["result"]
 
 
 # Verify node nested in other data structures are serialized with the proper
@@ -496,6 +522,7 @@ async def test_serialization_nested_node(websocket, context_id, html,
 
     assert {
         "type": "node",
+        "sharedId": ANY_SHARED_ID,
         "value": {
             "nodeType": 1,
             "localName": "div",
@@ -504,7 +531,6 @@ async def test_serialization_nested_node(websocket, context_id, html,
             "attributes": {
                 "some_attr_name": "some_attr_value"
             },
-            "sharedId": ANY_SHARED_ID
         }
     } == extract_delegate(result["result"])
 
