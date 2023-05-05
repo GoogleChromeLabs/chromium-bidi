@@ -24,7 +24,7 @@ jobs:
           - os: ubuntu-latest
             head: headless
             kind: chromedriver
-    name: ${{ matrix.head }}
+    name: ${{ matrix.kind }}-${{ matrix.head }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
