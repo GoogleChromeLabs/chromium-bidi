@@ -71,7 +71,7 @@ jobs:
           BROWSER_BIN: ${{ env.chromium_binary }}
           HEADLESS: true
           WPT_REPORT: out/wptreport.json
-      - name: Run WPT tests (chromedriver)
+      - name: Run WPT tests (chromedriver, new headless)
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headless' && matrix.kind == 'chromedriver' }}
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
