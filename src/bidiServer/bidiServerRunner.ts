@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 import http from 'http';
+import net from 'net';
 
 import debug from 'debug';
 import websocket from 'websocket';
@@ -116,8 +117,12 @@ export class BidiServerRunner {
         return response.end();
       }
     );
+
     server.listen(bidiPort, () => {
-      log('Server is listening on port', bidiPort);
+      log(
+        'Server is listening on port',
+        (server.address() as net.AddressInfo).port
+      );
     });
 
     const wsServer: websocket.server = new websocket.server({

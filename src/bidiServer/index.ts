@@ -43,12 +43,6 @@ function parseArguments() {
     exit_on_error: true,
   });
 
-  parser.add_argument('-p', '--port', {
-    help: 'Port that BiDi server should listen to. Default is 8080.',
-    type: 'int',
-    default: process.env['PORT'] || 8080,
-  });
-
   parser.add_argument('-c', '--channel', {
     help:
       'If set, the given installed Chrome Release Channel will be used ' +
@@ -56,9 +50,15 @@ function parseArguments() {
     choices: Object.values(ChromeReleaseChannel),
   });
 
+  parser.add_argument('-p', '--port', {
+    help: 'Port that BiDi server should listen to. Default is to pick an unused port.',
+    type: 'int',
+    default: process.env['PORT'] || 0,
+  });
+
   parser.add_argument('-hl', '--headless', {
     help: 'Sets if browser should run in headless or headful mode. Default is true.',
-    default: true,
+    default: process.env['HEADLESS'] || true,
   });
 
   parser.add_argument('-v', '--verbose', {
@@ -73,7 +73,7 @@ function parseArguments() {
 
 (() => {
   try {
-    log('Launching BiDi server');
+    log('Launching BiDi server with DEBUG="%s"', process.env['DEBUG'] ?? '');
 
     const args = parseArguments();
     const bidiPort = args.port;
