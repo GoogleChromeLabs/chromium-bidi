@@ -12,23 +12,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest] # , macos-latest
-        head:
-          [
-            headful,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-            headless,
-          ]
+        os: [ubuntu-latest] # macos-latest
+        head: [
+            headless_1,
+            headless_2,
+            headless_3,
+            headless_4,
+            headless_5,
+            headless_6,
+            headless_7,
+            headless_8,
+            headless_9,
+            headless_10,
+          ] # headful
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -38,11 +34,13 @@ jobs:
         with:
           node-version: 16
           cache: npm
-      - uses: google/wireit@setup-github-actions-caching/v1
+      #      - uses: google/wireit@setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
       - name: Install Chromium
-        run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
+        run: |
+          # browsers from @puppeteer/browsers
+          echo "chromium_binary=$(npx browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -51,21 +49,12 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
       - name: Run E2E tests
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' }}
         timeout-minutes: 20
-        run: >
-          xvfb-run --auto-servernum
-          npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
-        env:
-          BROWSER_BIN: ${{ env.chrome_binary }}
-      - name: Run E2E tests
-        if: ${{ matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless') }}
-        timeout-minutes: 20
-        run: npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
+        run: npm run e2e-headless
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
+          DEBUG: '*'
+          VERBOSE: true
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
