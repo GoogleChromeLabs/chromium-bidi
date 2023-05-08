@@ -98,6 +98,7 @@ if [[ "$UPDATE_EXPECTATIONS" == "true" ]]; then
   log "Updating WPT expectations..."
 
   ./wpt/wpt update-expectations \
+    --no-remove-obsolete=false \
     --product "$PRODUCT" \
     --manifest "$MANIFEST" \
     --metadata "$WPT_METADATA" \
