@@ -79,7 +79,9 @@ export class ScriptEvaluator {
         functionDeclaration: String((obj: unknown) => obj),
         awaitPromise: false,
         arguments: [arg],
-        generateWebDriverValue: true,
+        serializationOptions: {
+          serialization: 'deep',
+        },
         executionContextId: realm.executionContextId,
       });
     return realm.cdpToBidiValue(cdpWebDriverValue, resultOwnership);
@@ -97,7 +99,9 @@ export class ScriptEvaluator {
         contextId: realm.executionContextId,
         expression,
         awaitPromise,
-        generateWebDriverValue: true,
+        serializationOptions: {
+          serialization: 'deep',
+        },
       }
     );
 
@@ -156,7 +160,9 @@ export class ScriptEvaluator {
           functionDeclaration: callFunctionAndSerializeScript,
           awaitPromise,
           arguments: thisAndArgumentsList, // this, arguments.
-          generateWebDriverValue: true,
+          serializationOptions: {
+            serialization: 'deep',
+          },
           executionContextId: realm.executionContextId,
         }
       );
@@ -438,7 +444,9 @@ export class ScriptEvaluator {
             }),
             returnByValue: false,
             executionContextId: realm.executionContextId,
-            generateWebDriverValue: false,
+            serializationOptions: {
+              serialization: 'deep',
+            },
           }
         );
         const channelHandle = createChannelHandleResult.result.objectId;
@@ -461,7 +469,9 @@ export class ScriptEvaluator {
             ],
             returnByValue: false,
             executionContextId: realm.executionContextId,
-            generateWebDriverValue: false,
+            serializationOptions: {
+              serialization: 'deep',
+            },
           }
         );
         return {objectId: sendMessageArgResult.result.objectId};
@@ -532,7 +542,9 @@ export class ScriptEvaluator {
           ],
           awaitPromise: true,
           executionContextId: realm.executionContextId,
-          generateWebDriverValue: true,
+          serializationOptions: {
+            serialization: 'deep',
+          },
         }
       );
 
