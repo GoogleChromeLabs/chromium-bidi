@@ -26,11 +26,14 @@ import {CDP, Script} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
 
+import {PreloadScriptStorage} from './PreloadScriptStorage.js';
+
 export class CdpTarget {
   readonly #targetId: string;
   readonly #cdpClient: CdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
+  readonly #preloadScriptStorage: PreloadScriptStorage;
 
   readonly #targetUnblocked: Deferred<void>;
   #networkDomainActivated: boolean;
@@ -40,13 +43,15 @@ export class CdpTarget {
     cdpClient: CdpClient,
     cdpSessionId: string,
     realmStorage: RealmStorage,
-    eventManager: IEventManager
+    eventManager: IEventManager,
+    preloadScriptStorage: PreloadScriptStorage
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
       cdpClient,
       cdpSessionId,
-      eventManager
+      eventManager,
+      preloadScriptStorage
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
@@ -64,12 +69,14 @@ export class CdpTarget {
     targetId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    eventManager: IEventManager
+    eventManager: IEventManager,
+    preloadScriptStorage: PreloadScriptStorage
   ) {
     this.#targetId = targetId;
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
+    this.#preloadScriptStorage = preloadScriptStorage;
 
     this.#networkDomainActivated = false;
     this.#targetUnblocked = new Deferred();
@@ -119,6 +126,9 @@ export class CdpTarget {
     });
 
     await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
+
+    await this.loadTopLevelPreloadScripts();
+
     this.#targetUnblocked.resolve();
   }
 
@@ -147,6 +157,27 @@ export class CdpTarget {
         null
       );
     });
+  }
+
+  /** Loads all top-level preload scripts. */
+  async loadTopLevelPreloadScripts() {
+    for (const script of this.#preloadScriptStorage.findPreloadScripts({
+      contextId: null,
+    })) {
+      const functionDeclaration = script.functionDeclaration;
+      const sandbox = script.sandbox;
+
+      // The spec provides a function, and CDP expects an evaluation.
+      const cdpPreloadScriptId = await this.addPreloadScript(
+        `(${functionDeclaration})();`,
+        sandbox
+      );
+
+      this.#preloadScriptStorage.appendCdpPreloadScript(script, {
+        target: this,
+        preloadScriptId: cdpPreloadScriptId,
+      });
+    }
   }
 
   /**

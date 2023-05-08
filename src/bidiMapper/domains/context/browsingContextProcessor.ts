@@ -148,7 +148,8 @@ export class BrowsingContextProcessor {
       targetCdpClient,
       sessionId,
       this.#realmStorage,
-      this.#eventManager
+      this.#eventManager,
+      this.#preloadScriptStorage
     );
 
     if (this.#browsingContextStorage.hasContext(targetInfo.targetId)) {
@@ -158,7 +159,7 @@ export class BrowsingContextProcessor {
         .updateCdpTarget(cdpTarget);
     } else {
       // New context.
-      const context = BrowsingContextImpl.create(
+      BrowsingContextImpl.create(
         cdpTarget,
         this.#realmStorage,
         targetInfo.targetId,
@@ -167,28 +168,6 @@ export class BrowsingContextProcessor {
         this.#browsingContextStorage,
         this.#logger
       );
-
-      // Get all top-level context scripts.
-      const scripts = this.#preloadScriptStorage.findPreloadScripts({
-        contextId: null,
-      });
-
-      // Add them all to the new context.
-      for (const script of scripts) {
-        const functionDeclaration = script.functionDeclaration;
-        const sandbox = script.sandbox;
-
-        // The spec provides a function, and CDP expects an evaluation.
-        const cdpPreloadScriptId = await context.cdpTarget.addPreloadScript(
-          `(${functionDeclaration})();`,
-          sandbox
-        );
-
-        this.#preloadScriptStorage.appendPreloadScript(script, {
-          target: context.cdpTarget,
-          preloadScriptId: cdpPreloadScriptId,
-        });
-      }
     }
   }
 

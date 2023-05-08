@@ -119,7 +119,7 @@ export class PreloadScriptStorage {
    * Keeps track of the given CDP preload script in the given BiDi preload
    * script.
    */
-  appendPreloadScript(
+  appendCdpPreloadScript(
     script: BidiPreloadScript,
     cdpPreloadScript: CdpPreloadScript
   ) {
