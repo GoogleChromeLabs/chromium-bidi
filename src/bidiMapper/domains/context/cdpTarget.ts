@@ -60,7 +60,7 @@ export class CdpTarget {
 
     // No need in waiting.
     // Deferred will be resolved when the target is unblocked.
-    cdpTarget.#unblock();
+    void cdpTarget.#unblock();
 
     return cdpTarget;
   }
