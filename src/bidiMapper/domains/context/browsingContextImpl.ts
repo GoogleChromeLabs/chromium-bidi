@@ -530,12 +530,12 @@ export class BrowsingContextImpl {
     switch (wait) {
       case 'none':
         break;
-      // TODO: handle interactive.
       case 'interactive':
-        break;
-      // TODO: handle complete.
+        // TODO: handle interactive.
+        throw new Error('Not implemented');
       case 'complete':
-        break;
+        // TODO: handle complete.
+        throw new Error('Not implemented');
     }
 
     return {result: {}};
