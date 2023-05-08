@@ -131,7 +131,7 @@ export class Realm {
   }
 
   webDriverValueToBiDi(
-    webDriverValue: Protocol.Runtime.WebDriverValue
+    webDriverValue: Protocol.Runtime.DeepSerializedValue
   ): CommonDataTypes.RemoteValue {
     // This relies on the CDP to implement proper BiDi serialization, except
     // backendNodeId/sharedId and `platformobject`.
