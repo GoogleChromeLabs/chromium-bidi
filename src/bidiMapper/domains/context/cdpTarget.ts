@@ -53,8 +53,10 @@ export class CdpTarget {
 
     cdpTarget.#setEventListeners();
 
-    // No need in waiting. Deferred will be resolved when the target is unblocked.
-    void cdpTarget.#unblock();
+    // No need in waiting.
+    // Deferred will be resolved when the target is unblocked.
+    cdpTarget.#unblock();
+
     return cdpTarget;
   }
 
