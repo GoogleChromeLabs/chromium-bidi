@@ -120,7 +120,7 @@ export class PreloadScriptStorage {
    * script.
    */
   appendCdpPreloadScript(
-    script: BidiPreloadScript,
+    script: BidiPreloadScript, // XXX: id?
     cdpPreloadScript: CdpPreloadScript
   ) {
     script.cdpPreloadScripts.push(cdpPreloadScript);
@@ -130,6 +130,14 @@ export class PreloadScriptStorage {
   removePreloadScripts(filter?: BidiPreloadScriptFilter) {
     for (const preloadScript of this.findPreloadScripts(filter)) {
       this.#scripts.delete(preloadScript);
+    }
+  }
+
+  removeCdpTargetId(targetId: string) {
+    for (const preloadScript of this.#scripts) {
+      preloadScript.cdpPreloadScripts = preloadScript.cdpPreloadScripts.filter(
+        (cdpPreloadScript) => cdpPreloadScript.target.targetId !== targetId
+      );
     }
   }
 }

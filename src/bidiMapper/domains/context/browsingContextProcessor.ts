@@ -91,7 +91,7 @@ export class BrowsingContextProcessor {
     );
   }
 
-  #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
+  async #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
     const parentBrowsingContext = this.#browsingContextStorage.findContext(
       params.parentFrameId
     );
@@ -157,6 +157,8 @@ export class BrowsingContextProcessor {
       this.#browsingContextStorage
         .getContext(targetInfo.targetId)
         .updateCdpTarget(cdpTarget);
+
+      this.#logger?.(LogType.browsingContexts, 'QQQQQQQQQQQQQQQQQQ');
     } else {
       // New context.
       BrowsingContextImpl.create(
@@ -168,17 +170,21 @@ export class BrowsingContextProcessor {
         this.#browsingContextStorage,
         this.#logger
       );
+      this.#logger?.(LogType.browsingContexts, 'BBBBBBBBBBBBBB');
     }
   }
 
   #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
+    this.#logger?.(LogType.browsingContexts, 'QQQQQQQQQWWWWWWWWWWWWWWWWWW');
+
     // XXX: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;
     this.#browsingContextStorage.findContext(contextId)?.delete();
+    this.#preloadScriptStorage.removeCdpTargetId(contextId);
   }
 
   async #getRealm(target: Script.Target): Promise<Realm> {
@@ -285,9 +291,17 @@ export class BrowsingContextProcessor {
         : [this.#browsingContextStorage.getContext(params.context).cdpTarget]
     );
 
+    this.#logger?.(LogType.browsingContexts, 'CDP Targets: ', cdpTargets.size);
+
     const cdpPreloadScripts: CdpPreloadScript[] = [];
 
     for (const cdpTarget of cdpTargets) {
+      this.#logger?.(
+        LogType.browsingContexts,
+        'TARGETTTTTTTTTTTT add',
+        cdpTarget,
+        cdpTarget.cdpSessionId
+      );
       const cdpPreloadScriptId = await cdpTarget.addPreloadScript(
         // The spec provides a function, and CDP expects an evaluation.
         `(${params.functionDeclaration})();`,
@@ -331,6 +345,13 @@ export class BrowsingContextProcessor {
 
     for (const script of scripts) {
       for (const cdpPreloadScript of script.cdpPreloadScripts) {
+        this.#logger?.(
+          LogType.browsingContexts,
+          'wwwwwwwwwwww',
+          cdpPreloadScript.target.cdpSessionId,
+          cdpPreloadScript.target.targetId,
+          cdpPreloadScript
+        );
         const cdpTarget = cdpPreloadScript.target;
         const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
         await cdpTarget.removePreloadScript(cdpPreloadScriptId);
