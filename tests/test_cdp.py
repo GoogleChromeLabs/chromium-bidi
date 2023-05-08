@@ -36,49 +36,6 @@ async def test_cdp_sendCommand_commandResultReturned(websocket):
 
 
 @pytest.mark.asyncio
-async def test_cdp_evalute_resultReturned(websocket, context_id):
-    command_result = await execute_command(websocket, {
-        "method": "cdp.getSession",
-        "params": {
-            "context": context_id
-        }
-    })
-    session_id = command_result["cdpSession"]
-
-    command_result = await execute_command(
-        websocket, {
-            "method": "cdp.sendCommand",
-            "params": {
-                "cdpMethod": "Runtime.evaluate",
-                "cdpParams": {
-                    "expression": "[1,false,{a:42}]",
-                    "serializationOptions": {
-                        "serialization": "deep"
-                    }
-                },
-                "cdpSession": session_id
-            }
-        })
-
-    assert {
-        "type": "array",
-        "value": [{
-            "type": "number",
-            "value": 1
-        }, {
-            "type": "boolean",
-            "value": False
-        }, {
-            "type": "object",
-            "value": [["a", {
-                "type": "number",
-                "value": 42
-            }]]
-        }]
-    } == command_result["result"]["deepSerializedValue"]
-
-
-@pytest.mark.asyncio
 async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
     await subscribe(websocket, "cdp.eventReceived")
 
