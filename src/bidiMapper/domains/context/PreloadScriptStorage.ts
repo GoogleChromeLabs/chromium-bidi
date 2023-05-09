@@ -133,7 +133,7 @@ export class PreloadScriptStorage {
    * script.
    */
   appendCdpPreloadScript(
-    script: BidiPreloadScript, // XXX: id?
+    script: BidiPreloadScript,
     cdpPreloadScript: CdpPreloadScript
   ) {
     script.cdpPreloadScripts.push(cdpPreloadScript);

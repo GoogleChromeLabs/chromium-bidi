@@ -281,7 +281,6 @@ export class BrowsingContextProcessor {
       throw new Error('add preload script arguments are not supported');
     }
 
-    // XXX: Stop using Set.
     const cdpTargets = new Set<CdpTarget>(
       // TODO: Flatten children.
       params.context === undefined || params.context === null
