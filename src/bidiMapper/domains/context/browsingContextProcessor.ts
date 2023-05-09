@@ -282,7 +282,9 @@ export class BrowsingContextProcessor {
     }
 
     const cdpTargets = new Set<CdpTarget>(
-      // TODO: Flatten children.
+      // TODO: The unique target can be in a non-top-level browsing context.
+      // We need all the targets.
+      // To get them, we can walk through all the contexts and collect their targets into the set.
       params.context === undefined || params.context === null
         ? this.#browsingContextStorage
             .getTopLevelContexts()
