@@ -125,9 +125,9 @@ export class CdpTarget {
       flatten: true,
     });
 
-    await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
-
     await this.loadTopLevelPreloadScripts();
+
+    await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
 
     this.#targetUnblocked.resolve();
   }
