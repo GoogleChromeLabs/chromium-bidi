@@ -95,10 +95,6 @@ export class CdpTarget {
     return this.#targetId;
   }
 
-  get parentTargetId(): string | null {
-    return this.#parentTargetId;
-  }
-
   get cdpClient(): CdpClient {
     return this.#cdpClient;
   }
