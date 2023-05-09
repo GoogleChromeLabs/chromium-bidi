@@ -379,7 +379,7 @@ export namespace CommonDataTypes {
     | NodeRemoteValue
     | WindowProxyRemoteValue;
 
-  export type InternalId = number;
+  export type InternalId = string;
 
   export type ListRemoteValue = RemoteValue[];
 

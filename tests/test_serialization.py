@@ -309,7 +309,7 @@ async def test_serialization_deserialization(websocket, context_id,
       " })()", {
           "type": "object",
           "handle": ANY_STR,
-          "internalId": 3,
+          "internalId": "3",
           "value": [[{
               "type": "number",
               "value": 1
@@ -319,14 +319,14 @@ async def test_serialization_deserialization(websocket, context_id,
                   "type": "array",
                   "value": []
               }]],
-              "internalId": 1
+              "internalId": "1"
           }],
                     [{
                         "type": "number",
                         "value": 2
                     }, {
                         "type": "object",
-                        "internalId": 1
+                        "internalId": "1"
                     }],
                     [{
                         "type": "number",
@@ -340,17 +340,17 @@ async def test_serialization_deserialization(websocket, context_id,
                             "type": "number",
                             "value": 2
                         }],
-                        "internalId": 2
+                        "internalId": "2"
                     }],
                     [{
                         "type": "number",
                         "value": 4
                     }, {
                         "type": "array",
-                        "internalId": 2
+                        "internalId": "2"
                     }], ["self", {
                         "type": "object",
-                        "internalId": 3
+                        "internalId": "3"
                     }]],
       })])
 async def test_serialization_function(websocket, context_id, jsString,

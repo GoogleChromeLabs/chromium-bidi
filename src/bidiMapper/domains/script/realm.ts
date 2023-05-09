@@ -138,7 +138,7 @@ export class Realm {
     const result = webDriverValue as any;
 
     if (Object.hasOwn(result, 'weakLocalObjectReference')) {
-      result.internalId = result.weakLocalObjectReference;
+      result.internalId = `${result.weakLocalObjectReference}`;
       delete result['weakLocalObjectReference'];
     }
 
