@@ -19,6 +19,7 @@ import sinon from 'sinon';
 
 import {PreloadScriptStorage} from './PreloadScriptStorage';
 
+// TODO: expand unit tests.
 describe('PreloadScriptStorage', () => {
   let preloadScriptStorage: PreloadScriptStorage;
 

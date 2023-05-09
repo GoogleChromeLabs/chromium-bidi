@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CdpClient} from '../../CdpConnection.js';
@@ -82,9 +81,7 @@ export class CdpTarget {
     this.#targetUnblocked = new Deferred();
   }
 
-  /**
-   * Returns a promise that resolves when the target is unblocked.
-   */
+  /** Returns a promise that resolves when the target is unblocked. */
   get targetUnblocked(): Deferred<void> {
     return this.#targetUnblocked;
   }
@@ -125,7 +122,7 @@ export class CdpTarget {
       flatten: true,
     });
 
-    await this.loadTopLevelPreloadScripts();
+    await this.loadPreloadScripts();
 
     await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
 
@@ -159,9 +156,10 @@ export class CdpTarget {
     });
   }
 
-  /** Loads all top-level preload scripts. */
-  async loadTopLevelPreloadScripts() {
+  /** Loads all top-level and parent preload scripts. */
+  async loadPreloadScripts() {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
+      // TODO: Get `contextId: parentId` as well.
       contextId: null,
     })) {
       const functionDeclaration = script.functionDeclaration;
