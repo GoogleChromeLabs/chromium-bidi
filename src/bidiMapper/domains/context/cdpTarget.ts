@@ -29,6 +29,7 @@ import {PreloadScriptStorage} from './PreloadScriptStorage.js';
 
 export class CdpTarget {
   readonly #targetId: string;
+  readonly #parentTargetId: string | null;
   readonly #cdpClient: CdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
@@ -39,6 +40,7 @@ export class CdpTarget {
 
   static create(
     targetId: string,
+    parentTargetId: string | null,
     cdpClient: CdpClient,
     cdpSessionId: string,
     realmStorage: RealmStorage,
@@ -47,6 +49,7 @@ export class CdpTarget {
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
+      parentTargetId,
       cdpClient,
       cdpSessionId,
       eventManager,
@@ -57,7 +60,7 @@ export class CdpTarget {
 
     cdpTarget.#setEventListeners();
 
-    // No need in waiting.
+    // No need to await.
     // Deferred will be resolved when the target is unblocked.
     void cdpTarget.#unblock();
 
@@ -66,12 +69,14 @@ export class CdpTarget {
 
   private constructor(
     targetId: string,
+    parentTargetId: string | null,
     cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager,
     preloadScriptStorage: PreloadScriptStorage
   ) {
     this.#targetId = targetId;
+    this.#parentTargetId = parentTargetId;
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
@@ -88,6 +93,10 @@ export class CdpTarget {
 
   get targetId(): string {
     return this.#targetId;
+  }
+
+  get parentTargetId(): string | null {
+    return this.#parentTargetId;
   }
 
   get cdpClient(): CdpClient {
@@ -159,8 +168,7 @@ export class CdpTarget {
   /** Loads all top-level and parent preload scripts. */
   async loadPreloadScripts() {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
-      // TODO: Get `contextId: parentId` as well.
-      contextId: null,
+      contextIds: [null, this.#parentTargetId],
     })) {
       const functionDeclaration = script.functionDeclaration;
       const sandbox = script.sandbox;

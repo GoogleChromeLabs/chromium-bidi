@@ -143,8 +143,13 @@ export class BrowsingContextProcessor {
 
     this.#setEventListeners(targetCdpClient);
 
+    const maybeContext = this.#browsingContextStorage.findContext(
+      targetInfo.targetId
+    );
+
     const cdpTarget = CdpTarget.create(
       targetInfo.targetId,
+      maybeContext?.parentId ?? null,
       targetCdpClient,
       sessionId,
       this.#realmStorage,
@@ -152,13 +157,9 @@ export class BrowsingContextProcessor {
       this.#preloadScriptStorage
     );
 
-    if (this.#browsingContextStorage.hasContext(targetInfo.targetId)) {
+    if (maybeContext) {
       // OOPiF.
-      this.#browsingContextStorage
-        .getContext(targetInfo.targetId)
-        .updateCdpTarget(cdpTarget);
-
-      this.#logger?.(LogType.browsingContexts, 'QQQQQQQQQQQQQQQQQQ');
+      maybeContext.updateCdpTarget(cdpTarget);
     } else {
       // New context.
       BrowsingContextImpl.create(
