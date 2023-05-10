@@ -55,7 +55,7 @@ jobs:
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
       - name: Upload artifacts
-        if: always()
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}-${{ matrix.head }}-artifacts

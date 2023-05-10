@@ -84,19 +84,19 @@ jobs:
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
-        if: always()
+        if: success() || failure()
         run: >
           node test-report/htmlWptReport.mjs
           out/wptreport.json
           out/wptreport.html
       - name: Upload expectations
-        if: always()
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
           path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
-        if: always()
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
