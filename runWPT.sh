@@ -73,19 +73,20 @@ declare -a WPT_RUN_ARGS=(
 )
 
 if [[ "$CHROMEDRIVER" == "true" ]]; then
-  log "Using Chromedriver with mapper..."
+  log "Using chromedriver with mapper..."
   WPT_RUN_ARGS+=(
     --binary-arg="--headless=new"
     --install-webdriver
     --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
     --webdriver-arg="--log-path=out/chromedriver.log"
     --webdriver-arg="--verbose"
-    --channel=dev
     --yes
   )
 else
   log "Using pure mapper..."
 fi
+
+echo "Using browser \"$BROWSER_BIN\"..."
 
 WPT_RUN_ARGS+=(
   # All arguments except the first one (the command) and the last one (the test) are the flags.
