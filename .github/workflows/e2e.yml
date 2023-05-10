@@ -29,7 +29,7 @@ jobs:
       - name: Install Chromium
         shell: bash # force -eo pipefail
         run: |
-          chromium_binary="$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')"
+          chromium_binary="$(npx @puppeteer/browsers install chrome@115 | cut -f 2- -d' ')"
           echo "chromium_binary=$chromium_binary" >> $GITHUB_ENV
       - name: Set up Python
         uses: actions/setup-python@v4
