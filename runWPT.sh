@@ -68,6 +68,7 @@ declare -a WPT_RUN_ARGS=(
   --log-wptreport "$WPT_REPORT"
   --manifest "$MANIFEST"
   --metadata "$WPT_METADATA"
+  --skip-implementation-status=backlog
   --timeout-multiplier "$TIMEOUT_MULTIPLIER"
 )
 
@@ -87,11 +88,14 @@ else
 fi
 
 WPT_RUN_ARGS+=(
+  # All arguments except the first one (the command) and the last one (the test) are the flags.
+  "${@: 1:$#-1}"
   "$PRODUCT"
-  "$@"
+  # The last argument is the test.
+  "${@: -1}"
 )
 
-(cd "$(dirname "$0")/" && ./wpt/wpt run --skip-implementation-status=backlog "${WPT_RUN_ARGS[@]}")
+(cd "$(dirname "$0")/" && ./wpt/wpt run "${WPT_RUN_ARGS[@]}")
 status="$?"
 
 if [[ "$UPDATE_EXPECTATIONS" == "true" ]]; then
