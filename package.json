@@ -44,7 +44,12 @@
       ]
     },
     "eslint": {
-      "command": "eslint --cache --ext .js,.ts --fix ."
+      "command": "eslint --cache --ext .js,.ts --fix .",
+      "files": [
+        ".eslintignore",
+        ".eslintrc.js",
+        "src/**/*.ts"
+      ]
     },
     "format": {
       "dependencies": [
