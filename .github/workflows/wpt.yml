@@ -52,7 +52,7 @@ jobs:
           chromium_binary="$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')"
           echo "chromium_binary=$chromium_binary" >> $GITHUB_ENV
       - name: Run WPT tests (mapper, headful)
-        if: ${{ matrix.head == 'headful' && matrix.kind == 'mapper' }}
+        if: matrix.head == 'headful' && matrix.kind == 'mapper'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
@@ -64,7 +64,7 @@ jobs:
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests (mapper, headless)
-        if: ${{ matrix.head == 'headless' && matrix.kind == 'mapper' }}
+        if: matrix.head == 'headless' && matrix.kind == 'mapper'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
         run: ./runWPT.sh webdriver/tests/bidi/
@@ -74,7 +74,7 @@ jobs:
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests (chromedriver, new headless)
-        if: ${{ matrix.head == 'headless' && matrix.kind == 'chromedriver' }}
+        if: matrix.head == 'headless' && matrix.kind == 'chromedriver'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
         run: ./runWPT.sh webdriver/tests/bidi/
@@ -84,19 +84,19 @@ jobs:
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
-        if: ${{ always() }}
+        if: always()
         run: >
           node test-report/htmlWptReport.mjs
           out/wptreport.json
           out/wptreport.html
       - name: Upload expectations
-        if: ${{ always() }}
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
           path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
-        if: ${{ always() }}
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
