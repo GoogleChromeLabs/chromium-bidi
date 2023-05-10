@@ -46,6 +46,10 @@ jobs:
   wpt:
     name: ${{ matrix.kind }}-${{ matrix.head }}
     runs-on: ubuntu-latest
+    # Give GITHUB_TOKEN write permission to commit and push.
+    # Needed by stefanzweifel/git-auto-commit-action@v4.
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -120,6 +124,14 @@ jobs:
           CHROMEDRIVER: true
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
+      - name: Maybe auto commit WPT expectations
+        # Only auto-commit on pull requests whose branch name contains "auto-commit".
+        if: (success() || failure()) && github.event_name == 'pull_request' && contains('auto-commit', ${{ github.head_ref }})
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update WPT expectations for ${{ matrix.kind }}-${{ matrix.head }}
+          commit_options: -n --signoff
+          file_pattern: 'wpt-metadata/**/*.ini'
       - name: Generate HTML test report
         if: success() || failure()
         run: >
