@@ -266,6 +266,8 @@ export class BrowsingContextProcessor {
     const context = this.#browsingContextStorage.getContext(contextId);
     await context.awaitLoaded();
 
+    await context.navigate('about:blank', 'complete');
+
     return {
       result: {
         context: context.id,
