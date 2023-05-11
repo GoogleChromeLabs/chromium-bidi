@@ -6,9 +6,6 @@ on:
   schedule:
     # Run hourly at xx:30.
     - cron: '30 * * * *'
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
