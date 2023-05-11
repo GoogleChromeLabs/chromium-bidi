@@ -441,24 +441,6 @@ async def test_serialization_node(websocket, context_id, html):
             "attributes": {
                 "some_attr_name": "some_attr_value"
             },
-            "children": [{
-                "type": "node",
-                "sharedId": ANY_SHARED_ID,
-                "value": {
-                    "nodeType": 3,
-                    "nodeValue": "some text",
-                }
-            }, {
-                "type": "node",
-                "sharedId": ANY_SHARED_ID,
-                "value": {
-                    "nodeType": 1,
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "childNodeCount": 1,
-                    "attributes": {}
-                }
-            }]
         }
     } == result["result"]
 
