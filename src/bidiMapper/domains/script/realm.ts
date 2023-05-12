@@ -232,7 +232,8 @@ export class Realm {
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions
   ): Promise<Script.CallFunctionResult> {
     const context = this.#browsingContextStorage.getContext(
       this.browsingContextId
@@ -246,7 +247,8 @@ export class Realm {
         _this,
         _arguments,
         awaitPromise,
-        resultOwnership
+        resultOwnership,
+        serializationOptions
       ),
     };
   }
@@ -254,7 +256,8 @@ export class Realm {
   async scriptEvaluate(
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions
   ): Promise<Script.EvaluateResult> {
     const context = this.#browsingContextStorage.getContext(
       this.browsingContextId
@@ -266,7 +269,8 @@ export class Realm {
         this,
         expression,
         awaitPromise,
-        resultOwnership
+        resultOwnership,
+        serializationOptions
       ),
     };
   }

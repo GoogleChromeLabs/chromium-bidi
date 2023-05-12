@@ -20,6 +20,7 @@ import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
 import {IEventManager} from '../events/EventManager.js';
 
 import {Realm} from './realm.js';
+import {MAX_INT} from '../../../protocol-parser/protocol-parser';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
 // should be adjusted.
@@ -91,8 +92,12 @@ export class ScriptEvaluator {
     realm: Realm,
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
+    if (![0, undefined].includes(serializationOptions?.maxDomDepth))
+      throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
+
     const cdpEvaluateResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
       {
@@ -101,6 +106,7 @@ export class ScriptEvaluator {
         awaitPromise,
         serializationOptions: {
           serialization: 'deep',
+          maxDepth: serializationOptions?.maxObjectDepth ?? MAX_INT,
         },
       }
     );
@@ -132,8 +138,12 @@ export class ScriptEvaluator {
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
+    if (![0, undefined].includes(serializationOptions?.maxDomDepth))
+      throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
+
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -162,6 +172,7 @@ export class ScriptEvaluator {
           arguments: thisAndArgumentsList, // this, arguments.
           serializationOptions: {
             serialization: 'deep',
+            maxDepth: serializationOptions?.maxObjectDepth ?? MAX_INT,
           },
           executionContextId: realm.executionContextId,
         }
