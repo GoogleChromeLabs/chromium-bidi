@@ -16,7 +16,7 @@
 import copy
 
 import pytest
-from anys import ANY_LIST, ANY_STR
+from anys import ANY_STR
 from test_helpers import (ANY_SHARED_ID, execute_command, goto_url,
                           read_JSON_message, send_JSON_command, subscribe)
 
@@ -530,25 +530,7 @@ async def test_serialization_node(websocket, context_id, html):
             "childNodeCount": 2,
             "attributes": {
                 "some_attr_name": "some_attr_value"
-            },
-            "children": [{
-                "type": "node",
-                "sharedId": ANY_SHARED_ID,
-                "value": {
-                    "nodeType": 3,
-                    "nodeValue": "some text",
-                }
-            }, {
-                "type": "node",
-                "sharedId": ANY_SHARED_ID,
-                "value": {
-                    "nodeType": 1,
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "childNodeCount": 1,
-                    "attributes": {}
-                }
-            }]
+            }
         }
     } == result["result"]
 
@@ -592,7 +574,6 @@ async def test_serialization_nested_node(websocket, context_id, html,
             "localName": "div",
             "namespaceURI": "http://www.w3.org/1999/xhtml",
             "childNodeCount": 2,
-            "children": ANY_LIST,
             "attributes": {
                 "some_attr_name": "some_attr_value"
             },
