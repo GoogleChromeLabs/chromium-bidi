@@ -20,7 +20,6 @@ import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
 import {IEventManager} from '../events/EventManager.js';
 
 import {Realm} from './realm.js';
-import {MAX_INT} from '../../../protocol-parser/protocol-parser';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
 // should be adjusted.
@@ -106,7 +105,9 @@ export class ScriptEvaluator {
         awaitPromise,
         serializationOptions: {
           serialization: 'deep',
-          maxDepth: serializationOptions?.maxObjectDepth ?? MAX_INT,
+          ...(serializationOptions?.maxObjectDepth
+            ? {}
+            : {maxDepth: serializationOptions?.maxObjectDepth}),
         },
       }
     );
@@ -172,7 +173,9 @@ export class ScriptEvaluator {
           arguments: thisAndArgumentsList, // this, arguments.
           serializationOptions: {
             serialization: 'deep',
-            maxDepth: serializationOptions?.maxObjectDepth ?? MAX_INT,
+            ...(serializationOptions?.maxObjectDepth
+              ? {}
+              : {maxDepth: serializationOptions?.maxObjectDepth}),
           },
           executionContextId: realm.executionContextId,
         }

@@ -33,7 +33,7 @@ import {
   CommonDataTypes as CommonDataTypesTypes,
 } from '../protocol/protocol.js';
 
-export const MAX_INT = 9007199254740991 as const;
+const MAX_INT = 9007199254740991 as const;
 
 export function parseObject<T extends ZodType>(
   obj: unknown,
@@ -271,14 +271,8 @@ export namespace Script {
   //   ?includeShadowTree: ("none" / "open" / "all") .default "none",
   // }
   const SerializationOptions = zod.object({
-    maxDomDepth: zod.number().int().min(0).max(0).default(0).optional(),
-    maxObjectDepth: zod
-      .number()
-      .int()
-      .min(0)
-      .max(MAX_INT)
-      .default(MAX_INT)
-      .optional(),
+    maxDomDepth: zod.number().int().min(0).optional(),
+    maxObjectDepth: zod.number().int().min(0).max(MAX_INT).optional(),
     includeShadowTree: zod.enum(['none', 'open', 'all']).optional(),
   });
 
@@ -293,7 +287,7 @@ export namespace Script {
     awaitPromise: zod.boolean(),
     target: TargetSchema,
     resultOwnership: ResultOwnershipSchema.optional(),
-    serializationOptions: SerializationOptions.optional(),
+    // serializationOptions: SerializationOptions.optional(),
   });
 
   export function parseEvaluateParams(
