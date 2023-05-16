@@ -95,7 +95,7 @@ export class ScriptEvaluator {
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
     if (![0, undefined, null].includes(serializationOptions.maxDomDepth))
-      throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
+      throw new Error('serializationOptions.maxDomDepth other than 0 or null is not supported');
 
     const cdpEvaluateResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
