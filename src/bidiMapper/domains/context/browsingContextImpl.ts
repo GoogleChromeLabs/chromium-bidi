@@ -346,7 +346,7 @@ export class BrowsingContextImpl {
                 method: BrowsingContext.EventNames.DomContentLoadedEvent,
                 params: {
                   context: this.id,
-                  navigation: this.#loaderId,
+                  navigation: this.#loaderId ?? null,
                   timestamp,
                   url: this.#url,
                 },
@@ -362,7 +362,7 @@ export class BrowsingContextImpl {
                 method: BrowsingContext.EventNames.LoadEvent,
                 params: {
                   context: this.id,
-                  navigation: this.#loaderId,
+                  navigation: this.#loaderId ?? null,
                   timestamp,
                   url: this.#url,
                 },
