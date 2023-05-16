@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC.
+# Copyright 2023 Google LLC.
 # Copyright (c) Microsoft Corporation.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,46 +16,57 @@
 import pytest
 from test_helpers import execute_command
 
-
-@pytest.mark.parametrize("eval, max_object_depth, expected_result", [
-    ("({'foo': {'bar': 'baz'}})", 0, {
-        "type": "object"
-    }),
-    ("({'foo': {'bar': 'baz'}})", 1, {
-        "type": "object",
-        "value": [["foo", {
+test_data = {
+    "argNames": "eval, max_object_depth, expected_result",
+    "argValues": [
+        ("({'foo': {'bar': 'baz'}})", 0, {
+            "type": "object"
+        }),
+        ("({'foo': {'bar': 'baz'}})", 1, {
             "type": "object",
-        }]],
-    }),
-    ("({'foo': {'bar': 'baz'}})", 2, {
-        "type": "object",
-        "value": [[
-            "foo", {
+            "value": [["foo", {
                 "type": "object",
-                "value": [["bar", {
-                    "type": "string",
-                    "value": "baz"
-                }]]
-            }
-        ]],
-    }),
-    ("({'foo': {'bar': 'baz'}})", None, {
-        "type": "object",
-        "value": [[
-            "foo", {
-                "type": "object",
-                "value": [["bar", {
-                    "type": "string",
-                    "value": "baz"
-                }]]
-            }
-        ]],
-    }),
-])
+            }]],
+        }),
+        ("({'foo': {'bar': 'baz'}})", 2, {
+            "type": "object",
+            "value": [[
+                "foo", {
+                    "type": "object",
+                    "value": [["bar", {
+                        "type": "string",
+                        "value": "baz"
+                    }]]
+                }
+            ]],
+        }),
+        ("({'foo': {'bar': 'baz'}})", None, {
+            "type": "object",
+            "value": [[
+                "foo", {
+                    "type": "object",
+                    "value": [["bar", {
+                        "type": "string",
+                        "value": "baz"
+                    }]]
+                }
+            ]],
+        }),
+    ],
+    "ids": [
+        "maxObjectDepth: 0", "maxObjectDepth: 1", "maxObjectDepth: 2",
+        "maxObjectDepth: null"
+    ],
+}
+
+
+@pytest.mark.parametrize(test_data["argNames"],
+                         test_data["argValues"],
+                         ids=test_data["ids"])
 @pytest.mark.asyncio
-async def test_serializationOptions(websocket, context_id, eval,
-                                    max_object_depth, expected_result):
-    result = await execute_command(
+async def test_serializationOptions_maxObjectDepth_evaluate(
+        websocket, context_id, eval, max_object_depth, expected_result):
+    response = await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
@@ -69,9 +80,16 @@ async def test_serializationOptions(websocket, context_id, eval,
                 }
             }
         })
-    assert result["result"] == expected_result
+    assert response["result"] == expected_result
 
-    result = await execute_command(
+
+@pytest.mark.parametrize(test_data["argNames"],
+                         test_data["argValues"],
+                         ids=test_data["ids"])
+@pytest.mark.asyncio
+async def test_serializationOptions_maxObjectDepth_callFunction(
+        websocket, context_id, eval, max_object_depth, expected_result):
+    response = await execute_command(
         websocket, {
             "method": "script.callFunction",
             "params": {
@@ -88,4 +106,4 @@ async def test_serializationOptions(websocket, context_id, eval,
                 }
             }
         })
-    assert result["result"] == expected_result
+    assert response["result"] == expected_result
