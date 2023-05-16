@@ -18,6 +18,7 @@
 import {
   BrowsingContext,
   CDP,
+  Input,
   Message,
   Script,
   Session,
@@ -59,6 +60,8 @@ export interface BidiParser {
     params: object
   ): BrowsingContext.CaptureScreenshotParameters;
   parsePrintParams(params: object): BrowsingContext.PrintParameters;
+  parsePerformActionsParams(params: object): Input.PerformActionsParameters;
+  parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters;
 }
 
 class BidiNoOpParser implements BidiParser {
@@ -117,6 +120,12 @@ class BidiNoOpParser implements BidiParser {
   }
   parsePrintParams(params: object): BrowsingContext.PrintParameters {
     return params as BrowsingContext.PrintParameters;
+  }
+  parsePerformActionsParams(params: object): Input.PerformActionsParameters {
+    return params as Input.PerformActionsParameters;
+  }
+  parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters {
+    return params as Input.ReleaseActionsParameters;
   }
 }
 
@@ -246,6 +255,15 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       case 'script.disown':
         return this.#contextProcessor.process_script_disown(
           this.#parser.parseDisownParams(commandData.params)
+        );
+
+      case 'input.performActions':
+        return this.#contextProcessor.process_input_performActions(
+          this.#parser.parsePerformActionsParams(commandData.params)
+        );
+      case 'input.releaseActions':
+        return this.#contextProcessor.process_input_releaseActions(
+          this.#parser.parseReleaseActionsParams(commandData.params)
         );
 
       case 'cdp.sendCommand':

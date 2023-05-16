@@ -19,6 +19,7 @@ import Protocol from 'devtools-protocol';
 import {
   BrowsingContext,
   CDP,
+  Input,
   Message,
   Script,
 } from '../../../protocol/protocol.js';
@@ -423,6 +424,17 @@ export class BrowsingContextProcessor {
   ): Promise<Script.DisownResult> {
     const realm = await this.#getRealm(params.target);
     await Promise.all(params.handles.map(async (h) => realm.disown(h)));
+    return {result: {}};
+  }
+
+  async process_input_performActions(
+    params: Input.PerformActionsParameters
+  ): Promise<Message.EmptyResult> {
+    return {result: {}};
+  }
+  async process_input_releaseActions(
+    params: Input.ReleaseActionsParameters
+  ): Promise<Message.EmptyResult> {
     return {result: {}};
   }
 

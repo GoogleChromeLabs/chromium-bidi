@@ -33,7 +33,8 @@ export type BiDiCommand =
   | BrowsingContext.Command
   | CDP.Command
   | Script.Command
-  | Session.Command;
+  | Session.Command
+  | Input.Command;
 
 export namespace Message {
   export type OutgoingMessage =
@@ -1239,4 +1240,178 @@ export namespace Session {
   };
 
   export type UnsubscribeResult = Message.EmptyResult;
+}
+
+/** @see https://w3c.github.io/webdriver-bidi/#module-input */
+export namespace Input {
+  export type Command = PerformActions | ReleaseActions;
+
+  export type ElementOrigin = {
+    type: 'element';
+    element: CommonDataTypes.SharedReference;
+  };
+
+  export type PerformActions = {
+    method: 'input.performActions';
+    params: PerformActionsParameters;
+  };
+
+  export type PerformActionsParameters = {
+    context: CommonDataTypes.BrowsingContext;
+    actions: SourceActions[];
+  };
+
+  export type SourceActions =
+    | NoneSourceActions
+    | KeySourceActions
+    | PointerSourceActions
+    | WheelSourceActions;
+
+  export type NoneSourceActions = {
+    type: 'none';
+    id: string;
+    actions: NoneSourceAction[];
+  };
+
+  export type NoneSourceAction = PauseAction;
+
+  export type KeySourceActions = {
+    type: 'key';
+    id: string;
+    actions: KeySourceAction[];
+  };
+
+  export type KeySourceAction = PauseAction | KeyDownAction | KeyUpAction;
+
+  export type PointerSourceActions = {
+    type: 'pointer';
+    id: string;
+    parameters?: PointerParameters;
+    actions: PointerSourceAction[];
+  };
+
+  export type PointerType = 'mouse' | 'pen' | 'touch';
+
+  export type PointerParameters = {
+    /**
+     * @defaultValue `"mouse"`
+     */
+    pointerType?: PointerType;
+  };
+
+  export type PointerSourceAction =
+    | PauseAction
+    | PointerDownAction
+    | PointerUpAction
+    | PointerMoveAction;
+
+  export type WheelSourceActions = {
+    type: 'wheel';
+    id: string;
+    actions: WheelSourceAction[];
+  };
+
+  export type WheelSourceAction = PauseAction | WheelScrollAction;
+
+  export type PauseAction = {
+    type: 'pause';
+    duration?: number;
+  };
+
+  export type KeyDownAction = {
+    type: 'keyDown';
+    value: string;
+  };
+
+  export type KeyUpAction = {
+    type: 'keyUp';
+    value: string;
+  };
+
+  export type PointerUpAction = {
+    type: 'pointerUp';
+    button: number;
+  } & PointerCommonProperties;
+
+  export type PointerDownAction = {
+    type: 'pointerDown';
+    button: number;
+  } & PointerCommonProperties;
+
+  export type PointerMoveAction = {
+    type: 'pointerMove';
+    x: number;
+    y: number;
+    duration?: number;
+    origin?: Origin;
+  } & PointerCommonProperties;
+
+  export type WheelScrollAction = {
+    type: 'scroll';
+    x: number;
+    y: number;
+    deltaX: number;
+    deltaY: number;
+    duration?: number;
+    /**
+     * @defaultValue `"viewport"`
+     */
+    origin?: Origin;
+  };
+
+  export type PointerCommonProperties = {
+    /**
+     * @defaultValue `1`
+     */
+    width?: number;
+    /**
+     * @defaultValue `1`
+     */
+    height?: number;
+    /**
+     * @defaultValue `0.0`
+     */
+    pressure?: number;
+    /**
+     * @defaultValue `0.0`
+     */
+    tangentialPressure?: number;
+    /**
+     * @defaultValue `9`
+     */
+    twist?: number;
+  } & (AngleProperties | TiltProperties);
+
+  export type AngleProperties = {
+    /**
+     * @defaultValue `0.0`
+     */
+    altitudeAngle?: number;
+    /**
+     * @defaultValue `0.0`
+     */
+    azimuthAngle?: number;
+  };
+
+  export type TiltProperties = {
+    /**
+     * @defaultValue `0`
+     */
+    tiltX?: number;
+    /**
+     * @defaultValue `0`
+     */
+    tiltY?: number;
+  };
+
+  export type Origin = 'viewport' | 'pointer' | ElementOrigin;
+
+  export type ReleaseActions = {
+    method: 'input.releaseActions';
+    params: ReleaseActionsParameters;
+  };
+
+  export type ReleaseActionsParameters = {
+    context: CommonDataTypes.BrowsingContext;
+  };
 }
