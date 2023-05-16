@@ -94,7 +94,7 @@ export class ScriptEvaluator {
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
-    if (![0, undefined].includes(serializationOptions?.maxDomDepth))
+    if (![0, undefined, null].includes(serializationOptions.maxDomDepth))
       throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
 
     const cdpEvaluateResult = await realm.cdpClient.sendCommand(
@@ -105,9 +105,10 @@ export class ScriptEvaluator {
         awaitPromise,
         serializationOptions: {
           serialization: 'deep',
-          ...(serializationOptions?.maxObjectDepth
+          ...(serializationOptions.maxObjectDepth === undefined ||
+          serializationOptions.maxObjectDepth === null
             ? {}
-            : {maxDepth: serializationOptions?.maxObjectDepth}),
+            : {maxDepth: serializationOptions.maxObjectDepth}),
         },
       }
     );
@@ -142,7 +143,7 @@ export class ScriptEvaluator {
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
-    if (![0, undefined].includes(serializationOptions?.maxDomDepth))
+    if (![0, null, undefined].includes(serializationOptions.maxDomDepth))
       throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
 
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
@@ -173,9 +174,10 @@ export class ScriptEvaluator {
           arguments: thisAndArgumentsList, // this, arguments.
           serializationOptions: {
             serialization: 'deep',
-            ...(serializationOptions?.maxObjectDepth
+            ...(serializationOptions.maxObjectDepth === undefined ||
+            serializationOptions.maxObjectDepth === null
               ? {}
-              : {maxDepth: serializationOptions?.maxObjectDepth}),
+              : {maxDepth: serializationOptions.maxObjectDepth}),
           },
           executionContextId: realm.executionContextId,
         }
