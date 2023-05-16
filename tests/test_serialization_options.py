@@ -17,8 +17,8 @@ import pytest
 from test_helpers import execute_command
 
 test_data = {
-    "argNames": "eval, max_object_depth, expected_result",
-    "argValues": [
+    "argnames": "eval, max_object_depth, expected_result",
+    "argvalues": [
         ("({'foo': {'bar': 'baz'}})", 0, {
             "type": "object"
         }),
@@ -60,9 +60,7 @@ test_data = {
 }
 
 
-@pytest.mark.parametrize(test_data["argNames"],
-                         test_data["argValues"],
-                         ids=test_data["ids"])
+@pytest.mark.parametrize(**test_data)
 @pytest.mark.asyncio
 async def test_serializationOptions_maxObjectDepth_evaluate(
         websocket, context_id, eval, max_object_depth, expected_result):
@@ -83,9 +81,7 @@ async def test_serializationOptions_maxObjectDepth_evaluate(
     assert response["result"] == expected_result
 
 
-@pytest.mark.parametrize(test_data["argNames"],
-                         test_data["argValues"],
-                         ids=test_data["ids"])
+@pytest.mark.parametrize(**test_data)
 @pytest.mark.asyncio
 async def test_serializationOptions_maxObjectDepth_callFunction(
         websocket, context_id, eval, max_object_depth, expected_result):
