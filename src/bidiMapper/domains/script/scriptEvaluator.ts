@@ -95,7 +95,9 @@ export class ScriptEvaluator {
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
     if (![0, null, undefined].includes(serializationOptions.maxDomDepth))
-      throw new Error('serializationOptions.maxDomDepth other than 0 or null is not supported');
+      throw new Error(
+        'serializationOptions.maxDomDepth other than 0 or null is not supported'
+      );
 
     const cdpEvaluateResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
@@ -144,7 +146,9 @@ export class ScriptEvaluator {
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
     if (![0, null, undefined].includes(serializationOptions.maxDomDepth))
-      throw new Error('serializationOptions.maxDomDepth other than 0 or null is not supported');
+      throw new Error(
+        'serializationOptions.maxDomDepth other than 0 or null is not supported'
+      );
 
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
