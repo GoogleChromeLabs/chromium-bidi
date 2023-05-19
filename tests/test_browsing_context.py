@@ -876,3 +876,9 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
             "url": url,
         }
     }
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: Not Implemented")
+async def test_browsingContext_ignoreCache():
+    pass
