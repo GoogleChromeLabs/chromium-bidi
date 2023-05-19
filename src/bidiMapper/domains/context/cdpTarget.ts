@@ -24,6 +24,7 @@ import {IEventManager} from '../events/EventManager.js';
 import {CDP, Script} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
+import {LoggerFn, LogType} from '../../../utils/log.js';
 
 import {PreloadScriptStorage} from './PreloadScriptStorage.js';
 import {BrowsingContextStorage} from './browsingContextStorage';
@@ -35,6 +36,7 @@ export class CdpTarget {
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
+  readonly #logger?: LoggerFn;
 
   readonly #targetUnblocked: Deferred<void>;
   #networkDomainActivated: boolean;
@@ -48,7 +50,8 @@ export class CdpTarget {
     realmStorage: RealmStorage,
     eventManager: IEventManager,
     preloadScriptStorage: PreloadScriptStorage,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    logger?: LoggerFn
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -57,7 +60,8 @@ export class CdpTarget {
       cdpSessionId,
       eventManager,
       preloadScriptStorage,
-      browsingContextStorage
+      browsingContextStorage,
+      logger
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
@@ -78,7 +82,8 @@ export class CdpTarget {
     cdpSessionId: string,
     eventManager: IEventManager,
     preloadScriptStorage: PreloadScriptStorage,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    logger?: LoggerFn
   ) {
     this.#targetId = targetId;
     this.#parentTargetId = parentTargetId;
@@ -87,6 +92,7 @@ export class CdpTarget {
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#logger = logger;
 
     this.#networkDomainActivated = false;
     this.#targetUnblocked = new Deferred();
@@ -197,12 +203,21 @@ export class CdpTarget {
           .getAllContexts()
           .filter((context) => context.cdpTarget === this)
           .map((context) =>
-            context.getOrCreateSandbox(sandbox).then((realm) =>
-              this.cdpClient.sendCommand('Runtime.evaluate', {
-                expression: `(${functionDeclaration})();`,
-                contextId: realm.executionContextId,
+            context
+              .getOrCreateSandbox(sandbox)
+              .then((realm) =>
+                this.cdpClient.sendCommand('Runtime.evaluate', {
+                  expression: `(${functionDeclaration})();`,
+                  contextId: realm.executionContextId,
+                })
+              )
+              .catch((error) => {
+                this.#logger?.(
+                  LogType.cdp,
+                  'Could not evaluate preload script',
+                  error
+                );
               })
-            )
           )
       );
 
