@@ -87,6 +87,7 @@ export namespace Message {
     // keep-sorted start
     InvalidArgument = 'invalid argument',
     InvalidSessionId = 'invalid session id',
+    MoveTargetOutOfBounds = 'move target out of bounds',
     NoSuchAlert = 'no such alert',
     NoSuchFrame = 'no such frame',
     NoSuchHandle = 'no such handle',
@@ -125,6 +126,12 @@ export namespace Message {
   export class InvalidArgumentException extends ErrorResponse {
     constructor(message: string, stacktrace?: string) {
       super(ErrorCode.InvalidArgument, message, stacktrace);
+    }
+  }
+
+  export class MoveTargetOutOfBoundsException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.MoveTargetOutOfBounds, message, stacktrace);
     }
   }
 
@@ -1267,8 +1274,15 @@ export namespace Input {
     | PointerSourceActions
     | WheelSourceActions;
 
+  export enum SourceActionsType {
+    None = 'none',
+    Key = 'key',
+    Pointer = 'pointer',
+    Wheel = 'wheel',
+  }
+
   export type NoneSourceActions = {
-    type: 'none';
+    type: SourceActionsType.None;
     id: string;
     actions: NoneSourceAction[];
   };
@@ -1276,7 +1290,7 @@ export namespace Input {
   export type NoneSourceAction = PauseAction;
 
   export type KeySourceActions = {
-    type: 'key';
+    type: SourceActionsType.Key;
     id: string;
     actions: KeySourceAction[];
   };
@@ -1284,13 +1298,17 @@ export namespace Input {
   export type KeySourceAction = PauseAction | KeyDownAction | KeyUpAction;
 
   export type PointerSourceActions = {
-    type: 'pointer';
+    type: SourceActionsType.Pointer;
     id: string;
     parameters?: PointerParameters;
     actions: PointerSourceAction[];
   };
 
-  export type PointerType = 'mouse' | 'pen' | 'touch';
+  export enum PointerType {
+    Mouse = 'mouse',
+    Pen = 'pen',
+    Touch = 'touch',
+  }
 
   export type PointerParameters = {
     /**
@@ -1306,40 +1324,50 @@ export namespace Input {
     | PointerMoveAction;
 
   export type WheelSourceActions = {
-    type: 'wheel';
+    type: SourceActionsType.Wheel;
     id: string;
     actions: WheelSourceAction[];
   };
 
   export type WheelSourceAction = PauseAction | WheelScrollAction;
 
+  export enum ActionType {
+    Pause = 'pause',
+    KeyDown = 'keyDown',
+    KeyUp = 'keyUp',
+    PointerUp = 'pointerUp',
+    PointerDown = 'pointerDown',
+    PointerMove = 'pointerMove',
+    Scroll = 'scroll',
+  }
+
   export type PauseAction = {
-    type: 'pause';
+    type: ActionType.Pause;
     duration?: number;
   };
 
   export type KeyDownAction = {
-    type: 'keyDown';
+    type: ActionType.KeyDown;
     value: string;
   };
 
   export type KeyUpAction = {
-    type: 'keyUp';
+    type: ActionType.KeyUp;
     value: string;
   };
 
   export type PointerUpAction = {
-    type: 'pointerUp';
+    type: ActionType.PointerUp;
     button: number;
   } & PointerCommonProperties;
 
   export type PointerDownAction = {
-    type: 'pointerDown';
+    type: ActionType.PointerDown;
     button: number;
   } & PointerCommonProperties;
 
   export type PointerMoveAction = {
-    type: 'pointerMove';
+    type: ActionType.PointerMove;
     x: number;
     y: number;
     duration?: number;
@@ -1347,7 +1375,7 @@ export namespace Input {
   } & PointerCommonProperties;
 
   export type WheelScrollAction = {
-    type: 'scroll';
+    type: ActionType.Scroll;
     x: number;
     y: number;
     deltaX: number;

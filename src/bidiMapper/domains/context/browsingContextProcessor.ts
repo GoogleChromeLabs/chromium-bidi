@@ -23,20 +23,23 @@ import {
   Message,
   Script,
 } from '../../../protocol/protocol.js';
+import {LogType, LoggerFn} from '../../../utils/log.js';
 import {CdpClient, CdpConnection} from '../../CdpConnection.js';
-import {LoggerFn, LogType} from '../../../utils/log.js';
 import {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
+import {ActionOption} from '../input/ActionOption.js';
+import {InputStateManager} from '../input/InputStateManager.js';
+import {ActionDispatcher} from '../input/ActionDispatcher.js';
 
-import {BrowsingContextStorage} from './browsingContextStorage.js';
-import {BrowsingContextImpl} from './browsingContextImpl.js';
-import {CdpTarget} from './cdpTarget.js';
 import {
-  PreloadScriptStorage,
-  CdpPreloadScript,
   BidiPreloadScript,
+  CdpPreloadScript,
+  PreloadScriptStorage,
 } from './PreloadScriptStorage.js';
+import {BrowsingContextImpl} from './browsingContextImpl.js';
+import {BrowsingContextStorage} from './browsingContextStorage.js';
+import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -46,6 +49,7 @@ export class BrowsingContextProcessor {
   readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
   readonly #preloadScriptStorage: PreloadScriptStorage;
+  readonly #inputStateManager = new InputStateManager();
 
   constructor(
     realmStorage: RealmStorage,
@@ -430,11 +434,60 @@ export class BrowsingContextProcessor {
   async process_input_performActions(
     params: Input.PerformActionsParameters
   ): Promise<Message.EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    const inputState = this.#inputStateManager.get(context.top);
+
+    const actionsByTick: ActionOption[][] = [];
+    for (const action of params.actions) {
+      switch (action.type) {
+        case Input.SourceActionsType.Pointer: {
+          action.parameters ??= {pointerType: Input.PointerType.Mouse};
+          action.parameters.pointerType ??= Input.PointerType.Mouse;
+
+          const source = inputState.getOrCreate(
+            action.id,
+            Input.SourceActionsType.Pointer,
+            action.parameters.pointerType
+          );
+          if (source.subtype !== action.parameters.pointerType) {
+            throw new Message.InvalidArgumentException(
+              `Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`
+            );
+          }
+          break;
+        }
+        default:
+          inputState.getOrCreate(action.id, action.type);
+      }
+      const actions: ActionOption[] = [];
+      for (const item of action.actions) {
+        actions.push({
+          id: action.id,
+          action: item,
+        });
+      }
+      for (let i = 0; i < actions.length; i++) {
+        if (actionsByTick.length === i) {
+          actionsByTick.push([]);
+        }
+        actionsByTick[i]!.push(actions[i]!);
+      }
+    }
+
+    const dispatcher = new ActionDispatcher(inputState, context);
+    await dispatcher.dispatchActions(actionsByTick);
+
     return {result: {}};
   }
   async process_input_releaseActions(
     params: Input.ReleaseActionsParameters
   ): Promise<Message.EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    const topContext = context.top;
+    const inputState = this.#inputStateManager.get(topContext);
+    const dispatcher = new ActionDispatcher(inputState, context);
+    await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
+    this.#inputStateManager.delete(topContext);
     return {result: {}};
   }
 
