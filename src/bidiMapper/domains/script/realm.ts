@@ -38,7 +38,7 @@ export class Realm {
   readonly #type: RealmType;
   readonly #cdpClient: CdpClient;
   readonly #eventManager: IEventManager;
-  readonly #scriptEvaluator: ScriptEvaluator;
+  readonly scriptEvaluator: ScriptEvaluator;
 
   readonly sandbox?: string;
   readonly cdpSessionId: string;
@@ -70,7 +70,7 @@ export class Realm {
     this.#realmStorage = realmStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
-    this.#scriptEvaluator = new ScriptEvaluator(this.#eventManager);
+    this.scriptEvaluator = new ScriptEvaluator(this.#eventManager);
 
     this.#realmStorage.realmMap.set(this.#realmId, this);
 
@@ -241,7 +241,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await this.#scriptEvaluator.callFunction(
+      result: await this.scriptEvaluator.callFunction(
         this,
         functionDeclaration,
         _this,
@@ -265,7 +265,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await this.#scriptEvaluator.scriptEvaluate(
+      result: await this.scriptEvaluator.scriptEvaluate(
         this,
         expression,
         awaitPromise,
@@ -285,7 +285,7 @@ export class Realm {
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.ResultOwnership
   ): Promise<CommonDataTypes.RemoteValue> {
-    return this.#scriptEvaluator.serializeCdpObject(
+    return this.scriptEvaluator.serializeCdpObject(
       cdpObject,
       resultOwnership,
       this

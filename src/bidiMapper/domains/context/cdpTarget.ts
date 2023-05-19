@@ -26,6 +26,7 @@ import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
 
 import {PreloadScriptStorage} from './PreloadScriptStorage.js';
+import {BrowsingContextStorage} from './browsingContextStorage';
 
 export class CdpTarget {
   readonly #targetId: string;
@@ -37,6 +38,7 @@ export class CdpTarget {
 
   readonly #targetUnblocked: Deferred<void>;
   #networkDomainActivated: boolean;
+  #browsingContextStorage: BrowsingContextStorage;
 
   static create(
     targetId: string,
@@ -45,7 +47,8 @@ export class CdpTarget {
     cdpSessionId: string,
     realmStorage: RealmStorage,
     eventManager: IEventManager,
-    preloadScriptStorage: PreloadScriptStorage
+    preloadScriptStorage: PreloadScriptStorage,
+    browsingContextStorage: BrowsingContextStorage
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -53,7 +56,8 @@ export class CdpTarget {
       cdpClient,
       cdpSessionId,
       eventManager,
-      preloadScriptStorage
+      preloadScriptStorage,
+      browsingContextStorage
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
@@ -73,7 +77,8 @@ export class CdpTarget {
     cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager,
-    preloadScriptStorage: PreloadScriptStorage
+    preloadScriptStorage: PreloadScriptStorage,
+    browsingContextStorage: BrowsingContextStorage
   ) {
     this.#targetId = targetId;
     this.#parentTargetId = parentTargetId;
@@ -84,6 +89,7 @@ export class CdpTarget {
 
     this.#networkDomainActivated = false;
     this.#targetUnblocked = new Deferred();
+    this.#browsingContextStorage = browsingContextStorage;
   }
 
   /** Returns a promise that resolves when the target is unblocked. */
@@ -128,7 +134,7 @@ export class CdpTarget {
         flatten: true,
       });
 
-      await this.loadPreloadScripts();
+      await this.#loadPreloadScripts();
 
       await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
     } catch (error: any) {
@@ -169,7 +175,7 @@ export class CdpTarget {
   }
 
   /** Loads all top-level and parent preload scripts. */
-  async loadPreloadScripts() {
+  async #loadPreloadScripts() {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
       contextIds: [null, this.#parentTargetId],
     })) {
@@ -180,6 +186,20 @@ export class CdpTarget {
       const cdpPreloadScriptId = await this.addPreloadScript(
         `(${functionDeclaration})();`,
         sandbox
+      );
+
+      await Promise.all(
+        this.#browsingContextStorage
+          .getAllContexts()
+          .filter((c) => c.cdpTarget === this)
+          .map((c) =>
+            c.getOrCreateSandbox(sandbox).then((realm) =>
+              this.cdpClient.sendCommand('Runtime.evaluate', {
+                expression: `(${functionDeclaration})();`,
+                contextId: realm.executionContextId,
+              })
+            )
+          )
       );
 
       this.#preloadScriptStorage.appendCdpPreloadScript(script, {
