@@ -83,11 +83,11 @@ jobs:
       - name: Setup cache for browser binaries
         uses: actions/cache@v3
         with:
-          path: ~/.cache/chromium-bidi
+          path: $HOME/.cache/chromium-bidi
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
       - name: Install pinned browser
         id: browser
-        run: node install-browser.mjs ~/.cache/chromium-bidi
+        run: node install-browser.mjs $HOME/.cache/chromium-bidi
       - name: Run WPT tests (mapper, headful)
         if: matrix.head == 'headful' && matrix.kind == 'mapper'
         timeout-minutes: 60
