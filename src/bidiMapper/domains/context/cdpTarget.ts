@@ -187,6 +187,11 @@ export class CdpTarget {
         sandbox
       );
 
+      // Upon attaching to a new target, run preload scripts on each execution
+      // context before `Runtime.runIfWaitingForDebugger`.
+      //
+      // Otherwise a browsing context might be created without the evaluation of
+      // preload scripts.
       await Promise.all(
         this.#browsingContextStorage
           .getAllContexts()
