@@ -22,8 +22,8 @@ import * as uuid from '../../../utils/uuid.js';
 import {CdpTarget} from './cdpTarget';
 import {PreloadScriptStorage, CdpPreloadScript} from './PreloadScriptStorage';
 
-const MOCKED_UUID_1 = 'a5cc4fe2-e17f-4091-a605-625ca189bd8e';
-const MOCKED_UUID_2 = 'a5cc4fe2-e17f-4091-a605-625ca189bd8f';
+const MOCKED_UUID_1 = '00000000-0000-0000-0000-00000000000a';
+const MOCKED_UUID_2 = '00000000-0000-0000-0000-00000000000b';
 
 describe('PreloadScriptStorage', () => {
   let preloadScriptStorage: PreloadScriptStorage;
@@ -34,6 +34,7 @@ describe('PreloadScriptStorage', () => {
   let uuidStub: sinon.SinonStub;
 
   let cdpTarget: sinon.SinonStubbedInstance<CdpTarget>;
+  let cdpTargetId: string;
   let cdpPreloadScript1: CdpPreloadScript;
   let cdpPreloadScript2: CdpPreloadScript;
 
@@ -42,6 +43,7 @@ describe('PreloadScriptStorage', () => {
 
     functionDeclaration = '() => {}';
     sandbox = 'MY_SANDBOX';
+    cdpTargetId = 'TARGET_ID';
 
     uuidStub = sinon
       .stub(uuid, 'uuidv4')
@@ -51,6 +53,8 @@ describe('PreloadScriptStorage', () => {
       .returns(MOCKED_UUID_2);
 
     cdpTarget = sinon.createStubInstance(CdpTarget);
+    sinon.stub(cdpTarget, 'targetId').get(() => cdpTargetId);
+
     cdpPreloadScript1 = {
       target: cdpTarget,
       preloadScriptId: 'PRELOAD_SCRIPT_1',
@@ -134,6 +138,31 @@ describe('PreloadScriptStorage', () => {
           contextId: context,
           functionDeclaration,
           sandbox,
+        },
+      ]);
+    });
+
+    it(`remove cdp preload script in ${contextDescription}`, () => {
+      preloadScriptStorage.addPreloadScripts(
+        context,
+        [cdpPreloadScript1],
+        functionDeclaration,
+        sandbox
+      );
+
+      preloadScriptStorage.removeCdpPreloadScripts({
+        targetId: cdpTargetId,
+      });
+
+      expect(
+        preloadScriptStorage.findPreloadScripts({contextId: context})
+      ).to.be.deep.equal([
+        {
+          id: MOCKED_UUID_1,
+          cdpPreloadScripts: [],
+          functionDeclaration,
+          sandbox,
+          contextId: context,
         },
       ]);
     });
