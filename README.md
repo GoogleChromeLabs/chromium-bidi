@@ -369,6 +369,26 @@ npm run build --watch
   wptreport.json
 ```
 
+## Update CDDL
+
+TODO: add BiDi+ types.
+
+In order to update CDDL files `src/protocol/cddlLocal.ts` and `src/protocol/cddlRemote.ts`, first generate CDLL files in https://github.com/w3c/webdriver-bidi:
+
+```sh
+# Go to webdriver-bidi repo.
+cd ../webdriver-bidi
+./scripts/test.sh`
+
+# Go to chromium-bidi repo.
+cd ../chromium-bidi
+npx cddl2ts ../webdriver-bidi/local.cddl &> src/protocol/cddlLocal.ts
+npx cddl2ts ../webdriver-bidi/remote.cddl &> src/protocol/cddlRemote.ts
+
+# Prettify the files.
+npm run prettier
+```
+
 ## How does it work?
 
 The architecture is described in the
