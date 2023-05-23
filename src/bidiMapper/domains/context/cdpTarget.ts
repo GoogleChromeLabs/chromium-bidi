@@ -185,11 +185,11 @@ export class CdpTarget {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
       contextIds: [null, this.#parentTargetId],
     })) {
-      const {functionDeclaration, sandbox} = script;
+      const {functionDeclaration, channels, sandbox} = script;
 
-      // The spec provides a function, and CDP expects an evaluation.
-      const cdpPreloadScriptId = await this.addPreloadScript(
-        `(${functionDeclaration})();`,
+      const cdpPreloadScriptId = await this.addPreloadScriptWithChannels(
+        functionDeclaration,
+        channels,
         sandbox
       );
 
@@ -226,6 +226,25 @@ export class CdpTarget {
         preloadScriptId: cdpPreloadScriptId,
       });
     }
+  }
+
+  // TODO: Document.
+  async addPreloadScriptWithChannels(
+    functionDeclaration: string,
+    channels?: Script.ChannelValue[],
+    sandbox?: string
+  ): Promise<Script.PreloadScript> {
+    if (channels === undefined) {
+      // The spec provides a function, and CDP expects an evaluation.
+      return this.addPreloadScript(`(${functionDeclaration})();`, sandbox);
+    }
+
+    // TODO: Document.
+    const intermediateScript = `
+(${functionDeclaration})();
+`;
+
+    return this.addPreloadScript(intermediateScript, sandbox);
   }
 
   /**

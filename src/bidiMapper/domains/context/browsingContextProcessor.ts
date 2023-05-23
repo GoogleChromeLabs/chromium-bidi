@@ -306,11 +306,6 @@ export class BrowsingContextProcessor {
   async process_script_addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    if (params.arguments !== undefined && params.arguments.length > 0) {
-      // TODO: Handle arguments.
-      throw new Error('add preload script arguments are not supported');
-    }
-
     const cdpTargets = new Set<CdpTarget>(
       // TODO: The unique target can be in a non-top-level browsing context.
       // We need all the targets.
@@ -325,9 +320,9 @@ export class BrowsingContextProcessor {
     const cdpPreloadScripts: CdpPreloadScript[] = [];
 
     for (const cdpTarget of cdpTargets) {
-      const cdpPreloadScriptId = await cdpTarget.addPreloadScript(
-        // The spec provides a function, and CDP expects an evaluation.
-        `(${params.functionDeclaration})();`,
+      const cdpPreloadScriptId = await cdpTarget.addPreloadScriptWithChannels(
+        params.functionDeclaration,
+        params.arguments,
         params.sandbox
       );
       cdpPreloadScripts.push({
@@ -341,6 +336,7 @@ export class BrowsingContextProcessor {
         params.context ?? null,
         cdpPreloadScripts,
         params.functionDeclaration,
+        params.arguments,
         params.sandbox
       );
 

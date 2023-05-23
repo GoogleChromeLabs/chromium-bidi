@@ -18,6 +18,7 @@ import {expect} from 'chai';
 import * as sinon from 'sinon';
 
 import * as uuid from '../../../utils/uuid.js';
+import {Script} from '../../../protocol/protocol.js';
 
 import {CdpTarget} from './cdpTarget';
 import {PreloadScriptStorage, CdpPreloadScript} from './PreloadScriptStorage';
@@ -29,6 +30,7 @@ describe('PreloadScriptStorage', () => {
   let preloadScriptStorage: PreloadScriptStorage;
 
   let functionDeclaration: string;
+  let channels: Script.ChannelValue[] | undefined;
   let sandbox: string;
 
   let uuidStub: sinon.SinonStub;
@@ -42,6 +44,7 @@ describe('PreloadScriptStorage', () => {
     preloadScriptStorage = new PreloadScriptStorage();
 
     functionDeclaration = '() => {}';
+    channels = [];
     sandbox = 'MY_SANDBOX';
     cdpTargetId = 'TARGET_ID';
 
@@ -94,6 +97,7 @@ describe('PreloadScriptStorage', () => {
         context,
         [cdpPreloadScript1, cdpPreloadScript2],
         functionDeclaration,
+        channels,
         sandbox
       );
 
@@ -105,6 +109,7 @@ describe('PreloadScriptStorage', () => {
           cdpPreloadScripts: [cdpPreloadScript1, cdpPreloadScript2],
           contextId: context,
           functionDeclaration,
+          channels,
           sandbox,
         },
       ]);
@@ -117,6 +122,7 @@ describe('PreloadScriptStorage', () => {
         context,
         [cdpPreloadScript1],
         functionDeclaration,
+        channels,
         sandbox
       );
 
@@ -137,6 +143,7 @@ describe('PreloadScriptStorage', () => {
           cdpPreloadScripts: [cdpPreloadScript1, cdpPreloadScript2],
           contextId: context,
           functionDeclaration,
+          channels,
           sandbox,
         },
       ]);
@@ -147,6 +154,7 @@ describe('PreloadScriptStorage', () => {
         context,
         [cdpPreloadScript1],
         functionDeclaration,
+        channels,
         sandbox
       );
 
@@ -161,6 +169,7 @@ describe('PreloadScriptStorage', () => {
           id: MOCKED_UUID_1,
           cdpPreloadScripts: [],
           functionDeclaration,
+          channels,
           sandbox,
           contextId: context,
         },
@@ -172,6 +181,7 @@ describe('PreloadScriptStorage', () => {
         context,
         [cdpPreloadScript1, cdpPreloadScript2],
         functionDeclaration,
+        channels,
         sandbox
       );
 
@@ -202,6 +212,7 @@ describe('PreloadScriptStorage', () => {
           null,
           [cdpPreloadScript1],
           functionDeclaration,
+          channels,
           sandbox
         );
 
@@ -211,6 +222,7 @@ describe('PreloadScriptStorage', () => {
             cdpPreloadScripts: [cdpPreloadScript1],
             contextId: null,
             functionDeclaration,
+            channels,
             sandbox,
           },
         ]);
@@ -221,6 +233,7 @@ describe('PreloadScriptStorage', () => {
           null,
           [cdpPreloadScript1],
           functionDeclaration,
+          channels,
           sandbox
         );
         preloadScriptStorage.removeBiDiPreloadScripts(filter);

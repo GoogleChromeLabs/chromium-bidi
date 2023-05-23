@@ -26,6 +26,8 @@ export type BidiPreloadScript = {
   cdpPreloadScripts: CdpPreloadScript[];
   /** The script itself, in a format expected by the spec i.e. a function. */
   functionDeclaration: string;
+  /** Function declaration arguments (channels). */
+  channels?: Script.ChannelValue[];
   /** The script sandbox / world name. */
   sandbox?: string;
   /** Browsing context ID. */
@@ -109,6 +111,7 @@ export class PreloadScriptStorage {
     contextId: CommonDataTypes.BrowsingContext | null,
     cdpPreloadScripts: CdpPreloadScript[],
     functionDeclaration: string,
+    channels?: Script.ChannelValue[],
     sandbox?: string
   ): BidiPreloadScript {
     // Generate a random ID.
@@ -119,6 +122,7 @@ export class PreloadScriptStorage {
       contextId,
       cdpPreloadScripts,
       functionDeclaration,
+      channels,
       sandbox,
     };
 
