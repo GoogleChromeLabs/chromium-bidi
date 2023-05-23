@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
@@ -29,5 +30,5 @@ export default {
       crypto: 'crypto',
     },
   },
-  plugins: [nodeResolve(), commonjs(), terser()],
+  plugins: [nodePolyfills(), nodeResolve(), commonjs(), terser()],
 };
