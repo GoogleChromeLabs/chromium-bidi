@@ -29,10 +29,10 @@ async def test_channel_twoMessageEvents(websocket, context_id):
             "method": "script.callFunction",
             "params": {
                 # A small delay is needed to avoid a race condition.
-                "functionDeclaration": """(binding) => {
+                "functionDeclaration": """(channel) => {
                     setTimeout(() => {
-                        binding('MY_MESSAGE1');
-                        binding('MY_MESSAGE2');
+                        channel('MY_MESSAGE1');
+                        channel('MY_MESSAGE2');
                     }, 1);
                 }""",
                 "arguments": [{
@@ -93,10 +93,10 @@ async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
             "method": "script.callFunction",
             "params": {
                 # A small delay is needed to avoid a race condition.
-                "functionDeclaration": """(binding) => {
-                    binding('MESSAGE_BEFORE_EXEC_FINISHED');
+                "functionDeclaration": """(channel) => {
+                    channel('MESSAGE_BEFORE_EXEC_FINISHED');
                     setTimeout(() => {
-                        binding('MESSAGE_AFTER_EXEC_FINISHED');
+                        channel('MESSAGE_AFTER_EXEC_FINISHED');
                     }, 1);
                 }""",
                 "arguments": [{

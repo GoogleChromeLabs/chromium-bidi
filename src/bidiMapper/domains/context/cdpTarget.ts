@@ -18,6 +18,8 @@
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
+import {newChannelProxy} from '../script/channelProxy.js';
+import {uuidv4} from '../../../utils/uuid.js';
 import {LogManager} from '../log/logManager.js';
 import {RealmStorage} from '../script/realmStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
@@ -234,17 +236,40 @@ export class CdpTarget {
     channels?: Script.ChannelValue[],
     sandbox?: string
   ): Promise<Script.PreloadScript> {
-    if (channels === undefined) {
-      // The spec provides a function, and CDP expects an evaluation.
-      return this.addPreloadScript(`(${functionDeclaration})();`, sandbox);
-    }
-
     // TODO: Document.
-    const intermediateScript = `
-(${functionDeclaration})();
+    const createScriptWithChannels = (
+      functionDeclaration: string,
+      channels?: Script.ChannelValue[]
+    ): string => {
+      if (channels === undefined) {
+        // The spec provides a function, and CDP expects an evaluation.
+        return `(${functionDeclaration})();`;
+      }
+
+      const uuid = uuidv4();
+
+      // See: http://go/chrome-devtools:bootstrap-bindings-proposal
+      const intermediateScript = `
+      const channelProxy = (${newChannelProxy()})();
+      window['${uuid}'] = channelProxy.getMessage;
+      Object.defineProperty(window, '${uuid}', {enumerable: false});
+
+      const channelPost = [${channels
+        .map((channel) => `'${channel.value.channel}'`)
+        .join(', ')}];
+
+      // Yields: (...['channel_name_1', 'channel_name_2'].map(...))
+      (${functionDeclaration})(...channelPost.map((channel) => channelProxy.getSendMessageByChannelName.bind(null, channel)));
 `;
 
-    return this.addPreloadScript(intermediateScript, sandbox);
+      // TODO: Handle channels. Keep `uuid` somewhere, so that later long-poll mechanism can use it to hook the `channelProxy`.
+      return intermediateScript;
+    };
+
+    return this.addPreloadScript(
+      createScriptWithChannels(functionDeclaration, channels),
+      sandbox
+    );
   }
 
   /**

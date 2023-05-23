@@ -636,3 +636,63 @@ async def test_removePreloadScript_addAndRemoveIsNoop_secondRemoval_fails(
         'error': 'no such script',
         'message': f"No preload script with BiDi ID '{bidi_id}'"
     } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: fails")
+async def test_preload_script_channel(websocket, context_id, html):
+    await subscribe(websocket, "script.message")
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": """
+                (channel) => {
+                    setTimeout(() => {
+                        channel({'foo': 'bar', 'baz': {'1': 2}})
+                    }, 1);
+                }""",
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "channel_name",
+                        "serializationOptions": {
+                            "maxObjectDepth": 0
+                        },
+                    },
+                }, ],
+                "context": context_id,
+            }
+        })
+    assert result == {'script': ANY_STR}
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html(),
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    # Message event should happen before navigation.
+    result = await read_JSON_message(websocket)
+    assert result == AnyExtending({
+        "method": "script.message",
+        "params": {
+            "channel": "channel_name",
+            "data": {
+                "type": "object"
+            },
+            "source": {
+                "realm": ANY_STR,
+                "context": context_id,
+            },
+        }
+    })
+
+    # Assert navigation is finished.
+    result = await read_JSON_message(websocket)
+    assert result == AnyExtending({"id": command_id})
