@@ -320,7 +320,6 @@ export class NetworkRequest {
           protocol: this.#responseReceivedEvent.response.protocol,
           status: this.#responseReceivedEvent.response.status,
           statusText: this.#responseReceivedEvent.response.statusText,
-          // Check if this is correct.
           fromCache:
             this.#responseReceivedEvent.response.fromDiskCache ||
             this.#responseReceivedEvent.response.fromPrefetchCache ||
