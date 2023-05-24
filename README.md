@@ -210,7 +210,7 @@ output to the file `log.txt`:
 Running:
 
 ```sh
-npm test
+npm run unit
 ```
 
 ### E2E tests

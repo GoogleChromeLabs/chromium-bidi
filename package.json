@@ -21,6 +21,7 @@
     "server-headless": "wireit",
     "test": "wireit",
     "tsc": "wireit",
+    "unit": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "wireit": {
@@ -120,9 +121,8 @@
       ]
     },
     "test": {
-      "command": "mocha",
       "dependencies": [
-        "tsc"
+        "unit"
       ]
     },
     "tsc": {
@@ -134,6 +134,12 @@
       ],
       "output": [
         "lib/cjs/**"
+      ]
+    },
+    "unit": {
+      "command": "mocha",
+      "dependencies": [
+        "tsc"
       ]
     }
   },
