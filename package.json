@@ -94,7 +94,6 @@
     "server-headful": {
       "command": "./runBiDiServer.sh --headless=false",
       "files": [
-        "lib/cjs/bidiServer/index.js",
         "runBiDiServer.sh"
       ],
       "service": {
@@ -109,7 +108,6 @@
     "server-headless": {
       "command": "./runBiDiServer.sh --headless=true",
       "files": [
-        "lib/cjs/bidiServer/index.js",
         "runBiDiServer.sh"
       ],
       "service": {
