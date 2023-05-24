@@ -22,6 +22,7 @@
     "test": "wireit",
     "tsc": "wireit",
     "unit": "wireit",
+    "wpt": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "wireit": {
@@ -123,7 +124,8 @@
     "test": {
       "dependencies": [
         "unit",
-        "e2e"
+        "e2e",
+        "wpt"
       ]
     },
     "tsc": {
@@ -141,6 +143,15 @@
       "command": "mocha",
       "dependencies": [
         "tsc"
+      ]
+    },
+    "wpt": {
+      "command": "./runWPT.sh",
+      "files": [
+        "runWPT.sh"
+      ],
+      "dependencies": [
+        "rollup"
       ]
     }
   },
