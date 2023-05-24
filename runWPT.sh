@@ -87,9 +87,6 @@ else
 fi
 
 TEST="${*: -1}"
-if [ -z "${TEST}" ]; then
-  TEST="webdriver/tests/bidi/"
-fi
 
 echo "Running \"$TEST\" with \"$BROWSER_BIN\"..."
 

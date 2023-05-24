@@ -337,13 +337,13 @@ npm run build --watch
 #### 3. Run
 
 ```sh
-npm run wpt
+npm run wpt -- webdriver/tests/bidi/
 ```
 
 ### Update WPT expectations if needed
 
 ```sh
-UPDATE_EXPECTATIONS=true npm run wpt
+UPDATE_EXPECTATIONS=true npm run wpt -- webdriver/tests/bidi/
 ```
 
 ## How does it work?
