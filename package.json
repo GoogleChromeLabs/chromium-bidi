@@ -122,7 +122,8 @@
     },
     "test": {
       "dependencies": [
-        "unit"
+        "unit",
+        "e2e"
       ]
     },
     "tsc": {
