@@ -125,7 +125,7 @@ export class CdpTarget {
     try {
       // It is not guaranteed the commands can be finished before
       // `Runtime.runIfWaitingForDebugger` is called. However, it is safe to
-      // schedule it.
+      // schedule them.
       const initializationPromises = [];
       // Enable Network domain, if it is enabled globally.
       // TODO: enable Network domain for OOPiF targets.
@@ -208,8 +208,8 @@ export class CdpTarget {
         sandbox
       );
 
-      // TODO: Here can be a race condition with the page script, as the command
-      // above can be finished after ``Runtime.runIfWaitingForDebugger` is
+      // TODO: Here there could be a race condition with the page script, as the command
+      // above can be finished after `Runtime.runIfWaitingForDebugger` is
       // called.
       //
       // Upon attaching to a new target, run preload scripts on each execution
