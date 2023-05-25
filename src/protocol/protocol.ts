@@ -32,6 +32,7 @@ export interface EventResponse<MethodType, ParamsType> {
 export type BiDiCommand =
   | BrowsingContext.Command
   | CDP.Command
+  | Network.Command
   | Script.Command
   | Session.Command;
 
@@ -51,6 +52,7 @@ export namespace Message {
   export type CommandRequest = Pick<RawCommandRequest, 'id'> & BiDiCommand;
   export type CommandResponse = Pick<RawCommandRequest, 'id'> & ResultData;
 
+  export type EmptyCommand = never;
   export type EmptyParams = Record<string, never>;
   export type EmptyResult = {result: Record<string, never>};
 
@@ -60,6 +62,7 @@ export namespace Message {
     | BrowsingContext.Result
     | CDP.Result
     | ErrorResult
+    | Network.Result
     | Script.Result
     | Session.Result;
   // keep-sorted end
@@ -1018,9 +1021,14 @@ export namespace Log {
 }
 
 export namespace Network {
+  export type Command = Message.EmptyCommand;
+
+  export type Result = Message.EmptyResult;
+
   export type Event =
     | BeforeRequestSentEvent
     | ResponseCompletedEvent
+    | ResponseStartedEvent
     | FetchErrorEvent;
 
   export type BeforeRequestSentEvent = EventResponse<
@@ -1033,12 +1041,17 @@ export namespace Network {
     ResponseCompletedParams
   >;
 
+  export type ResponseStartedEvent = EventResponse<
+    EventNames.ResponseStartedEvent,
+    ResponseStartedParams
+  >;
+
   export type FetchErrorEvent = EventResponse<
     EventNames.FetchErrorEvent,
     FetchErrorParams
   >;
 
-  type Header = {
+  export type Header = {
     name: string;
     value?: string;
     binaryValue?: number[];
@@ -1074,6 +1087,8 @@ export namespace Network {
     responseEnd: number;
   };
 
+  export type Request = string;
+
   export type RequestData = {
     request: string;
     url: string;
@@ -1085,8 +1100,8 @@ export namespace Network {
     timings: FetchTimingInfo;
   };
 
-  export type BaseEventParams = {
-    context: string | null;
+  export type BaseParameters = {
+    context: CommonDataTypes.BrowsingContext | null;
     navigation: BrowsingContext.Navigation | null;
     redirectCount: number;
     request: RequestData;
@@ -1119,15 +1134,19 @@ export namespace Network {
     content: ResponseContent;
   };
 
-  export type BeforeRequestSentParams = BaseEventParams & {
+  export type BeforeRequestSentParams = BaseParameters & {
     initiator: Initiator;
   };
 
-  export type ResponseCompletedParams = BaseEventParams & {
+  export type ResponseCompletedParams = BaseParameters & {
     response: ResponseData;
   };
 
-  export type FetchErrorParams = BaseEventParams & {
+  export type ResponseStartedParams = BaseParameters & {
+    response: ResponseData;
+  };
+
+  export type FetchErrorParams = BaseParameters & {
     errorText: string;
   };
 
@@ -1135,8 +1154,9 @@ export namespace Network {
 
   export enum EventNames {
     BeforeRequestSentEvent = 'network.beforeRequestSent',
-    ResponseCompletedEvent = 'network.responseCompleted',
     FetchErrorEvent = 'network.fetchError',
+    ResponseStartedEvent = 'network.responseStarted',
+    ResponseCompletedEvent = 'network.responseCompleted',
   }
 }
 
