@@ -318,9 +318,7 @@ export namespace Script {
 
   const ChannelPropertiesSchema = zod.object({
     channel: ChannelSchema,
-    // TODO(#294): maxDepth: CommonDataTypes.MaxDepthSchema.optional(),
-    // See: https://github.com/w3c/webdriver-bidi/pull/361/files#r1141961142
-    maxDepth: zod.number().int().min(1).max(1).optional(),
+    serializationOptions: SerializationOptionsSchema.optional(),
     ownership: ResultOwnershipSchema.optional(),
   });
 
