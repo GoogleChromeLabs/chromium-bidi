@@ -7,6 +7,20 @@ on:
   pull_request:
   push:
     branches: 'main'
+  workflow_dispatch:
+    inputs:
+      # TODO(#361): Use.
+      auto-commit:
+        description: Whether to auto-commit WPT expectations
+        default: false
+        required: false
+        type: boolean
+      # TODO(#361): Use.
+      verbose:
+        description: Whether to enable verbose logging
+        default: false
+        required: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -46,6 +60,10 @@ jobs:
   wpt:
     name: ${{ matrix.kind }}-${{ matrix.head }}
     runs-on: ubuntu-latest
+    # Give GITHUB_TOKEN write permission to commit and push.
+    # Needed by stefanzweifel/git-auto-commit-action@v4.
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -94,7 +112,7 @@ jobs:
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
           xvfb-run --auto-servernum
-          ./runWPT.sh webdriver/tests/bidi/
+          npm run wpt -- webdriver/tests/bidi/
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: false
@@ -104,7 +122,7 @@ jobs:
         if: matrix.head == 'headless' && matrix.kind == 'mapper'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./runWPT.sh webdriver/tests/bidi/
+        run: npm run wpt -- webdriver/tests/bidi/
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: true
@@ -114,12 +132,19 @@ jobs:
         if: matrix.head == 'headless' && matrix.kind == 'chromedriver'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./runWPT.sh webdriver/tests/bidi/
+        run: npm run wpt -- webdriver/tests/bidi/
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true
           UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
+      - name: Auto commit WPT expectations
+        if: (success() || failure()) && github.event.inputs.auto-commit == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update WPT expectations for ${{ matrix.kind }}-${{ matrix.head }}
+          commit_options: -n --signoff
+          file_pattern: 'wpt-metadata/**/*.ini'
       - name: Generate HTML test report
         if: success() || failure()
         run: >
