@@ -57,6 +57,10 @@ export function generatePage() {
   }
   globalThis.document.documentElement.innerHTML = mapperPageSource;
 
+  console.log(
+    'BiDi-CDP Mapper is controlling this tab. Closing or reloading it will stop the BiDi process.'
+  );
+
   // Create main log containers in proper order.
   findOrCreateTypeLogContainer(LogType.system);
   findOrCreateTypeLogContainer(LogType.bidi);

@@ -123,26 +123,41 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
+      // It is not guaranteed the commands can be finished before
+      // `Runtime.runIfWaitingForDebugger` is called. However, it is safe to
+      // schedule it.
+      const initializationPromises = [];
       // Enable Network domain, if it is enabled globally.
       // TODO: enable Network domain for OOPiF targets.
       if (this.#eventManager.isNetworkDomainEnabled) {
-        await this.enableNetworkDomain();
+        initializationPromises.push(this.enableNetworkDomain());
       }
 
-      await this.#cdpClient.sendCommand('Runtime.enable');
-      await this.#cdpClient.sendCommand('Page.enable');
-      await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-        enabled: true,
-      });
-      await this.#cdpClient.sendCommand('Target.setAutoAttach', {
-        autoAttach: true,
-        waitForDebuggerOnStart: true,
-        flatten: true,
-      });
+      initializationPromises.push(
+        this.#cdpClient.sendCommand('Runtime.enable')
+      );
+      initializationPromises.push(this.#cdpClient.sendCommand('Page.enable'));
+      initializationPromises.push(
+        this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+          enabled: true,
+        })
+      );
+      initializationPromises.push(
+        this.#cdpClient.sendCommand('Target.setAutoAttach', {
+          autoAttach: true,
+          waitForDebuggerOnStart: true,
+          flatten: true,
+        })
+      );
 
-      await this.#loadPreloadScripts();
+      initializationPromises.push(this.#loadPreloadScripts());
 
+      // At this point Some initialization commands can be finished, some will
+      // be finished afterwards.
       await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
+
+      // Wait for all the initialization commands to be finished.
+      await Promise.all(initializationPromises);
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
       if (!this.#cdpClient.isCloseError(error)) {
@@ -193,6 +208,10 @@ export class CdpTarget {
         sandbox
       );
 
+      // TODO: Here can be a race condition with the page script, as the command
+      // above can be finished after ``Runtime.runIfWaitingForDebugger` is
+      // called.
+      //
       // Upon attaching to a new target, run preload scripts on each execution
       // context before `Runtime.runIfWaitingForDebugger`.
       //
