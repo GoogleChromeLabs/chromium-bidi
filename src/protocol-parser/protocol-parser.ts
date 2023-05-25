@@ -19,7 +19,6 @@
  * @fileoverview Provides parsing and validator for WebDriver BiDi protocol.
  * Parser types should match the `../protocol` types.
  */
-
 import {ZodType, z as zod} from 'zod';
 
 import {
@@ -271,9 +270,11 @@ export namespace Script {
   //   ?includeShadowTree: ("none" / "open" / "all") .default "none",
   // }
   const SerializationOptionsSchema = zod.object({
-    maxDomDepth: zod.union([zod.null(), zod.number().int().min(0)]).optional(),
+    maxDomDepth: zod
+      .union([zod.null(), zod.number().int().nonnegative()])
+      .optional(),
     maxObjectDepth: zod
-      .union([zod.null(), zod.number().int().min(0).max(MAX_INT)])
+      .union([zod.null(), zod.number().int().nonnegative().max(MAX_INT)])
       .optional(),
     includeShadowTree: zod.enum(['none', 'open', 'all']).optional(),
   });
@@ -487,8 +488,8 @@ export namespace BrowsingContext {
   //   ?width: (float .ge 0.0) .default 21.59,
   // }
   const PrintPageParametersSchema = zod.object({
-    height: zod.number().min(0.0).default(27.94).optional(),
-    width: zod.number().min(0.0).default(21.59).optional(),
+    height: zod.number().nonnegative().default(27.94).optional(),
+    width: zod.number().nonnegative().default(21.59).optional(),
   });
 
   // All units are in cm.
@@ -499,10 +500,10 @@ export namespace BrowsingContext {
   //   ?top: (float .ge 0.0) .default 1.0,
   // }
   const PrintMarginParametersSchema = zod.object({
-    bottom: zod.number().min(0.0).default(1.0).optional(),
-    left: zod.number().min(0.0).default(1.0).optional(),
-    right: zod.number().min(0.0).default(1.0).optional(),
-    top: zod.number().min(0.0).default(1.0).optional(),
+    bottom: zod.number().nonnegative().default(1.0).optional(),
+    left: zod.number().nonnegative().default(1.0).optional(),
+    right: zod.number().nonnegative().default(1.0).optional(),
+    top: zod.number().nonnegative().default(1.0).optional(),
   });
 
   /** @see https://w3c.github.io/webdriver/#dfn-parse-a-page-range */
