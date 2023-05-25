@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_STR
+from anys import ANY_DICT, ANY_STR, AnyWithEntries, Not
 from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree, goto_url,
                           read_JSON_message, send_JSON_command, subscribe,
                           wait_for_event)
@@ -866,6 +866,77 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
             "navigation": ANY_STR,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_createByUserAction_created(
+        websocket, context_id, html):
+    url = html("<a href='https://example.com' target='_blank'>new tab</a>")
+
+    await execute_command(
+        websocket, {
+            "id": 3,
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    await subscribe(websocket,
+                    ["browsingContext.contextCreated", "browsingContext.load"])
+
+    command_result = await execute_command(websocket, {
+        "method": "cdp.getSession",
+        "params": {
+            "context": context_id
+        }
+    })
+    cdp_session = command_result["cdpSession"]
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "cdpMethod": "Runtime.evaluate",
+                "cdpParams": {
+                    "expression": "document.querySelector('a').click();",
+                    "userGesture": True
+                },
+                "cdpSession": cdp_session
+            }
+        })
+
+    # New context is created.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.contextCreated",
+        "params": {
+            "context": Not(context_id),
+            # The context is not navigated yet.
+            "url": "about:blank",
+            "children": None,
+            "parent": None
+        }
+    }
+    new_context_id = response["params"]["context"]
+
+    # Click command is completed.
+    response = await read_JSON_message(websocket)
+    assert response == AnyWithEntries({"id": command_id, "result": ANY_DICT})
+
+    # New context is navigated.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": new_context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": "https://example.com/"
         }
     }
 
