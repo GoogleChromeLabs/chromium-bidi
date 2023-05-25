@@ -782,7 +782,8 @@ export namespace BrowsingContext {
     | CreateCommand
     | GetTreeCommand
     | NavigateCommand
-    | PrintCommand;
+    | PrintCommand
+    | ReloadCommand;
   export type Result =
     | CaptureScreenshotResult
     | CreateResult
@@ -848,6 +849,17 @@ export namespace BrowsingContext {
     };
   };
 
+  export type ReloadCommand = {
+    method: 'browsingContext.reload';
+    params: ReloadParameters;
+  };
+
+  export type ReloadParameters = {
+    context: CommonDataTypes.BrowsingContext;
+    ignoreCache?: boolean;
+    wait?: ReadinessState;
+  };
+
   export type CreateCommand = {
     method: 'browsingContext.create';
     params: CreateParameters;
@@ -864,7 +876,9 @@ export namespace BrowsingContext {
   };
 
   export type CreateResult = {
-    result: Info;
+    result: {
+      context: CommonDataTypes.BrowsingContext;
+    };
   };
 
   export type CloseCommand = {
@@ -1142,7 +1156,9 @@ export namespace CDP {
     cdpSession?: string;
   };
 
-  export type SendCommandResult = {result: unknown};
+  export type SendCommandResult = {
+    result: ProtocolMapping.Commands[keyof ProtocolMapping.Commands]['returnType'];
+  };
 
   export type GetSessionCommand = {
     method: 'cdp.getSession';

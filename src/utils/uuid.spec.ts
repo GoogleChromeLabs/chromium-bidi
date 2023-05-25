@@ -14,22 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {expect} from 'chai';
 
-import fs from 'fs';
+import {uuidv4} from './uuid.js';
 
-import {generateReport} from './htmlWptReportFormatter.mjs';
+// These tests do not run in the browser, therefore their value is limited.
+describe('uuidv4', () => {
+  it('should generate an UUID in the correct format', () => {
+    expect(uuidv4()).match(
+      /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
+    );
+  });
 
-function readReport(filePath) {
-  const rawReport = fs.readFileSync(filePath);
-  return JSON.parse(rawReport);
-}
-
-function getReportPath() {
-  return process.argv.slice(2)[0];
-}
-
-function getOutputPath() {
-  return process.argv.slice(2)[1];
-}
-
-fs.writeFileSync(getOutputPath(), generateReport(readReport(getReportPath())));
+  it('subsequent calls should yield different UUIDs', () => {
+    const id1 = uuidv4();
+    const id2 = uuidv4();
+    expect(id1).to.not.equal(id2);
+  });
+});

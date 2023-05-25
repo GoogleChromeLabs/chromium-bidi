@@ -65,7 +65,7 @@ export function groupTests(tests) {
     }
 
     let curPath = '';
-    for (let part of parts) {
+    for (const part of parts) {
       curPath = `${curPath}/${part}`;
       if (!currentPathMap.children.has(part)) {
         currentPathMap.children.set(part, {
@@ -165,21 +165,17 @@ function generateTestReport(map) {
 }
 
 function generateSubtestReport(subtest) {
-  return `
-      <div class="divider"></div>
+  return `<div class="divider"></div>
       <div class="test-card">
         <p class="non-collapsible-item path ${
           subtest.status === 'PASS' ? 'pass' : 'fail'
         }">
           ${escapeHtml(subtest.name ?? subtest.path)} ${
-            subtest.message
-              ? `<br /><small>${escapeHtml(subtest.message)}</small>`
-              : ''
-          }
+    subtest.message ? `<br /><small>${escapeHtml(subtest.message)}</small>` : ''
+  }
           <span class="stat"><b>${escapeHtml(subtest.status)}</b></span>
         </p>
-      </div>
-`;
+      </div>`;
 }
 
 export function generateReport(rawReport) {

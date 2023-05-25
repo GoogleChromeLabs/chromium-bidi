@@ -30,6 +30,7 @@ import {Network} from '../../../protocol/protocol.js';
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';
   requestId: string;
+  #servedFromCache = false;
   #eventManager: IEventManager;
   #requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent | undefined;
   #requestWillBeSentExtraInfoEvent:
@@ -88,14 +89,15 @@ export class NetworkRequest {
     }
     this.#responseReceivedEvent = responseReceivedEvent;
     if (
-      responseReceivedEvent.hasExtraInfo !== true &&
+      !responseReceivedEvent.hasExtraInfo &&
       !this.#beforeRequestSentDeferred.isFinished
     ) {
       this.#beforeRequestSentDeferred.resolve();
     }
     if (
-      responseReceivedEvent.hasExtraInfo !== true ||
-      this.#responseReceivedExtraInfoEvent !== undefined
+      !responseReceivedEvent.hasExtraInfo ||
+      this.#responseReceivedExtraInfoEvent !== undefined ||
+      this.#servedFromCache
     ) {
       this.#responseReceivedDeferred.resolve();
     }
@@ -113,6 +115,18 @@ export class NetworkRequest {
     if (this.#responseReceivedEvent !== undefined) {
       this.#responseReceivedDeferred.resolve();
     }
+  }
+
+  onServedFromCache() {
+    if (this.#requestWillBeSentEvent !== undefined) {
+      this.#beforeRequestSentDeferred.resolve();
+    }
+
+    if (this.#responseReceivedEvent !== undefined) {
+      this.#responseReceivedDeferred.resolve();
+    }
+
+    this.#servedFromCache = true;
   }
 
   onLoadingFailedEvent(
@@ -309,7 +323,8 @@ export class NetworkRequest {
           // Check if this is correct.
           fromCache:
             this.#responseReceivedEvent.response.fromDiskCache ||
-            this.#responseReceivedEvent.response.fromPrefetchCache,
+            this.#responseReceivedEvent.response.fromPrefetchCache ||
+            this.#servedFromCache,
           // TODO: implement.
           headers: this.#getHeaders(
             this.#responseReceivedEvent.response.headers

@@ -47,7 +47,7 @@ export class BrowsingContextImpl {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
 
-  readonly #defers = {
+  readonly #deferreds = {
     documentInitialized: new Deferred<void>(),
     Page: {
       navigatedWithinDocument:
@@ -62,7 +62,7 @@ export class BrowsingContextImpl {
   #url = 'about:blank';
   readonly #eventManager: IEventManager;
   readonly #realmStorage: RealmStorage;
-  #loaderId: string | null = null;
+  #loaderId?: Protocol.Network.LoaderId;
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm: Realm | undefined;
   readonly #logger?: LoggerFn;
@@ -125,7 +125,7 @@ export class BrowsingContextImpl {
   /**
    * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
    */
-  get navigableId(): string | null {
+  get navigableId(): string | undefined {
     return this.#loaderId;
   }
 
@@ -219,7 +219,7 @@ export class BrowsingContextImpl {
   }
 
   async awaitLoaded() {
-    await this.#defers.Page.lifecycleEvent.load;
+    await this.#deferreds.Page.lifecycleEvent.load;
   }
 
   awaitUnblocked(): Promise<void> {
@@ -256,7 +256,7 @@ export class BrowsingContextImpl {
 
   serializeToBidiValue(
     maxDepth = 0,
-    addParentFiled = true
+    addParentField = true
   ): BrowsingContext.Info {
     return {
       context: this.#id,
@@ -267,7 +267,7 @@ export class BrowsingContextImpl {
               c.serializeToBidiValue(maxDepth - 1, false)
             )
           : null,
-      ...(addParentFiled ? {parent: this.#parentId} : {}),
+      ...(addParentField ? {parent: this.#parentId} : {}),
     };
   }
 
@@ -305,7 +305,7 @@ export class BrowsingContextImpl {
         }
 
         this.#url = params.url;
-        this.#defers.Page.navigatedWithinDocument.resolve(params);
+        this.#deferreds.Page.navigatedWithinDocument.resolve(params);
       }
     );
 
@@ -322,29 +322,26 @@ export class BrowsingContextImpl {
         // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
         const timestamp = new Date().getTime();
 
-        if (params.name === 'init') {
-          this.#documentChanged(params.loaderId);
-          this.#defers.documentInitialized.resolve();
-        }
-
-        if (params.name === 'commit') {
-          this.#loaderId = params.loaderId;
-          return;
-        }
-
-        if (params.loaderId !== this.#loaderId) {
-          return;
-        }
-
         switch (params.name) {
+          case 'init':
+            this.#documentChanged(params.loaderId);
+            this.#deferreds.documentInitialized.resolve();
+            break;
+
+          case 'commit':
+            this.#loaderId = params.loaderId;
+            break;
+
           case 'DOMContentLoaded':
-            this.#defers.Page.lifecycleEvent.DOMContentLoaded.resolve(params);
+            this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.resolve(
+              params
+            );
             this.#eventManager.registerEvent(
               {
                 method: BrowsingContext.EventNames.DomContentLoadedEvent,
                 params: {
                   context: this.id,
-                  navigation: this.#loaderId,
+                  navigation: this.#loaderId ?? null,
                   timestamp,
                   url: this.#url,
                 },
@@ -354,13 +351,13 @@ export class BrowsingContextImpl {
             break;
 
           case 'load':
-            this.#defers.Page.lifecycleEvent.load.resolve(params);
+            this.#deferreds.Page.lifecycleEvent.load.resolve(params);
             this.#eventManager.registerEvent(
               {
                 method: BrowsingContext.EventNames.LoadEvent,
                 params: {
                   context: this.id,
-                  navigation: this.#loaderId,
+                  navigation: this.#loaderId ?? null,
                   timestamp,
                   url: this.#url,
                 },
@@ -368,6 +365,10 @@ export class BrowsingContextImpl {
               this.id
             );
             break;
+        }
+
+        if (params.loaderId !== this.#loaderId) {
+          return;
         }
       }
     );
@@ -439,34 +440,49 @@ export class BrowsingContextImpl {
   #documentChanged(loaderId?: string) {
     // Same document navigation.
     if (loaderId === undefined || this.#loaderId === loaderId) {
-      if (this.#defers.Page.navigatedWithinDocument.isFinished) {
-        this.#defers.Page.navigatedWithinDocument =
+      if (this.#deferreds.Page.navigatedWithinDocument.isFinished) {
+        this.#deferreds.Page.navigatedWithinDocument =
           new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
+      } else {
+        this.#logger?.(
+          LogType.browsingContexts,
+          'Document changed (navigatedWithinDocument)'
+        );
       }
       return;
     }
 
-    if (this.#defers.documentInitialized.isFinished) {
-      this.#defers.documentInitialized = new Deferred<void>();
-    } else {
-      this.#logger?.(LogType.browsingContexts, 'Document changed');
-    }
-
-    if (this.#defers.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
-      this.#defers.Page.lifecycleEvent.DOMContentLoaded =
-        new Deferred<Protocol.Page.LifecycleEventEvent>();
-    } else {
-      this.#logger?.(LogType.browsingContexts, 'Document changed');
-    }
-
-    if (this.#defers.Page.lifecycleEvent.load.isFinished) {
-      this.#defers.Page.lifecycleEvent.load =
-        new Deferred<Protocol.Page.LifecycleEventEvent>();
-    } else {
-      this.#logger?.(LogType.browsingContexts, 'Document changed');
-    }
+    this.#resetDeferredsIfFinished();
 
     this.#loaderId = loaderId;
+  }
+
+  #resetDeferredsIfFinished() {
+    if (this.#deferreds.documentInitialized.isFinished) {
+      this.#deferreds.documentInitialized = new Deferred<void>();
+    } else {
+      this.#logger?.(
+        LogType.browsingContexts,
+        'Document changed (document initialized)'
+      );
+    }
+
+    if (this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
+      this.#deferreds.Page.lifecycleEvent.DOMContentLoaded =
+        new Deferred<Protocol.Page.LifecycleEventEvent>();
+    } else {
+      this.#logger?.(
+        LogType.browsingContexts,
+        'Document changed (DOMContentLoaded)'
+      );
+    }
+
+    if (this.#deferreds.Page.lifecycleEvent.load.isFinished) {
+      this.#deferreds.Page.lifecycleEvent.load =
+        new Deferred<Protocol.Page.LifecycleEventEvent>();
+    } else {
+      this.#logger?.(LogType.browsingContexts, 'Document changed (load)');
+    }
   }
 
   async navigate(
@@ -488,7 +504,6 @@ export class BrowsingContextImpl {
 
     this.#documentChanged(cdpNavigateResult.loaderId);
 
-    // Wait for `wait` condition.
     switch (wait) {
       case 'none':
         break;
@@ -496,28 +511,56 @@ export class BrowsingContextImpl {
       case 'interactive':
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.#defers.Page.navigatedWithinDocument;
+          await this.#deferreds.Page.navigatedWithinDocument;
         } else {
-          await this.#defers.Page.lifecycleEvent.DOMContentLoaded;
+          await this.#deferreds.Page.lifecycleEvent.DOMContentLoaded;
         }
         break;
 
       case 'complete':
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.#defers.Page.navigatedWithinDocument;
+          await this.#deferreds.Page.navigatedWithinDocument;
         } else {
-          await this.#defers.Page.lifecycleEvent.load;
+          await this.awaitLoaded();
         }
         break;
     }
 
     return {
       result: {
-        navigation: cdpNavigateResult.loaderId || null,
+        navigation: cdpNavigateResult.loaderId ?? null,
         url,
       },
     };
+  }
+
+  async reload(
+    ignoreCache: boolean,
+    wait: BrowsingContext.ReadinessState
+  ): Promise<Message.EmptyResult> {
+    await this.awaitUnblocked();
+
+    await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
+      ignoreCache,
+    });
+
+    this.#resetDeferredsIfFinished();
+
+    switch (wait) {
+      case 'none':
+        break;
+
+      case 'interactive':
+        await this.#deferreds.Page.lifecycleEvent.DOMContentLoaded;
+        break;
+
+      case 'complete':
+        await this.awaitLoaded();
+        break;
+    }
+
+    return {result: {}};
   }
 
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {

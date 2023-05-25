@@ -1,10 +1,10 @@
 {
   "name": "chromium-bidi",
-  "version": "0.4.9",
+  "version": "0.4.10",
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "scripts": {
     "build": "wireit",
-    "clean": "rimraf lib .wireit",
+    "clean": "rimraf lib .eslintcache .wireit",
     "coverage": "nyc mocha",
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
@@ -21,7 +21,9 @@
     "server-headless": "wireit",
     "test": "wireit",
     "tsc": "wireit",
-    "yapf": "yapf --in-place --parallel --recursive --exclude=wpt examples/ tests/"
+    "unit": "wireit",
+    "wpt": "wireit",
+    "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "wireit": {
     "build": {
@@ -34,12 +36,20 @@
       "command": "python3 -m pytest",
       "dependencies": [
         "server-headful"
+      ],
+      "files": [
+        "pytest.ini",
+        "tests/**/*.py"
       ]
     },
     "e2e-headless": {
       "command": "python3 -m pytest",
       "dependencies": [
         "server-headless"
+      ],
+      "files": [
+        "pytest.ini",
+        "tests/**/*.py"
       ]
     },
     "eslint": {
@@ -53,7 +63,7 @@
         ".eslintcache"
       ],
       "dependencies": [
-        "build"
+        "tsc"
       ]
     },
     "format": {
@@ -84,7 +94,7 @@
     "server-headful": {
       "command": "./runBiDiServer.sh --headless=false",
       "files": [
-        "lib/cjs/bidiServer/index.js"
+        "runBiDiServer.sh"
       ],
       "service": {
         "readyWhen": {
@@ -92,13 +102,13 @@
         }
       },
       "dependencies": [
-        "build"
+        "rollup"
       ]
     },
     "server-headless": {
       "command": "./runBiDiServer.sh --headless=true",
       "files": [
-        "lib/cjs/bidiServer/index.js"
+        "runBiDiServer.sh"
       ],
       "service": {
         "readyWhen": {
@@ -106,14 +116,15 @@
         }
       },
       "dependencies": [
-        "build"
+        "rollup"
       ]
     },
     "test": {
       "dependencies": [
-        "build"
-      ],
-      "command": "mocha"
+        "unit",
+        "e2e",
+        "wpt"
+      ]
     },
     "tsc": {
       "command": "tsc --build src/tsconfig.json --pretty",
@@ -125,10 +136,27 @@
       "output": [
         "lib/cjs/**"
       ]
+    },
+    "unit": {
+      "command": "mocha",
+      "dependencies": [
+        "tsc"
+      ]
+    },
+    "wpt": {
+      "command": "./runWPT.sh",
+      "files": [
+        "runWPT.sh"
+      ],
+      "dependencies": [
+        "rollup"
+      ]
     }
   },
   "files": [
-    "lib"
+    "lib",
+    "!lib/**/*.spec.*",
+    ".browser"
   ],
   "repository": {
     "type": "git",
@@ -152,7 +180,6 @@
     "@types/mocha": "10.0.1",
     "@types/node": "18.16.0",
     "@types/sinon": "10.0.14",
-    "@types/uuid": "^9.0.1",
     "@types/websocket": "1.0.5",
     "@types/ws": "8.5.4",
     "@typescript-eslint/eslint-plugin": "5.59.2",
@@ -168,6 +195,7 @@
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-mocha": "10.1.0",
     "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-promise": "6.1.1",
     "gts": "3.1.1",
     "mocha": "10.2.0",
     "nyc": "15.1.0",

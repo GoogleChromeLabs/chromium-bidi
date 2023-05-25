@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {v4 as uuidv4} from 'uuid';
-
+import {uuidv4} from '../../../utils/uuid.js';
 import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 
 import {CdpTarget} from './cdpTarget.js';
@@ -78,18 +77,18 @@ export class PreloadScriptStorage {
     }
 
     return [...this.#scripts].filter((script) => {
-      if (filter?.id !== undefined && filter?.id !== script.id) {
+      if (filter.id !== undefined && filter.id !== script.id) {
         return false;
       }
       if (
-        filter?.contextId !== undefined &&
-        filter?.contextId !== script.contextId
+        filter.contextId !== undefined &&
+        filter.contextId !== script.contextId
       ) {
         return false;
       }
       if (
-        filter?.contextIds !== undefined &&
-        !filter?.contextIds.includes(script.contextId)
+        filter.contextIds !== undefined &&
+        !filter.contextIds.includes(script.contextId)
       ) {
         return false;
       }
@@ -153,13 +152,13 @@ export class PreloadScriptStorage {
         (cdpPreloadScript) => {
           if (
             filter?.targetId !== undefined &&
-            filter?.targetId !== cdpPreloadScript.target.targetId
+            filter.targetId !== cdpPreloadScript.target.targetId
           ) {
             return true;
           }
           if (
             filter?.sessionId !== undefined &&
-            filter?.sessionId !== cdpPreloadScript.target.cdpSessionId
+            filter.sessionId !== cdpPreloadScript.target.cdpSessionId
           ) {
             return true;
           }

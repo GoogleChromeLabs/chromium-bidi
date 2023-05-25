@@ -19,13 +19,13 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 
-import {CdpConnection} from './cdpConnection.js';
+import {CdpConnection, CloseError} from './cdpConnection.js';
 
-type Mapping = {
+type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
 };
 
-export class CdpClient extends EventEmitter<Mapping> {
+export class CdpClient extends EventEmitter<CdpEvents> {
   #cdpConnection: CdpConnection;
   #sessionId: string | null;
 
@@ -36,8 +36,8 @@ export class CdpClient extends EventEmitter<Mapping> {
   }
 
   /**
-   * Creates a new CDP client object that communicates with the browser using a given
-   * transport mechanism.
+   * Creates a new CDP client object that communicates with the browser using a
+   * given transport mechanism.
    * @param transport A transport object that will be used to send and receive raw CDP messages.
    * @return A connected CDP client object.
    */
@@ -49,7 +49,8 @@ export class CdpClient extends EventEmitter<Mapping> {
   }
 
   /**
-   * Returns command promise, which will be resolved with the command result after receiving CDP result.
+   * Returns a command promise, which will be resolved with the command result
+   * after receiving the result from CDP.
    * @param method Name of the CDP command to call.
    * @param params Parameters to pass to the CDP command.
    */
@@ -59,5 +60,9 @@ export class CdpClient extends EventEmitter<Mapping> {
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']> {
     const param = params[0];
     return this.#cdpConnection.sendCommand(method, param, this.#sessionId);
+  }
+
+  isCloseError(error: unknown): boolean {
+    return error instanceof CloseError;
   }
 }

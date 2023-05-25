@@ -317,15 +317,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
     new_context_id = command_result['result']['context']
 
     # Assert command done.
-    assert command_result == {
-        "id": 9,
-        "result": {
-            'context': new_context_id,
-            'parent': None,
-            'children': [],
-            'url': 'about:blank'
-        }
-    }
+    assert command_result == {"id": 9, "result": {'context': new_context_id}}
 
     # Assert "browsingContext.contextCreated" event emitted.
     assert {
@@ -733,56 +725,152 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
-async def test_browsingContext_type_textTyped():
-    pass
+async def test_browsingContext_reload_waitNone(websocket, context_id, html):
+    url = html()
+
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
+
+    await goto_url(websocket, context_id, url)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "context": context_id,
+                "wait": "none",
+            }
+        })
+
+    # Assert command done.
+    response = await read_JSON_message(websocket)
+    assert response["result"] == {}
+
+    # Wait for `browsingContext.load` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    # Wait for `browsingContext.domContentLoaded` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
-async def test_browsingContext_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted(
-):
-    pass
+async def test_browsingContext_reload_waitInteractive(websocket, context_id,
+                                                      html):
+    url = html()
+
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
+
+    await goto_url(websocket, context_id, url)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "context": context_id,
+                "wait": "interactive",
+            }
+        })
+
+    # Wait for `browsingContext.load` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    # Wait for `browsingContext.domContentLoaded` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    # Assert command done.
+    response = await read_JSON_message(websocket)
+    assert response["result"] == {}
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
-async def test_browsingContext_waitForSelector_success():
-    pass
+async def test_browsingContext_reload_waitComplete(websocket, context_id,
+                                                   html):
+    url = html()
+
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
+
+    await goto_url(websocket, context_id, url)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "context": context_id,
+                "wait": "complete",
+            }
+        })
+
+    # Wait for `browsingContext.load` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    # Assert command done.
+    response = await read_JSON_message(websocket)
+    assert response["result"] == {}
+
+    # Wait for `browsingContext.domContentLoaded` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
-async def test_browsingContext_waitForSelector_success_slow():
-    # 1. Wait for element which is not on the page.
-    # 2. Assert element not found.
-    # 3. Add element to the page.
-    # 4. Wait for newly created element.
-    # 5. Assert element found.
-    pass
-
-
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
-async def test_browsingContext_waitForHiddenSelector_success():
-    pass
-
-
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
-async def test_browsingContext_waitForSelectorWithMinimumTimeout_failedWithTimeout(
-):
-    pass
-
-
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
-async def test_browsingContext_waitForSelectorWithMissingElement_failedWithTimeout_slow(
-):
-    pass
-
-
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
-async def test_browsingContext_clickElement_clickProcessed():
+@pytest.mark.skip(reason="TODO: Not Implemented")
+async def test_browsingContext_ignoreCache():
     pass

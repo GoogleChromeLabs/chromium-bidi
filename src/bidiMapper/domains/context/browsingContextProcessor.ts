@@ -155,7 +155,9 @@ export class BrowsingContextProcessor {
       sessionId,
       this.#realmStorage,
       this.#eventManager,
-      this.#preloadScriptStorage
+      this.#preloadScriptStorage,
+      this.#browsingContextStorage,
+      this.#logger
     );
 
     if (maybeContext) {
@@ -218,7 +220,8 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
     const browserCdpClient = this.#cdpConnection.browserClient();
-    let referenceContext = undefined;
+
+    let referenceContext: BrowsingContextImpl | undefined;
     if (params.referenceContext !== undefined) {
       referenceContext = this.#browsingContextStorage.getContext(
         params.referenceContext
@@ -230,10 +233,22 @@ export class BrowsingContextProcessor {
       }
     }
 
-    const result = await browserCdpClient.sendCommand('Target.createTarget', {
-      url: 'about:blank',
-      newWindow: params.type === 'window',
-    });
+    let result: Protocol.Target.CreateTargetResponse;
+
+    switch (params.type) {
+      case 'tab':
+        result = await browserCdpClient.sendCommand('Target.createTarget', {
+          url: 'about:blank',
+          newWindow: false,
+        });
+        break;
+      case 'window':
+        result = await browserCdpClient.sendCommand('Target.createTarget', {
+          url: 'about:blank',
+          newWindow: true,
+        });
+        break;
+    }
 
     // Wait for the new tab to be loaded to avoid race conditions in the
     // `browsingContext` events, when the `browsingContext.domContentLoaded` and
@@ -245,7 +260,9 @@ export class BrowsingContextProcessor {
     await context.awaitLoaded();
 
     return {
-      result: context.serializeToBidiValue(1),
+      result: {
+        context: context.id,
+      },
     };
   }
 
@@ -254,10 +271,15 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.NavigateResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
 
-    return context.navigate(
-      params.url,
-      params.wait === undefined ? 'none' : params.wait
-    );
+    return context.navigate(params.url, params.wait ?? 'none');
+  }
+
+  process_browsingContext_reload(
+    params: BrowsingContext.ReloadParameters
+  ): Promise<Message.EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+
+    return context.reload(params.ignoreCache ?? false, params.wait ?? 'none');
   }
 
   async process_browsingContext_captureScreenshot(
