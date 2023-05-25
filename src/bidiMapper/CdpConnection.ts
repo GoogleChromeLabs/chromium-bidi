@@ -19,32 +19,11 @@
  * @fileoverview CDP interfaces and types that BiDi Mapper expects.
  */
 
-import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
-
-import {EventEmitter} from '../utils/EventEmitter.js';
-
-type CdpEvents = {
-  [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
-};
+import {ICdpClient} from '../cdp/cdpClient.js';
 
 export interface CdpConnection {
-  browserClient(): CdpClient;
-  getCdpClient(sessionId: string): CdpClient;
+  browserClient(): ICdpClient;
+  getCdpClient(sessionId: string): ICdpClient;
 }
 
-export interface CdpClient extends EventEmitter<CdpEvents> {
-  /**
-   * Provides an unique way to detect if an error was caused by the closure of a
-   * Target or Session.
-   *
-   * @example
-   * During the creation of a subframe we navigate the main frame.
-   * The subframe Target is closed while initialized commands are in-flight.
-   * In this case we want to swallow the thrown error.
-   */
-  isCloseError(err: unknown): boolean;
-  sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
-    method: CdpMethod,
-    ...params: ProtocolMapping.Commands[CdpMethod]['paramsType']
-  ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']>;
-}
+export {ICdpClient as CdpClient};
