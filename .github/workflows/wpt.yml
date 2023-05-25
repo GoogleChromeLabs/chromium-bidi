@@ -16,7 +16,7 @@ on:
         type: boolean
       tests:
         description: Tests to run (e.g. 'network/combined/')
-        required: true
+        required: false
         type: string
       verbose:
         description: Verbose logging
@@ -173,6 +173,6 @@ jobs:
             out
 
 env:
-  DEBUG: bidiServer:log
+  DEBUG: 'bidiServer:log,bidiMapper:mapperDebug:*'
   FORCE_COLOR: 3
   PIP_DISABLE_PIP_VERSION_CHECK: 1
