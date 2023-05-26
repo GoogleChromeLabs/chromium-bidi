@@ -18,6 +18,7 @@
 import {
   BrowsingContext,
   CDP,
+  Input,
   Message,
   Script,
   Session,
@@ -247,6 +248,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         return this.#contextProcessor.process_script_disown(
           this.#parser.parseDisownParams(commandData.params)
         );
+
+      case 'input.performActions':
+        throw new Message.UnsupportedOperationException('Not yet supported');
+      case 'input.releaseActions':
+        throw new Message.UnsupportedOperationException('Not yet supported');
 
       case 'cdp.sendCommand':
         return this.#contextProcessor.process_cdp_sendCommand(
