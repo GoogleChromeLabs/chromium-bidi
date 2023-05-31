@@ -16,9 +16,9 @@
  */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import {ITransport} from '../utils/transport.js';
+import type {ITransport} from '../utils/transport.js';
 
-import {CloseError, CdpClient} from './cdpClient.js';
+import {CloseError, CdpClient, ICdpClient} from './cdpClient.js';
 import {CdpMessage} from './cdpMessage.js';
 
 interface CdpCallbacks {
@@ -27,11 +27,16 @@ interface CdpCallbacks {
   error: Error;
 }
 
+export interface ICdpConnection {
+  browserClient(): ICdpClient;
+  getCdpClient(sessionId: string): ICdpClient;
+}
+
 /**
  * Represents a high-level CDP connection to the browser backend.
  * Manages a CdpClient instance for each active CDP session.
  */
-export class CdpConnection {
+export class CdpConnection implements ICdpConnection {
   readonly #transport: ITransport;
 
   /** The CdpClient object attached to the root browser session. */
