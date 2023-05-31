@@ -296,7 +296,7 @@ export class NetworkRequest {
           fromCache:
             (this.#responseReceivedEvent.response.fromDiskCache ||
               this.#responseReceivedEvent.response.fromPrefetchCache) ??
-            false,
+            this.#servedFromCache,
           headers: NetworkRequest.#getHeaders(
             this.#responseReceivedEvent.response.headers
           ),
