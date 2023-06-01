@@ -579,15 +579,37 @@ export class BrowsingContextImpl {
     // This is needed because the screenshot gets blocked until the active tab gets focus.
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
 
-    const {cssContentSize: clip} = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.getLayoutMetrics'
-    );
+    let clip: Protocol.DOM.Rect;
+
+    if (this.isTopLevelContext()) {
+      clip = (
+        await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics')
+      ).cssContentSize;
+    } else {
+      const {
+        result: {value: iframeDocRect},
+      } = await this.#cdpTarget.cdpClient.sendCommand(
+        'Runtime.callFunctionOn',
+        {
+          functionDeclaration: String(() => {
+            const docRect =
+              globalThis.document.documentElement.getBoundingClientRect();
+            return JSON.stringify({
+              x: docRect.x,
+              y: docRect.y,
+              width: docRect.width,
+              height: docRect.height,
+            });
+          }),
+          executionContextId: this.#defaultRealm.executionContextId,
+        }
+      );
+      clip = JSON.parse(iframeDocRect);
+    }
 
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
       {
-        format: 'png',
-        captureBeyondViewport: true,
         clip: {
           ...clip,
           scale: 1.0,
