@@ -66,6 +66,7 @@ export class BrowsingContextImpl {
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm: Realm | undefined;
   readonly #logger?: LoggerFn;
+  #oopif = false;
 
   private constructor(
     cdpTarget: CdpTarget,
@@ -188,6 +189,16 @@ export class BrowsingContextImpl {
    */
   isTopLevelContext(): boolean {
     return this.#parentId === null;
+  }
+
+  /** Returns true if this is an out-of-process iframe. */
+  isOOPIF(): boolean {
+    return this.#oopif;
+  }
+
+  /** Sets the out-of-process iframe flag to true.  */
+  setOOPIF() {
+    this.#oopif = true;
   }
 
   get top(): BrowsingContextImpl {
