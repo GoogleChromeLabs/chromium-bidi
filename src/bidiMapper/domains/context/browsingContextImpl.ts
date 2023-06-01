@@ -586,6 +586,12 @@ export class BrowsingContextImpl {
   }
 
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {
+    if (this.isOOPIF()) {
+      throw new Message.UnsupportedOperationException(
+        'Cannot take screenshot of an out-of-process iframe.'
+      );
+    }
+
     // XXX: Focus the original tab after the screenshot is taken.
     // This is needed because the screenshot gets blocked until the active tab gets focus.
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
