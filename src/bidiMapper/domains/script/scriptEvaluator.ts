@@ -99,10 +99,8 @@ export class ScriptEvaluator {
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
-    if (![0, null, undefined].includes(serializationOptions.maxDomDepth))
-      throw new Error(
-        'serializationOptions.maxDomDepth other than 0 or null is not supported'
-      );
+    const additionalParameters =
+      this.#getAdditionalSerializationParameters(serializationOptions);
 
     const cdpEvaluateResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
@@ -112,12 +110,14 @@ export class ScriptEvaluator {
         awaitPromise,
         serializationOptions: {
           serialization: 'deep',
+          additionalParameters,
           ...(serializationOptions.maxObjectDepth === undefined ||
           serializationOptions.maxObjectDepth === null
             ? {}
             : {maxDepth: serializationOptions.maxObjectDepth}),
         },
-      }
+        // XXX: remove `as any` after crrev.com/c/4555602 is merged.
+      } as any
     );
 
     if (cdpEvaluateResult.exceptionDetails) {
@@ -141,6 +141,23 @@ export class ScriptEvaluator {
     };
   }
 
+  #getAdditionalSerializationParameters(
+    serializationOptions: Script.SerializationOptions
+  ) {
+    const additionalParameters: Record<string, number | string> = {};
+    if (serializationOptions.maxDomDepth !== undefined) {
+      additionalParameters['maxNodeDepth'] =
+        serializationOptions.maxDomDepth === null
+          ? 1000
+          : serializationOptions.maxDomDepth;
+    }
+    if (serializationOptions.includeShadowTree !== undefined) {
+      additionalParameters['includeShadowTree'] =
+        serializationOptions.includeShadowTree;
+    }
+    return additionalParameters;
+  }
+
   async callFunction(
     realm: Realm,
     functionDeclaration: string,
@@ -150,11 +167,6 @@ export class ScriptEvaluator {
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
-    if (![0, null, undefined].includes(serializationOptions.maxDomDepth))
-      throw new Error(
-        'serializationOptions.maxDomDepth other than 0 or null is not supported'
-      );
-
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -173,6 +185,9 @@ export class ScriptEvaluator {
       ))
     );
 
+    const additionalParameters =
+      this.#getAdditionalSerializationParameters(serializationOptions);
+
     let cdpCallFunctionResult: Protocol.Runtime.CallFunctionOnResponse;
     try {
       cdpCallFunctionResult = await realm.cdpClient.sendCommand(
@@ -183,13 +198,15 @@ export class ScriptEvaluator {
           arguments: thisAndArgumentsList, // this, arguments.
           serializationOptions: {
             serialization: 'deep',
+            additionalParameters,
             ...(serializationOptions.maxObjectDepth === undefined ||
             serializationOptions.maxObjectDepth === null
               ? {}
               : {maxDepth: serializationOptions.maxObjectDepth}),
           },
           executionContextId: realm.executionContextId,
-        }
+          // TODO XXX: remove `as any` after crrev.com/c/4555602 is merged.
+        } as any
       );
     } catch (e: any) {
       // Heuristic to determine if the problem is in the argument.
