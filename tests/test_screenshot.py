@@ -18,8 +18,8 @@ import io
 import pytest
 from anys import ANY_STR
 from PIL import Image, ImageChops
-from test_helpers import (execute_command, goto_url, read_JSON_message,
-                          send_JSON_command)
+from test_helpers import (execute_command, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command)
 
 
 def assert_images_equal(img1: Image, img2: Image):
@@ -98,4 +98,59 @@ async def test_screenshot(websocket, context_id, png_base64):
 
     img1 = Image.open(io.BytesIO(base64.b64decode(resp["result"]["data"])))
     img2 = Image.open(io.BytesIO(base64.b64decode(png_base64)))
+    assert_images_equal(img1, img2)
+
+
+@pytest.mark.asyncio
+async def test_screenshot_oopif(websocket, context_id, html, iframe):
+    await goto_url(websocket,
+                   context_id,
+                   html(iframe("https://www.example.com")),
+                   wait="complete")
+
+    iframe_context_id = (await get_tree(
+        websocket, context_id))["contexts"][0]["children"][0]["context"]
+    assert iframe_context_id != context_id
+
+    command_result = await execute_command(websocket, {
+        "method": "cdp.getSession",
+        "params": {
+            "context": context_id
+        }
+    })
+    session_id = command_result["cdpSession"]
+
+    # Set a fixed viewport to make the test deterministic.
+    await execute_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "cdpMethod": "Emulation.setDeviceMetricsOverride",
+                "cdpParams": {
+                    "width": 200,
+                    "height": 200,
+                    "deviceScaleFactor": 1.0,
+                    "mobile": False,
+                },
+                "cdpSession": session_id
+            }
+        })
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": iframe_context_id
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp["result"] == {'data': ANY_STR}
+
+    img1 = Image.open(io.BytesIO(base64.b64decode(resp["result"]["data"])))
+    img2 = Image.open(
+        io.BytesIO(
+            base64.b64decode(
+                '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AVCDYAFQg2ABUINgAVCDYAFQg2ABUINgAVCDYAFQg2ABUINgAVCDYAFQg2ABUINgAVCDYAFQg2ABUMOrT36OiYmR0tLi670WoMFp2bKlr5eAamo9woqJiZGYmJgbsRYAqFGAYRiGrxcBAN7gHBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANQgWADUIFgA1CBYANf4fN3oryWD/6H8AAAAASUVORK5CYII='
+            )))
     assert_images_equal(img1, img2)
