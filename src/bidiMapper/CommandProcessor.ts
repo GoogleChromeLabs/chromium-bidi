@@ -25,11 +25,11 @@ import {
 } from '../protocol/protocol.js';
 import {LogType, LoggerFn} from '../utils/log.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
+import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
-import {CdpConnection} from './CdpConnection.js';
-import {IEventManager} from './domains/events/EventManager.js';
+import type {IEventManager} from './domains/events/EventManager.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
@@ -137,7 +137,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
 
   constructor(
     realmStorage: RealmStorage,
-    cdpConnection: CdpConnection,
+    cdpConnection: ICdpConnection,
     eventManager: IEventManager,
     selfTargetId: string,
     parser: BidiParser = new BidiNoOpParser(),
@@ -165,7 +165,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   async #process_session_subscribe(
     params: Session.SubscriptionRequest,
     channel: string | null
-  ): Promise<Session.SubscribeResult> {
+  ): Promise<Message.EmptyResult> {
     await this.#eventManager.subscribe(
       params.events,
       params.contexts ?? [null],
@@ -177,7 +177,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   async #process_session_unsubscribe(
     params: Session.SubscriptionRequest,
     channel: string | null
-  ): Promise<Session.UnsubscribeResult> {
+  ): Promise<Message.EmptyResult> {
     await this.#eventManager.unsubscribe(
       params.events,
       params.contexts ?? [null],

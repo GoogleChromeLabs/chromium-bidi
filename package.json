@@ -25,6 +25,11 @@
     "wpt": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
+  "nyc": {
+    "exclude": [
+      "**/*.spec.ts"
+    ]
+  },
   "wireit": {
     "build": {
       "dependencies": [
@@ -171,25 +176,25 @@
     "@actions/core": "1.10.0",
     "@puppeteer/browsers": "1.1.0",
     "@rollup/plugin-commonjs": "24.1.0",
-    "@rollup/plugin-node-resolve": "15.0.2",
+    "@rollup/plugin-node-resolve": "15.1.0",
     "@rollup/plugin-terser": "0.4.1",
     "@types/argparse": "2.0.10",
     "@types/chai": "4.3.5",
     "@types/chai-as-promised": "7.1.5",
-    "@types/debug": "4.1.7",
+    "@types/debug": "4.1.8",
     "@types/mocha": "10.0.1",
     "@types/node": "18.16.0",
     "@types/sinon": "10.0.14",
     "@types/websocket": "1.0.5",
     "@types/ws": "8.5.4",
     "@typescript-eslint/eslint-plugin": "5.59.2",
-    "@typescript-eslint/parser": "5.59.2",
+    "@typescript-eslint/parser": "5.59.8",
     "argparse": "2.0.1",
     "chai": "4.3.7",
     "chai-as-promised": "7.1.1",
     "chai-exclude": "2.1.0",
     "debug": "4.3.4",
-    "devtools-protocol": "0.0.1140464",
+    "devtools-protocol": "0.0.1151065",
     "eslint": "8.39.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
@@ -201,7 +206,7 @@
     "nyc": "15.1.0",
     "prettier": "2.8.8",
     "rimraf": "5.0.0",
-    "rollup": "3.21.3",
+    "rollup": "3.23.0",
     "sinon": "15.0.4",
     "source-map-support": "0.5.21",
     "terser": "5.17.1",
