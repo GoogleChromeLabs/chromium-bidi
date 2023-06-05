@@ -6,19 +6,19 @@ from . import viewport_dimensions
 
 
 @pytest.mark.asyncio
-async def test_capture(bidi_session, url, top_context, inline, compare_png_bidi):
-    expected_size = await viewport_dimensions(bidi_session, top_context)
-
+async def test_capture(bidi_session, url, top_context, inline,
+                       compare_png_bidi):
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url="about:blank", wait="complete"
-    )
+        context=top_context["context"], url="about:blank", wait="complete")
+    expected_size = await viewport_dimensions(bidi_session, top_context)
     reference_data = await bidi_session.browsing_context.capture_screenshot(
         context=top_context["context"])
     assert png_dimensions(reference_data) == expected_size
 
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=inline("<div>foo</div>"), wait="complete"
-    )
+        context=top_context["context"],
+        url=inline("<div>foo</div>"),
+        wait="complete")
     data = await bidi_session.browsing_context.capture_screenshot(
         context=top_context["context"])
 
@@ -28,8 +28,9 @@ async def test_capture(bidi_session, url, top_context, inline, compare_png_bidi)
     # Take a second screenshot that should be identical to validate that
     # we don't just always return false here
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=inline("<div>foo</div>"), wait="complete"
-    )
+        context=top_context["context"],
+        url=inline("<div>foo</div>"),
+        wait="complete")
     new_data = await bidi_session.browsing_context.capture_screenshot(
         context=top_context["context"])
 
