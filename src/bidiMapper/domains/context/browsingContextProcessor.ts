@@ -33,6 +33,7 @@ import {ActionDispatcher} from '../input/ActionDispatcher.js';
 import {InputState} from '../input/InputState.js';
 import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
+import {uuidv4} from '../../../utils/uuid';
 
 import {
   BidiPreloadScript,
@@ -42,7 +43,6 @@ import {
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
-import {uuidv4} from '../../../utils/uuid';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -309,7 +309,6 @@ export class BrowsingContextProcessor {
   async process_script_addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    const scriptId = uuidv4();
     const exposedId = uuidv4();
 
     const cdpTargets = new Set<CdpTarget>(
@@ -340,7 +339,6 @@ export class BrowsingContextProcessor {
 
     const preloadScript: BidiPreloadScript =
       this.#preloadScriptStorage.addPreloadScripts(
-        scriptId,
         exposedId,
         params.context ?? null,
         cdpPreloadScripts,
