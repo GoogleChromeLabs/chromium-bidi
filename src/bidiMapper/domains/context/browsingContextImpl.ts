@@ -575,27 +575,26 @@ export class BrowsingContextImpl {
   }
 
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {
-    // XXX: Focus the original tab after the screenshot is taken.
-    // This is needed because the screenshot gets blocked until the active tab gets focus.
-    await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
-
     const {
       result: {value: docRect},
     } = await this.#cdpTarget.cdpClient.sendCommand('Runtime.callFunctionOn', {
       functionDeclaration: String(() => {
-        const {innerHeight, innerWidth} = globalThis;
         const docRect =
           globalThis.document.documentElement.getBoundingClientRect();
         return JSON.stringify({
           x: docRect.x,
           y: docRect.y,
-          width: Math.floor(innerWidth),
-          height: Math.floor(innerHeight),
+          width: docRect.width,
+          height: docRect.height,
         });
       }),
       executionContextId: this.#defaultRealm.executionContextId,
     });
     const clip: Protocol.DOM.Rect = JSON.parse(docRect);
+
+    // XXX: Focus the original tab after the screenshot is taken.
+    // This is needed because the screenshot gets blocked until the active tab gets focus.
+    await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
 
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
@@ -606,6 +605,7 @@ export class BrowsingContextImpl {
         },
       }
     );
+
     return {
       result: {
         data: result.data,
