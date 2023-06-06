@@ -579,33 +579,23 @@ export class BrowsingContextImpl {
     // This is needed because the screenshot gets blocked until the active tab gets focus.
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
 
-    let clip: Protocol.DOM.Rect;
-
-    if (this.isTopLevelContext()) {
-      clip = (
-        await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics')
-      ).cssContentSize;
-    } else {
-      const {
-        result: {value: iframeDocRect},
-      } = await this.#cdpTarget.cdpClient.sendCommand(
-        'Runtime.callFunctionOn',
-        {
-          functionDeclaration: String(() => {
-            const docRect =
-              globalThis.document.documentElement.getBoundingClientRect();
-            return JSON.stringify({
-              x: docRect.x,
-              y: docRect.y,
-              width: docRect.width,
-              height: docRect.height,
-            });
-          }),
-          executionContextId: this.#defaultRealm.executionContextId,
-        }
-      );
-      clip = JSON.parse(iframeDocRect);
-    }
+    const {
+      result: {value: docRect},
+    } = await this.#cdpTarget.cdpClient.sendCommand('Runtime.callFunctionOn', {
+      functionDeclaration: String(() => {
+        const {innerHeight, innerWidth} = globalThis;
+        const docRect =
+          globalThis.document.documentElement.getBoundingClientRect();
+        return JSON.stringify({
+          x: docRect.x,
+          y: docRect.y,
+          width: Math.floor(innerWidth),
+          height: Math.floor(innerHeight),
+        });
+      }),
+      executionContextId: this.#defaultRealm.executionContextId,
+    });
+    const clip: Protocol.DOM.Rect = JSON.parse(docRect);
 
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
