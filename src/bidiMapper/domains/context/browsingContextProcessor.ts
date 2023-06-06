@@ -42,6 +42,7 @@ import {
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
+import {uuidv4} from '../../../utils/uuid';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -308,6 +309,9 @@ export class BrowsingContextProcessor {
   async process_script_addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
+    const scriptId = uuidv4();
+    const exposedId = uuidv4();
+
     const cdpTargets = new Set<CdpTarget>(
       // TODO: The unique target can be in a non-top-level browsing context.
       // We need all the targets.
@@ -324,6 +328,7 @@ export class BrowsingContextProcessor {
     for (const cdpTarget of cdpTargets) {
       const cdpPreloadScriptId = await cdpTarget.addPreloadScriptWithChannels(
         params.functionDeclaration,
+        exposedId,
         params.arguments,
         params.sandbox
       );
@@ -335,6 +340,8 @@ export class BrowsingContextProcessor {
 
     const preloadScript: BidiPreloadScript =
       this.#preloadScriptStorage.addPreloadScripts(
+        scriptId,
+        exposedId,
         params.context ?? null,
         cdpPreloadScripts,
         params.functionDeclaration,

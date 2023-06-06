@@ -31,6 +31,7 @@ import {RealmStorage} from '../script/realmStorage.js';
 
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
+import {initChannelListener} from '../script/channelProxy';
 
 export class BrowsingContextImpl {
   /** The ID of this browsing context. */
@@ -416,6 +417,20 @@ export class BrowsingContextImpl {
         if (params.context.auxData.isDefault) {
           this.#maybeDefaultRealm = realm;
         }
+
+        // TODO: run only when needed. Maybe only for default realms?
+        this.cdpTarget.preloadScriptStorage
+          .findPreloadScripts({
+            contextId: this.id,
+          })
+          .forEach((preloadScript) => {
+            void initChannelListener(
+              undefined,
+              preloadScript.exposedId,
+              realm,
+              this.#eventManager
+            );
+          });
       }
     );
 

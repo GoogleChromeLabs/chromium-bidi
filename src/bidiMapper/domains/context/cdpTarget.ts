@@ -19,7 +19,6 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {newChannelProxy} from '../script/channelProxy.js';
-import {uuidv4} from '../../../utils/uuid.js';
 import {LogManager} from '../log/logManager.js';
 import {RealmStorage} from '../script/realmStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
@@ -37,7 +36,8 @@ export class CdpTarget {
   readonly #cdpClient: ICdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
-  readonly #preloadScriptStorage: PreloadScriptStorage;
+  // TODO: handle properly.
+  readonly preloadScriptStorage: PreloadScriptStorage;
   readonly #logger?: LoggerFn;
 
   readonly #targetUnblocked: Deferred<void>;
@@ -92,7 +92,7 @@ export class CdpTarget {
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
-    this.#preloadScriptStorage = preloadScriptStorage;
+    this.preloadScriptStorage = preloadScriptStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#logger = logger;
 
@@ -184,13 +184,14 @@ export class CdpTarget {
 
   /** Loads all top-level and parent preload scripts. */
   async #loadPreloadScripts() {
-    for (const script of this.#preloadScriptStorage.findPreloadScripts({
+    for (const script of this.preloadScriptStorage.findPreloadScripts({
       contextIds: [null, this.#parentTargetId],
     })) {
-      const {functionDeclaration, channels, sandbox} = script;
+      const {functionDeclaration, channels, sandbox, exposedId} = script;
 
       const cdpPreloadScriptId = await this.addPreloadScriptWithChannels(
         functionDeclaration,
+        exposedId,
         channels,
         sandbox
       );
@@ -223,7 +224,7 @@ export class CdpTarget {
           )
       );
 
-      this.#preloadScriptStorage.appendCdpPreloadScript(script, {
+      this.preloadScriptStorage.appendCdpPreloadScript(script, {
         target: this,
         preloadScriptId: cdpPreloadScriptId,
       });
@@ -233,6 +234,7 @@ export class CdpTarget {
   // TODO: Document.
   async addPreloadScriptWithChannels(
     functionDeclaration: string,
+    exposeId: string,
     channels?: Script.ChannelValue[],
     sandbox?: string
   ): Promise<Script.PreloadScript> {
@@ -246,24 +248,46 @@ export class CdpTarget {
         return `(${functionDeclaration})();`;
       }
 
-      const uuid = uuidv4();
+      // const channelProxy = newChannelProxy();
+      // const qwe = String(function (
+      //   channelProxy: {
+      //     getMessage: unknown;
+      //     getSendMessageByChannelName: unknown;
+      //   },
+      //   exposeId: String,
+      //   functionDeclaration: String
+      // ) {
+      //   // TODO: make non-enumerable
+      //   if (window[exposeId] === undefined) {
+      //     window[exposeId] = {getMessage: channelProxy.getMessage};
+      //   } else {
+      //     // Long poll already initializes and waits for the getMessage to be set.
+      //     console.log(`window['${exposeId}'] is already set`);
+      //     window[exposeId]({getMessage: channelProxy.getMessage});
+      //   }
+      //   // TODO: add channel_name.
+      //   functionDeclaration(
+      //     channelProxy.getSendMessageByChannelName('channel_name')
+      //   );
+      // });
+      // console.log(qwe);
+      // console.log('!!@@##');
 
       // See: http://go/chrome-devtools:bootstrap-bindings-proposal
-      const intermediateScript = `
+      return `
       const channelProxy = (${newChannelProxy()})();
-      window['${uuid}'] = channelProxy.getMessage;
-      Object.defineProperty(window, '${uuid}', {enumerable: false});
-
-      const channelPost = [${channels
-        .map((channel) => `'${channel.value.channel}'`)
-        .join(', ')}];
-
-      // Yields: (...['channel_name_1', 'channel_name_2'].map(...))
-      (${functionDeclaration})(...channelPost.map((channel) => channelProxy.getSendMessageByChannelName.bind(null, channel)));
-`;
-
-      // TODO: Handle channels. Keep `uuid` somewhere, so that later long-poll mechanism can use it to hook the `channelProxy`.
-      return intermediateScript;
+      // TODO: make non-enumerable
+      if(window['${exposeId}']===undefined) {
+        window['${exposeId}'] = {getMessage: channelProxy.getMessage};
+      } else {
+        // Long poll already initializes and waits for the getMessage to be set.
+        console.log("window['${exposeId}'] is already set" );
+        window['${exposeId}']({getMessage: channelProxy.getMessage});
+      
+      } 
+      // TODO: add channel_name.
+      (${functionDeclaration})(channelProxy.getSendMessageByChannelName("channel_name"));
+      `;
     };
 
     return this.addPreloadScript(

@@ -442,8 +442,8 @@ export class ScriptEvaluator {
 
         // Long-poll the message queue asynchronously.
         void initChannelListener(
-          argumentValue,
           channelHandle,
+          undefined,
           realm,
           this.#eventManager
         );

@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {uuidv4} from '../../../utils/uuid.js';
 import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 
 import {CdpTarget} from './cdpTarget.js';
@@ -22,6 +21,8 @@ import {CdpTarget} from './cdpTarget.js';
 export type BidiPreloadScript = {
   /** BiDi ID, an automatically generated UUID. */
   id: string;
+  // TODO: add description and name properly.
+  exposedId: string;
   /** CDP preload scripts. */
   cdpPreloadScripts: CdpPreloadScript[];
   /** The script itself, in a format expected by the spec i.e. a function. */
@@ -108,17 +109,18 @@ export class PreloadScriptStorage {
    *   i.e. a function.
    */
   addPreloadScripts(
+    id: string,
+    // TODO: proper name.
+    exposedId: string,
     contextId: CommonDataTypes.BrowsingContext | null,
     cdpPreloadScripts: CdpPreloadScript[],
     functionDeclaration: string,
     channels?: Script.ChannelValue[],
     sandbox?: string
   ): BidiPreloadScript {
-    // Generate a random ID.
-    const bidiId: string = uuidv4();
-
     const preloadScript = {
-      id: bidiId,
+      id,
+      exposedId,
       contextId,
       cdpPreloadScripts,
       functionDeclaration,

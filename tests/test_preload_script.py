@@ -639,7 +639,6 @@ async def test_removePreloadScript_addAndRemoveIsNoop_secondRemoval_fails(
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: fails")
 async def test_preload_script_channel(websocket, context_id, html):
     await subscribe(websocket, "script.message")
 
@@ -677,6 +676,12 @@ async def test_preload_script_channel(websocket, context_id, html):
             }
         })
 
+    # TODO: fix events order.
+
+    # Assert navigation is finished.
+    result = await read_JSON_message(websocket)
+    assert result == AnyExtending({"id": command_id})
+
     # Message event should happen before navigation.
     result = await read_JSON_message(websocket)
     assert result == AnyExtending({
@@ -692,7 +697,3 @@ async def test_preload_script_channel(websocket, context_id, html):
             },
         }
     })
-
-    # Assert navigation is finished.
-    result = await read_JSON_message(websocket)
-    assert result == AnyExtending({"id": command_id})

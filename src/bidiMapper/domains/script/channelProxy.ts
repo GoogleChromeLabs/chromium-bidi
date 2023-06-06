@@ -18,6 +18,7 @@ import {Script} from '../../../protocol/protocol.js';
 import {IEventManager} from '../events/EventManager.js';
 
 import {Realm} from './realm.js';
+import Channel = Script.Channel;
 
 /** Creates a new channel proxy script suitable for evaluation. */
 export function newChannelProxy(): string {
@@ -67,43 +68,95 @@ export function newChannelProxy(): string {
 }
 
 export async function initChannelListener(
-  channel: Script.ChannelValue,
   channelHandle: string | undefined,
+  channelUuid: string | undefined,
   realm: Realm,
   eventManager: IEventManager
 ) {
-  const channelValue = channel.value;
+  // Get channel handler from window.
+  // TODO: probably, condition should be `channelHandle===undefined`.
+  if (channelUuid !== undefined) {
+    const message = await realm.cdpClient.sendCommand('Runtime.evaluate', {
+      expression: `(async()=>{
+        if(window['${channelUuid}']!==undefined){
+          const result = window['${channelUuid}'];
+          delete window['${channelUuid}'];
+          return result;
+        }
+        let resolve;
+        const promise = new Promise(r=>resolve=r);
+        // TODO: make non-enumerable
+        window['${channelUuid}'] = promise;
+        const result = await promise;
+        delete window['${channelUuid}'];
+        return result; 
+      })()`,
+      awaitPromise: true,
+      contextId: realm.executionContextId,
+      serializationOptions: {
+        // TODO: replace with `idOnly`.
+        serialization: 'deep',
+      },
+    });
+
+    channelHandle = message.result.objectId;
+  }
 
   // TODO(#294): Remove this loop after the realm is destroyed.
   // Rely on the CDP throwing exception in such a case.
+  // noinspection InfiniteLoopJS
   for (;;) {
+    // TODO: error handling.
+    const event = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
+      functionDeclaration: String(
+        async (channelHandle: {
+          getMessage: () => Promise<{message: string; channelName: string}>;
+        }) => await channelHandle.getMessage()
+      ),
+      arguments: [
+        {
+          objectId: channelHandle,
+        },
+      ],
+      awaitPromise: true,
+      executionContextId: realm.executionContextId,
+      serializationOptions: {
+        serialization: 'deep',
+        maxDepth: 1,
+      },
+    });
+
+    const channelName = event.result.deepSerializedValue?.value.find(
+      (v: String[]) => v[0] == 'channelName'
+    )[1].value as Channel;
+
+    // Extra call is needed to get the handle and properly serialized message.
     const message = await realm.cdpClient.sendCommand(
       'Runtime.callFunctionOn',
       {
-        functionDeclaration: String(
-          async (channelHandle: {
-            getMessage: () => Promise<{message: string; channelName: string}>;
-          }) => (await channelHandle.getMessage()).message
-        ),
+        functionDeclaration: 'event => event.message',
         arguments: [
           {
-            objectId: channelHandle,
+            objectId: event.result.objectId,
           },
         ],
-        awaitPromise: true,
+        awaitPromise: false,
         executionContextId: realm.executionContextId,
         serializationOptions: {
           serialization: 'deep',
+          // TODO: add serialization options.
         },
       }
     );
 
+    // TODO: error handling.
     eventManager.registerEvent(
       {
         method: Script.EventNames.MessageEvent,
         params: {
-          channel: channelValue.channel,
-          data: realm.cdpToBidiValue(message, channelValue.ownership ?? 'none'),
+          channel: channelName,
+          // TODO handle result ownership.
+          data: realm.cdpToBidiValue(message, 'none'),
           source: {
             realm: realm.realmId,
             context: realm.browsingContextId,

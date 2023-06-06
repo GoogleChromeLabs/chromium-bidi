@@ -62,6 +62,9 @@ export function generatePage() {
   findOrCreateTypeLogContainer(LogType.bidi);
   findOrCreateTypeLogContainer(LogType.browsingContexts);
   findOrCreateTypeLogContainer(LogType.cdp);
+
+  // Write a message to console log to have a reference to the script in DevTools.
+  console.log('Mapper tab page created.');
 }
 
 export function log(logType: LogType, ...messages: unknown[]) {
