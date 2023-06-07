@@ -226,15 +226,11 @@ export class NetworkRequest {
   }
 
   #sendBeforeRequestEvent() {
-    if (!this.#isIgnoredEvent()) {
-      this.#eventManager.registerPromiseEvent(
-        this.#beforeRequestSentDeferred.then(() =>
-          this.#getBeforeRequestEvent()
-        ),
-        this.#requestWillBeSentEvent?.frameId ?? null,
-        Network.EventNames.BeforeRequestSentEvent
-      );
-    }
+    this.#eventManager.registerPromiseEvent(
+      this.#beforeRequestSentDeferred.then(() => this.#getBeforeRequestEvent()),
+      this.#requestWillBeSentEvent?.frameId ?? null,
+      Network.EventNames.BeforeRequestSentEvent
+    );
   }
 
   #getBeforeRequestEvent(): Network.BeforeRequestSentEvent {
@@ -256,15 +252,13 @@ export class NetworkRequest {
   }
 
   #sendResponseReceivedEvent() {
-    if (!this.#isIgnoredEvent()) {
-      this.#eventManager.registerPromiseEvent(
-        this.#responseReceivedDeferred.then(() =>
-          this.#getResponseReceivedEvent()
-        ),
-        this.#responseReceivedEvent?.frameId ?? null,
-        Network.EventNames.ResponseCompletedEvent
-      );
-    }
+    this.#eventManager.registerPromiseEvent(
+      this.#responseReceivedDeferred.then(() =>
+        this.#getResponseReceivedEvent()
+      ),
+      this.#responseReceivedEvent?.frameId ?? null,
+      Network.EventNames.ResponseCompletedEvent
+    );
   }
 
   #getResponseReceivedEvent(): Network.ResponseCompletedEvent {
@@ -313,13 +307,6 @@ export class NetworkRequest {
         },
       },
     };
-  }
-
-  #isIgnoredEvent(): boolean {
-    return (
-      this.#requestWillBeSentEvent?.request.url.endsWith('/favicon.ico') ??
-      false
-    );
   }
 
   static #getHeaders(headers: Protocol.Network.Headers): Network.Header[] {
