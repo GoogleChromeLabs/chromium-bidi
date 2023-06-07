@@ -75,7 +75,8 @@ declare -a WPT_RUN_ARGS=(
   --log-wptreport "$WPT_REPORT"
   --manifest "$MANIFEST"
   --metadata "$WPT_METADATA"
-  --skip-implementation-status=backlog
+  --no-manifest-download
+  --skip-implementation-status backlog
   --timeout-multiplier "$TIMEOUT_MULTIPLIER"
 )
 
