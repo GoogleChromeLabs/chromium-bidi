@@ -21,6 +21,11 @@ import {Realm} from './realm.js';
 import {IEventManager} from '../events/EventManager.js';
 import Handle = CommonDataTypes.Handle;
 
+/**
+ * Used to send messages from realm to BiDi user.
+ * After initialization, use `sendMessageHandle` to get a handle to the delegate
+ * in the realm, which can be used to send message.
+ */
 export class ChannelProxy {
   readonly #channel: Script.ChannelProperties;
   readonly #eventManager: IEventManager;
@@ -28,7 +33,7 @@ export class ChannelProxy {
   readonly #channelHandle: CommonDataTypes.Handle;
   readonly #sendMessageHandle: CommonDataTypes.Handle;
 
-  constructor(
+  private constructor(
     channel: Script.ChannelProperties,
     eventManager: IEventManager,
     realm: Realm,
@@ -63,6 +68,13 @@ export class ChannelProxy {
 
     void channelProxy.initChannelListener();
     return channelProxy;
+  }
+
+  /**
+   * Returns a handle to the delegate sending message.
+   */
+  get sendMessageHandle(): CommonDataTypes.Handle {
+    return this.#sendMessageHandle;
   }
 
   static async #createHandle(realm: Realm): Promise<CommonDataTypes.Handle> {
@@ -136,10 +148,6 @@ export class ChannelProxy {
       }
     );
     return sendMessageArgResult.result.objectId!;
-  }
-
-  get sendMessageHandle(): CommonDataTypes.Handle {
-    return this.#sendMessageHandle;
   }
 
   async initChannelListener() {
