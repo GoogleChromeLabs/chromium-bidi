@@ -86,6 +86,10 @@ if [[ "$VERBOSE" == "true" ]]; then
     --log-mach -
     --log-mach-level info
   )
+elif [[ "$HEADLESS" == "true" ]]; then
+  WPT_RUN_ARGS+=(
+    --processes "$(nproc)"
+  )
 fi
 
 if [[ "$CHROMEDRIVER" == "true" ]]; then
