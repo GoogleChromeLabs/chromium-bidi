@@ -20,7 +20,7 @@ import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
 
 import {Realm} from './realm.js';
-import {ChannelProxy} from './channelProxy';
+import {ChannelProxy} from './channelProxy.js';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
 // should be adjusted.

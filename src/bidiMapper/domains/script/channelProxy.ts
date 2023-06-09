@@ -16,9 +16,9 @@
  *
  */
 
-import {CommonDataTypes, Script} from '../../../protocol/protocol';
-import {Realm} from './realm';
-import {IEventManager} from '../events/EventManager';
+import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
+import {Realm} from './realm.js';
+import {IEventManager} from '../events/EventManager.js';
 import Handle = CommonDataTypes.Handle;
 
 export class ChannelProxy {
@@ -27,10 +27,6 @@ export class ChannelProxy {
   readonly #realm: Realm;
   readonly #channelHandle: CommonDataTypes.Handle;
   readonly #sendMessageHandle: CommonDataTypes.Handle;
-
-  get sendMessageHandle(): CommonDataTypes.Handle {
-    return this.#sendMessageHandle;
-  }
 
   constructor(
     channel: Script.ChannelProperties,
@@ -140,6 +136,10 @@ export class ChannelProxy {
       }
     );
     return sendMessageArgResult.result.objectId!;
+  }
+
+  get sendMessageHandle(): CommonDataTypes.Handle {
+    return this.#sendMessageHandle;
   }
 
   async initChannelListener() {
