@@ -875,7 +875,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
 async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
     if not ignoreCache:
         pytest.xfail(reason="TODO: Fix flakiness with ignoreCache=False")
-        
+
     url = "https://example.com/"
 
     await subscribe(websocket, [
