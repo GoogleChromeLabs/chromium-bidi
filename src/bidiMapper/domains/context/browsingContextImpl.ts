@@ -580,11 +580,27 @@ export class BrowsingContextImpl {
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
 
     let clip: Protocol.DOM.Rect;
+    let result: Protocol.Page.CaptureScreenshotResponse;
 
     if (this.isTopLevelContext()) {
       clip = (
         await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics')
       ).cssContentSize;
+      await this.#cdpTarget.cdpClient.sendCommand(
+        'Emulation.setDeviceMetricsOverride',
+        {
+          mobile: false,
+          width: clip.width,
+          height: clip.height,
+          deviceScaleFactor: 1.0,
+        }
+      );
+      result = await this.#cdpTarget.cdpClient.sendCommand(
+        'Page.captureScreenshot'
+      );
+      await this.#cdpTarget.cdpClient.sendCommand(
+        'Emulation.clearDeviceMetricsOverride'
+      );
     } else {
       const {
         result: {value: iframeDocRect},
@@ -605,17 +621,17 @@ export class BrowsingContextImpl {
         }
       );
       clip = JSON.parse(iframeDocRect);
+      result = await this.#cdpTarget.cdpClient.sendCommand(
+        'Page.captureScreenshot',
+        {
+          clip: {
+            ...clip,
+            scale: 1.0,
+          },
+        }
+      );
     }
 
-    const result = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.captureScreenshot',
-      {
-        clip: {
-          ...clip,
-          scale: 1.0,
-        },
-      }
-    );
     return {
       result: {
         data: result.data,
