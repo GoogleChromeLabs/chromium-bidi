@@ -585,7 +585,7 @@ export class BrowsingContextImpl {
     if (this.isTopLevelContext()) {
       clip = (
         await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics')
-      ).cssContentSize;
+      ).contentSize;
       await this.#cdpTarget.cdpClient.sendCommand(
         'Emulation.setDeviceMetricsOverride',
         {
