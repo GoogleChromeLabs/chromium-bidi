@@ -218,126 +218,120 @@ async def test_channel_and_another_channel(websocket, context_id):
     }
 
 
-@pytest.mark.parametrize(
-    "serialization_options, expected_result",
-    [
-        ({}, {
-            "type": "object",
-            "value": [[
-                "a", {
-                    "type": "node",
-                    "value": {
-                        "nodeType": 1,
-                        "childNodeCount": 0,
-                        "shadowRoot": None,
-                        "localName": "body",
-                        "namespaceURI": "http://www.w3.org/1999/xhtml",
-                        "attributes": {}
-                    },
-                    "sharedId": ANY_SHARED_ID
-                }
-            ]],
-            "handle": ANY_STR
-        }),
-        ({
-            "maxDomDepth": 0
-        }, {
-            "type": "object",
-            "value": [[
-                "a", {
-                    "type": "node",
-                    "value": {
-                        "nodeType": 1,
-                        "childNodeCount": 0,
-                        "shadowRoot": None,
-                        "localName": "body",
-                        "namespaceURI": "http://www.w3.org/1999/xhtml",
-                        "attributes": {}
-                    },
-                    "sharedId": ANY_SHARED_ID
-                }
-            ]],
-            "handle": ANY_STR
-        }),
-        # ({
-        #      "maxDomDepth": 1
-        #  }, {}),
-        # ({
-        #      "maxDomDepth": None
-        #  }, {}),
-        ({
-            "maxObjectDepth": 0
-        }, {
-            "type": "object",
-            "handle": ANY_STR
-        }),
-        ({
-            "maxObjectDepth": 1
-        }, {
-            "type": "object",
-            "value": [[
-                "a", {
-                    "type": "node",
-                    "value": {
-                        "nodeType": 1,
-                        "childNodeCount": 0,
-                        "shadowRoot": None,
-                        "localName": "body",
-                        "namespaceURI": "http://www.w3.org/1999/xhtml",
-                        "attributes": {}
-                    },
-                    "sharedId": ANY_SHARED_ID
-                }
-            ]],
-            "handle": ANY_STR
-        }),
-        ({
-            "maxObjectDepth": None
-        }, {
-            "type": "object",
-            "value": [[
-                "a", {
-                    "type": "node",
-                    "value": {
-                        "nodeType": 1,
-                        "childNodeCount": 0,
-                        "shadowRoot": None,
-                        "localName": "body",
-                        "namespaceURI": "http://www.w3.org/1999/xhtml",
-                        "attributes": {}
-                    },
-                    "sharedId": ANY_SHARED_ID
-                }
-            ]],
-            "handle": ANY_STR
-        }),
-        ({
-            "includeShadowTree": "none"
-        }, {
-            "type": "object",
-            "value": [[
-                "a", {
-                    "type": "node",
-                    "value": {
-                        "nodeType": 1,
-                        "childNodeCount": 0,
-                        "shadowRoot": None,
-                        "localName": "body",
-                        "namespaceURI": "http://www.w3.org/1999/xhtml",
-                        "attributes": {}
-                    },
-                    "sharedId": ANY_SHARED_ID
-                }
-            ]],
-            "handle": ANY_STR
-        }),
-        # ({
-        #      "includeShadowTree": "open"
-        #  }, {}),
-        # ({
-        #      "includeShadowTree": "all"
-        #  }, {})
-    ])
+@pytest.mark.parametrize("serialization_options, expected_result", [
+    ({}, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    ({
+        "maxDomDepth": 0
+    }, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    pytest.param({"maxDomDepth": 1}, {},
+                 marks=pytest.mark.skip("Not implemented yet")),
+    pytest.param({"maxDomDepth": None}, {},
+                 marks=pytest.mark.skip("Not implemented yet")),
+    ({
+        "maxObjectDepth": 0
+    }, {
+        "type": "object",
+        "handle": ANY_STR
+    }),
+    ({
+        "maxObjectDepth": 1
+    }, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    ({
+        "maxObjectDepth": None
+    }, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    ({
+        "includeShadowTree": "none"
+    }, {
+        "type": "object",
+        "value": [[
+            "a", {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 0,
+                    "shadowRoot": None,
+                    "localName": "body",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "attributes": {}
+                },
+                "sharedId": ANY_SHARED_ID
+            }
+        ]],
+        "handle": ANY_STR
+    }),
+    pytest.param({"includeShadowTree": "open"}, {},
+                 marks=pytest.mark.skip("Not implemented yet")),
+    pytest.param({"includeShadowTree": "all"}, {},
+                 marks=pytest.mark.skip("Not implemented yet")),
+])
 @pytest.mark.asyncio
 async def test_channel_serialization_options(websocket, context_id,
                                              serialization_options,
