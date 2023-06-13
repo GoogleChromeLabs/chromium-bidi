@@ -66,6 +66,7 @@ module.exports = {
     "@typescript-eslint/explicit-member-accessibility": ['warn', {accessibility: 'no-public'}],
     '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
+    '@typescript-eslint/consistent-type-imports': ['warn', {fixStyle: 'inline-type-imports'}],
     '@typescript-eslint/no-empty-function': 'warn',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-extraneous-class': 'warn',
