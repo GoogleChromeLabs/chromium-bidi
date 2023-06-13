@@ -92,7 +92,6 @@ module.exports = {
     'import/no-unresolved': 'off',
     'import/order': ['warn', {'newlines-between': 'always'}],
     'no-console': 'warn',
-    'no-duplicate-imports': 'error',
     'no-else-return': 'warn',
     'no-empty': ['warn', {allowEmptyCatch: true}],
     'no-implicit-coercion': 'error',
