@@ -17,9 +17,9 @@
  */
 
 import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
-import {type IEventManager} from '../events/EventManager.js';
+import type {IEventManager} from '../events/EventManager.js';
 
-import {type Realm} from './realm.js';
+import type {Realm} from './realm.js';
 
 import Handle = CommonDataTypes.Handle;
 

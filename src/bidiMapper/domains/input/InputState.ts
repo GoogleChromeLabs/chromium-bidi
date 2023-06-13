@@ -18,7 +18,7 @@
 import {Input, Message} from '../../../protocol/protocol.js';
 import {Mutex} from '../../../utils/Mutex.js';
 
-import {type ActionOption} from './ActionOption.js';
+import type {ActionOption} from './ActionOption.js';
 import {
   type InputSource,
   PointerSource,

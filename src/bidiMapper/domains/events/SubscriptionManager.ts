@@ -25,7 +25,7 @@ import {
   Script,
   type Session,
 } from '../../../protocol/protocol.js';
-import {type BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 /**
  * Returns the cartesian product of the given arrays.

@@ -25,12 +25,12 @@ import {
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {type Realm} from '../script/realm.js';
-import {type RealmStorage} from '../script/realmStorage.js';
-import {type ActionOption} from '../input/ActionOption.js';
+import type {Realm} from '../script/realm.js';
+import type {RealmStorage} from '../script/realmStorage.js';
+import type {ActionOption} from '../input/ActionOption.js';
 import {InputStateManager} from '../input/InputStateManager.js';
 import {ActionDispatcher} from '../input/ActionDispatcher.js';
-import {type InputState} from '../input/InputState.js';
+import type {InputState} from '../input/InputState.js';
 import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 
@@ -40,7 +40,7 @@ import {
   PreloadScriptStorage,
 } from './PreloadScriptStorage.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
-import {type BrowsingContextStorage} from './browsingContextStorage.js';
+import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {

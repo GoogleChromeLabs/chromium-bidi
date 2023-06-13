@@ -22,10 +22,10 @@ import {ProcessingQueue} from '../utils/processingQueue.js';
 import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
 import {type BidiParser, CommandProcessor} from './CommandProcessor.js';
-import {type BidiTransport} from './BidiTransport.js';
+import type {BidiTransport} from './BidiTransport.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import {EventManager} from './domains/events/EventManager.js';
-import {type OutgoingBidiMessage} from './OutgoingBidiMessage.js';
+import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
 type BidiServerEvents = {

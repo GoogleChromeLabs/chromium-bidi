@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {type Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {
   type CommonDataTypes,
@@ -23,7 +23,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
 
-import {type Realm} from './realm.js';
+import type {Realm} from './realm.js';
 import {ChannelProxy} from './channelProxy.js';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`

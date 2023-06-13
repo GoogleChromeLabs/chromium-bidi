@@ -17,7 +17,7 @@
 
 import {type CommonDataTypes, Message} from '../../../protocol/protocol.js';
 
-import {type BrowsingContextImpl} from './browsingContextImpl.js';
+import type {BrowsingContextImpl} from './browsingContextImpl.js';
 
 /** Container class for browsing contexts. */
 export class BrowsingContextStorage {
