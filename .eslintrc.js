@@ -55,6 +55,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:import/recommended',
+    'plugin:mocha/recommended',
     'plugin:prettier/recommended',
     'plugin:promise/recommended',
     // keep-sorted end
@@ -63,10 +64,6 @@ module.exports = {
     // https://denar90.github.io/eslint.github.io/docs/rules/
     // Some rules use 'warn' in order to ease local development iteration.
     // keep-sorted start
-    "@typescript-eslint/prefer-nullish-coalescing": "error",
-    "@typescript-eslint/sort-type-constituents": ["error", {"checkUnions": false}],
-    "mocha/no-exclusive-tests": "error",
-    "mocha/no-skipped-tests": "error",
     '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
     '@typescript-eslint/consistent-type-imports': ['warn', {fixStyle: 'inline-type-imports'}],
@@ -85,9 +82,11 @@ module.exports = {
     '@typescript-eslint/no-unsafe-member-access': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', {argsIgnorePattern: '^_'}],
+    '@typescript-eslint/prefer-nullish-coalescing': 'error',
     '@typescript-eslint/prefer-return-this-type': 'warn',
     '@typescript-eslint/require-await': 'warn',
     '@typescript-eslint/restrict-template-expressions': 'warn',
+    '@typescript-eslint/sort-type-constituents': ['error', {'checkUnions': false}],
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
     'func-names': 'error',
     'import/first': 'error',
@@ -95,6 +94,8 @@ module.exports = {
     'import/no-duplicates': 'error',
     'import/no-unresolved': 'off',
     'import/order': ['warn', {'newlines-between': 'always'}],
+    'mocha/no-mocha-arrows': 'off',
+    'mocha/no-setup-in-describe': 'off',
     'no-console': 'warn',
     'no-else-return': 'warn',
     'no-empty': ['warn', {allowEmptyCatch: true}],
