@@ -52,7 +52,7 @@ export namespace Message {
     channel?: Script.Channel;
   };
 
-  export type CommandRequest = Pick<RawCommandRequest, 'id'> & BiDiCommand;
+  export type CommandRequest = BiDiCommand & Pick<RawCommandRequest, 'id'>;
   export type CommandResponse = Pick<RawCommandRequest, 'id'> & ResultData;
 
   export type EmptyCommand = never;
@@ -423,9 +423,9 @@ export namespace CommonDataTypes {
     type: 'function';
   };
 
-  export type RegExpRemoteValue = RemoteReference & RegExpLocalValue;
+  export type RegExpRemoteValue = RegExpLocalValue & RemoteReference;
 
-  export type DateRemoteValue = RemoteReference & DateLocalValue;
+  export type DateRemoteValue = DateLocalValue & RemoteReference;
 
   export type MapRemoteValue = RemoteReference & {
     type: 'map';
@@ -1380,23 +1380,23 @@ export namespace Input {
     value: string;
   };
 
-  export type PointerUpAction = {
+  export type PointerUpAction = PointerCommonProperties & {
     type: ActionType.PointerUp;
     button: number;
-  } & PointerCommonProperties;
+  };
 
-  export type PointerDownAction = {
+  export type PointerDownAction = PointerCommonProperties & {
     type: ActionType.PointerDown;
     button: number;
-  } & PointerCommonProperties;
+  };
 
-  export type PointerMoveAction = {
+  export type PointerMoveAction = PointerCommonProperties & {
     type: ActionType.PointerMove;
     x: number;
     y: number;
     duration?: number;
     origin?: Origin;
-  } & PointerCommonProperties;
+  };
 
   export type WheelScrollAction = {
     type: ActionType.Scroll;
