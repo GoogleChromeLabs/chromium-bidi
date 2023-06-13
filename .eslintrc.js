@@ -63,6 +63,7 @@ module.exports = {
     // https://denar90.github.io/eslint.github.io/docs/rules/
     // Some rules use 'warn' in order to ease local development iteration.
     // keep-sorted start
+    "@typescript-eslint/prefer-nullish-coalescing": "error",
     "@typescript-eslint/sort-type-constituents": ["error", {"checkUnions": false}],
     '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
