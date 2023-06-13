@@ -65,6 +65,8 @@ module.exports = {
     // keep-sorted start
     "@typescript-eslint/prefer-nullish-coalescing": "error",
     "@typescript-eslint/sort-type-constituents": ["error", {"checkUnions": false}],
+    "mocha/no-exclusive-tests": "error",
+    "mocha/no-skipped-tests": "error",
     '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
     '@typescript-eslint/consistent-type-imports': ['warn', {fixStyle: 'inline-type-imports'}],
