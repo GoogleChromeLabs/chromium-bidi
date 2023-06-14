@@ -123,12 +123,12 @@ def url_all_origins(request):
     return request.param
 
 
-# Reads the given number of messages from the websocket, and returns them
-# in consistent order.
 @pytest.fixture
 def read_sorted_messages(websocket):
+    # Reads the given number of messages from the websocket, and returns them
+    # in consistent order.
 
-    async def _(message_count):
+    async def read_sorted_messages(message_count):
         messages = []
         for _ in range(message_count):
             messages.append(await read_JSON_message(websocket))
@@ -136,7 +136,7 @@ def read_sorted_messages(websocket):
                       if "method" in x else str(x["id"]) if "id" in x else "")
         return messages
 
-    return _
+    return read_sorted_messages
 
 
 @pytest.fixture
