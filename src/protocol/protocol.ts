@@ -53,7 +53,7 @@ export namespace Message {
   };
 
   export type CommandRequest = BiDiCommand & Pick<RawCommandRequest, 'id'>;
-  export type CommandResponse = Pick<RawCommandRequest, 'id'> & ResultData;
+  export type CommandResponse = ResultData & Pick<RawCommandRequest, 'id'>;
 
   export type EmptyCommand = never;
   export type EmptyParams = Record<string, never>;
@@ -423,9 +423,9 @@ export namespace CommonDataTypes {
     type: 'function';
   };
 
-  export type RegExpRemoteValue = RegExpLocalValue & RemoteReference;
+  export type RegExpRemoteValue = RemoteReference & RegExpLocalValue;
 
-  export type DateRemoteValue = DateLocalValue & RemoteReference;
+  export type DateRemoteValue = RemoteReference & DateLocalValue;
 
   export type MapRemoteValue = RemoteReference & {
     type: 'map';
