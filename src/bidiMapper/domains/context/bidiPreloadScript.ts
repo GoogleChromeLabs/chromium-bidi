@@ -103,10 +103,11 @@ export class BidiPreloadScript {
   }
 
   /**
-   * Immediately runs the script on the given target.
+   * Schedule the script to be run right after
+   * `Runtime.runIfWaitingForDebugger`, but does not wait for result.
    */
-  async evaluateInTarget(cdpTarget: CdpTarget) {
-    await cdpTarget.cdpClient.sendCommand('Runtime.evaluate', {
+  scheduleEvaluateInTarget(cdpTarget: CdpTarget) {
+    void cdpTarget.cdpClient.sendCommand('Runtime.evaluate', {
       expression: `(${this.#functionDeclaration})();`,
     });
   }
@@ -128,7 +129,7 @@ export class BidiPreloadScript {
   }
 
   /**
-   * Removes the provided cdp target from the list of preload scripts.
+   * Removes the provided cdp target from the list of cdp preload scripts.
    */
   async cdpTargetIsGone(cdpTargetId: string) {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(

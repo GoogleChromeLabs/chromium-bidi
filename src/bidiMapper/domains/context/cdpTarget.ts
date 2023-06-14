@@ -173,8 +173,9 @@ export class CdpTarget {
       contextIds: [null, this.#parentTargetId],
     })) {
       await script.initInTarget(this);
-      // Upon attaching to a new target, run preload scripts on each execution context before `Runtime.runIfWaitingForDebugger`.
-      await script.evaluateInTarget(this);
+      // Upon attaching to a new target, schedule running preload scripts right
+      // after `Runtime.runIfWaitingForDebugger`, but don't wait for the result.
+      script.scheduleEvaluateInTarget(this);
     }
   }
 }
