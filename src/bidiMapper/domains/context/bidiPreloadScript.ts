@@ -46,6 +46,7 @@ export class BidiPreloadScript {
   readonly #functionDeclaration: string;
   /** Browsing context ID. */
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
+  /** Targets, in which the preload script is initialized. */
   readonly #targetIds: Set<string> = new Set();
 
   get id(): string {
@@ -78,11 +79,9 @@ export class BidiPreloadScript {
    * Adds the script to the given CDP targets by calling the
    * `Page.addScriptToEvaluateOnNewDocument` command.
    */
-  async initInTargets(cdpTargets: Set<CdpTarget>) {
+  async initInTargets(cdpTargets: Iterable<CdpTarget>) {
     await Promise.all(
-      Array.from(cdpTargets.values()).map((cdpTarget) =>
-        this.initInTarget(cdpTarget)
-      )
+      Array.from(cdpTargets).map((cdpTarget) => this.initInTarget(cdpTarget))
     );
   }
 
