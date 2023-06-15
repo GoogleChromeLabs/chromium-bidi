@@ -77,7 +77,7 @@ export class BidiPreloadScript {
     this.#contextId = params.context ?? null;
   }
 
-  /** Channels to be added as arguments to the preload script. */
+  /** Channels of the preload script. */
   get channels(): ChannelProxy[] {
     return this.#channels;
   }
