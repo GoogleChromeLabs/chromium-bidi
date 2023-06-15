@@ -20,7 +20,7 @@ from test_helpers import (AnyExtending, execute_command, get_tree,
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_nonExistingContext_exceptionReturned(
+async def test_preloadScript_add_nonExistingContext_exceptionReturned(
         websocket, context_id):
     DUMMY_CONTEXT = 'UNKNOWN_CONTEXT_ID'
     assert DUMMY_CONTEXT != context_id
@@ -41,7 +41,8 @@ async def test_addPreloadScript_nonExistingContext_exceptionReturned(
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_setGlobalVariable(websocket, context_id, html):
+async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
+                                                   html):
     result = await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
@@ -78,7 +79,7 @@ async def test_addPreloadScript_setGlobalVariable(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_logging(websocket, context_id, html):
+async def test_preloadScript_add_logging(websocket, context_id, html):
     await subscribe(websocket, "log.entryAdded")
 
     result = await execute_command(
@@ -119,7 +120,7 @@ async def test_addPreloadScript_logging(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_multipleScriptsAddedToSameContext(
+async def test_preloadScript_add_multipleScriptsAddedToSameContext(
         websocket, context_id, html):
     await execute_command(
         websocket, {
@@ -164,7 +165,7 @@ async def test_addPreloadScript_multipleScriptsAddedToSameContext(
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_sameScript_multipleTimes_addedToSameContext(
+async def test_preloadScript_add_sameScript_multipleTimes_addedToSameContext(
         websocket, context_id, html):
     EXPRESSION = "() => { window.foo1 = (window.foo1 ?? 0) + 1; }"
 
@@ -219,9 +220,9 @@ async def test_addPreloadScript_sameScript_multipleTimes_addedToSameContext(
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_loadedInNewIframes(websocket, context_id,
-                                                   url_all_origins, html,
-                                                   read_sorted_messages):
+async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
+                                                    url_all_origins, html,
+                                                    read_sorted_messages):
     await subscribe(websocket, "log.entryAdded")
 
     await execute_command(
@@ -293,7 +294,7 @@ async def test_addPreloadScript_loadedInNewIframes(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_loadedInNewIframes_withChildScript(
+async def test_preloadScript_add_loadedInNewIframes_withChildScript(
         websocket, context_id, html):
     await subscribe(websocket, "log.entryAdded")
 
@@ -375,7 +376,7 @@ async def test_addPreloadScript_loadedInNewIframes_withChildScript(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("globally", [True, False])
-async def test_addPreloadScript_loadedInMultipleContexts(
+async def test_preloadScript_add_loadedInMultipleContexts(
         websocket, context_id, globally, html):
     await execute_command(
         websocket, {
@@ -413,7 +414,7 @@ async def test_addPreloadScript_loadedInMultipleContexts(
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScriptGlobally_loadedInNewContexts(
+async def test_preloadScript_addGlobally_loadedInNewContexts(
         websocket, context_id, create_context, html):
     await execute_command(
         websocket, {
@@ -489,7 +490,7 @@ async def test_addPreloadScriptGlobally_loadedInNewContexts(
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScriptGlobally_loadedInMultipleContexts_withIframes(
+async def test_preloadScript_addGlobally_loadedInMultipleContexts_withIframes(
         websocket, context_id, url_all_origins, html):
     if url_all_origins in [
             'https://example.com/', 'data:text/html,<h2>child page</h2>'
@@ -562,7 +563,7 @@ async def test_addPreloadScriptGlobally_loadedInMultipleContexts_withIframes(
 
 
 @pytest.mark.asyncio
-async def test_removePreloadScript_nonExistingScript_fails(websocket):
+async def test_preloadScript_remove_nonExistingScript_fails(websocket):
     with pytest.raises(Exception) as exception_info:
         await execute_command(websocket, {
             "method": "script.removePreloadScript",
@@ -577,7 +578,7 @@ async def test_removePreloadScript_nonExistingScript_fails(websocket):
 
 
 @pytest.mark.asyncio
-async def test_removePreloadScript_addAndRemoveIsNoop_secondRemoval_fails(
+async def test_preloadScript_remove_addAndRemoveIsNoop_secondRemoval_fails(
         websocket, context_id, html):
     result = await execute_command(
         websocket, {
@@ -638,7 +639,7 @@ async def test_removePreloadScript_addAndRemoveIsNoop_secondRemoval_fails(
 
 
 @pytest.mark.asyncio
-async def test_preload_script_channel(websocket, context_id, html):
+async def test_preloadScript_with_channel(websocket, context_id, html):
     await subscribe(websocket, "script.message")
 
     result = await execute_command(
