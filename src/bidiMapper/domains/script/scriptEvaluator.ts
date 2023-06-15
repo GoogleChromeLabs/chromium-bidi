@@ -431,13 +431,12 @@ export class ScriptEvaluator {
       }
 
       case 'channel': {
-        const channel = await ChannelProxy.init(
+        const channelProxy = new ChannelProxy(
           argumentValue.value,
-          this.#eventManager,
-          realm
+          this.#eventManager
         );
-
-        return {objectId: channel.sendMessageHandle};
+        const channelProxySendMessageHandle = await channelProxy.init(realm);
+        return {objectId: channelProxySendMessageHandle};
       }
 
       // TODO(#375): Dispose of nested objects.

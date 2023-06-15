@@ -31,23 +31,15 @@ import Handle = CommonDataTypes.Handle;
 export class ChannelProxy {
   readonly #channel: Script.ChannelProperties;
   readonly #eventManager: IEventManager;
-  readonly #realm: Realm;
-  readonly #channelHandle: CommonDataTypes.Handle;
-  readonly #sendMessageHandle: CommonDataTypes.Handle;
 
-  private constructor(
-    channelHandle: CommonDataTypes.Handle,
-    sendMessageHandle: CommonDataTypes.Handle,
-    channel: Script.ChannelProperties,
-    eventManager: IEventManager,
-    realm: Realm
-  ) {
+  constructor(channel: Script.ChannelProperties, eventManager: IEventManager) {
     if (
       ![0, null, undefined].includes(channel.serializationOptions?.maxDomDepth)
-    )
+    ) {
       throw new Error(
         'serializationOptions.maxDomDepth other than 0 or null is not supported'
       );
+    }
 
     if (
       ![undefined, 'none'].includes(
@@ -61,39 +53,21 @@ export class ChannelProxy {
 
     this.#channel = channel;
     this.#eventManager = eventManager;
-    this.#realm = realm;
-    this.#channelHandle = channelHandle;
-    this.#sendMessageHandle = sendMessageHandle;
   }
 
-  static async init(
-    channel: Script.ChannelProperties,
-    eventManager: IEventManager,
-    realm: Realm
-  ): Promise<ChannelProxy> {
+  /**
+   * Initialises creates a channel proxy in the given realm, initialises
+   * listener and returns a handle to `sendMessage` delegate.
+   * */
+  async init(realm: Realm): Promise<Handle> {
     const channelHandle = await ChannelProxy.#createHandle(realm);
     const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(
       realm,
       channelHandle
     );
 
-    const channelProxy = new ChannelProxy(
-      channelHandle,
-      sendMessageHandle,
-      channel,
-      eventManager,
-      realm
-    );
-
-    void channelProxy.initChannelListener();
-    return channelProxy;
-  }
-
-  /**
-   * Returns a handle to the delegate sending message.
-   */
-  get sendMessageHandle(): CommonDataTypes.Handle {
-    return this.#sendMessageHandle;
+    void this.#initChannelListener(realm, channelHandle);
+    return sendMessageHandle;
   }
 
   static async #createHandle(realm: Realm): Promise<CommonDataTypes.Handle> {
@@ -169,12 +143,12 @@ export class ChannelProxy {
     return sendMessageArgResult.result.objectId!;
   }
 
-  async initChannelListener() {
+  async #initChannelListener(realm: Realm, channelHandle: Handle) {
     // TODO(#294): Remove this loop after the realm is destroyed.
     // Rely on the CDP throwing exception in such a case.
     // noinspection InfiniteLoopJS
     for (;;) {
-      const message = await this.#realm.cdpClient.sendCommand(
+      const message = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
           functionDeclaration: String(
@@ -183,11 +157,11 @@ export class ChannelProxy {
           ),
           arguments: [
             {
-              objectId: this.#channelHandle,
+              objectId: channelHandle,
             },
           ],
           awaitPromise: true,
-          executionContextId: this.#realm.executionContextId,
+          executionContextId: realm.executionContextId,
           serializationOptions: {
             serialization: 'deep',
             ...(this.#channel.serializationOptions?.maxObjectDepth ===
@@ -204,17 +178,17 @@ export class ChannelProxy {
           method: Script.EventNames.MessageEvent,
           params: {
             channel: this.#channel.channel,
-            data: this.#realm.cdpToBidiValue(
+            data: realm.cdpToBidiValue(
               message,
               this.#channel.ownership ?? 'none'
             ),
             source: {
-              realm: this.#realm.realmId,
-              context: this.#realm.browsingContextId,
+              realm: realm.realmId,
+              context: realm.browsingContextId,
             },
           },
         },
-        this.#realm.browsingContextId
+        realm.browsingContextId
       );
     }
   }
