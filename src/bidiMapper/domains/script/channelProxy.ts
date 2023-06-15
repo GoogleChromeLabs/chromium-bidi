@@ -23,16 +23,17 @@ import type {Realm} from './realm.js';
 
 import Handle = CommonDataTypes.Handle;
 
+import {uuidv4} from '../../../utils/uuid';
+
 /**
  * Used to send messages from realm to BiDi user.
- * After initialization, use `sendMessageHandle` to get a handle to the delegate
- * in the realm, which can be used to send message.
  */
 export class ChannelProxy {
-  readonly #channel: Script.ChannelProperties;
-  readonly #eventManager: IEventManager;
+  readonly #properties: Script.ChannelProperties;
 
-  constructor(channel: Script.ChannelProperties, eventManager: IEventManager) {
+  readonly #id = uuidv4();
+
+  constructor(channel: Script.ChannelProperties) {
     if (
       ![0, null, undefined].includes(channel.serializationOptions?.maxDomDepth)
     ) {
@@ -51,63 +52,108 @@ export class ChannelProxy {
       );
     }
 
-    this.#channel = channel;
-    this.#eventManager = eventManager;
+    this.#properties = channel;
   }
 
   /**
-   * Initialises creates a channel proxy in the given realm, initialises
-   * listener and returns a handle to `sendMessage` delegate.
+   * Creates a channel proxy in the given realm, initialises listener and
+   * returns a handle to `sendMessage` delegate.
    * */
-  async init(realm: Realm): Promise<Handle> {
-    const channelHandle = await ChannelProxy.#createHandle(realm);
+  async init(realm: Realm, eventManager: IEventManager): Promise<Handle> {
+    const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
     const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(
       realm,
       channelHandle
     );
 
-    void this.#initChannelListener(realm, channelHandle);
+    void this.#startListener(realm, channelHandle, eventManager);
     return sendMessageHandle;
   }
 
-  static async #createHandle(realm: Realm): Promise<CommonDataTypes.Handle> {
-    const createChannelHandleResult = await realm.cdpClient.sendCommand(
-      'Runtime.callFunctionOn',
+  /** Gets a ChannelProxy from window and returns its handle. */
+  async startListenerFromWindow(realm: Realm, eventManager: IEventManager) {
+    const channelHandle = await this.#getHandleFromWindow(realm);
+    void this.#startListener(realm, channelHandle, eventManager);
+  }
+
+  /**
+   * Returns a handle of ChannelProxy from window's property which was set there
+   * by `getEvalInWindowStr`.
+   */
+  async #getHandleFromWindow(realm: Realm) {
+    const channelHandleResult = await realm.cdpClient.sendCommand(
+      'Runtime.evaluate',
       {
-        functionDeclaration: String(() => {
-          const queue: unknown[] = [];
-          let queueNonEmptyResolver: null | (() => void) = null;
+        expression: `(()=>{
+          const result = window['${this.#id}'];
+          delete window['${this.#id}'];
+          return result;
+      })()`,
+        contextId: realm.executionContextId,
+        serializationOptions: {
+          serialization: 'idOnly',
+        },
+      }
+    );
+    if (
+      channelHandleResult.exceptionDetails !== undefined ||
+      channelHandleResult.result.objectId === undefined
+    ) {
+      throw new Error(`ChannelHandle is not found in window["${this.#id}"]`);
+    }
+    return channelHandleResult.result.objectId;
+  }
 
-          return {
-            /**
-             * Gets a promise, which is resolved as soon as a message occurs
-             * in the queue.
-             */
-            async getMessage(): Promise<unknown> {
-              const onMessage =
-                queue.length > 0
-                  ? Promise.resolve()
-                  : new Promise<void>((resolve) => {
-                      queueNonEmptyResolver = resolve;
-                    });
-              await onMessage;
-              return queue.shift();
-            },
+  /**
+   * Evaluation string which creates a ChannelProxy object on the client side.
+   */
+  static #createChannelProxyEvalStr() {
+    const functionStr = String(() => {
+      const queue: unknown[] = [];
+      let queueNonEmptyResolver: null | (() => void) = null;
 
-            /**
-             * Adds a message to the queue.
-             * Resolves the pending promise if needed.
-             */
-            sendMessage(message: string) {
-              queue.push(message);
-              if (queueNonEmptyResolver !== null) {
-                queueNonEmptyResolver();
-                queueNonEmptyResolver = null;
-              }
-            },
-          };
-        }),
-        executionContextId: realm.executionContextId,
+      return {
+        /**
+         * Gets a promise, which is resolved as soon as a message occurs
+         * in the queue.
+         */
+        async getMessage(): Promise<unknown> {
+          const onMessage: Promise<void> =
+            queue.length > 0
+              ? Promise.resolve()
+              : new Promise<void>((resolve) => {
+                  queueNonEmptyResolver = resolve;
+                });
+          await onMessage;
+          return queue.shift();
+        },
+
+        /**
+         * Adds a message to the queue.
+         * Resolves the pending promise if needed.
+         */
+        sendMessage(message: string) {
+          queue.push(message);
+          if (queueNonEmptyResolver !== null) {
+            queueNonEmptyResolver();
+            queueNonEmptyResolver = null;
+          }
+        },
+      };
+    });
+
+    return `(${functionStr})()`;
+  }
+
+  /** Creates a ChannelProxy in the given realm. */
+  static async #createAndGetHandleInRealm(
+    realm: Realm
+  ): Promise<CommonDataTypes.Handle> {
+    const createChannelHandleResult = await realm.cdpClient.sendCommand(
+      'Runtime.evaluate',
+      {
+        expression: this.#createChannelProxyEvalStr(),
+        contextId: realm.executionContextId,
         serializationOptions: {
           serialization: 'idOnly',
         },
@@ -118,9 +164,13 @@ export class ChannelProxy {
         `Failed to create channel handle: ${createChannelHandleResult.exceptionDetails}`
       );
     }
-    return createChannelHandleResult.result.objectId!;
+    if (createChannelHandleResult.result.objectId === undefined) {
+      throw new Error(`Cannot create chanel`);
+    }
+    return createChannelHandleResult.result.objectId;
   }
 
+  /** Gets a handle to `sendMessage` delegate from the ChanelProxy handle. */
   static async #createSendMessageHandle(
     realm: Realm,
     channelHandle: CommonDataTypes.Handle
@@ -143,7 +193,12 @@ export class ChannelProxy {
     return sendMessageArgResult.result.objectId!;
   }
 
-  async #initChannelListener(realm: Realm, channelHandle: Handle) {
+  /** Starts listening for the channel events of the provided ChannelProxy. */
+  async #startListener(
+    realm: Realm,
+    channelHandle: Handle,
+    eventManager: IEventManager
+  ) {
     // TODO(#294): Remove this loop after the realm is destroyed.
     // Rely on the CDP throwing exception in such a case.
     // noinspection InfiniteLoopJS
@@ -164,23 +219,26 @@ export class ChannelProxy {
           executionContextId: realm.executionContextId,
           serializationOptions: {
             serialization: 'deep',
-            ...(this.#channel.serializationOptions?.maxObjectDepth ===
+            ...(this.#properties.serializationOptions?.maxObjectDepth ===
               undefined ||
-            this.#channel.serializationOptions.maxObjectDepth === null
+            this.#properties.serializationOptions.maxObjectDepth === null
               ? {}
-              : {maxDepth: this.#channel.serializationOptions.maxObjectDepth}),
+              : {
+                  maxDepth:
+                    this.#properties.serializationOptions.maxObjectDepth,
+                }),
           },
         }
       );
 
-      this.#eventManager.registerEvent(
+      eventManager.registerEvent(
         {
           method: Script.EventNames.MessageEvent,
           params: {
-            channel: this.#channel.channel,
+            channel: this.#properties.channel,
             data: realm.cdpToBidiValue(
               message,
-              this.#channel.ownership ?? 'none'
+              this.#properties.ownership ?? 'none'
             ),
             source: {
               realm: realm.realmId,
@@ -191,5 +249,22 @@ export class ChannelProxy {
         realm.browsingContextId
       );
     }
+  }
+
+  /**
+   * String to be evaluated to create a ProxyChannel and put it to window.
+   * Returns the delegate `sendMessage`. Used to provide an argument for preload
+   * script. Does the following:
+   * 1. Creates a ChannelProxy.
+   * 2. Puts the ChannelProxy to window['${this.#id}'].
+   * 3. Returns the delegate `sendMessage` of the created ChannelProxy.
+   */
+  getEvalInWindowStr() {
+    // TODO: make window['${this.#id}'] non-iterable.
+    return `(()=>{
+      const channel = ${ChannelProxy.#createChannelProxyEvalStr()};
+      window['${this.#id}'] = channel;
+      return channel.sendMessage;
+    })()`;
   }
 }

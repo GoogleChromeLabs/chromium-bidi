@@ -26,6 +26,7 @@ import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
 
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
+import {ChannelProxy} from '../script/channelProxy';
 
 export class CdpTarget {
   readonly #targetId: string;
@@ -166,6 +167,18 @@ export class CdpTarget {
         null
       );
     });
+  }
+
+  /**
+   * All the ProxyChannels from all the preload scripts of the given
+   * BrowsingContext.
+   */
+  getChannels(contextId: string): ChannelProxy[] {
+    return this.#preloadScriptStorage
+      .findPreloadScripts({
+        contextIds: [null, contextId],
+      })
+      .flatMap((script) => script.channels);
   }
 
   /** Loads all top-level and parent preload scripts. */

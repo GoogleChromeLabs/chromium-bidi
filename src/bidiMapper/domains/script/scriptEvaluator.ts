@@ -431,11 +431,11 @@ export class ScriptEvaluator {
       }
 
       case 'channel': {
-        const channelProxy = new ChannelProxy(
-          argumentValue.value,
+        const channelProxy = new ChannelProxy(argumentValue.value);
+        const channelProxySendMessageHandle = await channelProxy.init(
+          realm,
           this.#eventManager
         );
-        const channelProxySendMessageHandle = await channelProxy.init(realm);
         return {objectId: channelProxySendMessageHandle};
       }
 
