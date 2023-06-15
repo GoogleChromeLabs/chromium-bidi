@@ -74,6 +74,10 @@ export class BidiPreloadScript {
     this.#contextId = params.context ?? null;
   }
 
+  /**
+   * Adds the script to the given CDP targets by calling the
+   * `Page.addScriptToEvaluateOnNewDocument` command.
+   */
   async initInTargets(cdpTargets: Set<CdpTarget>) {
     await Promise.all(
       Array.from(cdpTargets.values()).map((cdpTarget) =>
@@ -83,7 +87,7 @@ export class BidiPreloadScript {
   }
 
   /**
-   * Adds the script to the given CDP target by
+   * Adds the script to the given CDP target by calling the
    * `Page.addScriptToEvaluateOnNewDocument` command.
    */
   async initInTarget(cdpTarget: CdpTarget) {
