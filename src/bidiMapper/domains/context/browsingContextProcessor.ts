@@ -341,13 +341,7 @@ export class BrowsingContextProcessor {
       );
     }
 
-    for (const script of scripts) {
-      await script.remove();
-    }
-
-    this.#preloadScriptStorage.removeBiDiPreloadScripts({
-      id: bidiId,
-    });
+    await Promise.all(scripts.map((script) => script.remove()));
 
     return {result: {}};
   }
