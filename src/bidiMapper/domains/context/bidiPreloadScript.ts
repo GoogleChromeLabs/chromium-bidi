@@ -103,7 +103,7 @@ export class BidiPreloadScript {
   }
 
   /**
-   * Schedule the script to be run right after
+   * Schedules the script to be run right after
    * `Runtime.runIfWaitingForDebugger`, but does not wait for result.
    */
   scheduleEvaluateInTarget(cdpTarget: CdpTarget) {
@@ -113,7 +113,7 @@ export class BidiPreloadScript {
   }
 
   /**
-   * Removes the script from all the CDP targets.
+   * Removes this script from all CDP targets.
    */
   async remove() {
     for (const cdpPreloadScript of this.#cdpPreloadScripts) {
