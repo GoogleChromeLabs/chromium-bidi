@@ -85,7 +85,6 @@ export class BidiPreloadScript {
   /**
    * Adds the script to the given CDP target by
    * `Page.addScriptToEvaluateOnNewDocument` command.
-   * @param cdpTarget
    */
   async initInTarget(cdpTarget: CdpTarget) {
     const addCdpPreloadScriptResult = await cdpTarget.cdpClient.sendCommand(
