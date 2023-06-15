@@ -52,8 +52,8 @@ export namespace Message {
     channel?: Script.Channel;
   };
 
-  export type CommandRequest = Pick<RawCommandRequest, 'id'> & BiDiCommand;
-  export type CommandResponse = Pick<RawCommandRequest, 'id'> & ResultData;
+  export type CommandRequest = BiDiCommand & Pick<RawCommandRequest, 'id'>;
+  export type CommandResponse = ResultData & Pick<RawCommandRequest, 'id'>;
 
   export type EmptyCommand = never;
   export type EmptyParams = Record<string, never>;
@@ -523,7 +523,7 @@ export namespace Script {
     | GetRealmsResult
     | DisownResult
     | AddPreloadScriptResult;
-  export type Event = MessageEvent;
+  export type Event = MessageEvent | RealmCreatedEvent;
 
   export type Realm = string;
 
@@ -787,8 +787,21 @@ export namespace Script {
     Script.MessageParameters
   >;
 
+  export type RealmCreatedEvent = EventResponse<
+    EventNames.RealmCreated,
+    RealmInfo
+  >;
+
+  export type RealmCreated = {
+    method: 'script.realmCreated';
+    params: RealmInfo;
+  };
+
   export enum EventNames {
+    // keep-sorted start;
     MessageEvent = 'script.message',
+    RealmCreated = 'script.realmCreated',
+    // keep-sorted end;
   }
 
   export const AllEvents = 'script';
@@ -1380,23 +1393,23 @@ export namespace Input {
     value: string;
   };
 
-  export type PointerUpAction = {
+  export type PointerUpAction = PointerCommonProperties & {
     type: ActionType.PointerUp;
     button: number;
-  } & PointerCommonProperties;
+  };
 
-  export type PointerDownAction = {
+  export type PointerDownAction = PointerCommonProperties & {
     type: ActionType.PointerDown;
     button: number;
-  } & PointerCommonProperties;
+  };
 
-  export type PointerMoveAction = {
+  export type PointerMoveAction = PointerCommonProperties & {
     type: ActionType.PointerMove;
     x: number;
     y: number;
     duration?: number;
     origin?: Origin;
-  } & PointerCommonProperties;
+  };
 
   export type WheelScrollAction = {
     type: ActionType.Scroll;
