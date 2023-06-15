@@ -108,9 +108,9 @@ describe('PreloadScriptStorage', () => {
         const preloadScript1 = createPreloadScript(MOCKED_UUID_1, null);
         preloadScriptStorage.addPreloadScript(preloadScript1);
 
-        expect(preloadScriptStorage.findPreloadScripts(filter)[0]).to.equal(
-          preloadScript1
-        );
+        expect(preloadScriptStorage.findPreloadScripts(filter)).to.deep.equal([
+          preloadScript1,
+        ]);
       });
 
       it(`remove preload scripts by in ${contextDescription} by ${filterDescription}`, () => {
