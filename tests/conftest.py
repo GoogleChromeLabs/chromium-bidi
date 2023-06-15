@@ -125,8 +125,8 @@ def url_all_origins(request):
 
 @pytest.fixture
 def read_sorted_messages(websocket):
-    # Reads the given number of messages from the websocket, and returns them
-    # in consistent order.
+    """Reads the given number of messages from the websocket, and returns them
+    in consistent order."""
 
     async def read_sorted_messages(message_count):
         messages = []
