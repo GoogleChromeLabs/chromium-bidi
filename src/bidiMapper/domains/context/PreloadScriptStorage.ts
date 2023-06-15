@@ -19,7 +19,8 @@ import type {CommonDataTypes} from '../../../protocol/protocol.js';
 import type {CdpTarget} from './cdpTarget.js';
 import {BidiPreloadScript} from './bidiPreloadScript.js';
 
-/** BidiPreloadScripts can be filtered by either context ID, BiDi ID or
+/**
+ * BidiPreloadScripts can be filtered by either context ID, BiDi ID or
  * target ID.
  */
 export type BidiPreloadScriptFilter = Partial<
