@@ -343,6 +343,10 @@ export class BrowsingContextProcessor {
 
     await Promise.all(scripts.map((script) => script.remove()));
 
+    this.#preloadScriptStorage.removeBiDiPreloadScripts({
+      id: bidiId,
+    });
+
     return {result: {}};
   }
 
