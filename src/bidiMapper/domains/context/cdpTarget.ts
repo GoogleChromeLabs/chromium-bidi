@@ -26,7 +26,7 @@ import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
 
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
-import {ChannelProxy} from '../script/channelProxy';
+import type {ChannelProxy} from '../script/channelProxy';
 
 export class CdpTarget {
   readonly #targetId: string;
