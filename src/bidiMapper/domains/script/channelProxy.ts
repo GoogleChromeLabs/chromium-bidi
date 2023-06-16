@@ -18,12 +18,11 @@
 
 import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
+import {uuidv4} from '../../../utils/uuid';
 
 import type {Realm} from './realm.js';
 
 import Handle = CommonDataTypes.Handle;
-
-import {uuidv4} from '../../../utils/uuid';
 
 /**
  * Used to send messages from realm to BiDi user.
@@ -74,34 +73,6 @@ export class ChannelProxy {
   async startListenerFromWindow(realm: Realm, eventManager: IEventManager) {
     const channelHandle = await this.#getHandleFromWindow(realm);
     void this.#startListener(realm, channelHandle, eventManager);
-  }
-
-  /**
-   * Returns a handle of ChannelProxy from window's property which was set there
-   * by `getEvalInWindowStr`.
-   */
-  async #getHandleFromWindow(realm: Realm) {
-    const channelHandleResult = await realm.cdpClient.sendCommand(
-      'Runtime.evaluate',
-      {
-        expression: `(()=>{
-          const result = window['${this.#id}'];
-          delete window['${this.#id}'];
-          return result;
-      })()`,
-        contextId: realm.executionContextId,
-        serializationOptions: {
-          serialization: 'idOnly',
-        },
-      }
-    );
-    if (
-      channelHandleResult.exceptionDetails !== undefined ||
-      channelHandleResult.result.objectId === undefined
-    ) {
-      throw new Error(`ChannelHandle is not found in window["${this.#id}"]`);
-    }
-    return channelHandleResult.result.objectId;
   }
 
   /**
@@ -159,12 +130,10 @@ export class ChannelProxy {
         },
       }
     );
-    if (createChannelHandleResult.exceptionDetails) {
-      throw new Error(
-        `Failed to create channel handle: ${createChannelHandleResult.exceptionDetails}`
-      );
-    }
-    if (createChannelHandleResult.result.objectId === undefined) {
+    if (
+      createChannelHandleResult.exceptionDetails ||
+      createChannelHandleResult.result.objectId === undefined
+    ) {
       throw new Error(`Cannot create chanel`);
     }
     return createChannelHandleResult.result.objectId;
@@ -190,6 +159,7 @@ export class ChannelProxy {
         },
       }
     );
+    // TODO: check for exceptionDetails.
     return sendMessageArgResult.result.objectId!;
   }
 
@@ -231,6 +201,12 @@ export class ChannelProxy {
         }
       );
 
+      if (message.exceptionDetails) {
+        // TODO: add logging.
+        // TODO: check if a error should be thrown.
+        return;
+      }
+
       eventManager.registerEvent(
         {
           method: Script.EventNames.MessageEvent,
@@ -252,19 +228,84 @@ export class ChannelProxy {
   }
 
   /**
+   * Returns a handle of ChannelProxy from window's property which was set there
+   * by `getEvalInWindowStr`. If window property is not set yet, sets a promise
+   * resolver to the window property, so that `getEvalInWindowStr` can resolve
+   * the promise later on with the channel.
+   * This is needed because `getEvalInWindowStr` can be called before or
+   * after this method.
+   */
+  async #getHandleFromWindow(realm: Realm) {
+    const channelHandleResult = await realm.cdpClient.sendCommand(
+      'Runtime.callFunctionOn',
+      {
+        functionDeclaration: String((id: string) => {
+          // Needed for type script.
+          const w = window as unknown as {
+            [key: string]: unknown;
+          };
+          if (w[id] === undefined) {
+            // The channelProxy is not created yet. Create a promise, put the
+            // resolver to window property and return the promise.
+            // `getEvalInWindowStr` will resolve the promise later.
+            return new Promise((resolve) => (w[id] = resolve));
+          } else {
+            // The channelProxy is already created by `getEvalInWindowStr` and
+            // is set into window property. Return it.
+            const channelProxy = w[id];
+            delete w[id];
+            return channelProxy;
+          }
+        }),
+        arguments: [{value: this.#id}],
+        executionContextId: realm.executionContextId,
+        awaitPromise: true,
+        serializationOptions: {
+          serialization: 'idOnly',
+        },
+      }
+    );
+    if (
+      channelHandleResult.exceptionDetails !== undefined ||
+      channelHandleResult.result.objectId === undefined
+    ) {
+      throw new Error(`ChannelHandle is not found in window["${this.#id}"]`);
+    }
+    return channelHandleResult.result.objectId;
+  }
+
+  /**
    * String to be evaluated to create a ProxyChannel and put it to window.
    * Returns the delegate `sendMessage`. Used to provide an argument for preload
    * script. Does the following:
    * 1. Creates a ChannelProxy.
-   * 2. Puts the ChannelProxy to window['${this.#id}'].
+   * 2. Puts the ChannelProxy to window['${this.#id}'] or resolves the promise
+   *    by calling delegate stored in window['${this.#id}'].
+   *    This is needed because `#getHandleFromWindow` can be called before or
+   *    after this method.
    * 3. Returns the delegate `sendMessage` of the created ChannelProxy.
    */
   getEvalInWindowStr() {
-    // TODO: make window['${this.#id}'] non-iterable.
-    return `(()=>{
-      const channel = ${ChannelProxy.#createChannelProxyEvalStr()};
-      window['${this.#id}'] = channel;
-      return channel.sendMessage;
-    })()`;
+    const delegate = String(
+      (id: string, channelProxy: {sendMessage: unknown}) => {
+        // Needed for type script.
+        const w = window as unknown as {
+          [key: string]: unknown;
+        };
+        if (w[id] === undefined) {
+          // `#getHandleFromWindow` is not initialized yet, and will get the
+          // channelProxy later.
+          w[id] = channelProxy;
+        } else {
+          // `#getHandleFromWindow` is already set a delegate to window property
+          // and is waiting for it to be called with the channelProxy.
+          (w[id] as (c: unknown) => void)(channelProxy);
+          delete w[id];
+        }
+        return channelProxy.sendMessage;
+      }
+    );
+    const channelProxyEval = ChannelProxy.#createChannelProxyEvalStr();
+    return `(${delegate})('${this.#id}',${channelProxyEval})`;
   }
 }

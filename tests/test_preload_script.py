@@ -650,7 +650,8 @@ async def test_preloadScript_remove_addAndRemoveIsNoop_secondRemoval_fails(
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_with_channel(websocket, context_id, html):
+async def test_preloadScript_channel_navigate(websocket, context_id, html,
+                                              read_sorted_messages):
     await subscribe(websocket, "script.message")
 
     result = await execute_command(
@@ -687,15 +688,10 @@ async def test_preloadScript_with_channel(websocket, context_id, html):
             }
         })
 
-    # TODO: fix events order.
+    [command_result, channel_message] = await read_sorted_messages(2)
+    assert command_result == {"id": command_id, "result": ANY_DICT}
 
-    # Assert navigation is finished.
-    result = await read_JSON_message(websocket)
-    assert result == AnyExtending({"id": command_id})
-
-    # Message event should happen before navigation.
-    result = await read_JSON_message(websocket)
-    assert result == AnyExtending({
+    assert channel_message == AnyExtending({
         "method": "script.message",
         "params": {
             "channel": "channel_name",
@@ -705,6 +701,55 @@ async def test_preloadScript_with_channel(websocket, context_id, html):
             "source": {
                 "realm": ANY_STR,
                 "context": context_id,
+            },
+        }
+    })
+
+
+@pytest.mark.asyncio
+async def test_preloadScript_channel_newContext(websocket, context_id, html,
+                                                read_sorted_messages):
+    await subscribe(websocket, "script.message")
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": """
+                (channel) => {
+                    channel({'foo': 'bar', 'baz': {'1': 2}});
+                }""",
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "channel_name"
+                    },
+                }, ],
+            }
+        })
+    assert result == {'script': ANY_STR}
+
+    command_id = await send_JSON_command(websocket, {
+        "method": "browsingContext.create",
+        "params": {
+            "type": "tab"
+        }
+    })
+
+    [command_result, channel_message] = await read_sorted_messages(2)
+    assert command_result == {"id": command_id, "result": ANY_DICT}
+    new_context_id = command_result["result"]["context"]
+
+    assert channel_message == AnyExtending({
+        "method": "script.message",
+        "params": {
+            "channel": "channel_name",
+            "data": {
+                "type": "object"
+            },
+            "source": {
+                "realm": ANY_STR,
+                "context": new_context_id,
             },
         }
     })
