@@ -87,6 +87,7 @@ if [[ "$VERBOSE" == "true" ]]; then
     --log-mach-level info
   )
 elif [[ "$HEADLESS" == "true" ]]; then
+  # Parallelization is flaky in headful mode.
   WPT_RUN_ARGS+=(
     --processes "$(nproc)"
   )
