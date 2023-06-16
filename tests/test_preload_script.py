@@ -15,8 +15,8 @@
 
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (AnyExtending, execute_command, get_tree,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (AnyExtending, execute_command, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -491,11 +491,7 @@ async def test_preloadScript_addGlobally_loadedInNewContexts(
 
 @pytest.mark.asyncio
 async def test_preloadScript_addGlobally_loadedInMultipleContexts_withIframes(
-        websocket, context_id, url_all_origins, html):
-    if url_all_origins in [
-            'https://example.com/', 'data:text/html,<h2>child page</h2>'
-    ]:
-        pytest.xfail(reason="TODO: fail")
+        websocket, context_id, url_all_origins, html, read_sorted_messages):
     await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
@@ -528,8 +524,11 @@ async def test_preloadScript_addGlobally_loadedInMultipleContexts_withIframes(
         })
     assert result["result"] == {"type": "string", "value": 'bar'}
 
+    # Needed to make sure the iFrame loaded.
+    await subscribe(websocket, "browsingContext.load")
+
     # Create a new iframe within the same context.
-    result = await execute_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
@@ -543,8 +542,20 @@ async def test_preloadScript_addGlobally_loadedInMultipleContexts_withIframes(
                 "resultOwnership": "root"
             }
         })
-    iframe_context_id = (await get_tree(
-        websocket, context_id))["contexts"][0]["children"][0]["context"]
+
+    # Depending on the URL, the iframe can be loaded before or after the script
+    # is done.
+    [command_result, browsing_context_load] = await read_sorted_messages(2)
+    assert command_result == {"id": command_id, "result": ANY_DICT}
+    assert browsing_context_load == {
+        "method": "browsingContext.load",
+        "params": AnyExtending({
+            "context": ANY_STR,
+            "url": url_all_origins
+        })
+    }
+
+    iframe_context_id = browsing_context_load["params"]["context"]
     assert iframe_context_id != context_id
 
     result = await execute_command(
