@@ -24,9 +24,8 @@ import type {IEventManager} from '../events/EventManager.js';
 import {CDP} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
-
+import type {ChannelProxy} from '../script/channelProxy.js';
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
-import type {ChannelProxy} from '../script/channelProxy';
 
 export class CdpTarget {
   readonly #targetId: string;

@@ -18,9 +18,8 @@
 
 import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
-
+import {ChannelProxy} from '../script/channelProxy.js';
 import type {CdpTarget} from './cdpTarget.js';
-import {ChannelProxy} from '../script/channelProxy';
 
 type CdpPreloadScript = {
   /** CDP target. Includes session ID and target ID. */
@@ -105,7 +104,6 @@ export class BidiPreloadScript {
       .join(', ')}]`;
 
     return `(()=>{
-      console.log("!!@@##");
       (${this.#functionDeclaration})(...${channelsArgStr});
     })()`;
   }
@@ -158,7 +156,7 @@ export class BidiPreloadScript {
   /**
    * Removes the provided cdp target from the list of cdp preload scripts.
    */
-  async cdpTargetIsGone(cdpTargetId: string) {
+  cdpTargetIsGone(cdpTargetId: string) {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(
       (cdpPreloadScript) => cdpPreloadScript.target?.targetId !== cdpTargetId
     );
