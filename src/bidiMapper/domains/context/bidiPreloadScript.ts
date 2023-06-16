@@ -103,9 +103,7 @@ export class BidiPreloadScript {
       .map((c) => c.getEvalInWindowStr())
       .join(', ')}]`;
 
-    return `(()=>{
-      (${this.#functionDeclaration})(...${channelsArgStr});
-    })()`;
+    return `(()=>{(${this.#functionDeclaration})(...${channelsArgStr})})()`;
   }
 
   /**
