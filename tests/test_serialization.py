@@ -525,20 +525,20 @@ async def test_serialization_deserialization_date(websocket, context_id):
                 "type": "node",
                 "sharedId": ANY_SHARED_ID,
                 "value": {
+                    "childNodeCount": 0,
                     "nodeType": 3,
                     "nodeValue": "some text",
-                    "childNodeCount": 0
                 }
             }, {
                 "type": "node",
                 "sharedId": ANY_SHARED_ID,
                 "value": {
-                    "nodeType": 1,
+                    "attributes": {},
                     "childNodeCount": 1,
+                    "localName": 'h2',
+                    "namespaceURI": 'http://www.w3.org/1999/xhtml',
+                    "nodeType": 1,
                     "shadowRoot": None,
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "attributes": {}
                 }
             }]
         }
@@ -561,32 +561,32 @@ async def test_serialization_deserialization_date(websocket, context_id):
                 "type": "node",
                 "sharedId": ANY_SHARED_ID,
                 "value": {
+                    "childNodeCount": 0,
                     "nodeType": 3,
                     "nodeValue": "some text",
-                    "childNodeCount": 0,
-                    "children": []
+                    'children': []
                 }
             }, {
                 "type": "node",
                 "sharedId": ANY_SHARED_ID,
                 "value": {
-                    "nodeType": 1,
-                    "childNodeCount": 1,
-                    "shadowRoot": None,
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
                     "attributes": {},
-                    "children": [{
-                        "type": "node",
+                    "childNodeCount": 1,
+                    "localName": 'h2',
+                    "namespaceURI": 'http://www.w3.org/1999/xhtml',
+                    "nodeType": 1,
+                    "shadowRoot": None,
+                    'children': [{
+                        'type': 'node',
                         "sharedId": ANY_SHARED_ID,
-                        "value": {
-                            "nodeType": 3,
-                            "nodeValue": "some another text",
-                            "childNodeCount": 0,
-                            "children": []
+                        'value': {
+                            'childNodeCount': 0,
+                            'children': [],
+                            'nodeType': 3,
+                            'nodeValue': 'some another text',
                         }
                     }]
-                }
+                },
             }]
         }
     }),
@@ -617,7 +617,7 @@ async def test_serialization_node(websocket, context_id, html,
 
 
 @pytest.mark.asyncio
-async def test_serialization_shadow_dom(websocket, context_id, html):
+async def test_serialization_shadow_dom(websocket, context_id):
     result = await execute_command(
         websocket, {
             "method": "script.evaluate",
@@ -692,26 +692,26 @@ async def test_serialization_shadow_dom(websocket, context_id, html):
                         }]
                     }
                 }
-            },
+            }
         }, {
             "type": "node",
             "sharedId": ANY_SHARED_ID,
             "value": {
                 "nodeType": 1,
                 "childNodeCount": 0,
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "attributes": {},
+                "children": [],
                 "shadowRoot": {
                     "type": "node",
-                    "sharedId": ANY_SHARED_ID,
                     "value": {
                         "nodeType": 11,
                         "childNodeCount": 1,
                         "mode": "closed"
-                    }
-                },
-                "localName": "div",
-                "namespaceURI": "http://www.w3.org/1999/xhtml",
-                "attributes": {},
-                "children": []
+                    },
+                    "sharedId": ANY_SHARED_ID,
+                }
             }
         }]
     } == result["result"]
