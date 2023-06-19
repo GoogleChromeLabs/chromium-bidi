@@ -57,7 +57,7 @@ export class ChannelProxy {
   /**
    * Creates a channel proxy in the given realm, initialises listener and
    * returns a handle to `sendMessage` delegate.
-   * */
+   */
   async init(realm: Realm, eventManager: IEventManager): Promise<Handle> {
     const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
     const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(
@@ -103,7 +103,7 @@ export class ChannelProxy {
          * Adds a message to the queue.
          * Resolves the pending promise if needed.
          */
-        sendMessage(message: string) {
+        sendMessage(message: unknown) {
           queue.push(message);
           if (queueNonEmptyResolver !== null) {
             queueNonEmptyResolver();
@@ -134,12 +134,12 @@ export class ChannelProxy {
       createChannelHandleResult.exceptionDetails ||
       createChannelHandleResult.result.objectId === undefined
     ) {
-      throw new Error(`Cannot create chanel`);
+      throw new Error(`Cannot create channel`);
     }
     return createChannelHandleResult.result.objectId;
   }
 
-  /** Gets a handle to `sendMessage` delegate from the ChanelProxy handle. */
+  /** Gets a handle to `sendMessage` delegate from the ChannelProxy handle. */
   static async #createSendMessageHandle(
     realm: Realm,
     channelHandle: CommonDataTypes.Handle
@@ -240,7 +240,6 @@ export class ChannelProxy {
       'Runtime.callFunctionOn',
       {
         functionDeclaration: String((id: string) => {
-          // Needed for type script.
           const w = window as unknown as {
             [key: string]: unknown;
           };
@@ -269,7 +268,7 @@ export class ChannelProxy {
       channelHandleResult.exceptionDetails !== undefined ||
       channelHandleResult.result.objectId === undefined
     ) {
-      throw new Error(`ChannelHandle is not found in window["${this.#id}"]`);
+      throw new Error(`ChannelHandle not found in window["${this.#id}"]`);
     }
     return channelHandleResult.result.objectId;
   }
@@ -288,7 +287,6 @@ export class ChannelProxy {
   getEvalInWindowStr() {
     const delegate = String(
       (id: string, channelProxy: {sendMessage: unknown}) => {
-        // Needed for type script.
         const w = window as unknown as {
           [key: string]: unknown;
         };

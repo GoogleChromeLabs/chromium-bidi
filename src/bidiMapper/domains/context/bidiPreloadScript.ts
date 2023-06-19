@@ -48,7 +48,7 @@ export class BidiPreloadScript {
   /** Browsing context ID. */
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
   /** Targets, in which the preload script is initialized. */
-  readonly #targetIds: Set<string> = new Set<string>();
+  readonly #targetIds = new Set<string>();
   /** Channels to be added as arguments to functionDeclaration. */
   readonly #channels: ChannelProxy[];
 
