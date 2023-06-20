@@ -114,7 +114,7 @@ export class CdpTarget {
       // Enable Network domain, if it is enabled globally.
       // TODO: enable Network domain for OOPiF targets.
       if (this.#eventManager.isNetworkDomainEnabled) {
-        await this.enableNetworkDomain();
+        void this.enableNetworkDomain();
       }
 
       // Schedule, but don't wait for the result, as the command can be finished
@@ -124,13 +124,13 @@ export class CdpTarget {
       void this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
         enabled: true,
       });
-      await this.#cdpClient.sendCommand('Target.setAutoAttach', {
+      void this.#cdpClient.sendCommand('Target.setAutoAttach', {
         autoAttach: true,
         waitForDebuggerOnStart: true,
         flatten: true,
       });
 
-      await this.#initAndEvaluatePreloadScripts();
+      this.#initAndEvaluatePreloadScripts();
 
       await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
     } catch (error: any) {
@@ -183,7 +183,7 @@ export class CdpTarget {
   }
 
   /** Loads all top-level and parent preload scripts. */
-  async #initAndEvaluatePreloadScripts() {
+  #initAndEvaluatePreloadScripts() {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
       contextIds: [null, this.#parentTargetId],
     })) {
