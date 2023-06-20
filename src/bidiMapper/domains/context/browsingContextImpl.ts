@@ -622,23 +622,23 @@ export class BrowsingContextImpl {
     return {result: {}};
   }
 
-  async setViewport(viewport: BrowsingContext.Viewport | null): Promise<void> {
+  async setViewport(viewport: BrowsingContext.Viewport | null) {
     if (viewport === null) {
       await this.#cdpTarget.cdpClient.sendCommand(
         'Emulation.clearDeviceMetricsOverride'
       );
-      return;
+    } else {
+      await this.#cdpTarget.cdpClient.sendCommand(
+        'Emulation.setDeviceMetricsOverride',
+        {
+          width: viewport.width,
+          height: viewport.height,
+          deviceScaleFactor: 0,
+          mobile: false,
+          dontSetVisibleSize: true,
+        }
+      );
     }
-    await this.#cdpTarget.cdpClient.sendCommand(
-      'Emulation.setDeviceMetricsOverride',
-      {
-        width: viewport.width,
-        height: viewport.height,
-        deviceScaleFactor: 0,
-        mobile: false,
-        dontSetVisibleSize: true,
-      }
-    );
   }
 
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {

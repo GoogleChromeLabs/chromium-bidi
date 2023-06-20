@@ -990,10 +990,6 @@ export namespace BrowsingContext {
     params: SetViewportParameters;
   };
 
-  export type SetViewportResult = {
-    result: Record<string, never>;
-  };
-
   export type SetViewportParameters = {
     context: CommonDataTypes.BrowsingContext;
     viewport: Viewport | null;

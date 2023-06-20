@@ -19,7 +19,7 @@ from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio
-async def test_emulation_setviewport(websocket, context_id):
+async def test_set_viewport(websocket, context_id):
     await goto_url(websocket, context_id, "about:blank")
 
     await execute_command(

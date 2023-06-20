@@ -565,8 +565,8 @@ export namespace BrowsingContext {
   //   height: js-uint,
   // }
   const ViewportSchema = zod.object({
-    width: zod.number().int(),
-    height: zod.number().int(),
+    width: zod.number().int().nonnegative(),
+    height: zod.number().int().nonnegative(),
   });
 
   // browsingContext.SetViewportParameters = {
