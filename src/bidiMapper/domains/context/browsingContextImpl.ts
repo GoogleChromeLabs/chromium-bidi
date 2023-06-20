@@ -362,16 +362,23 @@ export class BrowsingContextImpl {
         if (this.id !== params.frameId) {
           return;
         }
+
+        if (params.name === 'commit') {
+          this.#loaderId = params.loaderId;
+          return;
+        }
+
+        // Ignore event from not current navigation.
+        if (params.loaderId !== this.#loaderId) {
+          return;
+        }
+
         const timestamp = BrowsingContextImpl.getTimestamp();
 
         switch (params.name) {
           case 'init':
             this.#documentChanged(params.loaderId);
             this.#deferreds.documentInitialized.resolve();
-            break;
-
-          case 'commit':
-            this.#loaderId = params.loaderId;
             break;
 
           case 'DOMContentLoaded':
@@ -407,10 +414,6 @@ export class BrowsingContextImpl {
               this.id
             );
             break;
-        }
-
-        if (params.loaderId !== this.#loaderId) {
-          return;
         }
       }
     );
