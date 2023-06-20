@@ -363,6 +363,12 @@ export class BrowsingContextImpl {
           return;
         }
 
+        if (params.name === 'init') {
+          this.#documentChanged(params.loaderId);
+          this.#deferreds.documentInitialized.resolve();
+          return;
+        }
+
         if (params.name === 'commit') {
           this.#loaderId = params.loaderId;
           return;
@@ -376,11 +382,6 @@ export class BrowsingContextImpl {
         const timestamp = BrowsingContextImpl.getTimestamp();
 
         switch (params.name) {
-          case 'init':
-            this.#documentChanged(params.loaderId);
-            this.#deferreds.documentInitialized.resolve();
-            break;
-
           case 'DOMContentLoaded':
             this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.resolve(
               params
