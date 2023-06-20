@@ -111,28 +111,41 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
+      // Scheduled commands can be finished only after the
+      // `Runtime.runIfWaitingForDebugger` is called. Collect all the command's
+      // promises, and wait for them after the `Runtime.runIfWaitingForDebugger`
+      // and before the command is finished.
+      const promises = [];
       // Enable Network domain, if it is enabled globally.
       // TODO: enable Network domain for OOPiF targets.
       if (this.#eventManager.isNetworkDomainEnabled) {
-        void this.enableNetworkDomain();
+        promises.push(this.enableNetworkDomain());
       }
 
       // Schedule, but don't wait for the result, as the command can be finished
       // only after the `Runtime.runIfWaitingForDebugger`.
-      void this.#cdpClient.sendCommand('Runtime.enable');
-      void this.#cdpClient.sendCommand('Page.enable');
-      void this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-        enabled: true,
-      });
-      void this.#cdpClient.sendCommand('Target.setAutoAttach', {
-        autoAttach: true,
-        waitForDebuggerOnStart: true,
-        flatten: true,
-      });
+      promises.push(this.#cdpClient.sendCommand('Runtime.enable'));
+      promises.push(this.#cdpClient.sendCommand('Page.enable'));
+      promises.push(
+        void this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+          enabled: true,
+        })
+      );
+      promises.push(
+        this.#cdpClient.sendCommand('Target.setAutoAttach', {
+          autoAttach: true,
+          waitForDebuggerOnStart: true,
+          flatten: true,
+        })
+      );
 
-      this.#initAndEvaluatePreloadScripts();
+      promises.push(this.#initAndEvaluatePreloadScripts());
 
-      await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
+      promises.push(
+        this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger')
+      );
+      // Wait for all the scheduled commands are finished.
+      await Promise.all(promises);
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
       if (!this.#cdpClient.isCloseError(error)) {
@@ -183,7 +196,7 @@ export class CdpTarget {
   }
 
   /** Loads all top-level and parent preload scripts. */
-  #initAndEvaluatePreloadScripts() {
+  async #initAndEvaluatePreloadScripts() {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
       contextIds: [null, this.#parentTargetId],
     })) {
@@ -191,8 +204,8 @@ export class CdpTarget {
       // preload scripts right after `Runtime.runIfWaitingForDebugger`, but
       // don't wait for the result, as the commands can be finished only after
       // the `Runtime.runIfWaitingForDebugger`.
-      void script.initInTarget(this);
       script.scheduleEvaluateInTarget(this);
+      await script.initInTarget(this);
     }
   }
 }
