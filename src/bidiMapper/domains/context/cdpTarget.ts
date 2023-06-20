@@ -112,10 +112,11 @@ export class CdpTarget {
   async #unblock() {
     try {
       // Scheduled commands can be finished only after the
-      // `Runtime.runIfWaitingForDebugger` is called. Collect all the command's
+      // `Runtime.runIfWaitingForDebugger` is called. Collect all the commands
       // promises, and wait for them after the `Runtime.runIfWaitingForDebugger`
       // and before the command is finished.
-      const promises = [];
+      const promises: Promise<unknown>[] = [];
+
       // Enable Network domain, if it is enabled globally.
       // TODO: enable Network domain for OOPiF targets.
       if (this.#eventManager.isNetworkDomainEnabled) {
@@ -127,7 +128,7 @@ export class CdpTarget {
       promises.push(this.#cdpClient.sendCommand('Runtime.enable'));
       promises.push(this.#cdpClient.sendCommand('Page.enable'));
       promises.push(
-        void this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+        this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
         })
       );
