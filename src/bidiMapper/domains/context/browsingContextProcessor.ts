@@ -482,7 +482,7 @@ export class BrowsingContextProcessor {
   ): Promise<Message.EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     if (!context.isTopLevelContext()) {
-      throw new Message.UnsupportedOperationException(
+      throw new Message.InvalidArgumentException(
         'Emulating viewport is only supported on the top-level context'
       );
     }
