@@ -117,9 +117,11 @@ export class CdpTarget {
         await this.enableNetworkDomain();
       }
 
-      await this.#cdpClient.sendCommand('Runtime.enable');
-      await this.#cdpClient.sendCommand('Page.enable');
-      await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+      // Schedule, but don't wait for the result, as the command can be finished
+      // only after the `Runtime.runIfWaitingForDebugger`.
+      void this.#cdpClient.sendCommand('Runtime.enable');
+      void this.#cdpClient.sendCommand('Page.enable');
+      void this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
         enabled: true,
       });
       await this.#cdpClient.sendCommand('Target.setAutoAttach', {
@@ -185,9 +187,11 @@ export class CdpTarget {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
       contextIds: [null, this.#parentTargetId],
     })) {
-      await script.initInTarget(this);
-      // Upon attaching to a new target, schedule running preload scripts right
-      // after `Runtime.runIfWaitingForDebugger`, but don't wait for the result.
+      // Upon attaching to a new target, schedule ininitating target and running
+      // preload scripts right after `Runtime.runIfWaitingForDebugger`, but
+      // don't wait for the result, as the commands can be finished only after
+      // the `Runtime.runIfWaitingForDebugger`.
+      void script.initInTarget(this);
       script.scheduleEvaluateInTarget(this);
     }
   }
