@@ -187,7 +187,7 @@ export class CdpTarget {
     for (const script of this.#preloadScriptStorage.findPreloadScripts({
       contextIds: [null, this.#parentTargetId],
     })) {
-      // Upon attaching to a new target, schedule ininitating target and running
+      // Upon attaching to a new target, schedule initiating target and running
       // preload scripts right after `Runtime.runIfWaitingForDebugger`, but
       // don't wait for the result, as the commands can be finished only after
       // the `Runtime.runIfWaitingForDebugger`.
