@@ -450,7 +450,6 @@ async def test_browsingContext_createByUserGesture_eventsEmitted(
         "id": command_id,
         "result": ANY_DICT
     })
-
     assert dom_content_loaded_event == AnyExtending(
         {"method": "browsingContext.domContentLoaded"})
     assert load_event == AnyExtending({"method": "browsingContext.load"})
