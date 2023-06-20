@@ -62,7 +62,7 @@ export class CdpClient extends EventEmitter<CdpEvents> implements ICdpClient {
     this.#sessionId = sessionId;
   }
 
-  sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
+  async sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
     ...params: ProtocolMapping.Commands[CdpMethod]['paramsType']
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']> {

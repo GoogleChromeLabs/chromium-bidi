@@ -220,7 +220,7 @@ export class EventManager implements IEventManager {
           this.#bidiServer
             .getBrowsingContextStorage()
             .getAllContexts()
-            .map((context) => context.cdpTarget.enableNetworkDomain())
+            .map(async (context) => context.cdpTarget.enableNetworkDomain())
         );
       } else {
         await this.#bidiServer

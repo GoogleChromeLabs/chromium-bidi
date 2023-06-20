@@ -19,6 +19,7 @@
 import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import {ChannelProxy} from '../script/channelProxy.js';
+
 import type {CdpTarget} from './cdpTarget.js';
 
 type CdpPreloadScript = {
@@ -87,7 +88,9 @@ export class BidiPreloadScript {
    */
   async initInTargets(cdpTargets: Iterable<CdpTarget>) {
     await Promise.all(
-      Array.from(cdpTargets).map((cdpTarget) => this.initInTarget(cdpTarget))
+      Array.from(cdpTargets).map(async (cdpTarget) =>
+        this.initInTarget(cdpTarget)
+      )
     );
   }
 

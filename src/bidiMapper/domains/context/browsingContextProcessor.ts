@@ -136,7 +136,7 @@ export class BrowsingContextProcessor {
       // debugger  and ignore them.
       targetCdpClient
         .sendCommand('Runtime.runIfWaitingForDebugger')
-        .then(() =>
+        .then(async () =>
           parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
         )
         .catch((error) => this.#logger?.(LogType.system, error));
@@ -282,7 +282,7 @@ export class BrowsingContextProcessor {
     };
   }
 
-  process_browsingContext_navigate(
+  async process_browsingContext_navigate(
     params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
@@ -290,7 +290,7 @@ export class BrowsingContextProcessor {
     return context.navigate(params.url, params.wait ?? 'none');
   }
 
-  process_browsingContext_reload(
+  async process_browsingContext_reload(
     params: BrowsingContext.ReloadParameters
   ): Promise<Message.EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
@@ -353,7 +353,7 @@ export class BrowsingContextProcessor {
       );
     }
 
-    await Promise.all(scripts.map((script) => script.remove()));
+    await Promise.all(scripts.map(async (script) => script.remove()));
 
     this.#preloadScriptStorage.removeBiDiPreloadScripts({
       id: bidiId,

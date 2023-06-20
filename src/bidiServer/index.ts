@@ -87,7 +87,7 @@ function parseArguments(): {
     const verbose = args.verbose === true;
     const chromeChannel = args.channel;
 
-    new BidiServerRunner().run(bidiPort, (bidiServer) => {
+    new BidiServerRunner().run(bidiPort, async (bidiServer) => {
       return onNewBidiConnectionOpen(
         headless,
         chromeChannel,

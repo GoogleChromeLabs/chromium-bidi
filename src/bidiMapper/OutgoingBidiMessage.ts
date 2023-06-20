@@ -38,7 +38,7 @@ export class OutgoingBidiMessage {
     );
   }
 
-  static createResolved(
+  static async createResolved(
     message: Message.OutgoingMessage,
     channel: string | null
   ): Promise<OutgoingBidiMessage> {

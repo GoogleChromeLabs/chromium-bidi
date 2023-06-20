@@ -29,7 +29,7 @@ export class Mutex {
   #acquirers: (() => void)[] = [];
 
   // This is FIFO.
-  acquire(): Promise<ReleaseFunction> {
+  async acquire(): Promise<ReleaseFunction> {
     const state = {resolved: false};
     if (this.#locked) {
       return new Promise((resolve) => {

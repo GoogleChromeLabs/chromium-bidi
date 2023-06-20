@@ -476,7 +476,7 @@ export class ScriptEvaluator {
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument[]> {
     return Promise.all(
-      list.map((value) => this.#deserializeToCdpArg(value, realm))
+      list.map(async (value) => this.#deserializeToCdpArg(value, realm))
     );
   }
   async #serializeCdpExceptionDetails(

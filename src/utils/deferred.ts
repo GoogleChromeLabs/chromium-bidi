@@ -38,14 +38,14 @@ export class Deferred<T> implements Promise<T> {
     });
   }
 
-  then<TResult1 = T, TResult2 = never>(
+  async then<TResult1 = T, TResult2 = never>(
     onFulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
     onRejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
   ): Promise<TResult1 | TResult2> {
     return this.#promise.then(onFulfilled, onRejected);
   }
 
-  catch<TResult = never>(
+  async catch<TResult = never>(
     onRejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null
   ): Promise<T | TResult> {
     return this.#promise.catch(onRejected);
@@ -61,7 +61,7 @@ export class Deferred<T> implements Promise<T> {
     this.#reject?.(reason);
   }
 
-  finally(onFinally?: () => void | null): Promise<T> {
+  async finally(onFinally?: () => void | null): Promise<T> {
     return this.#promise.finally(onFinally);
   }
 

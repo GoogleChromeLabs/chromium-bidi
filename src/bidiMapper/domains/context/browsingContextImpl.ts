@@ -242,7 +242,7 @@ export class BrowsingContextImpl {
     await this.#deferreds.Page.lifecycleEvent.load;
   }
 
-  awaitUnblocked(): Promise<void> {
+  async awaitUnblocked(): Promise<void> {
     return this.#cdpTarget.targetUnblocked;
   }
 
@@ -447,7 +447,7 @@ export class BrowsingContextImpl {
           void Promise.all(
             this.#cdpTarget
               .getChannels(this.id)
-              .map((channel) =>
+              .map(async (channel) =>
                 channel.startListenerFromWindow(realm, this.#eventManager)
               )
           );

@@ -179,7 +179,7 @@ export class ActionDispatcher {
     }
   }
 
-  #dispatchPointerDownAction(
+  async #dispatchPointerDownAction(
     source: PointerSource,
     keyState: KeySource,
     action: Readonly<Input.PointerDownAction>
@@ -260,7 +260,7 @@ export class ActionDispatcher {
     // --- Platform-specific code ends here ---
   }
 
-  #dispatchPointerUpAction(
+  async #dispatchPointerUpAction(
     source: PointerSource,
     keyState: KeySource,
     action: Readonly<Input.PointerUpAction>
@@ -538,7 +538,7 @@ export class ActionDispatcher {
     } while (!last);
   }
 
-  #dispatchKeyDownAction(
+  async #dispatchKeyDownAction(
     source: KeySource,
     action: Readonly<Input.KeyDownAction>
   ) {
@@ -587,7 +587,10 @@ export class ActionDispatcher {
     // --- Platform-specific code ends here ---
   }
 
-  #dispatchKeyUpAction(source: KeySource, action: Readonly<Input.KeyUpAction>) {
+  async #dispatchKeyUpAction(
+    source: KeySource,
+    action: Readonly<Input.KeyUpAction>
+  ) {
     const rawKey = action.value;
     const key = getNormalizedKey(rawKey);
     if (!source.pressed.has(key)) {

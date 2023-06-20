@@ -26,7 +26,9 @@ const debugInternal = debug('bidiServer:internal');
 const debugSend = debug('bidiServer:SEND ▸');
 const debugRecv = debug('bidiServer:RECV ◂');
 
-function getHttpRequestPayload(request: http.IncomingMessage): Promise<string> {
+async function getHttpRequestPayload(
+  request: http.IncomingMessage
+): Promise<string> {
   return new Promise((resolve, reject) => {
     let data = '';
     request.on('data', (chunk) => {
@@ -162,13 +164,13 @@ export class BidiServerRunner {
         onBidiConnectionClosed();
       });
 
-      bidiServer.initialise((messageStr) => {
+      bidiServer.initialise(async (messageStr) => {
         return this.#sendClientMessageStr(messageStr, connection);
       });
     });
   }
 
-  #sendClientMessageStr(
+  async #sendClientMessageStr(
     messageStr: string,
     connection: websocket.connection
   ): Promise<void> {
@@ -177,7 +179,7 @@ export class BidiServerRunner {
     return Promise.resolve();
   }
 
-  #sendClientMessage(
+  async #sendClientMessage(
     messageObj: unknown,
     connection: websocket.connection
   ): Promise<void> {
@@ -231,7 +233,7 @@ class BidiServer implements ITransport {
     this.#handlers.push(handler);
   }
 
-  sendMessage(message: string) {
+  async sendMessage(message: string) {
     if (!this.#sendBidiMessage)
       throw new Error('BiDi connection is not initialised yet');
 

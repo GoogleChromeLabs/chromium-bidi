@@ -78,7 +78,7 @@ export class MapperServer {
     this.#handlers.push(handler);
   }
 
-  sendMessage(messageJson: string): Promise<void> {
+  async sendMessage(messageJson: string): Promise<void> {
     return this.#sendBidiMessage(messageJson);
   }
 
@@ -86,7 +86,7 @@ export class MapperServer {
     this.#cdpConnection.close();
   }
 
-  static #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
+  static async #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
     return new Promise((resolve, reject) => {
       debugInternal('Establishing session with cdpUrl: ', cdpUrl);
 

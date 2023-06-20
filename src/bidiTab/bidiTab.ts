@@ -115,7 +115,7 @@ function createCdpConnection() {
   );
 }
 
-function createBidiServer(selfTargetId: string) {
+async function createBidiServer(selfTargetId: string) {
   class WindowBidiTransport implements BidiTransport {
     #onMessage: ((message: Message.RawCommandRequest) => void) | null = null;
 

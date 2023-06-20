@@ -84,7 +84,7 @@ export class CdpConnection implements ICdpConnection {
     return cdpClient;
   }
 
-  sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
+  async sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
     params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0],
     sessionId?: string

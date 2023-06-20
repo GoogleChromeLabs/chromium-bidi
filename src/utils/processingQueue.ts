@@ -45,7 +45,7 @@ export class ProcessingQueue<T> {
       const entryPromise = this.#queue.shift();
       if (entryPromise !== undefined) {
         await entryPromise
-          .then((entry) => this.#processor(entry))
+          .then(async (entry) => this.#processor(entry))
           .catch((e) => {
             this.#logger?.(LogType.system, 'Event was not processed:', e);
           });

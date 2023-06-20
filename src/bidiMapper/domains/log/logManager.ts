@@ -102,7 +102,7 @@ export class LogManager {
             ? Promise.resolve(params.args as CommonDataTypes.RemoteValue[])
             : // Properly serialize arguments if possible.
               Promise.all(
-                params.args.map((arg) => {
+                params.args.map(async (arg) => {
                   return realm.serializeCdpObject(arg, 'none');
                 })
               );

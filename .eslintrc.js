@@ -83,6 +83,7 @@ module.exports = {
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', {argsIgnorePattern: '^_'}],
     '@typescript-eslint/prefer-return-this-type': 'warn',
+    '@typescript-eslint/promise-function-async': "error",
     '@typescript-eslint/require-await': 'warn',
     '@typescript-eslint/restrict-template-expressions': 'warn',
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
