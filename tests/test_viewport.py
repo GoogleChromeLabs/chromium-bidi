@@ -42,7 +42,7 @@ async def test_set_viewport(websocket, context_id):
                 "target": {
                     "context": context_id
                 },
-                "resultOwnership": "root",
+                "resultOwnership": "none",
                 "awaitPromise": True
             }
         })
