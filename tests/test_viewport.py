@@ -48,10 +48,9 @@ async def test_set_viewport(websocket, context_id):
         })
 
     assert [["width", {
-                "type": "number",
-                "value": 300
-            }], ["height", {
-                "type": "number",
-                "value": 300
-            }]
-    ] == result["result"]["value"]
+        "type": "number",
+        "value": 300
+    }], ["height", {
+        "type": "number",
+        "value": 300
+    }]] == result["result"]["value"]
