@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_STR
 from test_helpers import execute_command, goto_url
 
 
