@@ -32,7 +32,7 @@ CdpSendCommandCommand = {
 CdpSendCommandParameters = {
    method: text,
    params: any,
-   cession?: text,
+   session?: text,
 }
 
 CdpSendCommandResult = {
