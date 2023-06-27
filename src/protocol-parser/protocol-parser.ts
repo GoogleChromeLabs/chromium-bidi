@@ -631,7 +631,7 @@ export namespace Session {
   // BiDi+ events
   const CdpSubscriptionRequestParametersEventsSchema =
     zod.custom<CdpTypes.EventNames>((value) => {
-      return typeof value === 'string' ? value.startsWith('cdp.') : false;
+      return typeof value === 'string' && value.startsWith('cdp.');
     }, 'Not a CDP event');
 
   const SubscriptionRequestParametersEventsSchema = zod.union([
