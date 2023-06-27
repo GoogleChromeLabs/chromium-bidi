@@ -1261,9 +1261,9 @@ export namespace CDP {
 
   export type GetSessionResult = {result: {session: string | null}};
 
-  export type EventReceivedEvent = EventResponse<EventNames, CDPEventParams>;
+  export type EventReceivedEvent = EventResponse<EventNames, CdpEventParams>;
 
-  export type CDPEventParams<
+  export type CdpEventParams<
     EventName extends keyof ProtocolMapping.Events = keyof ProtocolMapping.Events
   > = {
     event: EventName;
