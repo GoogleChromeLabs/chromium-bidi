@@ -89,6 +89,14 @@ export namespace Message {
     | Script.EventNames;
   // keep-sorted end;
 
+  export type AllEvents =
+    // keep-sorted start
+    | typeof BrowsingContext.AllEvents
+    | typeof Log.AllEvents
+    | typeof Network.AllEvents
+    | typeof Script.AllEvents;
+  // keep-sorted end
+
   export enum ErrorCode {
     // keep-sorted start
     InvalidArgument = 'invalid argument',
@@ -1299,12 +1307,7 @@ export namespace Session {
 
   export type SubscriptionRequestEvent =
     // keep-sorted start
-    | CDP.EventNames
-    | Message.EventNames
-    | typeof BrowsingContext.AllEvents
-    | typeof Log.AllEvents
-    | typeof Network.AllEvents
-    | typeof Script.AllEvents;
+    CDP.EventNames | Message.EventNames | Message.AllEvents;
   // keep-sorted end;
 
   // SessionSubscriptionRequest = {
