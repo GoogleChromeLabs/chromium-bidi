@@ -617,12 +617,6 @@ export namespace CDP {
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-session */
 export namespace Session {
-  // BiDi+ events
-  const CDPSubscriptionRequestParametersEventsSchema =
-    zod.custom<CdpTypes.EventNames>((value) => {
-      return typeof value === 'string' ? value.startsWith('cdp.') : false;
-    }, 'Not a CDP event');
-
   const BiDiSubscriptionRequestParametersEventsSchema = zod.enum([
     BrowsingContextTypes.AllEvents,
     ...Object.values(BrowsingContextTypes.EventNames),
@@ -633,9 +627,16 @@ export namespace Session {
     ScriptTypes.AllEvents,
     ...Object.values(ScriptTypes.EventNames),
   ]);
+
+  // BiDi+ events
+  const CdpSubscriptionRequestParametersEventsSchema =
+    zod.custom<CdpTypes.EventNames>((value) => {
+      return typeof value === 'string' ? value.startsWith('cdp.') : false;
+    }, 'Not a CDP event');
+
   const SubscriptionRequestParametersEventsSchema = zod.union([
-    CDPSubscriptionRequestParametersEventsSchema,
     BiDiSubscriptionRequestParametersEventsSchema,
+    CdpSubscriptionRequestParametersEventsSchema,
   ]);
 
   // SessionSubscriptionRequest = {
