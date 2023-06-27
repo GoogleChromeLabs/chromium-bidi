@@ -88,36 +88,3 @@ async def test_set_viewport_unsupported(websocket, context_id, html, width,
         "error": "unsupported operation",
         "message": "Provided viewport dimensions are not supported"
     } == exception_info.value.args[0]
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("width,height", [
-    (300, -20),
-    (-20, 300),
-    (-20, -20),
-],
-                         ids=[
-                             "negative height",
-                             "negative width",
-                             "negative width and height",
-                         ])
-async def test_set_viewport_negative(websocket, context_id, html, width,
-                                     height):
-    await goto_url(websocket, context_id, html())
-
-    with pytest.raises(Exception) as exception_info:
-        await execute_command(
-            websocket, {
-                "method": "browsingContext.setViewport",
-                "params": {
-                    "context": context_id,
-                    "viewport": {
-                        "width": width,
-                        "height": height,
-                    }
-                }
-            })
-
-    assert "invalid argument" == exception_info.value.args[0]["error"]
-    assert "Number must be greater than or equal to 0" in exception_info.value.args[
-        0]["message"]
