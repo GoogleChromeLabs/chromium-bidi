@@ -25,7 +25,7 @@ import {
   BrowsingContext as BrowsingContextTypes,
   Script as ScriptTypes,
   Log as LogTypes,
-  type CDP as CdpTypes,
+  type Cdp as CdpTypes,
   Message as MessageTypes,
   type Session as SessionTypes,
   Network as NetworkTypes,
@@ -585,7 +585,7 @@ export namespace BrowsingContext {
   }
 }
 
-export namespace CDP {
+export namespace Cdp {
   const SendCommandParamsSchema = zod.object({
     // Allowing any cdpMethod, and casting to proper type later on.
     method: zod.string(),

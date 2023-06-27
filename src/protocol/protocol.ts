@@ -32,7 +32,7 @@ interface EventResponse<MethodType, ParamsType> {
 type BiDiCommand =
   // keep-sorted start
   | BrowsingContext.Command
-  | CDP.Command
+  | Cdp.Command
   | Input.Command
   | Network.Command
   | Script.Command
@@ -64,7 +64,7 @@ export namespace Message {
     | EmptyResult
     // keep-sorted start
     | BrowsingContext.Result
-    | CDP.Result
+    | Cdp.Result
     | ErrorResult
     | Network.Result
     | Script.Result
@@ -74,7 +74,7 @@ export namespace Message {
   export type EventMessage =
     // keep-sorted start
     | BrowsingContext.Event
-    | CDP.Event
+    | Cdp.Event
     | Log.Event
     | Network.Event
     | Script.Event;
@@ -83,7 +83,7 @@ export namespace Message {
   export type EventNames =
     // keep-sorted start
     | BrowsingContext.EventNames
-    | CDP.EventNames
+    | Cdp.EventNames
     | Log.EventNames
     | Network.EventNames
     | Script.EventNames;
@@ -1235,7 +1235,7 @@ export namespace Network {
   }
 }
 
-export namespace CDP {
+export namespace Cdp {
   export type Command = SendCommandCommand | GetSessionCommand;
   export type Result = SendCommandResult | GetSessionResult;
   export type Event = EventReceivedEvent;
@@ -1307,7 +1307,7 @@ export namespace Session {
 
   export type SubscriptionRequestEvent =
     // keep-sorted start
-    CDP.EventNames | Message.EventNames | Message.AllEvents;
+    Cdp.EventNames | Message.EventNames | Message.AllEvents;
   // keep-sorted end;
 
   // SessionSubscriptionRequest = {
