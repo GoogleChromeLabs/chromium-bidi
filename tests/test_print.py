@@ -13,29 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import base64
-
 import pytest
 from anys import ANY_STR
-from test_helpers import execute_command, goto_url
-
-
-def save_pdf(pdf_bytes_or_str: bytes | str, output_file: str):
-    pdf_bytes = pdf_bytes_or_str if isinstance(
-        pdf_bytes_or_str, bytes) else base64.b64decode(pdf_bytes_or_str,
-                                                       validate=True)
-    if pdf_bytes[0:4] != b'%PDF':
-        raise ValueError('Missing the PDF file signature')
-
-    with open(output_file, 'wb') as f:
-        f.write(pdf_bytes)
+from test_helpers import assert_images_equal, execute_command, goto_url
 
 
 @pytest.mark.asyncio
-async def test_print(websocket, context_id, html):
+async def test_print(websocket, context_id, html, get_cdp_session_id):
     await goto_url(websocket, context_id, html())
 
-    result = await execute_command(
+    print_result = await execute_command(
         websocket, {
             "method": "browsingContext.print",
             "params": {
@@ -49,4 +36,40 @@ async def test_print(websocket, context_id, html):
         })
 
     # 'data' is not deterministic, ~a dozen characters differ between runs.
-    assert result['data'] == ANY_STR
+    assert print_result["data"] == ANY_STR
+
+    await goto_url(websocket, context_id,
+                   f'data:application/pdf,base64;{print_result["data"]}')
+
+    session_id = await get_cdp_session_id(context_id)
+
+    # Set a fixed viewport to make the test deterministic.
+    await execute_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "method": "Emulation.setDeviceMetricsOverride",
+                "params": {
+                    "width": 200,
+                    "height": 200,
+                    "deviceScaleFactor": 1.0,
+                    "mobile": False,
+                },
+                "session": session_id
+            }
+        })
+
+    screenshot_result = await execute_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id
+            }
+        })
+
+    print(screenshot_result["data"])
+
+    assert_images_equal(
+        screenshot_result["data"],
+        "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAABL2lDQ1BTa2lhAAAokX2Qv0vDUBSFP0tB1C6iooNDxi5qW7E/sA62atGxVahuaRqK2NaQRnTv6h/h7Ca4iNDZxUlwEnFxFwTXeNIMKUi9l5v7vfMOee8+iC2hiKeg0/XcaqVk1I9PjMkPJpTDMK2ew/iQ6+c19L6s/OMbF1NNu2epf6k8V4frl03xfCvkq4AbIV8HfOk5nvgmYPewWhbfi5OtEW6MsOW4gf9NXOy0L6zo3iTs7lFNva5apsK5skUbmzVqnHGKKUqxS4E86+rbyg1VmoyUAlmtUpQpkdM3x56UvPbS7AxZjuA9wyP777A18H3/MdIOBnCXhemHSEtuwmwCnp4jLXpjx3TNoRRXxewSfC9olFuY+4SZvtTFYHvMrMafWQ326WKxKspomjTZXwyUTdpToV43AAACF0lEQVR4nO3TMRHAMBDAsCRgnj/DhkDPaztICLx4z8yzgFfn6wD4M4NAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIBINAMAgEg0AwCASDQDAIhAukDwMBXpINdQAAAABJRU5ErkJggg=="
+    )
