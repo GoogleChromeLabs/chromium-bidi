@@ -179,13 +179,13 @@ jobs:
           out/wptreport.html
       - name: Upload expectations
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
           path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
           path: |
