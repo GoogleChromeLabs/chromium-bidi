@@ -232,7 +232,7 @@ async def test_network_network_response_completed_event_emitted(
                 "headers": ANY_LIST,
                 "mimeType": "text/html",
                 "bytesReceived": ANY_NUMBER,
-                "headersSize": ANY_NUMBER,
+                "headersSize": AnyOr(338, 355, 360),
                 "bodySize": 0,
                 "content": {
                     "size": 0
