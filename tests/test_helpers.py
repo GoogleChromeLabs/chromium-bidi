@@ -18,7 +18,7 @@ import itertools
 import json
 from typing import Literal
 
-from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT, AnyWithEntries
+from anys import ANY_NUMBER, AnyGT, AnyLT, AnySubstr, AnyWithEntries
 
 _command_counter = itertools.count(1)
 
@@ -137,7 +137,7 @@ async def wait_for_event(websocket, event_method: str) -> dict:
             return event_response
 
 
-ANY_SHARED_ID = ANY_STR & AnyContains("_element_")
+ANY_SHARED_ID = AnySubstr("_element_")
 
 # Check if the timestamp has the proper order of magnitude between
 #   "2020-01-01 00:00:00" (1577833200000) and
