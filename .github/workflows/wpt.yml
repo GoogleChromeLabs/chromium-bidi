@@ -3,6 +3,11 @@
 
 name: WPT
 
+env:
+  DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
+  FORCE_COLOR: 3
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
 on:
   merge_group:
   pull_request:
@@ -71,7 +76,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - uses: actions/download-artifact@v3
         with:
           name: chromedriver-headless-wpt-metadata
@@ -103,10 +108,10 @@ jobs:
             head: headless
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
         with:
           submodules: true
-      - name: Set up node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -186,8 +191,3 @@ jobs:
           path: |
             logs
             out
-
-env:
-  DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
-  FORCE_COLOR: 3
-  PIP_DISABLE_PIP_VERSION_CHECK: 1

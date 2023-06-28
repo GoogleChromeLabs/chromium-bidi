@@ -3,6 +3,9 @@
 
 name: Unit tests
 
+env:
+  FORCE_COLOR: 3
+
 on:
   merge_group:
   pull_request:
@@ -17,8 +20,8 @@ jobs:
   unit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up node.js
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -30,6 +33,3 @@ jobs:
         run: du -sh lib/iife/mapperTab.js
       - name: Run unit tests
         run: npm run unit
-
-env:
-  FORCE_COLOR: 3
