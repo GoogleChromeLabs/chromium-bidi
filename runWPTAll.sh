@@ -9,7 +9,7 @@ ctrl_c() {
 }
 
 export LOG_FILE="logs/$(basename "$0").log"
-export UPDATE_EXPECTATIONS="${UPDATE_EXPECTATIONS:-false}"
+export UPDATE_EXPECTATIONS="${UPDATE_EXPECTATIONS:-true}"
 
 if [[ -n "$*" ]]; then
     for test in "$@"; do
