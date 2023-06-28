@@ -38,8 +38,15 @@ async def test_print(websocket, context_id, html, get_cdp_session_id):
     # 'data' is not deterministic, ~a dozen characters differ between runs.
     assert print_result["data"] == ANY_STR
 
-    await goto_url(websocket, context_id,
-                   f'data:application/pdf,base64;{print_result["data"]}')
+    try:
+        await goto_url(websocket, context_id,
+                       f'data:application/pdf,base64;{print_result["data"]}')
+    except Exception as e:
+        assert e.args[0] == {
+            'error': 'unknown error',
+            'message': 'net::ERR_ABORTED'
+        }
+        pytest.xfail("PDF viewer not available in headless.")
 
     session_id = await get_cdp_session_id(context_id)
 
