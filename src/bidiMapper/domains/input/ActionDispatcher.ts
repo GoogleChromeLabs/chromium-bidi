@@ -567,19 +567,22 @@ export class ActionDispatcher {
     // --- Platform-specific code begins here ---
     // The spread is a little hack so JS gives us an array of unicode characters
     // to measure.
-    const text = [...key].length === 1 ? key : undefined;
+    let unmodifiedText = [...key].length === 1 ? key : undefined;
+    if (source.shift) {
+      unmodifiedText = unmodifiedText?.toLocaleUpperCase('en-US');
+    }
     return this.#context.cdpTarget.cdpClient.sendCommand(
       'Input.dispatchKeyEvent',
       {
-        type: text ? 'keyDown' : 'rawKeyDown',
+        type: unmodifiedText ? 'keyDown' : 'rawKeyDown',
         windowsVirtualKeyCode: KeyToKeyCode[key],
         key,
         code,
-        text,
-        unmodifiedText: text,
+        text: unmodifiedText,
+        unmodifiedText,
         autoRepeat: repeat,
         isSystemKey: source.alt || undefined,
-        location: location < 2 ? location : undefined,
+        location: location < 3 ? location : undefined,
         isKeypad: location === 3,
         modifiers,
       }
@@ -615,7 +618,10 @@ export class ActionDispatcher {
     // --- Platform-specific code begins here ---
     // The spread is a little hack so JS gives us an array of unicode characters
     // to measure.
-    const text = [...key].length === 1 ? key : undefined;
+    let unmodifiedText = [...key].length === 1 ? key : undefined;
+    if (source.shift) {
+      unmodifiedText = unmodifiedText?.toLocaleUpperCase('en-US');
+    }
     return this.#context.cdpTarget.cdpClient.sendCommand(
       'Input.dispatchKeyEvent',
       {
@@ -623,9 +629,9 @@ export class ActionDispatcher {
         windowsVirtualKeyCode: KeyToKeyCode[key],
         key,
         code,
-        text,
-        unmodifiedText: text,
-        location: location < 2 ? location : undefined,
+        text: unmodifiedText,
+        unmodifiedText,
+        location: location < 3 ? location : undefined,
         isSystemKey: source.alt || undefined,
         isKeypad: location === 3,
         modifiers,
