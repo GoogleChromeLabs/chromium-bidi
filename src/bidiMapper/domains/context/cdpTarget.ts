@@ -181,7 +181,6 @@ export class CdpTarget {
       await script.initInTarget(this);
       // Upon attaching to a new target, schedule running preload scripts right
       // after `Runtime.runIfWaitingForDebugger`, but don't wait for the result.
-      script.scheduleEvaluateInTarget(this);
     }
   }
 }
