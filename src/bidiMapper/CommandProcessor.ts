@@ -20,7 +20,8 @@ import {LogType, type LoggerFn} from '../utils/log.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
-import {type BidiParser, BidiNoOpParser} from './BidiParser.js';
+import type {IBidiParser} from './BidiParser.js';
+import {BidiNoOpParser} from './BidiNoOpParser.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import type {IEventManager} from './domains/events/EventManager.js';
@@ -34,14 +35,14 @@ type CommandProcessorEvents = {
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #contextProcessor: BrowsingContextProcessor;
   #eventManager: IEventManager;
-  #parser: BidiParser;
+  #parser: IBidiParser;
   #logger?: LoggerFn;
 
   constructor(
     cdpConnection: ICdpConnection,
     eventManager: IEventManager,
     selfTargetId: string,
-    parser: BidiParser = new BidiNoOpParser(),
+    parser: IBidiParser = new BidiNoOpParser(),
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     logger?: LoggerFn
