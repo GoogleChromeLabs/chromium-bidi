@@ -76,6 +76,11 @@ export class BidiParserImpl implements BidiParser {
   parseAddInterceptParams(params: object): Network.AddInterceptParameters {
     return params as Network.AddInterceptParameters;
   }
+  parseRemoveInterceptParams(
+    params: object
+  ): Network.RemoveInterceptParameters {
+    return params as Network.RemoveInterceptParameters;
+  }
 
   // Script domain
   parseAddPreloadScriptParams(

@@ -147,6 +147,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         return this.#contextProcessor.process_network_addIntercept(
           this.#parser.parseAddInterceptParams(commandData.params)
         );
+      case 'network.removeIntercept':
+        return this.#contextProcessor.process_network_removeIntercept(
+          this.#parser.parseRemoveInterceptParams(commandData.params)
+        );
 
       case 'script.addPreloadScript':
         return this.#contextProcessor.process_script_addPreloadScript(

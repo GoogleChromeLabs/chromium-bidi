@@ -544,6 +544,16 @@ export class BrowsingContextProcessor {
     return ['page', 'iframe'].includes(target.type);
   }
 
+  process_cdp_getSession(params: Cdp.GetSessionParams): Cdp.GetSessionResult {
+    const context = params.context;
+    const sessionId =
+      this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
+    if (sessionId === undefined) {
+      return {result: {session: null}};
+    }
+    return {result: {session: sessionId}};
+  }
+
   async process_cdp_sendCommand(
     params: Cdp.SendCommandParams
   ): Promise<Cdp.SendCommandResult> {
@@ -560,16 +570,6 @@ export class BrowsingContextProcessor {
     };
   }
 
-  process_cdp_getSession(params: Cdp.GetSessionParams): Cdp.GetSessionResult {
-    const context = params.context;
-    const sessionId =
-      this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
-    if (sessionId === undefined) {
-      return {result: {session: null}};
-    }
-    return {result: {session: sessionId}};
-  }
-
   process_network_addIntercept(
     _params: Network.AddInterceptParameters
   ): Network.AddInterceptResult {
@@ -579,5 +579,12 @@ export class BrowsingContextProcessor {
         intercept: '',
       },
     };
+  }
+
+  process_network_removeIntercept(
+    _params: Network.RemoveInterceptParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
   }
 }

@@ -99,6 +99,11 @@ export class BidiNoOpParser implements BidiParser {
   parseAddInterceptParams(params: object): Network.AddInterceptParameters {
     return params as Network.AddInterceptParameters;
   }
+  parseRemoveInterceptParams(
+    params: object
+  ): Network.RemoveInterceptParameters {
+    return params as Network.RemoveInterceptParameters;
+  }
 
   // Session domain
   parseSubscribeParams(params: object): Session.SubscriptionRequest {
@@ -129,6 +134,7 @@ export interface BidiParser {
 
   // Network domain
   parseAddInterceptParams(params: object): Network.AddInterceptParameters;
+  parseRemoveInterceptParams(params: object): Network.RemoveInterceptParameters;
 
   // Script domain
   parseAddPreloadScriptParams(

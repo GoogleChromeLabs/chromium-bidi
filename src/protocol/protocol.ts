@@ -1374,10 +1374,12 @@ export namespace Network {
   export const AllEvents = 'network';
 
   export enum EventNames {
+    // keep-sorted start
     BeforeRequestSentEvent = 'network.beforeRequestSent',
     FetchErrorEvent = 'network.fetchError',
-    ResponseStartedEvent = 'network.responseStarted',
     ResponseCompletedEvent = 'network.responseCompleted',
+    ResponseStartedEvent = 'network.responseStarted',
+    // keep-sorted end
   }
 }
 
