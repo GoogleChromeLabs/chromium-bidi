@@ -761,6 +761,18 @@ export namespace Network {
   export function parseFailRequestParams(params: object) {
     return parseObject(params, FailRequestParametersSchema);
   }
+
+  const ProvideResponseParametersSchema = zod.object({
+    request: RequestSchema,
+    body: BodySchema.optional(),
+    headers: zod.array(HeaderSchema).optional(),
+    reasonPhrase: zod.string().optional(),
+    statusCode: zod.number().int().nonnegative().optional(),
+  });
+
+  export function parseProvideResponseParams(params: object) {
+    return parseObject(params, ProvideResponseParametersSchema);
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-input */
