@@ -86,6 +86,11 @@ export class BidiParserImpl implements BidiParser {
   ): Network.ContinueResponseParameters {
     return params as Network.ContinueResponseParameters;
   }
+  parseContinueWithAuthParams(
+    params: object
+  ): Network.ContinueWithAuthParameters {
+    return params as Network.ContinueWithAuthParameters;
+  }
   parseRemoveInterceptParams(
     params: object
   ): Network.RemoveInterceptParameters {

@@ -109,6 +109,11 @@ export class BidiNoOpParser implements BidiParser {
   ): Network.ContinueResponseParameters {
     return params as Network.ContinueResponseParameters;
   }
+  parseContinueWithAuthParams(
+    params: object
+  ): Network.ContinueWithAuthParameters {
+    return params as Network.ContinueWithAuthParameters;
+  }
   parseRemoveInterceptParams(
     params: object
   ): Network.RemoveInterceptParameters {
@@ -148,6 +153,9 @@ export interface BidiParser {
   parseContinueResponseParams(
     params: object
   ): Network.ContinueResponseParameters;
+  parseContinueWithAuthParams(
+    params: object
+  ): Network.ContinueWithAuthParameters;
   parseRemoveInterceptParams(params: object): Network.RemoveInterceptParameters;
 
   // Script domain

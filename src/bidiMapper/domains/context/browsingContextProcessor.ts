@@ -595,6 +595,13 @@ export class BrowsingContextProcessor {
     return {result: {}};
   }
 
+  process_network_continueWithAuth(
+    _params: Network.ContinueWithAuthParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
+  }
+
   process_network_removeIntercept(
     _params: Network.RemoveInterceptParameters
   ): Message.EmptyResult {
