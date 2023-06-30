@@ -602,6 +602,13 @@ export class BrowsingContextProcessor {
     return {result: {}};
   }
 
+  process_network_failRequest(
+    _params: Network.FailRequestParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
+  }
+
   process_network_removeIntercept(
     _params: Network.RemoveInterceptParameters
   ): Message.EmptyResult {
