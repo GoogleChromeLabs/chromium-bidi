@@ -21,6 +21,7 @@ import {
   type Cdp,
   Input,
   Message,
+  type Network,
   type Script,
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -567,5 +568,16 @@ export class BrowsingContextProcessor {
       return {result: {session: null}};
     }
     return {result: {session: sessionId}};
+  }
+
+  process_network_addIntercept(
+    _params: Network.AddInterceptParameters
+  ): Network.AddInterceptResult {
+    // TODO: Implement.
+    return {
+      result: {
+        intercept: '',
+      },
+    };
   }
 }

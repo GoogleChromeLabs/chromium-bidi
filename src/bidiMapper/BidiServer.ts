@@ -21,7 +21,8 @@ import type {Message} from '../protocol/protocol.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
 import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
-import {type BidiParser, CommandProcessor} from './CommandProcessor.js';
+import {CommandProcessor} from './CommandProcessor.js';
+import type {BidiParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import {EventManager} from './domains/events/EventManager.js';
