@@ -748,17 +748,11 @@ export class BrowsingContextImpl {
     if (params.background !== undefined) {
       cdpParams.printBackground = params.background;
     }
-    if (params.margin?.bottom !== undefined) {
-      cdpParams.marginBottom = inchesFromCm(params.margin.bottom);
-    }
-    if (params.margin?.left !== undefined) {
-      cdpParams.marginLeft = inchesFromCm(params.margin.left);
-    }
-    if (params.margin?.right !== undefined) {
-      cdpParams.marginRight = inchesFromCm(params.margin.right);
-    }
-    if (params.margin?.top !== undefined) {
-      cdpParams.marginTop = inchesFromCm(params.margin.top);
+    if (params.margin !== undefined) {
+      cdpParams.marginBottom = inchesFromCm(params.margin.bottom ?? 0);
+      cdpParams.marginLeft = inchesFromCm(params.margin.left ?? 0);
+      cdpParams.marginRight = inchesFromCm(params.margin.right ?? 0);
+      cdpParams.marginTop = inchesFromCm(params.margin.top ?? 0);
     }
     if (params.orientation !== undefined) {
       cdpParams.landscape = params.orientation === 'landscape';
