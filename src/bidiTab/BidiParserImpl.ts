@@ -94,6 +94,11 @@ export class BidiParserImpl implements BidiParser {
   parseFailRequestParams(params: object): Network.FailRequestParameters {
     return params as Network.FailRequestParameters;
   }
+  parseProvideResponseParams(
+    params: object
+  ): Network.ProvideResponseParameters {
+    return params as Network.ProvideResponseParameters;
+  }
   parseRemoveInterceptParams(
     params: object
   ): Network.RemoveInterceptParameters {
