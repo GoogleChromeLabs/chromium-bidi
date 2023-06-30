@@ -102,7 +102,7 @@ export class BidiParserImpl implements BidiParser {
   parseRemoveInterceptParams(
     params: object
   ): Network.RemoveInterceptParameters {
-    return params as Network.RemoveInterceptParameters;
+    return Parser.Network.parseRemoveInterceptParams(params);
   }
 
   // Script domain

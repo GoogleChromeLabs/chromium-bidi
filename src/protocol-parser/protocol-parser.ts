@@ -773,6 +773,16 @@ export namespace Network {
   export function parseProvideResponseParams(params: object) {
     return parseObject(params, ProvideResponseParametersSchema);
   }
+
+  const InterceptSchema = zod.string();
+
+  const RemoveInterceptParametersSchema = zod.object({
+    intercept: InterceptSchema,
+  });
+
+  export function parseRemoveInterceptParams(params: object) {
+    return parseObject(params, RemoveInterceptParametersSchema);
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-input */
