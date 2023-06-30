@@ -581,6 +581,13 @@ export class BrowsingContextProcessor {
     };
   }
 
+  process_network_continueRequest(
+    _params: Network.ContinueRequestParameters
+  ): Message.EmptyResult {
+    // TODO: Implement.
+    return {result: {}};
+  }
+
   process_network_removeIntercept(
     _params: Network.RemoveInterceptParameters
   ): Message.EmptyResult {
