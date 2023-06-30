@@ -74,7 +74,7 @@ export class BidiParserImpl implements BidiParser {
 
   // Network domain
   parseAddInterceptParams(params: object): Network.AddInterceptParameters {
-    return params as Network.AddInterceptParameters;
+    return Parser.Network.parseAddInterceptParams(params);
   }
   parseContinueRequestParams(
     params: object

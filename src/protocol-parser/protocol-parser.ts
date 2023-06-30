@@ -655,6 +655,24 @@ export namespace Session {
   }
 }
 
+/** @see https://w3c.github.io/webdriver-bidi/#module-network */
+export namespace Network {
+  const InterceptPhaseSchema = zod.enum([
+    'beforeRequestSent',
+    'responseStarted',
+    'authRequired',
+  ]);
+
+  const AddInterceptParametersSchema = zod.object({
+    phases: zod.array(InterceptPhaseSchema),
+    urlPatterns: zod.array(zod.string()).optional(),
+  });
+
+  export function parseAddInterceptParams(params: object) {
+    return parseObject(params, AddInterceptParametersSchema);
+  }
+}
+
 /** @see https://w3c.github.io/webdriver-bidi/#module-input */
 export namespace Input {
   // input.ElementOrigin = {
