@@ -24,8 +24,6 @@
 
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import type {Range} from './types.js';
-
 interface EventResponse<MethodType, ParamsType> {
   method: MethodType;
   params: ParamsType;
@@ -1148,7 +1146,7 @@ export namespace Network {
   };
 
   export type BinaryHeaderValue = {
-    binaryValue: Range<0, 255>[];
+    binaryValue: number[];
   };
 
   export type Header = {
@@ -1158,7 +1156,7 @@ export namespace Network {
   export type Cookie = {
     name: string;
     value?: string;
-    binaryValue?: Range<0, 255>[];
+    binaryValue?: number[];
     domain: string;
     path: string;
     expires?: number;

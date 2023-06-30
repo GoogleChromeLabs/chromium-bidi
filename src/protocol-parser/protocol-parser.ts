@@ -47,7 +47,7 @@ export function parseObject<T extends ZodType>(
     .map(
       (e) =>
         `${e.message} in ` +
-        `${e.path.map((p) => JSON.stringify(p)).join('/')}.`
+        `${e.path.map((p: unknown) => JSON.stringify(p)).join('/')}.`
     )
     .join(' ');
 
@@ -670,6 +670,46 @@ export namespace Network {
 
   export function parseAddInterceptParams(params: object) {
     return parseObject(params, AddInterceptParametersSchema);
+  }
+
+  const RequestSchema = zod.string();
+
+  const StringBodySchema = zod.object({
+    type: zod.literal('string'),
+    value: zod.string(),
+  });
+
+  const Base64BodySchema = zod.object({
+    type: zod.literal('base64'),
+    value: zod.string(),
+  });
+
+  const BodySchema = zod.union([StringBodySchema, Base64BodySchema]);
+
+  const StringHeaderValueSchema = zod.object({
+    value: zod.string(),
+  });
+
+  const BinaryHeaderValueSchema = zod.object({
+    binaryValue: zod.array(zod.number().int().min(0).max(255)),
+  });
+
+  const HeaderSchema = zod
+    .object({
+      name: zod.string(),
+    })
+    .and(zod.union([StringHeaderValueSchema, BinaryHeaderValueSchema]));
+
+  const ContinueRequestParametersSchema = zod.object({
+    request: RequestSchema,
+    body: BodySchema.optional(),
+    headers: zod.array(HeaderSchema).optional(),
+    method: zod.string().optional(),
+    url: zod.string().optional(),
+  });
+
+  export function parseContinueRequestParams(params: object) {
+    return parseObject(params, ContinueRequestParametersSchema);
   }
 }
 
