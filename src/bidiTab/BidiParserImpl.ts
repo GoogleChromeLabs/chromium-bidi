@@ -84,7 +84,7 @@ export class BidiParserImpl implements BidiParser {
   parseContinueResponseParams(
     params: object
   ): Network.ContinueResponseParameters {
-    return params as Network.ContinueResponseParameters;
+    return Parser.Network.parseContinueResponseParams(params);
   }
   parseContinueWithAuthParams(
     params: object

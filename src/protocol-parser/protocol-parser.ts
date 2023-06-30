@@ -711,6 +711,24 @@ export namespace Network {
   export function parseContinueRequestParams(params: object) {
     return parseObject(params, ContinueRequestParametersSchema);
   }
+
+  const AuthCredentialsSchema = zod.object({
+    type: zod.literal('password'),
+    username: zod.string(),
+    password: zod.string(),
+  });
+
+  const ContinueResponseParametersSchema = zod.object({
+    request: RequestSchema,
+    credentials: AuthCredentialsSchema.optional(),
+    headers: zod.array(HeaderSchema).optional(),
+    reasonPhrase: zod.string().optional(),
+    statusCode: zod.number().int().nonnegative().optional(),
+  });
+
+  export function parseContinueResponseParams(params: object) {
+    return parseObject(params, ContinueResponseParametersSchema);
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-input */
