@@ -753,6 +753,14 @@ export namespace Network {
   export function parseContinueWithAuthParams(params: object) {
     return parseObject(params, ContinueWithAuthParametersSchema);
   }
+
+  const FailRequestParametersSchema = zod.object({
+    request: RequestSchema,
+  });
+
+  export function parseFailRequestParams(params: object) {
+    return parseObject(params, FailRequestParametersSchema);
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-input */

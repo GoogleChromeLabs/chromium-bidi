@@ -92,7 +92,7 @@ export class BidiParserImpl implements BidiParser {
     return Parser.Network.parseContinueWithAuthParams(params);
   }
   parseFailRequestParams(params: object): Network.FailRequestParameters {
-    return params as Network.FailRequestParameters;
+    return Parser.Network.parseFailRequestParams(params);
   }
   parseProvideResponseParams(
     params: object
