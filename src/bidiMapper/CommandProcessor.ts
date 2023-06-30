@@ -151,6 +151,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         return this.#contextProcessor.process_network_continueRequest(
           this.#parser.parseContinueRequestParams(commandData.params)
         );
+      case 'network.continueResponse':
+        return this.#contextProcessor.process_network_continueResponse(
+          this.#parser.parseContinueResponseParams(commandData.params)
+        );
       case 'network.removeIntercept':
         return this.#contextProcessor.process_network_removeIntercept(
           this.#parser.parseRemoveInterceptParams(commandData.params)
