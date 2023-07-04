@@ -55,6 +55,22 @@ export class NetworkRequest {
   #beforeRequestSentDeferred = new Deferred<void>();
   #responseReceivedDeferred = new Deferred<void>();
 
+  #interceptMap = new Map<
+    Network.Intercept,
+    {
+      urlPattern: string;
+      interceptPhase: Network.InterceptPhase;
+    }
+  >();
+  #blockedRequestMap = new Map<
+    Network.Request,
+    {
+      request: Network.Request;
+      interceptPhase: Network.InterceptPhase;
+      response: Network.ResponseData;
+    }
+  >();
+
   constructor(requestId: Network.Request, eventManager: IEventManager) {
     this.requestId = requestId;
     this.#eventManager = eventManager;
