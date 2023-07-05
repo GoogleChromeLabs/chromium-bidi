@@ -116,8 +116,7 @@ export class ScriptEvaluator {
             ? {}
             : {maxDepth: serializationOptions.maxObjectDepth}),
         },
-        // XXX: remove `as any` after crrev.com/c/4555602 is merged.
-      } as any
+      }
     );
 
     if (cdpEvaluateResult.exceptionDetails) {
@@ -205,8 +204,7 @@ export class ScriptEvaluator {
               : {maxDepth: serializationOptions.maxObjectDepth}),
           },
           executionContextId: realm.executionContextId,
-          // TODO XXX: remove `as any` after crrev.com/c/4555602 is merged.
-        } as any
+        }
       );
     } catch (e: any) {
       // Heuristic to determine if the problem is in the argument.
