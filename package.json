@@ -4,6 +4,7 @@
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "scripts": {
     "build": "wireit",
+    "build:fast": "wireit",
     "clean": "rimraf lib .eslintcache .wireit",
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
@@ -34,6 +35,9 @@
         "rollup",
         "tsc"
       ]
+    },
+    "build:fast": {
+      "command": "node ./esbuild.mjs"
     },
     "e2e-headful": {
       "command": "python3 -m pytest",
@@ -196,12 +200,14 @@
     "codecov": "3.8.3",
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1165014",
+    "esbuild": "0.18.11",
     "eslint": "8.44.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-mocha": "10.1.0",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-promise": "6.1.1",
+    "glob": "10.3.1",
     "gts": "3.1.1",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
