@@ -196,7 +196,7 @@ export class BrowsingContextProcessor {
 
     this.#preloadScriptStorage
       .findPreloadScripts({targetId: contextId})
-      .map((preloadScript) => preloadScript.cdpTargetIsGone(contextId));
+      .map((preloadScript) => preloadScript.dispose(contextId));
   }
 
   #handleTargetInfoChangedEvent(

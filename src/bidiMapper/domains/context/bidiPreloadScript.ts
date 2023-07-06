@@ -141,10 +141,8 @@ export class BidiPreloadScript {
     }
   }
 
-  /**
-   * Removes the provided cdp target from the list of cdp preload scripts.
-   */
-  cdpTargetIsGone(cdpTargetId: string) {
+  /** Removes the provided cdp target from the list of cdp preload scripts. */
+  dispose(cdpTargetId: string) {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(
       (cdpPreloadScript) => cdpPreloadScript.target?.targetId !== cdpTargetId
     );
