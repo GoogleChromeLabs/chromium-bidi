@@ -35,20 +35,21 @@ jobs:
         run: rustup update stable && rustup default stable
       - name: Install cddlconv
         run: cargo install --git https://github.com/jrandolf/cddlconv.git cddlconv
+      - name: Set up Node.js
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        with:
+          node-version: 18
+          cache: npm
+      - name: Set up cache
+        uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Install and build npm dependencies
+        run: npm ci
       - name: Download WebDriverBidi CDDL
         uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b # v3.0.2
         with:
           name: all-cddl
       - name: Generate TypeScript types
         run: npm run bidi-types -- all.cddl
-      - name: Set up Node.js
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
-        with:
-          node-version: 18
-          cache: npm
-      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
-      - name: Install and build npm dependencies
-        run: npm ci
       - name: Run formatter
         run: npm run format || exit 0
       - name: Create Pull Request
