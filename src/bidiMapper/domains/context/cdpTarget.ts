@@ -103,26 +103,37 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
-      // Enable Network domain, if it is enabled globally.
+      // Scheduled commands can be finished only after
+      // `Runtime.runIfWaitingForDebugger` is called.
+      // Collect all command promises, and wait for them after
+      // `Runtime.runIfWaitingForDebugger` and before the command is finished.
+      const promises: Promise<unknown>[] = [];
+
+      // Enable Network domain if enabled globally.
       // TODO: enable Network domain for OOPiF targets.
       if (this.#eventManager.isNetworkDomainEnabled) {
-        await this.enableNetworkDomain();
+        promises.push(this.enableNetworkDomain());
       }
 
-      await this.#cdpClient.sendCommand('Runtime.enable');
-      await this.#cdpClient.sendCommand('Page.enable');
-      await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-        enabled: true,
-      });
-      await this.#cdpClient.sendCommand('Target.setAutoAttach', {
-        autoAttach: true,
-        waitForDebuggerOnStart: true,
-        flatten: true,
-      });
+      // Schedule but don't wait for the result as the command can be finished
+      // only after `Runtime.runIfWaitingForDebugger`.
+      promises.push(
+        this.#cdpClient.sendCommand('Page.enable'),
+        this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+          enabled: true,
+        }),
+        this.#cdpClient.sendCommand('Target.setAutoAttach', {
+          autoAttach: true,
+          flatten: true,
+          waitForDebuggerOnStart: true,
+        }),
+        this.#cdpClient.sendCommand('Runtime.enable'),
+        this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+        this.#initAndEvaluatePreloadScripts()
+      );
 
-      await this.#initAndEvaluatePreloadScripts();
-
-      await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
+      // Wait for all the scheduled commands are finished.
+      await Promise.all(promises);
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
       if (!this.#cdpClient.isCloseError(error)) {
