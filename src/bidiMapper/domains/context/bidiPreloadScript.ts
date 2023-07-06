@@ -94,9 +94,14 @@ export class BidiPreloadScript {
    * Adds the script to the given CDP targets by calling the
    * `Page.addScriptToEvaluateOnNewDocument` command.
    */
-  async initInTargets(cdpTargets: Iterable<CdpTarget>) {
+  async initInTargets(
+    cdpTargets: Iterable<CdpTarget>,
+    runImmediately: boolean
+  ) {
     await Promise.all(
-      Array.from(cdpTargets).map((cdpTarget) => this.initInTarget(cdpTarget))
+      Array.from(cdpTargets).map((cdpTarget) =>
+        this.initInTarget(cdpTarget, runImmediately)
+      )
     );
   }
 
@@ -104,12 +109,12 @@ export class BidiPreloadScript {
    * Adds the script to the given CDP target by calling the
    * `Page.addScriptToEvaluateOnNewDocument` command.
    */
-  async initInTarget(cdpTarget: CdpTarget) {
+  async initInTarget(cdpTarget: CdpTarget, runImmediately: boolean) {
     const addCdpPreloadScriptResult = await cdpTarget.cdpClient.sendCommand(
       'Page.addScriptToEvaluateOnNewDocument',
       {
         source: this.#getEvaluateString(),
-        runImmediately: true,
+        runImmediately,
       }
     );
 

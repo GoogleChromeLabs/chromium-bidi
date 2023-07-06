@@ -178,9 +178,7 @@ export class CdpTarget {
   /** Loads all top-level preload scripts. */
   async #initAndEvaluatePreloadScripts() {
     for (const script of this.#preloadScriptStorage.findPreloadScripts()) {
-      await script.initInTarget(this);
-      // Upon attaching to a new target, schedule running preload scripts right
-      // after `Runtime.runIfWaitingForDebugger`, but don't wait for the result.
+      await script.initInTarget(this, true);
     }
   }
 }

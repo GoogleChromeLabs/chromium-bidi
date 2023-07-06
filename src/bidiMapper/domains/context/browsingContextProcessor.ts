@@ -327,7 +327,7 @@ export class BrowsingContextProcessor {
         .map((context) => context.cdpTarget)
     );
 
-    await preloadScript.initInTargets(cdpTargets);
+    await preloadScript.initInTargets(cdpTargets, false);
 
     return {
       script: preloadScript.id,
