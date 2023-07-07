@@ -135,7 +135,7 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
-        websocket, iframe_id, html):
+        websocket, iframe_id, html, assert_no_more_messages):
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
@@ -165,6 +165,8 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
             "url": html("<h2>iframe</h2>")
         }
     }
+
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio

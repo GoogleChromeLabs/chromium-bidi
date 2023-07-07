@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import os
 
 import pytest
@@ -135,6 +136,18 @@ def read_sorted_messages(websocket):
         return messages
 
     return read_sorted_messages
+
+
+@pytest.fixture
+def assert_no_more_messages(websocket):
+    """Assert that there are no more messages on the websocket."""
+    async def assert_no_more_messages(timeout: float = 0):
+        with pytest.raises(Exception) as exception:
+            await asyncio.wait_for(read_JSON_message(websocket),
+                                   timeout=timeout)
+        assert exception.type == asyncio.TimeoutError
+
+    return assert_no_more_messages
 
 
 @pytest.fixture
