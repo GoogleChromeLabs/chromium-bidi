@@ -1,7 +1,10 @@
 #!/bin/bash
 
-TYPES_FILE=src/protocol/webdriver-bidi.ts
-ZOD_FILE=src/protocol-parser/webdriver-bidi.ts
+set -euo pipefail
+
+readonly TYPES_FILE="src/protocol/webdriver-bidi.ts"
+readonly ZOD_FILE="src/protocol-parser/webdriver-bidi.ts"
+
 HEADER=$(cat <<EOF
 /**
  * Copyright 2023 Google LLC.
@@ -27,9 +30,6 @@ HEADER=$(cat <<EOF
 
 EOF
 )
-
-readonly TYPES_FILE
-readonly ZOD_FILE
 readonly HEADER
 
 echo "$HEADER" > "$TYPES_FILE"
