@@ -140,49 +140,29 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await send_JSON_command(
+    result = await execute_command(
         websocket, {
-            "id": 15,
             "method": "browsingContext.navigate",
             "params": {
-                "url": html("<h2>test</h2>"),
+                "url": html("<h2>iframe</h2>"),
                 "wait": "complete",
                 "context": iframe_id
             }
         })
+    navigation_id = result["navigation"]
 
-    # Wait for `browsingContext.load` event.
-    resp = await read_JSON_message(websocket)
-    navigation_id = resp["params"]["navigation"]
-    assert resp == {
-        "method": "browsingContext.load",
-        "params": {
-            "context": iframe_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
-        }
+    assert result == {
+        "navigation": navigation_id,
+        "url": html("<h2>iframe</h2>")
     }
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 15,
-        "result": {
-            "navigation": navigation_id,
-            "url": html("<h2>test</h2>")
-        }
-    }
-
-    # Wait for `browsingContext.domContentLoaded` event.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
+    assert await read_JSON_message(websocket) == {
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
+            "url": html("<h2>iframe</h2>")
         }
     }
 
