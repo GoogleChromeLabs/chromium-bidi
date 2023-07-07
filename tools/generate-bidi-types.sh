@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-readonly TYPES_FILE="src/protocol/webdriver-bidi.ts"
-readonly ZOD_FILE="src/protocol-parser/webdriver-bidi.ts"
+TYPES_FILE="src/protocol/webdriver-bidi.ts"
+ZOD_FILE="src/protocol-parser/webdriver-bidi.ts"
 
 HEADER=$(cat <<EOF
 /**
@@ -30,7 +30,7 @@ HEADER=$(cat <<EOF
 
 EOF
 )
-readonly HEADER
+readonly TYPES_FILE ZOD_FILE HEADER
 
 echo "$HEADER" > "$TYPES_FILE"
 echo "$HEADER" > "$ZOD_FILE"
