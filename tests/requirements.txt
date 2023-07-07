@@ -4,7 +4,5 @@ pillow==10.0.0
 pytest==7.4.0
 pytest-asyncio==0.21.0
 pytest-icdiff==0.6
-pytest-mypy==0.10.3
 pytest-timeout==2.1.0
-types-Pillow==10.0.0.0
 websockets==11.0.3
