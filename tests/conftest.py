@@ -187,6 +187,6 @@ async def iframe_id(websocket, context_id: str, html_iframe_same_origin, html):
 
     # To avoid issue with the events order in headful mode, navigate to some
     # page: https://crbug.com/1353719
-    await goto_url(websocket, iframe_id, "data:text/html,<h1>FRAME</h1>")
+    await goto_url(websocket, iframe_id, html("<h1>FRAME</h1>"))
 
     return iframe_id
