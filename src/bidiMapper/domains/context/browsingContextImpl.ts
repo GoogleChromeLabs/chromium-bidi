@@ -816,14 +816,22 @@ export class BrowsingContextImpl {
       cdpParams.preferCSSPageSize = !params.shrinkToFit;
     }
 
-    const result = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.printToPDF',
-      cdpParams
-    );
-
-    return {
-      data: result.data,
-    };
+    try {
+      const result = await this.#cdpTarget.cdpClient.sendCommand(
+        'Page.printToPDF',
+        cdpParams
+      );
+      return {
+        data: result.data,
+      };
+    } catch (error: any) {
+      // Effectively zero dimensions.
+      if (error.message === 'invalid print parameters: content area is empty') {
+        throw new UnsupportedOperationException(error.message);
+      } else {
+        throw error;
+      }
+    }
   }
 
   async close(): Promise<void> {
