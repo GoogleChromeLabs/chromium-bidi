@@ -54,7 +54,7 @@ function parseArguments(): {
   });
 
   parser.add_argument('--headless', {
-    help: 'Sets if browser should run in headless or headful mode. Default is true.',
+    help: 'Sets if browser should run in new headless (default) or headful mode.',
     default: true,
   });
 
@@ -112,7 +112,9 @@ async function onNewBidiConnectionOpen(
   );
   // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
   const chromeArguments = [
-    ...(headless ? ['--headless', '--hide-scrollbars', '--mute-audio'] : []),
+    ...(headless
+      ? ['--headless=new', '--hide-scrollbars', '--mute-audio']
+      : []),
     // keep-sorted start
     '--disable-component-update',
     '--disable-default-apps',

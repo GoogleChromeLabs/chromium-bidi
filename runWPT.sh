@@ -63,7 +63,7 @@ if [ -z ${WPT_METADATA+x} ]; then
 fi
 
 if [[ "$HEADLESS" == "true" ]]; then
-  log "Running WPT in headless mode..."
+  log "Running WPT in new headless mode..."
 else
   log "Running WPT in headful mode..."
 fi
