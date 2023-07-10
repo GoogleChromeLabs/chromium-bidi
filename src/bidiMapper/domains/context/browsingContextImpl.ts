@@ -826,7 +826,10 @@ export class BrowsingContextImpl {
       };
     } catch (error: any) {
       // Effectively zero dimensions.
-      if (error.message === 'invalid print parameters: content area is empty') {
+      if (
+        (error as Error).message ===
+        'invalid print parameters: content area is empty'
+      ) {
         throw new UnsupportedOperationException(error.message);
       } else {
         throw error;
