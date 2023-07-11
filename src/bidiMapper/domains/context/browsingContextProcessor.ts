@@ -256,12 +256,14 @@ export class BrowsingContextProcessor {
         result = await browserCdpClient.sendCommand('Target.createTarget', {
           url: 'about:blank',
           newWindow: false,
+          background: true,
         });
         break;
       case BrowsingContext.CreateType.Window:
         result = await browserCdpClient.sendCommand('Target.createTarget', {
           url: 'about:blank',
           newWindow: true,
+          background: true,
         });
         break;
     }
