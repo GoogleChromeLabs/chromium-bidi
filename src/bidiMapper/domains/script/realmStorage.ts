@@ -38,13 +38,16 @@ type RealmFilter = {
 /** Container class for browsing realms. */
 export class RealmStorage {
   /** Tracks handles and their realms sent to the client. */
-  readonly #knownHandlesToRealm = new Map<string, Script.Realm>();
+  readonly #knownHandlesToRealmMap = new Map<
+    Protocol.Runtime.RemoteObjectId,
+    Script.Realm
+  >();
 
   /** Map from realm ID to Realm. */
   readonly #realmMap = new Map<Script.Realm, Realm>();
 
-  get knownHandlesToRealm() {
-    return this.#knownHandlesToRealm;
+  get knownHandlesToRealmMap() {
+    return this.#knownHandlesToRealmMap;
   }
 
   addRealm(realm: Realm) {
@@ -118,9 +121,9 @@ export class RealmStorage {
     this.findRealms(filter).map((realm) => {
       realm.dispose();
       this.#realmMap.delete(realm.realmId);
-      Array.from(this.knownHandlesToRealm.entries())
+      Array.from(this.knownHandlesToRealmMap.entries())
         .filter(([, r]) => r === realm.realmId)
-        .map(([handle]) => this.knownHandlesToRealm.delete(handle));
+        .map(([handle]) => this.knownHandlesToRealmMap.delete(handle));
     });
   }
 }
