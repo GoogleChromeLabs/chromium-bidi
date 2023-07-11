@@ -30,8 +30,6 @@ import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {SHARED_ID_DIVIDER, ScriptEvaluator} from './scriptEvaluator.js';
 import type {RealmStorage} from './realmStorage.js';
 
-export type RealmType = Script.RealmType;
-
 export class Realm {
   readonly #realmStorage: RealmStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -39,7 +37,7 @@ export class Realm {
   readonly #browsingContextId: BrowsingContext.BrowsingContext;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
-  readonly #type: RealmType;
+  readonly #type: Script.RealmType;
   readonly #cdpClient: ICdpClient;
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
@@ -55,7 +53,7 @@ export class Realm {
     browsingContextId: BrowsingContext.BrowsingContext,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
-    type: RealmType,
+    type: Script.RealmType,
     sandbox: string | undefined,
     cdpSessionId: string,
     cdpClient: ICdpClient,
@@ -74,10 +72,9 @@ export class Realm {
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
     this.#scriptEvaluator = new ScriptEvaluator(this.#eventManager);
+    this.#logger = logger;
 
     this.#realmStorage.addRealm(this);
-
-    this.#logger = logger;
 
     this.#eventManager.registerEvent(
       {
@@ -88,21 +85,26 @@ export class Realm {
     );
   }
 
-  async #releaseObject(handle: Script.Handle): Promise<void> {
+  async #releaseObject(handle: Script.Handle) {
     try {
       await this.cdpClient.sendCommand('Runtime.releaseObject', {
         objectId: handle,
       });
-    } catch (e: any) {
+    } catch (error: any) {
       // Heuristic to determine if the problem is in the unknown handler.
       // Ignore the error if so.
-      if (!(e.code === -32000 && e.message === 'Invalid remote object id')) {
-        throw e;
+      if (
+        !(
+          error.code === -32000 &&
+          (error as Error).message === 'Invalid remote object id'
+        )
+      ) {
+        throw error;
       }
     }
   }
 
-  async disown(handle: Script.Handle): Promise<void> {
+  async disown(handle: Script.Handle) {
     // Disowning an object from different realm does nothing.
     if (this.#realmStorage.knownHandlesToRealm.get(handle) !== this.realmId) {
       return;
@@ -131,7 +133,7 @@ export class Realm {
         // Remember all the handles sent to client.
         this.#realmStorage.knownHandlesToRealm.set(objectId, this.realmId);
       } else {
-        // No need in awaiting for the object to be released.
+        // No need to await for the object to be released.
         void this.#releaseObject(objectId).catch((error) =>
           this.#logger?.(LogType.system, error)
         );
@@ -240,7 +242,7 @@ export class Realm {
     return this.#origin;
   }
 
-  get type(): RealmType {
+  get type(): Script.RealmType {
     return this.#type;
   }
 

@@ -22,7 +22,7 @@ import {
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
 
-import type {Realm, RealmType} from './realm.js';
+import type {Realm} from './realm.js';
 
 type RealmFilter = {
   realmId?: Script.Realm;
@@ -30,7 +30,7 @@ type RealmFilter = {
   navigableId?: string;
   executionContextId?: Protocol.Runtime.ExecutionContextId;
   origin?: string;
-  type?: RealmType;
+  type?: Script.RealmType;
   sandbox?: string;
   cdpSessionId?: string;
 };
