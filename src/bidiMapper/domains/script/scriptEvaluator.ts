@@ -40,59 +40,6 @@ export class ScriptEvaluator {
     this.#eventManager = eventManager;
   }
 
-  /**
-   * Gets the string representation of an object. This is equivalent to
-   * calling toString() on the object value.
-   * @param cdpObject CDP remote object representing an object.
-   * @param realm
-   * @return string The stringified object.
-   */
-  static async stringifyObject(
-    cdpObject: Protocol.Runtime.RemoteObject,
-    realm: Realm
-  ): Promise<string> {
-    const stringifyResult = await realm.cdpClient.sendCommand(
-      'Runtime.callFunctionOn',
-      {
-        functionDeclaration: String((obj: Protocol.Runtime.RemoteObject) => {
-          return String(obj);
-        }),
-        awaitPromise: false,
-        arguments: [cdpObject],
-        returnByValue: true,
-        executionContextId: realm.executionContextId,
-      }
-    );
-    return stringifyResult.result.value;
-  }
-
-  /**
-   * Serializes a given CDP object into BiDi, keeping references in the
-   * target's `globalThis`.
-   * @param cdpRemoteObject CDP remote object to be serialized.
-   * @param resultOwnership Indicates desired ResultOwnership.
-   * @param realm
-   */
-  async serializeCdpObject(
-    cdpRemoteObject: Protocol.Runtime.RemoteObject,
-    resultOwnership: Script.ResultOwnership,
-    realm: Realm
-  ): Promise<Script.RemoteValue> {
-    const arg = ScriptEvaluator.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
-
-    const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
-      await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
-        functionDeclaration: String((obj: unknown) => obj),
-        awaitPromise: false,
-        arguments: [arg],
-        serializationOptions: {
-          serialization: 'deep',
-        },
-        executionContextId: realm.executionContextId,
-      });
-    return realm.cdpToBidiValue(cdpWebDriverValue, resultOwnership);
-  }
-
   async scriptEvaluate(
     realm: Realm,
     expression: string,
@@ -244,7 +191,7 @@ export class ScriptEvaluator {
     };
   }
 
-  static #cdpRemoteObjectToCallArgument(
+  static cdpRemoteObjectToCallArgument(
     cdpRemoteObject: Protocol.Runtime.RemoteObject
   ): Protocol.Runtime.CallArgument {
     if (cdpRemoteObject.objectId !== undefined) {
@@ -376,7 +323,7 @@ export class ScriptEvaluator {
       }
       case 'object': {
         // TODO: If none of the nested keys and values has a remote
-        //  reference, serialize to `unserializableValue` without CDP roundtrip.
+        // reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
           argumentValue.value,
           realm
@@ -516,17 +463,13 @@ export class ScriptEvaluator {
       })
     );
 
-    const exception = await this.serializeCdpObject(
+    const exception = await realm.serializeCdpObject(
       // Exception should always be there.
       cdpExceptionDetails.exception!,
-      resultOwnership,
-      realm
+      resultOwnership
     );
 
-    const text = await ScriptEvaluator.stringifyObject(
-      cdpExceptionDetails.exception!,
-      realm
-    );
+    const text = await realm.stringifyObject(cdpExceptionDetails.exception!);
 
     return {
       exception,

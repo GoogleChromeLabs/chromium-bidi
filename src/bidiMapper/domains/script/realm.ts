@@ -161,6 +161,13 @@ export class Realm {
       return {type: 'object'} as Script.RemoteValue;
     }
 
+    if (
+      result.type === 'object' &&
+      ['generator', 'iterator'].includes(result.subtype)
+    ) {
+      return {type: result.subtype};
+    }
+
     const bidiValue = result.value;
     if (bidiValue === undefined) {
       return result;
@@ -297,30 +304,55 @@ export class Realm {
   /**
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.
-   * @param cdpObject CDP remote object to be serialized.
-   * @param resultOwnership Indicates desired ResultOwnership.
    */
   async serializeCdpObject(
-    cdpObject: Protocol.Runtime.RemoteObject,
+    cdpRemoteObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.ResultOwnership
   ): Promise<Script.RemoteValue> {
-    return this.#scriptEvaluator.serializeCdpObject(
-      cdpObject,
-      resultOwnership,
-      this
-    );
+    const arg = Realm.cdpRemoteObjectToCallArgument(cdpRemoteObject);
+
+    const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
+      await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+        functionDeclaration: String((obj: unknown) => obj),
+        awaitPromise: false,
+        arguments: [arg],
+        serializationOptions: {
+          serialization: 'deep',
+        },
+        executionContextId: this.executionContextId,
+      });
+    return this.cdpToBidiValue(cdpWebDriverValue, resultOwnership);
+  }
+
+  static cdpRemoteObjectToCallArgument(
+    cdpRemoteObject: Protocol.Runtime.RemoteObject
+  ): Protocol.Runtime.CallArgument {
+    if (cdpRemoteObject.objectId !== undefined) {
+      return {objectId: cdpRemoteObject.objectId};
+    }
+    if (cdpRemoteObject.unserializableValue !== undefined) {
+      return {unserializableValue: cdpRemoteObject.unserializableValue};
+    }
+    return {value: cdpRemoteObject.value};
   }
 
   /**
    * Gets the string representation of an object. This is equivalent to
-   * calling toString() on the object value.
-   * @param cdpObject CDP remote object representing an object.
-   * @return string The stringified object.
+   * calling `toString()` on the object value.
    */
   async stringifyObject(
     cdpObject: Protocol.Runtime.RemoteObject
   ): Promise<string> {
-    return ScriptEvaluator.stringifyObject(cdpObject, this);
+    const result = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+      functionDeclaration: String((object: Protocol.Runtime.RemoteObject) =>
+        String(object)
+      ),
+      awaitPromise: false,
+      arguments: [cdpObject],
+      returnByValue: true,
+      executionContextId: this.executionContextId,
+    });
+    return result.result.value;
   }
 
   dispose() {
