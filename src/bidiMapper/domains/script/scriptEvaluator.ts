@@ -469,7 +469,7 @@ export class ScriptEvaluator {
       resultOwnership
     );
 
-    const text = await realm.stringifyObject(cdpExceptionDetails.exception!);
+    const text = await realm.toString(cdpExceptionDetails.exception!);
 
     return {
       exception,

@@ -144,11 +144,11 @@ export class Realm {
   }
 
   deepSerializedToBiDi(
-    webDriverValue: Protocol.Runtime.DeepSerializedValue
+    deepSerializedValue: Protocol.Runtime.DeepSerializedValue
   ): Script.RemoteValue {
     // This relies on the CDP to implement proper BiDi serialization, except
     // backendNodeId/sharedId and `platformobject`.
-    const result = webDriverValue as any;
+    const result = deepSerializedValue as any;
 
     if (Object.hasOwn(result, 'weakLocalObjectReference')) {
       result.internalId = `${result.weakLocalObjectReference}`;
@@ -197,14 +197,14 @@ export class Realm {
     // Recursively update the nested values.
     if (
       ['array', 'set', 'htmlcollection', 'nodelist'].includes(
-        webDriverValue.type
+        deepSerializedValue.type
       )
     ) {
       for (const i in bidiValue) {
         bidiValue[i] = this.deepSerializedToBiDi(bidiValue[i]);
       }
     }
-    if (['object', 'map'].includes(webDriverValue.type)) {
+    if (['object', 'map'].includes(deepSerializedValue.type)) {
       for (const i in bidiValue) {
         bidiValue[i] = [
           this.deepSerializedToBiDi(bidiValue[i][0]),
@@ -340,9 +340,7 @@ export class Realm {
    * Gets the string representation of an object. This is equivalent to
    * calling `toString()` on the object value.
    */
-  async stringifyObject(
-    cdpObject: Protocol.Runtime.RemoteObject
-  ): Promise<string> {
+  async toString(cdpObject: Protocol.Runtime.RemoteObject): Promise<string> {
     const result = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
       functionDeclaration: String((object: Protocol.Runtime.RemoteObject) =>
         String(object)
