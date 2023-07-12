@@ -89,7 +89,7 @@ export class RealmStorage {
       }
       if (
         filter.cdpSessionId !== undefined &&
-        filter.cdpSessionId !== realm.cdpSessionId
+        filter.cdpSessionId !== realm.cdpClient.sessionId
       ) {
         return false;
       }

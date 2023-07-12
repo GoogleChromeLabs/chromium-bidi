@@ -45,7 +45,6 @@ export class Realm {
   readonly #cdpClient: ICdpClient;
   readonly #eventManager: IEventManager;
   readonly sandbox?: string;
-  readonly cdpSessionId: string;
   readonly #logger?: LoggerFn;
 
   constructor(
@@ -57,7 +56,6 @@ export class Realm {
     origin: string,
     type: Script.RealmType,
     sandbox: string | undefined,
-    cdpSessionId: string,
     cdpClient: ICdpClient,
     eventManager: IEventManager,
     logger?: LoggerFn
@@ -68,7 +66,6 @@ export class Realm {
     this.sandbox = sandbox;
     this.#origin = origin;
     this.#type = type;
-    this.cdpSessionId = cdpSessionId;
     this.#cdpClient = cdpClient;
     this.#realmStorage = realmStorage;
     this.#browsingContextStorage = browsingContextStorage;
