@@ -86,7 +86,7 @@ if [[ "$VERBOSE" == "true" ]]; then
     --log-mach -
     --log-mach-level info
   )
-elif [[ "$HEADLESS" == "true" ]]; then
+elif [[ "$CI" == "true" && "$HEADLESS" == "true" ]]; then
   # Parallelization is flaky in headful mode.
   case "$(uname -s)" in
     Darwin*) WPT_RUN_ARGS+=(--processes "$(sysctl -n hw.physicalcpu)");;
