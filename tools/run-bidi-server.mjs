@@ -56,6 +56,7 @@ if (CHANNEL === 'local') {
   CHANNEL = 'canary';
 }
 
+// DEBUG = (empty string) is allowed.
 const DEBUG = process.env.DEBUG ?? '*';
 const DEBUG_COLORS = process.env.DEBUG_COLORS || 'yes';
 const LOG_DIR = process.env.LOG_DIR || 'logs';
