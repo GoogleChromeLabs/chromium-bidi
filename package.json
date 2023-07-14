@@ -108,7 +108,7 @@
     "server-headless": {
       "command": "./tools/run-bidi-server.mjs --headless=true",
       "files": [
-        "tools/run-bidi-server.mjs"
+        "./tools/run-bidi-server.mjs"
       ],
       "service": {
         "readyWhen": {
