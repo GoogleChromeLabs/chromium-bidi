@@ -110,13 +110,16 @@ export class Realm {
       }
     }
 
-    if (
-      cdpValue.result.type === 'object' &&
-      cdpValue.result.subtype === 'generator'
-    ) {
-      return {
-        type: 'generator',
-      };
+    if (cdpValue.result.type === 'object') {
+      switch (cdpValue.result.subtype) {
+        case 'generator':
+        case 'iterator':
+          return {
+            type: cdpValue.result.subtype,
+          };
+        default:
+        // Intentionally left blank.
+      }
     }
 
     return bidiValue;
