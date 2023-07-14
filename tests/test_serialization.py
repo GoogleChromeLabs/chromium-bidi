@@ -213,10 +213,12 @@ async def test_serialization_deserialization(websocket, context_id,
             "handle": ANY_STR
         }),
         ("(new Set([1, 2]))[Symbol.iterator]()", {
-            "type": "iterator"
+            "type": "iterator",
+            "handle": ANY_STR,
         }),
         ("(new Map([[1, 2]]))[Symbol.iterator]()", {
             "type": "iterator",
+            "handle": ANY_STR,
         }),
         (
             "('abc'[Symbol.iterator]())",
@@ -238,6 +240,7 @@ async def test_serialization_deserialization(websocket, context_id,
         }),
         ("(function*() { yield 'a'; })()", {
             "type": "generator",
+            "handle": ANY_STR,
         }),
         ("new Int32Array()", {
             "type": "typedarray",

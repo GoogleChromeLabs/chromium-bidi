@@ -114,9 +114,9 @@ export class Realm {
       switch (cdpValue.result.subtype) {
         case 'generator':
         case 'iterator':
-          return {
-            type: cdpValue.result.subtype,
-          };
+          bidiValue.type = cdpValue.result.subtype;
+          delete (bidiValue as any)['value'];
+          break;
         default:
         // Intentionally left blank.
       }
