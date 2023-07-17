@@ -38,6 +38,25 @@ export class NetworkManager {
    */
   readonly #requestMap: DefaultMap<Network.Request, NetworkRequest>;
 
+  /** A map to define the properties of active network intercepts. */
+  // #interceptMap = new Map<
+  //   Network.Intercept,
+  //   {
+  //     urlPattern: string;
+  //     interceptPhase: Network.InterceptPhase;
+  //   }
+  // >();
+
+  /** A map to track the requests which are actively being blocked. */
+  // #blockedRequestMap = new Map<
+  //   Network.Request,
+  //   {
+  //     request: Network.Request;
+  //     interceptPhase: Network.InterceptPhase;
+  //     response: Network.ResponseData;
+  //   }
+  // >();
+
   private constructor(eventManager: EventManager) {
     this.#eventManager = eventManager;
 
