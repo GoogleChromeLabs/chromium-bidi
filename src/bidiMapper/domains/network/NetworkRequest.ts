@@ -197,6 +197,8 @@ export class NetworkRequest {
 
   #getBaseEventParams(): Network.BaseParameters {
     return {
+      // TODO: implement.
+      isBlocked: false,
       context: this.#requestWillBeSentEvent?.frameId ?? null,
       navigation: this.#getNavigationId(),
       // TODO: implement.
