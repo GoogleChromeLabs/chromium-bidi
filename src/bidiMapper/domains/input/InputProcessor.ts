@@ -65,7 +65,7 @@ export class InputProcessor {
       await ActionDispatcher.isMacOS(context).catch(() => false)
     );
     await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
-    this.#inputStateManager.dispose(topContext);
+    this.#inputStateManager.delete(topContext);
     return {};
   }
 
