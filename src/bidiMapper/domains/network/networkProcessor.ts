@@ -142,7 +142,7 @@ export class NetworkProcessor {
     return this.#requestMap.get(requestId);
   }
 
-  #forgetRequest(requestId: Network.Request): void {
+  #forgetRequest(requestId: Network.Request) {
     const request = this.#requestMap.get(requestId);
     if (request) {
       request.dispose();

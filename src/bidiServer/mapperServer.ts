@@ -73,7 +73,7 @@ export class MapperServer {
     );
   }
 
-  setOnMessage(handler: (message: string) => void): void {
+  setOnMessage(handler: (message: string) => void) {
     this.#handlers.push(handler);
   }
 
@@ -113,7 +113,7 @@ export class MapperServer {
     }
   }
 
-  #onBidiMessage(bidiMessage: string): void {
+  #onBidiMessage(bidiMessage: string) {
     for (const handler of this.#handlers) handler(bidiMessage);
   }
 
