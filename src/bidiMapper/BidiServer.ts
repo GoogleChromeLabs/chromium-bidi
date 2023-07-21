@@ -73,7 +73,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     this.#transport.setOnMessage(this.#handleIncomingMessage);
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
-      new EventManager(this),
+      new EventManager(this.#browsingContextStorage, this),
       selfTargetId,
       parser,
       this.#browsingContextStorage,

@@ -25,6 +25,7 @@ import {Buffer} from '../../../utils/buffer.js';
 import {IdWrapper} from '../../../utils/idWrapper.js';
 import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingBidiMessage} from '../../OutgoingBidiMessage.js';
+import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 import {SubscriptionManager} from './SubscriptionManager.js';
 
@@ -111,14 +112,18 @@ export class EventManager implements IEventManager {
    */
   #lastMessageSent = new Map<string, number>();
   #subscriptionManager: SubscriptionManager;
+  #browsingContextStorage: BrowsingContextStorage;
   #bidiServer: BidiServer;
   #isNetworkDomainEnabled: boolean;
 
-  constructor(bidiServer: BidiServer) {
+  constructor(
+    browsingContextStorage: BrowsingContextStorage,
+    bidiServer: BidiServer
+  ) {
+    this.#browsingContextStorage = browsingContextStorage;
     this.#bidiServer = bidiServer;
-    this.#subscriptionManager = new SubscriptionManager(
-      bidiServer.getBrowsingContextStorage()
-    );
+
+    this.#subscriptionManager = new SubscriptionManager(browsingContextStorage);
     this.#isNetworkDomainEnabled = false;
   }
 
@@ -182,7 +187,7 @@ export class EventManager implements IEventManager {
     for (const contextId of contextIds) {
       if (contextId !== null) {
         // Assert the context is known. Throw exception otherwise.
-        this.#bidiServer.getBrowsingContextStorage().getContext(contextId);
+        this.#browsingContextStorage.getContext(contextId);
       }
     }
 
@@ -219,14 +224,12 @@ export class EventManager implements IEventManager {
       if (contextId === null) {
         this.#isNetworkDomainEnabled = true;
         await Promise.all(
-          this.#bidiServer
-            .getBrowsingContextStorage()
+          this.#browsingContextStorage
             .getAllContexts()
             .map((context) => context.cdpTarget.enableNetworkDomain())
         );
       } else {
-        await this.#bidiServer
-          .getBrowsingContextStorage()
+        await this.#browsingContextStorage
           .getContext(contextId)
           .cdpTarget.enableNetworkDomain();
       }
@@ -322,7 +325,7 @@ export class EventManager implements IEventManager {
             // Events without context are already in the result.
             _contextId !== null &&
             // Events from deleted contexts should not be sent.
-            this.#bidiServer.getBrowsingContextStorage().hasContext(_contextId)
+            this.#browsingContextStorage.hasContext(_contextId)
         )
         .map((_contextId) =>
           this.#getBufferedEvents(eventName, _contextId, channel)
