@@ -306,3 +306,34 @@ def compute_response_headers_size(headers) -> int:
     return sum(
         len(header['name']) + len(header['value']['value']) + 4
         for header in headers)
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: #1080")
+async def test_network_specific_context_subscription_does_not_enable_cdp_network_globally(
+        websocket, context_id, create_context):
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    new_context_id = await create_context()
+
+    await subscribe(websocket, ["cdp.Network.requestWillBeSent"])
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "http://example.com",
+                "wait": "complete",
+                "context": new_context_id
+            }
+        })
+    resp = await read_JSON_message(websocket)
+    while "id" not in resp:
+        # Assert CDP events are not from Network.
+        assert resp["method"].startswith("cdp")
+        assert not resp["params"]["event"].startswith("Network"), \
+            "There should be no `Network` cdp events, but was " \
+            f"`{ resp['params']['event'] }` "
+        resp = await read_JSON_message(websocket)
+
+    assert resp == AnyExtending({"type": "success", "id": command_id})
