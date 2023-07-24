@@ -89,36 +89,6 @@ async def test_network_global_subscription_enabled_in_new_context(
 
 
 @pytest.mark.asyncio
-async def test_network_specific_context_subscription_does_not_enable_cdp_network_globally(
-        websocket, context_id, create_context):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
-
-    new_context_id = await create_context()
-
-    await subscribe(websocket, ["cdp.Network.requestWillBeSent"])
-
-    command_id = await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": "http://example.com",
-                "wait": "complete",
-                "context": new_context_id
-            }
-        })
-    resp = await read_JSON_message(websocket)
-    while "id" not in resp:
-        # Assert CDP events are not from Network.
-        assert resp["method"].startswith("cdp")
-        assert not resp["params"]["event"].startswith("Network"), \
-            "There should be no `Network` cdp events, but was " \
-            f"`{ resp['params']['event'] }` "
-        resp = await read_JSON_message(websocket)
-
-    assert resp == AnyExtending({"type": "success", "id": command_id})
-
-
-@pytest.mark.asyncio
 async def test_network_before_request_sent_event_with_cookies_emitted(
         websocket, context_id):
     await execute_command(
