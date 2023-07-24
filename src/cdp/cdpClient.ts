@@ -28,24 +28,26 @@ export type CdpEvents = {
 /** A error that will be thrown if/when the connection is closed. */
 export class CloseError extends Error {}
 
-/**
- * Provides an unique way to detect if an error was caused by the closure of a
- * Target or Session.
- *
- * @example During the creation of a subframe, we navigate the main frame.
- * The subframe target is closed while initialized commands are in-flight.
- * In this case we want to swallow the thrown error.
- */
-export function isCloseError(error: unknown): boolean {
-  return error instanceof CloseError;
-}
-
 export interface ICdpClient extends EventEmitter<CdpEvents> {
-  /** Unique session identifier. */
-  sessionId?: string;
+  /**
+   * Unique session identifier.
+   */
+  sessionId: string | undefined;
 
-  /** Gets the default browser client (no sessionId). */
+  /**
+   * Get the default browser client (no sessionId)
+   */
   browserClient(): ICdpClient;
+
+  /**
+   * Provides an unique way to detect if an error was caused by the closure of a
+   * Target or Session.
+   *
+   * @example During the creation of a subframe we navigate the main frame.
+   * The subframe Target is closed while initialized commands are in-flight.
+   * In this case we want to swallow the thrown error.
+   */
+  isCloseError(error: unknown): boolean;
 
   /**
    * Returns a command promise, which will be resolved with the command result
@@ -83,5 +85,9 @@ export class CdpClient extends EventEmitter<CdpEvents> implements ICdpClient {
     ...params: ProtocolMapping.Commands[CdpMethod]['paramsType']
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']> {
     return this.#cdpConnection.sendCommand(method, params[0], this.#sessionId);
+  }
+
+  isCloseError(error: unknown): boolean {
+    return error instanceof CloseError;
   }
 }
