@@ -46,10 +46,10 @@ export class NetworkProcessor {
     );
   }
 
-  static async create(
+  static create(
     cdpClient: ICdpClient,
     eventManager: IEventManager
-  ): Promise<NetworkProcessor> {
+  ): NetworkProcessor {
     const networkProcessor = new NetworkProcessor(eventManager);
 
     cdpClient
@@ -124,8 +124,6 @@ export class NetworkProcessor {
         networkProcessor.#forgetRequest(params.requestId);
       }
     );
-
-    await cdpClient.sendCommand('Network.enable');
 
     return networkProcessor;
   }
