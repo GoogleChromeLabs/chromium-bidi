@@ -17,6 +17,7 @@
  */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
+import {isCloseError} from '../../../cdp/cdpClient.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {Deferred} from '../../../utils/deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
@@ -128,7 +129,7 @@ export class CdpTarget {
       await Promise.all(promises);
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
-      if (!this.#cdpClient.isCloseError(error)) {
+      if (isCloseError(error)) {
         throw error;
       }
     }
