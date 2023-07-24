@@ -164,7 +164,7 @@ export class SubscriptionManager {
     event: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
     channel: string | null
-  ) {
+  ): void {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
 

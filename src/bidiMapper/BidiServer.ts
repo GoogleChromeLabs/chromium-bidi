@@ -121,7 +121,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   /**
    * Sends BiDi message.
    */
-  emitOutgoingMessage(messageEntry: Promise<OutgoingBidiMessage>) {
+  emitOutgoingMessage(messageEntry: Promise<OutgoingBidiMessage>): void {
     this.#messageQueue.add(messageEntry);
   }
 
