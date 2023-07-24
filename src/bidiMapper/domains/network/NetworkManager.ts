@@ -29,7 +29,7 @@ import type {Network} from '../../../protocol/protocol.js';
 
 import {NetworkRequest} from './networkRequest.js';
 
-export class NetworkProcessor {
+export class NetworkManager {
   readonly #eventManager: IEventManager;
 
   /**
@@ -49,8 +49,8 @@ export class NetworkProcessor {
   static create(
     cdpClient: ICdpClient,
     eventManager: IEventManager
-  ): NetworkProcessor {
-    const networkProcessor = new NetworkProcessor(eventManager);
+  ): NetworkManager {
+    const networkProcessor = new NetworkManager(eventManager);
 
     cdpClient
       .browserClient()

@@ -21,7 +21,7 @@ import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {Deferred} from '../../../utils/deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {LogManager} from '../log/logManager.js';
-import {NetworkProcessor} from '../network/networkProcessor.js';
+import {NetworkManager} from '../network/NetworkManager.js';
 import type {ChannelProxy} from '../script/channelProxy.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
@@ -101,7 +101,7 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
-      NetworkProcessor.create(this.cdpClient, this.#eventManager);
+      NetworkManager.create(this.cdpClient, this.#eventManager);
 
       // Collect all command promises and wait for them after
       // `Runtime.runIfWaitingForDebugger`.
