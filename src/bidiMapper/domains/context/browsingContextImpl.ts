@@ -242,7 +242,7 @@ export class BrowsingContextImpl {
     return this.#url;
   }
 
-  async awaitLoaded() {
+  async pageLoaded() {
     await this.#deferreds.Page.lifecycleEvent.load;
   }
 
@@ -623,7 +623,7 @@ export class BrowsingContextImpl {
         if (cdpNavigateResult.loaderId === undefined) {
           await this.#deferreds.Page.navigatedWithinDocument;
         } else {
-          await this.awaitLoaded();
+          await this.pageLoaded();
         }
         break;
     }
@@ -653,7 +653,7 @@ export class BrowsingContextImpl {
         await this.#deferreds.Page.lifecycleEvent.DOMContentLoaded;
         break;
       case BrowsingContext.ReadinessState.Complete:
-        await this.awaitLoaded();
+        await this.pageLoaded();
         break;
     }
 
