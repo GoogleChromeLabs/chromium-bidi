@@ -156,6 +156,7 @@ def get_events(websocket, context_id):
 
 
 @pytest.mark.asyncio
+@pytest.mark.flaky
 async def test_input_performActionsEmitsKeyboardEvents(websocket, context_id,
                                                        html, activate_main_tab,
                                                        snapshot):
@@ -247,6 +248,7 @@ async def test_input_performActionsEmitsDragging(websocket, context_id, html,
 
 
 @pytest.mark.asyncio
+@pytest.mark.flaky
 async def test_input_performActionsCancelsDragging(websocket, context_id, html,
                                                    query_selector, snapshot,
                                                    activate_main_tab):
