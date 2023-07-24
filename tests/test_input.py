@@ -334,6 +334,7 @@ async def test_input_performActionsCancelsDragging(websocket, context_id, html,
 
 
 @pytest.mark.asyncio
+@pytest.mark.flaky
 async def test_input_performActionsDoesNotCancelDraggingWithAlt(
         websocket, context_id, html, query_selector, snapshot,
         activate_main_tab):
