@@ -52,6 +52,7 @@ export class CdpTarget {
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
+    NetworkManager.create(cdpClient, eventManager);
 
     cdpTarget.#setEventListeners();
 
@@ -101,8 +102,6 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
-      NetworkManager.create(this.cdpClient, this.#eventManager);
-
       // Collect all command promises and wait for them after
       // `Runtime.runIfWaitingForDebugger`.
       const promises: Promise<unknown>[] = [];
