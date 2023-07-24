@@ -20,9 +20,9 @@ import {expect} from 'chai';
 import * as sinon from 'sinon';
 import chaiAsPromised from 'chai-as-promised';
 
-import {StubTransport} from '../utils/transportStub.spec.js';
+import {TransportStub} from '../utils/transportStub.spec.js';
 
-import {CdpConnection} from './cdpConnection.js';
+import {CdpConnection} from './CdpConnection.js';
 
 chai.use(chaiAsPromised);
 
@@ -31,7 +31,7 @@ const ANOTHER_SESSION_ID = 'EFGH';
 
 describe('CdpConnection', () => {
   it('can send a command message for a CdpClient', () => {
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     const browserMessage = JSON.stringify({
@@ -47,7 +47,7 @@ describe('CdpConnection', () => {
   });
 
   it('creates a CdpClient for a session when the Target.attachedToTarget event is received', async () => {
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     expect(() => cdpConnection.getCdpClient(SOME_SESSION_ID)).to.throw(
@@ -64,7 +64,7 @@ describe('CdpConnection', () => {
   });
 
   it('removes the CdpClient for a session when the Target.detachedFromTarget event is received', async () => {
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     await mockCdpServer.emulateIncomingMessage({
@@ -86,7 +86,7 @@ describe('CdpConnection', () => {
   });
 
   it('routes event messages to the correct handler based on sessionId', async () => {
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     const browserMessage = {method: 'Browser.downloadWillBegin'};
@@ -155,7 +155,7 @@ describe('CdpConnection', () => {
   });
 
   it('closes the transport connection when closed', () => {
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
     cdpConnection.close();
     sinon.assert.calledOnce(mockCdpServer.close);

@@ -22,14 +22,14 @@ import {
   OutgoingBidiMessage,
   type BidiTransport,
 } from '../bidiMapper/bidiMapper.js';
-import {CdpConnection} from '../cdp/cdpConnection.js';
+import {CdpConnection} from '../cdp/CdpConnection.js';
 import {
   ErrorCode,
   type ChromiumBidi,
   type ErrorResponse,
 } from '../protocol/protocol.js';
 import {LogType} from '../utils/log.js';
-import type {ITransport} from '../utils/transport.js';
+import type {ITransport} from '../utils/ITransport.js';
 
 import {BidiParserImpl} from './BidiParserImpl';
 import {generatePage, log} from './mapperTabPage.js';

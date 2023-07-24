@@ -22,7 +22,7 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import {Deferred} from '../../../utils/deferred.js';
+import {Deferred} from '../../../utils/Deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {
   type Network,

@@ -21,8 +21,8 @@ import {
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
-import {Buffer} from '../../../utils/buffer.js';
-import {IdWrapper} from '../../../utils/idWrapper.js';
+import {Buffer} from '../../../utils/Buffer.js';
+import {IdWrapper} from '../../../utils/IdWrapper.js';
 import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingBidiMessage} from '../../OutgoingBidiMessage.js';
 

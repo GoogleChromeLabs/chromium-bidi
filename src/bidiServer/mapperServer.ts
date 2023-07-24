@@ -19,8 +19,8 @@ import type Protocol from 'devtools-protocol';
 import WebSocket from 'ws';
 import debug from 'debug';
 
-import {CdpConnection} from '../cdp/cdpConnection.js';
-import type {CdpClient} from '../cdp/cdpClient.js';
+import {CdpConnection} from '../cdp/CdpConnection.js';
+import type {CdpClient} from '../cdp/CdpClient.js';
 import {LogType} from '../utils/log.js';
 import {WebSocketTransport} from '../utils/websocketTransport.js';
 

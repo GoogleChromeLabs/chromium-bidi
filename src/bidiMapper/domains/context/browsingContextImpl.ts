@@ -25,15 +25,15 @@ import {
   type EmptyResult,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
-import {Deferred} from '../../../utils/deferred.js';
+import {Deferred} from '../../../utils/Deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {Realm} from '../script/realm.js';
-import type {RealmStorage} from '../script/realmStorage.js';
+import {Realm} from '../script/Realm.js';
+import type {RealmStorage} from '../script/RealmStorage.js';
 
-import type {BrowsingContextStorage} from './browsingContextStorage.js';
-import type {CdpTarget} from './cdpTarget.js';
+import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
+import type {CdpTarget} from './CdpTarget.js';
 
 export class BrowsingContextImpl {
   /** The ID of this browsing context. */

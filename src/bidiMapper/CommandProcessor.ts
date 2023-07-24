@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
+import type {ICdpConnection} from '../cdp/CdpConnection.js';
 import {
   Exception,
   UnknownCommandException,
@@ -30,13 +30,13 @@ import {LogType, type LoggerFn} from '../utils/log.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {IBidiParser} from './BidiParser.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
-import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
-import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
+import {BrowsingContextProcessor} from './domains/context/BrowsingContextProcessor.js';
+import type {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
 import type {IEventManager} from './domains/events/EventManager.js';
 import {InputProcessor} from './domains/input/InputProcessor.js';
 import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
-import type {RealmStorage} from './domains/script/realmStorage.js';
+import type {RealmStorage} from './domains/script/RealmStorage.js';
 
 type CommandProcessorEvents = {
   response: Promise<OutgoingBidiMessage>;

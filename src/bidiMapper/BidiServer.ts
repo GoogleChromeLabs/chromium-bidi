@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
+import type {ICdpConnection} from '../cdp/CdpConnection.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
-import {ProcessingQueue} from '../utils/processingQueue.js';
+import {ProcessingQueue} from '../utils/ProcessingQueue.js';
 
 import type {IBidiParser} from './BidiParser.js';
-import type {IBidiTransport} from './BidiTransport.js';
+import type {IBidiTransport} from './IBidiTransport.js';
 import {CommandProcessor} from './CommandProcessor.js';
 import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
-import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
+import {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
 import {EventManager} from './domains/events/EventManager.js';
-import {RealmStorage} from './domains/script/realmStorage.js';
+import {RealmStorage} from './domains/script/RealmStorage.js';
 
 type BidiServerEvent = {
   message: ChromiumBidi.Command;

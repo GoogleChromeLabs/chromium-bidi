@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export type ReleaseFunction = () => void;
+type ReleaseFunction = () => void;
 
 /**
  * Use Mutex class to coordinate local concurrent operations.

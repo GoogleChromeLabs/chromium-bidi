@@ -19,9 +19,9 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 
-import type {CdpConnection} from './cdpConnection.js';
+import type {CdpConnection} from './CdpConnection.js';
 
-export type CdpEvents = {
+type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
 };
 

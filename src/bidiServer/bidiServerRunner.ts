@@ -19,7 +19,7 @@ import http from 'http';
 import debug from 'debug';
 import websocket from 'websocket';
 
-import type {ITransport} from '../utils/transport.js';
+import type {ITransport} from '../utils/ITransport.js';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');

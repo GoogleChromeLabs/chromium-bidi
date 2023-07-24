@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {CdpTarget} from '../context/cdpTarget.js';
+import type {CdpTarget} from '../context/CdpTarget.js';
 
-import type {BidiPreloadScript} from './bidiPreloadScript.js';
+import type {BidiPreloadScript} from './BidiPreloadScript.js';
 
 /** BidiPreloadScripts can be filtered by BiDi ID or target ID. */
-export type BidiPreloadScriptFilter = Partial<
+type BidiPreloadScriptFilter = Partial<
   Pick<BidiPreloadScript, 'id'> & Pick<CdpTarget, 'targetId'>
 >;
 

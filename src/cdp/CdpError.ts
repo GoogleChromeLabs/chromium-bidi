@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC.
+ * Copyright 2023 Google LLC.
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
-
-import type {CdpError} from './CdpError';
-
-export interface CdpMessage<CdpMethod extends keyof ProtocolMapping.Commands> {
-  sessionId?: string;
-  id?: number;
-  error?: CdpError;
-  method?: CdpMethod;
-  params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0];
-  result?: ProtocolMapping.Commands[CdpMethod]['returnType'];
+export interface CdpError {
+  code: number;
+  message: string;
 }

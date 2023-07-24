@@ -18,8 +18,8 @@
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 
-import {Deferred} from './deferred.js';
-import {ProcessingQueue} from './processingQueue.js';
+import {Deferred} from './Deferred.js';
+import {ProcessingQueue} from './ProcessingQueue.js';
 
 describe('ProcessingQueue', () => {
   it('should wait and call processor in order', async () => {

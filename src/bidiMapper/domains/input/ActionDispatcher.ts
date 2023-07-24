@@ -23,12 +23,12 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
-import type {BrowsingContextImpl} from '../context/browsingContextImpl.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 
 import type {ActionOption} from './ActionOption.js';
 import type {KeySource, PointerSource, WheelSource} from './InputSource.js';
 import type {InputState} from './InputState.js';
-import {KeyToKeyCode} from './USKeyboardLayout.js';
+import {KeyToKeyCode} from './UsKeyboardLayout.js';
 import {getKeyCode, getKeyLocation, getNormalizedKey} from './keyUtils.js';
 
 /** https://w3c.github.io/webdriver/#dfn-center-point */

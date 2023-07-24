@@ -16,12 +16,12 @@
  */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import type {ITransport} from '../utils/transport.js';
+import type {ITransport} from '../utils/ITransport.js';
 import {LogType} from '../utils/log.js';
 import type {LoggerFn} from '../utils/log.js';
 
-import {CloseError, CdpClient, type ICdpClient} from './cdpClient.js';
-import type {CdpMessage} from './cdpMessage.js';
+import {CloseError, CdpClient, type ICdpClient} from './CdpClient.js';
+import type {CdpMessage} from './CdpMessage.js';
 
 interface CdpCallbacks {
   resolve: (result: CdpMessage<any>['result']) => void;

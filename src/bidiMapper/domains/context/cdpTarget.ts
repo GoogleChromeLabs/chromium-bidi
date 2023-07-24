@@ -17,13 +17,13 @@
  */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import {Deferred} from '../../../utils/deferred.js';
+import type {ICdpClient} from '../../../cdp/CdpClient.js';
+import {Deferred} from '../../../utils/Deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {LogManager} from '../log/logManager.js';
+import {LogManager} from '../log/LogManager.js';
 import {NetworkManager} from '../network/NetworkManager.js';
-import type {ChannelProxy} from '../script/channelProxy.js';
-import type {RealmStorage} from '../script/realmStorage.js';
+import type {ChannelProxy} from '../script/ChannelProxy.js';
+import type {RealmStorage} from '../script/RealmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 
 export class CdpTarget {

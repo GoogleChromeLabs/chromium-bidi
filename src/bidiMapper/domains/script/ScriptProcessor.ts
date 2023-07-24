@@ -20,13 +20,13 @@ import {
   Script,
   NoSuchScriptException,
 } from '../../../protocol/protocol';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage';
-import type {CdpTarget} from '../context/cdpTarget';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
+import type {CdpTarget} from '../context/CdpTarget';
 
 import type {PreloadScriptStorage} from './PreloadScriptStorage';
-import {BidiPreloadScript} from './bidiPreloadScript';
-import type {Realm} from './realm';
-import type {RealmStorage} from './realmStorage';
+import {BidiPreloadScript} from './BidiPreloadScript';
+import type {Realm} from './Realm';
+import type {RealmStorage} from './RealmStorage';
 
 export class ScriptProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;

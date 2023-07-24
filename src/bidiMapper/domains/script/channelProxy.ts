@@ -20,9 +20,9 @@ import {Protocol} from 'devtools-protocol';
 
 import {ChromiumBidi, Script} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {uuidv4} from '../../../utils/uuid';
+import {uuidv4} from '../../../utils/uuid.js';
 
-import type {Realm} from './realm.js';
+import type {Realm} from './Realm.js';
 
 /**
  * Used to send messages from realm to BiDi user.

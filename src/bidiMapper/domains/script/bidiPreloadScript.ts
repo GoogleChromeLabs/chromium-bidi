@@ -18,9 +18,9 @@
 
 import type {Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {CdpTarget} from '../context/cdpTarget.js';
+import type {CdpTarget} from '../context/CdpTarget.js';
 
-import {ChannelProxy} from './channelProxy.js';
+import {ChannelProxy} from './ChannelProxy.js';
 
 type CdpPreloadScript = {
   /** CDP target. Includes session ID and target ID. */

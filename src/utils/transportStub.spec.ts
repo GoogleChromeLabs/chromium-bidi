@@ -17,7 +17,7 @@
 
 import * as sinon from 'sinon';
 
-import type {ITransport} from './transport.js';
+import type {ITransport} from './ITransport.js';
 
 type TypedSpy<T extends (...args: any[]) => unknown> = sinon.SinonSpy<
   Parameters<T>,
@@ -28,7 +28,7 @@ function typedSpy<T extends sinon.SinonSpy>() {
   return sinon.spy() as T;
 }
 
-export class StubTransport implements ITransport {
+export class TransportStub implements ITransport {
   setOnMessage: TypedSpy<ITransport['setOnMessage']>;
   sendMessage: TypedSpy<ITransport['sendMessage']>;
   close: TypedSpy<ITransport['close']>;

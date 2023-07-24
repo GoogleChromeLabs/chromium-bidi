@@ -20,9 +20,9 @@ import {expect} from 'chai';
 import * as sinon from 'sinon';
 import chaiAsPromised from 'chai-as-promised';
 
-import {StubTransport} from '../utils/transportStub.spec.js';
+import {TransportStub} from '../utils/transportStub.spec.js';
 
-import {CdpConnection} from './cdpConnection.js';
+import {CdpConnection} from './CdpConnection.js';
 
 chai.use(chaiAsPromised);
 
@@ -39,7 +39,7 @@ describe('CdpClient', () => {
       },
     });
 
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     const cdpClient = cdpConnection.browserClient();
@@ -54,7 +54,7 @@ describe('CdpClient', () => {
   });
 
   it(`when command is called and it's done, sendMessage promise is resolved`, async () => {
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     const cdpClient = cdpConnection.browserClient();
@@ -75,7 +75,7 @@ describe('CdpClient', () => {
   });
 
   it(`when some command is called 2 times and it's done each command promise is resolved with proper results`, async () => {
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
     const cdpClient = cdpConnection.browserClient();
 
@@ -114,7 +114,7 @@ describe('CdpClient', () => {
   });
 
   it('gets event callbacks when events are received from CDP', async () => {
-    const mockCdpServer = new StubTransport();
+    const mockCdpServer = new TransportStub();
     const cdpConnection = new CdpConnection(mockCdpServer);
     const cdpClient = cdpConnection.browserClient();
 
@@ -159,7 +159,7 @@ describe('CdpClient', () => {
 
   describe('sendCommand()', () => {
     it('sends raw CDP messages and returns a promise that will be resolved with the result', async () => {
-      const mockCdpServer = new StubTransport();
+      const mockCdpServer = new TransportStub();
       const cdpConnection = new CdpConnection(mockCdpServer);
       const cdpClient = cdpConnection.browserClient();
 
@@ -184,7 +184,7 @@ describe('CdpClient', () => {
     });
 
     it('sends raw CDP messages and returns a promise that will reject on error', async () => {
-      const mockCdpServer = new StubTransport();
+      const mockCdpServer = new TransportStub();
       const cdpConnection = new CdpConnection(mockCdpServer);
       const cdpClient = cdpConnection.browserClient();
 

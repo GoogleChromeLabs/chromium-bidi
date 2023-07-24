@@ -22,12 +22,12 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import type {ICdpClient} from '../../../cdp/cdpClient.js';
+import type {ICdpClient} from '../../../cdp/CdpClient.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {Network} from '../../../protocol/protocol.js';
 
-import {NetworkRequest} from './networkRequest.js';
+import {NetworkRequest} from './NetworkRequest.js';
 
 export class NetworkManager {
   readonly #eventManager: IEventManager;

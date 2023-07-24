@@ -17,10 +17,10 @@
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 
-import {CdpTarget} from '../context/cdpTarget.js';
+import {CdpTarget} from '../context/CdpTarget.js';
 
 import {PreloadScriptStorage} from './PreloadScriptStorage.js';
-import {BidiPreloadScript} from './bidiPreloadScript.js';
+import {BidiPreloadScript} from './BidiPreloadScript.js';
 
 const MOCKED_UUID_1 = '00000000-0000-0000-0000-00000000000a';
 const MOCKED_UUID_2 = '00000000-0000-0000-0000-00000000000b';
