@@ -21,7 +21,7 @@ import {NetworkStorage} from './NetworkStorage.js';
 export class NetworkProcessor {
   #networkStorage: NetworkStorage = new NetworkStorage();
 
-  process_network_addIntercept(
+  addIntercept(
     _params: Network.AddInterceptParameters
   ): Network.AddInterceptResult {
     return {
@@ -30,39 +30,27 @@ export class NetworkProcessor {
     };
   }
 
-  process_network_continueRequest(
-    _params: Network.ContinueRequestParameters
-  ): EmptyResult {
+  continueRequest(_params: Network.ContinueRequestParameters): EmptyResult {
     return {};
   }
 
-  process_network_continueResponse(
-    _params: Network.ContinueResponseParameters
-  ): EmptyResult {
+  continueResponse(_params: Network.ContinueResponseParameters): EmptyResult {
     return {};
   }
 
-  process_network_continueWithAuth(
-    _params: Network.ContinueWithAuthParameters
-  ): EmptyResult {
+  continueWithAuth(_params: Network.ContinueWithAuthParameters): EmptyResult {
     return {};
   }
 
-  process_network_failRequest(
-    _params: Network.FailRequestParameters
-  ): EmptyResult {
+  failRequest(_params: Network.FailRequestParameters): EmptyResult {
     return {};
   }
 
-  process_network_provideResponse(
-    _params: Network.ProvideResponseParameters
-  ): EmptyResult {
+  provideResponse(_params: Network.ProvideResponseParameters): EmptyResult {
     return {};
   }
 
-  process_network_removeIntercept(
-    _params: Network.RemoveInterceptParameters
-  ): EmptyResult {
+  removeIntercept(_params: Network.RemoveInterceptParameters): EmptyResult {
     return {};
   }
 }

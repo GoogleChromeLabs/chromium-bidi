@@ -194,31 +194,31 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Network domain
       // keep-sorted start block=yes
       case 'network.addIntercept':
-        return this.#networkProcessor.process_network_addIntercept(
+        return this.#networkProcessor.addIntercept(
           this.#parser.parseAddInterceptParams(command.params)
         );
       case 'network.continueRequest':
-        return this.#networkProcessor.process_network_continueRequest(
+        return this.#networkProcessor.continueRequest(
           this.#parser.parseContinueRequestParams(command.params)
         );
       case 'network.continueResponse':
-        return this.#networkProcessor.process_network_continueResponse(
+        return this.#networkProcessor.continueResponse(
           this.#parser.parseContinueResponseParams(command.params)
         );
       case 'network.continueWithAuth':
-        return this.#networkProcessor.process_network_continueWithAuth(
+        return this.#networkProcessor.continueWithAuth(
           this.#parser.parseContinueWithAuthParams(command.params)
         );
       case 'network.failRequest':
-        return this.#networkProcessor.process_network_failRequest(
+        return this.#networkProcessor.failRequest(
           this.#parser.parseFailRequestParams(command.params)
         );
       case 'network.provideResponse':
-        return this.#networkProcessor.process_network_provideResponse(
+        return this.#networkProcessor.provideResponse(
           this.#parser.parseProvideResponseParams(command.params)
         );
       case 'network.removeIntercept':
-        return this.#networkProcessor.process_network_removeIntercept(
+        return this.#networkProcessor.removeIntercept(
           this.#parser.parseRemoveInterceptParams(command.params)
         );
       // keep-sorted end
