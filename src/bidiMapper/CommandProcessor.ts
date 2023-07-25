@@ -45,12 +45,14 @@ type CommandProcessorEvents = {
 };
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
+  // keep-sorted start
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
+  #cdpProcessor: CdpProcessor;
   #inputProcessor: InputProcessor;
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
-  #cdpProcessor: CdpProcessor;
+  // keep-sorted end
 
   #parser: IBidiParser;
   #logger?: LoggerFn;
@@ -68,6 +70,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     this.#parser = parser;
     this.#logger = logger;
     const preloadScriptStorage = new PreloadScriptStorage();
+
+    // keep-sorted start block=yes
     this.#browserProcessor = new BrowserProcessor(cdpConnection);
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
@@ -78,6 +82,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       preloadScriptStorage,
       logger
     );
+    this.#cdpProcessor = new CdpProcessor(
+      browsingContextStorage,
+      cdpConnection
+    );
     this.#inputProcessor = InputProcessor.create(browsingContextStorage);
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,
@@ -85,10 +93,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       preloadScriptStorage
     );
     this.#sessionProcessor = new SessionProcessor(eventManager);
-    this.#cdpProcessor = new CdpProcessor(
-      browsingContextStorage,
-      cdpConnection
-    );
+    // keep-sorted end
   }
 
   async #processCommand(
