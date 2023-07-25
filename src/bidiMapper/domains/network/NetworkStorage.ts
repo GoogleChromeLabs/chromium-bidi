@@ -31,8 +31,8 @@ export class NetworkStorage {
   readonly #interceptMap: Map<
     Network.Intercept,
     {
-      urlPattern: string;
-      interceptPhase: Network.InterceptPhase;
+      urlPatterns: string[];
+      phases: Network.InterceptPhase[];
     }
   >;
 
@@ -41,7 +41,7 @@ export class NetworkStorage {
     Network.Request,
     {
       request: Network.Request;
-      interceptPhase: Network.InterceptPhase;
+      phase: Network.InterceptPhase;
       response: Network.ResponseData;
     }
   >;

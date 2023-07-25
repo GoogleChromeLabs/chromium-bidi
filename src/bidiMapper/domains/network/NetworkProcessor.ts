@@ -19,21 +19,37 @@ import {
   type EmptyResult,
   UnknownCommandException,
 } from '../../../protocol/protocol.js';
+import {uuidv4} from '../../../utils/uuid.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';
 
 export class NetworkProcessor {
-  // TODO: Declare and use.
-  // readonly #networkStorage: NetworkStorage;
+  readonly #networkStorage: NetworkStorage;
 
-  constructor(_networkStorage: NetworkStorage) {
-    // this.#networkStorage = networkStorage;
+  constructor(networkStorage: NetworkStorage) {
+    this.#networkStorage = networkStorage;
   }
 
   addIntercept(
-    _params: Network.AddInterceptParameters
+    params: Network.AddInterceptParameters
   ): Network.AddInterceptResult {
-    throw new UnknownCommandException('Not implemented yet.');
+    const intercept = uuidv4();
+
+    const urlPatterns: string[] = params.urlPatterns ?? [];
+    const parsedPatterns: string[] = [];
+    for (const urlPattern of urlPatterns) {
+      const parsed = urlPattern; // TODO: Parse the pattern.
+      parsedPatterns.push(parsed);
+    }
+
+    this.#networkStorage.interceptMap.set(intercept, {
+      urlPatterns: parsedPatterns,
+      phases: params.phases,
+    });
+
+    return {
+      intercept,
+    };
   }
 
   continueRequest(_params: Network.ContinueRequestParameters): EmptyResult {
