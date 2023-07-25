@@ -65,7 +65,7 @@ export class CdpTarget {
   }
 
   private constructor(
-    targetId: string,
+    targetId: Protocol.Target.TargetID,
     cdpClient: ICdpClient,
     cdpSessionId: Protocol.Target.SessionID,
     eventManager: IEventManager,
@@ -83,7 +83,7 @@ export class CdpTarget {
     return this.#targetUnblocked;
   }
 
-  get targetId(): string {
+  get targetId(): Protocol.Target.TargetID {
     return this.#targetId;
   }
 
