@@ -71,7 +71,7 @@ export type JsInt = number;
  * Must be between `0` and `9007199254740991`, inclusive.
  */
 export type JsUint = number;
-export const enum ErrorCode {
+export enum ErrorCode {
   InvalidArgument = 'invalid argument',
   InvalidSessionId = 'invalid session id',
   MoveTargetOutOfBounds = 'move target out of bounds',
