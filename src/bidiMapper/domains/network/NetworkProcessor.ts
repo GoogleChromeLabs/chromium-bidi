@@ -18,6 +18,7 @@ import {
   type Network,
   type EmptyResult,
   UnknownCommandException,
+  NoSuchInterceptException,
 } from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
 
@@ -72,7 +73,18 @@ export class NetworkProcessor {
     throw new UnknownCommandException('Not implemented yet.');
   }
 
-  removeIntercept(_params: Network.RemoveInterceptParameters): EmptyResult {
-    throw new UnknownCommandException('Not implemented yet.');
+  removeIntercept(params: Network.RemoveInterceptParameters): EmptyResult {
+    const intercept = params.intercept;
+    const interceptMap = this.#networkStorage.interceptMap;
+
+    if (!interceptMap.has(intercept)) {
+      throw new NoSuchInterceptException(
+        `Intercept ${intercept} does not exist.`
+      );
+    }
+
+    interceptMap.delete(intercept);
+
+    return {};
   }
 }
