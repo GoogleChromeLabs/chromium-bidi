@@ -27,10 +27,12 @@ import type {EventManager} from '../events/EventManager.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {Network} from '../../../protocol/protocol.js';
 
-import {NetworkRequest} from './NetworkRequest.js';
+import type {NetworkRequest} from './NetworkRequest.js';
+import type {NetworkStorage} from './NetworkStorage.js';
 
 export class NetworkManager {
   readonly #eventManager: EventManager;
+  readonly #networkStorage: NetworkStorage;
 
   /**
    * Map of request ID to NetworkRequest objects. Needed as long as information
@@ -38,8 +40,9 @@ export class NetworkManager {
    */
   readonly #requestMap: DefaultMap<Network.Request, NetworkRequest>;
 
-  private constructor(eventManager: EventManager) {
+  private constructor(eventManager: EventManager, networkStorage: NetworkStorage) {
     this.#eventManager = eventManager;
+    this.#networkStorage = networkStorage;
 
     this.#requestMap = new DefaultMap(
       (requestId) => new NetworkRequest(requestId, this.#eventManager)
@@ -48,9 +51,10 @@ export class NetworkManager {
 
   static create(
     cdpClient: ICdpClient,
-    eventManager: EventManager
+    eventManager: EventManager,
+    networkStorage: NetworkStorage
   ): NetworkManager {
-    const networkProcessor = new NetworkManager(eventManager);
+    const networkManager = new NetworkManager(eventManager, networkStorage);
 
     cdpClient
       .browserClient()
@@ -58,7 +62,7 @@ export class NetworkManager {
         'Target.detachedFromTarget',
         (params: Protocol.Target.DetachedFromTargetEvent) => {
           if (cdpClient.sessionId === params.sessionId) {
-            networkProcessor.dispose();
+            networkManager.dispose();
           }
         }
       );
@@ -66,7 +70,7 @@ export class NetworkManager {
     cdpClient.on(
       'Network.requestWillBeSent',
       (params: Protocol.Network.RequestWillBeSentEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onRequestWillBeSentEvent(params);
       }
@@ -75,7 +79,7 @@ export class NetworkManager {
     cdpClient.on(
       'Network.requestWillBeSentExtraInfo',
       (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onRequestWillBeSentExtraInfoEvent(params);
       }
@@ -84,7 +88,7 @@ export class NetworkManager {
     cdpClient.on(
       'Network.responseReceived',
       (params: Protocol.Network.ResponseReceivedEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onResponseReceivedEvent(params);
       }
@@ -93,7 +97,7 @@ export class NetworkManager {
     cdpClient.on(
       'Network.responseReceivedExtraInfo',
       (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onResponseReceivedEventExtraInfo(params);
       }
@@ -102,7 +106,7 @@ export class NetworkManager {
     cdpClient.on(
       'Network.requestServedFromCache',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onServedFromCache();
       }
@@ -111,40 +115,40 @@ export class NetworkManager {
     cdpClient.on(
       'Network.loadingFailed',
       (params: Protocol.Network.LoadingFailedEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onLoadingFailedEvent(params);
-        networkProcessor.#forgetRequest(params.requestId);
+        networkManager.#forgetRequest(params.requestId);
       }
     );
 
     cdpClient.on(
       'Network.loadingFinished',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
-        networkProcessor.#forgetRequest(params.requestId);
+        networkManager.#forgetRequest(params.requestId);
       }
     );
 
-    return networkProcessor;
+    return networkManager;
   }
 
   dispose() {
-    for (const request of this.#requestMap.values()) {
+    for (const request of this.#networkStorage.requestMap.values()) {
       request.dispose();
     }
 
-    this.#requestMap.clear();
-  }
-
-  #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
-    return this.#requestMap.get(requestId);
+    this.#networkStorage.requestMap.clear();
   }
 
   #forgetRequest(requestId: Network.Request): void {
-    const request = this.#requestMap.get(requestId);
+    const request = this.#networkStorage.requestMap.get(requestId);
     if (request) {
       request.dispose();
-      this.#requestMap.delete(requestId);
+      this.#networkStorage.requestMap.delete(requestId);
     }
+  }
+
+  #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
+    return this.#networkStorage.requestMap.get(requestId);
   }
 }

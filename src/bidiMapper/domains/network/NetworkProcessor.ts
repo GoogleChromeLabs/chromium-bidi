@@ -20,10 +20,15 @@ import {
   UnknownCommandException,
 } from '../../../protocol/protocol.js';
 
-import {NetworkStorage} from './NetworkStorage.js';
+import type {NetworkStorage} from './NetworkStorage.js';
 
 export class NetworkProcessor {
-  #networkStorage: NetworkStorage = new NetworkStorage();
+  // TODO: Declare and use.
+  // readonly #networkStorage: NetworkStorage;
+
+  constructor(_networkStorage: NetworkStorage) {
+    // this.#networkStorage = networkStorage;
+  }
 
   addIntercept(
     _params: Network.AddInterceptParameters

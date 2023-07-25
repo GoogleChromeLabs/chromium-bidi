@@ -40,6 +40,7 @@ import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
 import type {RealmStorage} from './domains/script/realmStorage.js';
 import {NetworkProcessor} from './domains/network/NetworkProcessor.js';
 import {SessionProcessor} from './domains/session/SessionProcessor.js';
+import {NetworkStorage} from './domains/network/NetworkStorage.js';
 
 export const enum CommandProcessorEvents {
   Response = 'response',
@@ -79,6 +80,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#parser = parser;
     this.#logger = logger;
 
+    const networkStorage = new NetworkStorage(eventManager);
     const preloadScriptStorage = new PreloadScriptStorage();
 
     // keep-sorted start block=yes
@@ -89,6 +91,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       eventManager,
       browsingContextStorage,
       realmStorage,
+      networkStorage,
       preloadScriptStorage,
       logger
     );
@@ -97,7 +100,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       cdpConnection
     );
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
-    this.#networkProcessor = new NetworkProcessor();
+    this.#networkProcessor = new NetworkProcessor(networkStorage);
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,
       realmStorage,

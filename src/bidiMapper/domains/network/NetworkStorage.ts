@@ -15,28 +15,50 @@
  * limitations under the License.
  */
 import type {Network} from '../../../protocol/protocol.js';
+import {DefaultMap} from '../../../utils/DefaultMap.js';
+import type {IEventManager} from '../events/EventManager.js';
+
+import {NetworkRequest} from './NetworkRequest.js';
 
 export class NetworkStorage {
+  /**
+   * Map of request ID to NetworkRequest objects. Needed as long as information
+   * about requests comes from different events.
+   */
+  readonly #requestMap: DefaultMap<Network.Request, NetworkRequest>;
+
   /** A map to define the properties of active network intercepts. */
-  #interceptMap = new Map<
+  readonly #interceptMap: Map<
     Network.Intercept,
     {
       urlPattern: string;
       interceptPhase: Network.InterceptPhase;
     }
-  >();
+  >;
 
   /** A map to track the requests which are actively being blocked. */
-  #blockedRequestMap = new Map<
+  readonly #blockedRequestMap: Map<
     Network.Request,
     {
       request: Network.Request;
       interceptPhase: Network.InterceptPhase;
       response: Network.ResponseData;
     }
-  >();
+  >;
+
+  constructor(eventManager: IEventManager) {
+    this.#requestMap = new DefaultMap(
+      (requestId) => new NetworkRequest(requestId, eventManager)
+    );
+    this.#interceptMap = new Map();
+    this.#blockedRequestMap = new Map();
+  }
 
   // XXX: Replace getters with custom operations, like Browsing Context Storage.
+  get requestMap() {
+    return this.#requestMap;
+  }
+
   get interceptMap() {
     return this.#interceptMap;
   }
