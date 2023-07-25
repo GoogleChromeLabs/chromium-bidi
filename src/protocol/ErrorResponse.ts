@@ -95,6 +95,12 @@ export class NoSuchNodeException extends Exception {
   }
 }
 
+export class NoSuchRequestException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchRequest, message, stacktrace);
+  }
+}
+
 export class NoSuchScriptException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchScript, message, stacktrace);
