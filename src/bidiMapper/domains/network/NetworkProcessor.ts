@@ -16,25 +16,10 @@
  */
 import type {Network, EmptyResult} from '../../../protocol/protocol.js';
 
-export class NetworkProcessor {
-  /** A map to define the properties of active network intercepts. */
-  // #interceptMap = new Map<
-  //   Network.Intercept,
-  //   {
-  //     urlPattern: string;
-  //     interceptPhase: Network.InterceptPhase;
-  //   }
-  // >();
+import {NetworkStorage} from './NetworkStorage.js';
 
-  /** A map to track the requests which are actively being blocked. */
-  // #blockedRequestMap = new Map<
-  //   Network.Request,
-  //   {
-  //     request: Network.Request;
-  //     interceptPhase: Network.InterceptPhase;
-  //     response: Network.ResponseData;
-  //   }
-  // >();
+export class NetworkProcessor {
+  #networkStorage: NetworkStorage = new NetworkStorage();
 
   process_network_addIntercept(
     _params: Network.AddInterceptParameters
