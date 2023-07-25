@@ -66,4 +66,12 @@ export class NetworkStorage {
   get blockedRequestMap() {
     return this.#blockedRequestMap;
   }
+
+  disposeRequestMap() {
+    for (const request of this.#requestMap.values()) {
+      request.dispose();
+    }
+
+    this.#requestMap.clear();
+  }
 }
