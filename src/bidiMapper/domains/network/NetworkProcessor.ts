@@ -14,7 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {Network, EmptyResult} from '../../../protocol/protocol.js';
+import {
+  type Network,
+  type EmptyResult,
+  UnknownCommandException,
+} from '../../../protocol/protocol.js';
 
 import {NetworkStorage} from './NetworkStorage.js';
 
@@ -24,33 +28,30 @@ export class NetworkProcessor {
   addIntercept(
     _params: Network.AddInterceptParameters
   ): Network.AddInterceptResult {
-    return {
-      // TODO: populate.
-      intercept: '',
-    };
+    throw new UnknownCommandException('Not implemented yet.');
   }
 
   continueRequest(_params: Network.ContinueRequestParameters): EmptyResult {
-    return {};
+    throw new UnknownCommandException('Not implemented yet.');
   }
 
   continueResponse(_params: Network.ContinueResponseParameters): EmptyResult {
-    return {};
+    throw new UnknownCommandException('Not implemented yet.');
   }
 
   continueWithAuth(_params: Network.ContinueWithAuthParameters): EmptyResult {
-    return {};
+    throw new UnknownCommandException('Not implemented yet.');
   }
 
   failRequest(_params: Network.FailRequestParameters): EmptyResult {
-    return {};
+    throw new UnknownCommandException('Not implemented yet.');
   }
 
   provideResponse(_params: Network.ProvideResponseParameters): EmptyResult {
-    return {};
+    throw new UnknownCommandException('Not implemented yet.');
   }
 
   removeIntercept(_params: Network.RemoveInterceptParameters): EmptyResult {
-    return {};
+    throw new UnknownCommandException('Not implemented yet.');
   }
 }
