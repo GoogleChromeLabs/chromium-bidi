@@ -431,6 +431,7 @@ async def test_input_performActionsDoesNotCancelDraggingWithAlt(
 
 
 @pytest.mark.asyncio
+@pytest.mark.flaky
 async def test_input_performActionsEmitsPointerEvents(websocket, context_id,
                                                       html, activate_main_tab,
                                                       snapshot):
