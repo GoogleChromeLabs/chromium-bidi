@@ -43,6 +43,8 @@ export class NetworkProcessor {
       parsedPatterns.push(parsed);
     }
 
+    // TODO: call CDP `Fetch.enable`.
+
     this.#networkStorage.interceptMap.set(intercept, {
       urlPatterns: parsedPatterns,
       phases: params.phases,
@@ -82,6 +84,8 @@ export class NetworkProcessor {
         `Intercept ${intercept} does not exist.`
       );
     }
+
+    // TODO: call CDP `Fetch.disable`.
 
     interceptMap.delete(intercept);
 
