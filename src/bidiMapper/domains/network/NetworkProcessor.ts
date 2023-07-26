@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {
-  type Network,
+  Network,
   type EmptyResult,
   UnknownCommandException,
   NoSuchInterceptException,
@@ -35,7 +35,7 @@ export class NetworkProcessor {
     this.#cdpClient = cdpClient;
   }
 
-  addIntercept(
+  async addIntercept(
     params: Network.AddInterceptParameters
   ): Promise<Network.AddInterceptResult> {
     if (params.phases.length === 0) {
@@ -53,7 +53,16 @@ export class NetworkProcessor {
       parsedPatterns.push(parsed);
     }
 
-    // TODO: call CDP `Fetch.enable`.
+    // TODO: Refine CDP `Fetch.enable`.
+    await this.#cdpClient.sendCommand('Fetch.enable', {
+      patterns: parsedPatterns.map((pattern) => ({
+        urlPattern: pattern,
+        // TODO: Populate requestStage.
+      })),
+      handleAuthRequests: params.phases.includes(
+        Network.InterceptPhase.AuthRequired
+      ),
+    });
 
     this.#networkStorage.interceptMap.set(intercept, {
       urlPatterns: parsedPatterns,
