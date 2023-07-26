@@ -44,15 +44,16 @@ describe('Exception', () => {
 
   // XXX: Simplify with `Object.keys(ErrorCode)` once we switch to non-const enums.
   Object.keys(errors).forEach((errorCode) => {
-    it(`should have an exception class for ErrorCode.${errorCode}`, () => {
-      // Exception class name should be in PascalCase, e.g. InvalidArgumentException
-      const exceptionClassName = `${errorCode
-        .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('')}Exception`;
+    // Exception class name should be in PascalCase, e.g. InvalidArgumentException
+    const exceptionClassName = `${errorCode
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('')}Exception`;
 
+    it(`should have an exception class for ErrorCode.${exceptionClassName}`, () => {
       expect(exceptionClasses).to.have.property(exceptionClassName);
       const ExceptionClass = (exceptionClasses as any)[exceptionClassName];
+      expect(ExceptionClass.name.endsWith('Exception')).to.be.true;
 
       const instance = new ExceptionClass('my message', 'my stacktrace');
       expect(instance).to.have.property('error', errorCode);
