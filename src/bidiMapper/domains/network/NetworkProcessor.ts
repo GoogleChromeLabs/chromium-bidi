@@ -102,7 +102,7 @@ export class NetworkProcessor {
 
     if (!interceptMap.has(intercept)) {
       throw new NoSuchInterceptException(
-        `Intercept ${intercept} does not exist.`
+        `Intercept '${intercept}' does not exist.`
       );
     }
 
