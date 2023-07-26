@@ -94,7 +94,9 @@ export class NetworkProcessor {
     throw new UnknownCommandException('Not implemented yet.');
   }
 
-  removeIntercept(params: Network.RemoveInterceptParameters): EmptyResult {
+  async removeIntercept(
+    params: Network.RemoveInterceptParameters
+  ): Promise<EmptyResult> {
     const intercept = params.intercept;
     const interceptMap = this.#networkStorage.interceptMap;
 
@@ -104,7 +106,9 @@ export class NetworkProcessor {
       );
     }
 
-    // TODO: call CDP `Fetch.disable`.
+    // TODO: Refine CDP `Fetch.disable`.
+    // May need to call `enable` again for leftover intercept entries.
+    await this.#cdpClient.sendCommand('Fetch.disable');
 
     interceptMap.delete(intercept);
 
