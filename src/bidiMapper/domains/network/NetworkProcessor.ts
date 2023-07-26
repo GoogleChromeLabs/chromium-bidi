@@ -22,14 +22,17 @@ import {
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
+import type {ICdpClient} from '../../bidiMapper.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';
 
 export class NetworkProcessor {
   readonly #networkStorage: NetworkStorage;
+  readonly #cdpClient: ICdpClient;
 
-  constructor(networkStorage: NetworkStorage) {
+  constructor(networkStorage: NetworkStorage, cdpClient: ICdpClient) {
     this.#networkStorage = networkStorage;
+    this.#cdpClient = cdpClient;
   }
 
   addIntercept(
