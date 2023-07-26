@@ -19,6 +19,7 @@ import {
   type EmptyResult,
   UnknownCommandException,
   NoSuchInterceptException,
+  InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
 
@@ -33,7 +34,13 @@ export class NetworkProcessor {
 
   addIntercept(
     params: Network.AddInterceptParameters
-  ): Network.AddInterceptResult {
+  ): Promise<Network.AddInterceptResult> {
+    if (params.phases.length === 0) {
+      throw new InvalidArgumentException(
+        'At least one phase must be specified.'
+      );
+    }
+
     const intercept = uuidv4();
 
     const urlPatterns: string[] = params.urlPatterns ?? [];
