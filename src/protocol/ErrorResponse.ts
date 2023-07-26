@@ -77,12 +77,6 @@ export class NoSuchHandleException extends Exception {
   }
 }
 
-export class NoSuchHandleException extends Exception {
-  constructor(message: string, stacktrace?: string) {
-    super(ErrorCode.NoSuchHandle, message, stacktrace);
-  }
-}
-
 export class NoSuchInterceptException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchIntercept, message, stacktrace);
