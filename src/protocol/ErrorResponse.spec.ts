@@ -20,14 +20,35 @@ import * as exceptionClasses from './ErrorResponse.js';
 import {ErrorCode} from './webdriver-bidi.js';
 
 describe('Exception', () => {
-  Object.keys(ErrorCode).forEach((errorCodeKey: string) => {
-    const errorCode = ErrorCode[errorCodeKey as keyof typeof ErrorCode];
+  const errors: {
+    [key in ErrorCode]: boolean;
+  } = {
+    // keep-sorted start
+    [ErrorCode.InvalidArgument]: false,
+    [ErrorCode.InvalidSessionId]: false,
+    [ErrorCode.MoveTargetOutOfBounds]: false,
+    [ErrorCode.NoSuchAlert]: false,
+    [ErrorCode.NoSuchElement]: false,
+    [ErrorCode.NoSuchFrame]: false,
+    [ErrorCode.NoSuchHandle]: false,
+    [ErrorCode.NoSuchNode]: false,
+    [ErrorCode.NoSuchScript]: false,
+    [ErrorCode.SessionNotCreated]: false,
+    [ErrorCode.UnableToCaptureScreen]: false,
+    [ErrorCode.UnableToCloseBrowser]: false,
+    [ErrorCode.UnknownCommand]: false,
+    [ErrorCode.UnknownError]: false,
+    [ErrorCode.UnsupportedOperation]: false,
+    // keep-sorted end
+  };
 
+  // XXX: Simplify with `Object.keys(ErrorCode)` once we switch to non-const enums.
+  Object.keys(errors).forEach((errorCode) => {
     it(`should have an exception class for ErrorCode.${errorCode}`, () => {
       // Exception class name should be in PascalCase, e.g. InvalidArgumentException
       const exceptionClassName = `${errorCode
         .split(' ')
-        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join('')}Exception`;
 
       expect(exceptionClasses).to.have.property(exceptionClassName);
