@@ -30,6 +30,7 @@ export class NetworkProcessor {
   readonly #networkStorage: NetworkStorage;
   readonly #cdpClient: ICdpClient;
 
+  // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
   constructor(networkStorage: NetworkStorage, cdpClient: ICdpClient) {
     this.#networkStorage = networkStorage;
     this.#cdpClient = cdpClient;
