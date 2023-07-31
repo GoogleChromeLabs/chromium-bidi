@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import {spawnSync} from 'child_process';
+import {execSync, spawnSync} from 'child_process';
 import {cpus} from 'os';
 import {join, resolve, sep} from 'path';
 
@@ -47,32 +47,16 @@ if (
 
 let BROWSER_BIN = process.env.BROWSER_BIN;
 if (!BROWSER_BIN) {
-  switch (process.platform) {
-    case 'linux':
-      BROWSER_BIN = join(sep, 'usr', 'bin', 'google-chrome-unstable');
-      break;
-    case 'darwin':
-      BROWSER_BIN = join(
-        sep,
-        'Applications',
-        'Google Chrome Dev.app',
-        'Contents',
-        'MacOS',
-        'Google Chrome Dev'
-      );
-      break;
-    case 'win32':
-      BROWSER_BIN = join(
-        process.env['PROGRAMFILES'],
-        'Google',
-        'Chrome Dev',
-        'Application',
-        'chrome.exe'
-      );
-      break;
-    default:
-      BROWSER_BIN = '';
-  }
+  const path = execSync(
+    `node ${join('tools', 'install-browser.mjs')} '--shell'`
+  )
+    .toString()
+    .split(sep);
+  // We only need the path but return value
+  // contains the executable as well
+  path.pop();
+
+  BROWSER_BIN = path.join(sep);
 }
 
 // Whether to use Chromedriver with mapper.
