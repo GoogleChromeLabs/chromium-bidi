@@ -47,16 +47,11 @@ if (
 
 let BROWSER_BIN = process.env.BROWSER_BIN;
 if (!BROWSER_BIN) {
-  const path = execSync(
+  BROWSER_BIN = execSync(
     `node ${join('tools', 'install-browser.mjs')} '--shell'`
   )
     .toString()
-    .split(sep);
-  // We only need the path but return value
-  // contains the executable as well
-  path.pop();
-
-  BROWSER_BIN = path.join(sep);
+    .trim();
 }
 
 // Whether to use Chromedriver with mapper.
