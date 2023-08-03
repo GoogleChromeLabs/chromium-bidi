@@ -20,20 +20,20 @@ import type * as Cdp from './cdp.js';
 
 export type EventNames =
   // keep-sorted start
+  | BiDiModule
   | BrowsingContext.EventNames
   | Cdp.EventNames
   | Log.EventNames
   | Network.EventNames
-  | Script.EventNames
-  | BiDiModule;
+  | Script.EventNames;
 // keep-sorted end
 
 export enum BiDiModule {
   // keep-sorted start
   BrowsingContext = 'browsingContext',
-  Script = 'script',
   Log = 'log',
   Network = 'network',
+  Script = 'script',
   // keep-sorted end
 }
 
