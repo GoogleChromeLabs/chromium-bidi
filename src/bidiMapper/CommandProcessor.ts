@@ -82,7 +82,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,
       realmStorage,
-      preloadScriptStorage
+      preloadScriptStorage,
+      logger
     );
     this.#sessionProcessor = new SessionProcessor(eventManager);
     this.#cdpProcessor = new CdpProcessor(
