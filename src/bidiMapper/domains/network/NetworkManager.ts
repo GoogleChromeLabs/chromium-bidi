@@ -23,38 +23,23 @@
 import type Protocol from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import type {EventManager} from '../events/EventManager.js';
-import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {Network} from '../../../protocol/protocol.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
 
 export class NetworkManager {
-  readonly #eventManager: EventManager;
   readonly #networkStorage: NetworkStorage;
 
-  /**
-   * Map of request ID to NetworkRequest objects. Needed as long as information
-   * about requests comes from different events.
-   */
-  readonly #requestMap: DefaultMap<Network.Request, NetworkRequest>;
-
-  private constructor(eventManager: EventManager, networkStorage: NetworkStorage) {
-    this.#eventManager = eventManager;
+  private constructor(networkStorage: NetworkStorage) {
     this.#networkStorage = networkStorage;
-
-    this.#requestMap = new DefaultMap(
-      (requestId) => new NetworkRequest(requestId, this.#eventManager)
-    );
   }
 
   static create(
     cdpClient: ICdpClient,
-    eventManager: EventManager,
     networkStorage: NetworkStorage
   ): NetworkManager {
-    const networkManager = new NetworkManager(eventManager, networkStorage);
+    const networkManager = new NetworkManager(networkStorage);
 
     cdpClient
       .browserClient()

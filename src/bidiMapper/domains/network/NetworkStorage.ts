@@ -16,7 +16,7 @@
  */
 import type {Network} from '../../../protocol/protocol.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
-import type {IEventManager} from '../events/EventManager.js';
+import type {EventManager} from '../events/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
 
@@ -46,7 +46,7 @@ export class NetworkStorage {
     }
   >;
 
-  constructor(eventManager: IEventManager) {
+  constructor(eventManager: EventManager) {
     this.#requestMap = new DefaultMap(
       (requestId) => new NetworkRequest(requestId, eventManager)
     );
