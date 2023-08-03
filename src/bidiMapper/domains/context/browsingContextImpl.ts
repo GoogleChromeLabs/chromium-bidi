@@ -37,7 +37,7 @@ import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import type {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextImpl {
-  static LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
+  static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
 
   /** The ID of this browsing context. */
   readonly #id: BrowsingContext.BrowsingContext;
