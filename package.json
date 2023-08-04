@@ -153,9 +153,9 @@
       ]
     },
     "wpt-all": {
-      "command": "./runWPTAll.sh",
+      "command": "tools/runWPTAll.sh",
       "files": [
-        "runWPTAll.sh"
+        "tools/runWPTAll.sh"
       ],
       "dependencies": [
         "rollup"
