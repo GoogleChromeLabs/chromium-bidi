@@ -20,7 +20,8 @@ import {
   Script,
   NoSuchScriptException,
 } from '../../../protocol/protocol';
-import type {LoggerFn} from '../../../utils/log';
+import {eat} from '../../../utils/decorators';
+import {LoggerSym, type LoggerFn} from '../../../utils/log';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage';
 import type {CdpTarget} from '../context/cdpTarget';
 
@@ -33,18 +34,18 @@ export class ScriptProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #realmStorage: RealmStorage;
   readonly #preloadScriptStorage;
-  readonly #logger?: LoggerFn;
+
+  @eat(LoggerSym)
+  readonly #logger!: LoggerFn | undefined;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
-    preloadScriptStorage: PreloadScriptStorage,
-    logger?: LoggerFn
+    preloadScriptStorage: PreloadScriptStorage
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
-    this.#logger = logger;
   }
 
   async addPreloadScript(

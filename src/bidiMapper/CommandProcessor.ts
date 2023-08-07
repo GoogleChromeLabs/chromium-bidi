@@ -23,7 +23,8 @@ import {
   type ChromiumBidi,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
-import {LogType, type LoggerFn} from '../utils/log.js';
+import {eat, feed} from '../utils/decorators.js';
+import {LogType, LoggerSym, type LoggerFn} from '../utils/log.js';
 import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
@@ -47,7 +48,6 @@ type CommandProcessorEvents = {
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   // keep-sorted start
   #browserProcessor: BrowserProcessor;
-  #browsingContextProcessor: BrowsingContextProcessor;
   #cdpProcessor: CdpProcessor;
   #inputProcessor: InputProcessor;
   #scriptProcessor: ScriptProcessor;
@@ -55,7 +55,12 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   // keep-sorted end
 
   #parser: IBidiParser;
-  #logger?: LoggerFn;
+
+  @eat(LoggerSym)
+  readonly #logger!: LoggerFn | undefined;
+
+  @feed([LoggerSym])
+  accessor #browsingContextProcessor: BrowsingContextProcessor;
 
   constructor(
     cdpConnection: ICdpConnection,
@@ -63,12 +68,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     selfTargetId: string,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
-    parser: IBidiParser = new BidiNoOpParser(),
-    logger?: LoggerFn
+    parser: IBidiParser = new BidiNoOpParser()
   ) {
     super();
     this.#parser = parser;
-    this.#logger = logger;
     const preloadScriptStorage = new PreloadScriptStorage();
 
     // keep-sorted start block=yes
@@ -79,8 +82,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       eventManager,
       browsingContextStorage,
       realmStorage,
-      preloadScriptStorage,
-      logger
+      preloadScriptStorage
     );
     this.#cdpProcessor = new CdpProcessor(
       browsingContextStorage,
@@ -90,8 +92,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,
       realmStorage,
-      preloadScriptStorage,
-      logger
+      preloadScriptStorage
     );
     this.#sessionProcessor = new SessionProcessor(eventManager);
     // keep-sorted end

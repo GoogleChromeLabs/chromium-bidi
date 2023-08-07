@@ -23,10 +23,11 @@ import {
   InvalidArgumentException,
   type EmptyResult,
 } from '../../../protocol/protocol.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
+import {eat} from '../../../utils/decorators.js';
+import {LogType, LoggerSym, type LoggerFn} from '../../../utils/log.js';
 import type {EventManager} from '../events/EventManager.js';
-import type {RealmStorage} from '../script/realmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import type {RealmStorage} from '../script/realmStorage.js';
 
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import type {BrowsingContextStorage} from './browsingContextStorage.js';
@@ -41,7 +42,8 @@ export class BrowsingContextProcessor {
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
-  readonly #logger?: LoggerFn;
+  @eat(LoggerSym)
+  readonly #logger!: LoggerFn | undefined;
 
   constructor(
     cdpConnection: ICdpConnection,
@@ -49,8 +51,7 @@ export class BrowsingContextProcessor {
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
-    preloadScriptStorage: PreloadScriptStorage,
-    logger?: LoggerFn
+    preloadScriptStorage: PreloadScriptStorage
   ) {
     this.#cdpConnection = cdpConnection;
     this.#selfTargetId = selfTargetId;
@@ -58,7 +59,6 @@ export class BrowsingContextProcessor {
     this.#browsingContextStorage = browsingContextStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#realmStorage = realmStorage;
-    this.#logger = logger;
 
     this.#setEventListeners(this.#cdpConnection.browserClient());
   }
