@@ -71,6 +71,7 @@ describe('Decorators', () => {
 
     it('should not work with constructors', () => {
       class A {
+        // eslint-disable-next-line local/pantry/no-uninit-fields
         @pantry(SymbolSym)
         readonly value: symbol;
 
@@ -78,7 +79,9 @@ describe('Decorators', () => {
         readonly b: B;
 
         constructor() {
+          // eslint-disable-next-line local/pantry/no-uninit-fields
           this.value = Symbol();
+          // eslint-disable-next-line local/pantry/no-uninit-fields
           this.b = new B();
         }
       }
@@ -239,7 +242,9 @@ describe('Decorators', () => {
         accessor b: B;
 
         constructor() {
+          // eslint-disable-next-line local/pantry/no-uninit-fields
           this.value = Symbol();
+          // eslint-disable-next-line local/pantry/no-uninit-fields
           this.b = new B();
         }
       }
@@ -298,11 +303,14 @@ describe('Decorators', () => {
         @feed
         accessor b: B;
 
+        // eslint-disable-next-line local/pantry/no-uninit-fields
         @pantry(SymbolSym)
         readonly value: symbol;
 
         constructor() {
+          // eslint-disable-next-line local/pantry/no-uninit-fields
           this.b = new B();
+          // eslint-disable-next-line local/pantry/no-uninit-fields
           this.value = Symbol();
         }
       }
