@@ -20,14 +20,12 @@ import type {
   EmptyResult,
   Session,
 } from '../../../protocol/protocol.js';
-import type {EventManager} from '../events/EventManager.js';
+import {eat} from '../../../utils/decorators.js';
+import {EventManager} from '../events/EventManager.js';
 
 export class SessionProcessor {
-  #eventManager: EventManager;
-
-  constructor(eventManager: EventManager) {
-    this.#eventManager = eventManager;
-  }
+  @eat(EventManager)
+  readonly #eventManager!: EventManager;
 
   status(): Session.StatusResult {
     return {ready: false, message: 'already connected'};

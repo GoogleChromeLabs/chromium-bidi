@@ -28,7 +28,7 @@ import {
 } from '../../../protocol/protocol.js';
 import {eat} from '../../../utils/decorators.js';
 import {LogType, LoggerSym, type LoggerFn} from '../../../utils/log.js';
-import type {EventManager} from '../events/EventManager.js';
+import {EventManager} from '../events/EventManager.js';
 import {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import {RealmStorage} from '../script/realmStorage.js';
 
@@ -47,10 +47,11 @@ export class BrowsingContextProcessor {
   }
 
   readonly #selfTargetId: string;
-  readonly #eventManager: EventManager;
 
   @eat(BrowsingContextStorage)
   readonly #browsingContextStorage!: BrowsingContextStorage;
+  @eat(EventManager)
+  readonly #eventManager!: EventManager;
   @eat(LoggerSym)
   readonly #logger!: LoggerFn | undefined;
   @eat(PreloadScriptStorage)
@@ -58,9 +59,8 @@ export class BrowsingContextProcessor {
   @eat(RealmStorage)
   readonly #realmStorage!: RealmStorage;
 
-  constructor(selfTargetId: string, eventManager: EventManager) {
+  constructor(selfTargetId: string) {
     this.#selfTargetId = selfTargetId;
-    this.#eventManager = eventManager;
   }
 
   getTree(
