@@ -42,12 +42,7 @@ module.exports = {
       // keep-sorted end
     ],
   },
-  plugins: [
-    '@typescript-eslint',
-    'import',
-    'mocha',
-    "promise",
-  ],
+  plugins: ['@typescript-eslint', 'import', 'mocha', 'promise', 'local'],
   extends: [
     // keep-sorted start
     'eslint:recommended',
@@ -63,15 +58,20 @@ module.exports = {
   rules: {
     // https://denar90.github.io/eslint.github.io/docs/rules/
     // Some rules use 'warn' in order to ease local development iteration.
-    // keep-sorted start
     '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
-    '@typescript-eslint/consistent-type-imports': ['warn', {fixStyle: 'inline-type-imports'}],
-    '@typescript-eslint/explicit-member-accessibility': ['warn', {accessibility: 'no-public'}],
+    '@typescript-eslint/consistent-type-imports': [
+      'warn',
+      {fixStyle: 'inline-type-imports'},
+    ],
+    '@typescript-eslint/explicit-member-accessibility': [
+      'warn',
+      {accessibility: 'no-public'},
+    ],
     '@typescript-eslint/no-empty-function': 'warn',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-extraneous-class': 'warn',
-    '@typescript-eslint/no-import-type-side-effects': "error",
+    '@typescript-eslint/no-import-type-side-effects': 'error',
     '@typescript-eslint/no-misused-promises': 'off',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
@@ -86,12 +86,16 @@ module.exports = {
     '@typescript-eslint/require-await': 'warn',
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
+    eqeqeq: 'error',
     'func-names': 'error',
     'import/first': 'error',
     'import/newline-after-import': 'warn',
     'import/no-duplicates': 'error',
     'import/no-unresolved': 'off',
     'import/order': ['warn', {'newlines-between': 'always'}],
+    'local/pantry/definite-fields': 'error',
+    'local/pantry/no-uninit-fields': 'error',
+    'local/pantry/readonly-fields': 'error',
     'mocha/no-mocha-arrows': 'off',
     'mocha/no-setup-in-describe': 'off',
     'no-console': 'warn',
@@ -105,7 +109,5 @@ module.exports = {
     'object-shorthand': 'error',
     'prefer-promise-reject-errors': 'error',
     'prefer-template': 'error',
-    eqeqeq: 'error',
-    // keep-sorted end
   },
 };
