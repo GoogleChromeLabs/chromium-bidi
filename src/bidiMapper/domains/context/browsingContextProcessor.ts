@@ -29,11 +29,11 @@ import {
 import {eat} from '../../../utils/decorators.js';
 import {LogType, LoggerSym, type LoggerFn} from '../../../utils/log.js';
 import type {EventManager} from '../events/EventManager.js';
-import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
-import type {RealmStorage} from '../script/realmStorage.js';
+import {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import {RealmStorage} from '../script/realmStorage.js';
 
 import {BrowsingContextImpl} from './browsingContextImpl.js';
-import type {BrowsingContextStorage} from './browsingContextStorage.js';
+import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {
@@ -49,25 +49,18 @@ export class BrowsingContextProcessor {
   readonly #selfTargetId: string;
   readonly #eventManager: EventManager;
 
-  readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #preloadScriptStorage: PreloadScriptStorage;
-  readonly #realmStorage: RealmStorage;
-
+  @eat(BrowsingContextStorage)
+  readonly #browsingContextStorage!: BrowsingContextStorage;
   @eat(LoggerSym)
   readonly #logger!: LoggerFn | undefined;
+  @eat(PreloadScriptStorage)
+  readonly #preloadScriptStorage!: PreloadScriptStorage;
+  @eat(RealmStorage)
+  readonly #realmStorage!: RealmStorage;
 
-  constructor(
-    selfTargetId: string,
-    eventManager: EventManager,
-    browsingContextStorage: BrowsingContextStorage,
-    realmStorage: RealmStorage,
-    preloadScriptStorage: PreloadScriptStorage
-  ) {
+  constructor(selfTargetId: string, eventManager: EventManager) {
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
-    this.#browsingContextStorage = browsingContextStorage;
-    this.#preloadScriptStorage = preloadScriptStorage;
-    this.#realmStorage = realmStorage;
   }
 
   getTree(

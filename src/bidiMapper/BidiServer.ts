@@ -37,7 +37,9 @@ type BidiServerEvent = {
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
   #transport: IBidiTransport;
-  #browsingContextStorage = new BrowsingContextStorage();
+
+  @pantry(BrowsingContextStorage)
+  readonly #browsingContextStorage = new BrowsingContextStorage();
 
   @pantry(LoggerSym)
   accessor #logger: LoggerFn | undefined;
@@ -83,7 +85,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     this.#commandProcessor = new CommandProcessor(
       new EventManager(this),
       selfTargetId,
-      this.#browsingContextStorage,
       new RealmStorage(),
       parser
     );

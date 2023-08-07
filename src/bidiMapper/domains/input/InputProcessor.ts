@@ -21,16 +21,14 @@ import {ActionDispatcher} from '../input/ActionDispatcher.js';
 import type {ActionOption} from '../input/ActionOption.js';
 import {SourceType} from '../input/InputSource.js';
 import type {InputState} from '../input/InputState.js';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {eat} from '../../../utils/decorators.js';
 
 export class InputProcessor {
-  readonly #browsingContextStorage: BrowsingContextStorage;
+  @eat(BrowsingContextStorage)
+  readonly #browsingContextStorage!: BrowsingContextStorage;
 
   readonly #inputStateManager = new InputStateManager();
-
-  constructor(browsingContextStorage: BrowsingContextStorage) {
-    this.#browsingContextStorage = browsingContextStorage;
-  }
 
   async performActions(
     params: Input.PerformActionsParameters
