@@ -18,9 +18,10 @@
 import type {ICdpConnection} from '../cdp/cdpConnection.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
-import {LogType, type LoggerFn} from '../utils/log.js';
+import {LogType, LoggerSym, type LoggerFn} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
 import type {Result} from '../utils/result.js';
+import {Required, feed, pantry} from '../utils/decorators.js';
 
 import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
@@ -35,11 +36,16 @@ type BidiServerEvent = {
 };
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
-  #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
   #transport: IBidiTransport;
-  #commandProcessor: CommandProcessor;
   #browsingContextStorage = new BrowsingContextStorage();
-  #logger?: LoggerFn;
+
+  @pantry(LoggerSym)
+  accessor #logger: LoggerFn | undefined;
+
+  @feed(Required)
+  accessor #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
+  @feed(Required)
+  accessor #commandProcessor: CommandProcessor;
 
   #handleIncomingMessage = (message: ChromiumBidi.Command) => {
     void this.#commandProcessor.processCommand(message).catch((error) => {
@@ -67,8 +73,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     super();
     this.#logger = logger;
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
-      this.#processOutgoingMessage,
-      this.#logger
+      this.#processOutgoingMessage
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
@@ -78,8 +83,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       selfTargetId,
       this.#browsingContextStorage,
       new RealmStorage(),
-      parser,
-      this.#logger
+      parser
     );
     this.#commandProcessor.on(
       'response',

@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-import {LogType, type LoggerFn} from './log.js';
+import {eat} from './decorators.js';
+import {LogType, LoggerSym, type LoggerFn} from './log.js';
 import type {Result} from './result.js';
 
 export class ProcessingQueue<T> {
-  readonly #logger?: LoggerFn;
+  @eat(LoggerSym)
+  readonly #logger!: LoggerFn | undefined;
+
   readonly #processor: (arg: T) => Promise<void>;
   readonly #queue: Promise<Result<T>>[] = [];
 
   // Flag to keep only 1 active processor.
   #isProcessing = false;
 
-  constructor(processor: (arg: T) => Promise<void>, logger?: LoggerFn) {
+  constructor(processor: (arg: T) => Promise<void>) {
     this.#processor = processor;
-    this.#logger = logger;
   }
 
   add(entry: Promise<Result<T>>) {

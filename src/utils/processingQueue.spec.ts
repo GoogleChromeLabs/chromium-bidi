@@ -21,6 +21,8 @@ import * as sinon from 'sinon';
 import {Deferred} from './deferred.js';
 import {ProcessingQueue} from './processingQueue.js';
 import type {Result} from './result.js';
+import {inject} from './decorators.js';
+import {LoggerSym} from './log.js';
 
 describe('ProcessingQueue', () => {
   it('should wait and call processor in order', async () => {
@@ -64,7 +66,9 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.reject(error));
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = inject(new ProcessingQueue<number>(processor), {
+      [LoggerSym]: logger,
+    });
     const deferred2 = new Deferred<Result<number>>();
 
     queue.add(deferred2);
@@ -87,7 +91,9 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.resolve());
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = inject(new ProcessingQueue<number>(processor), {
+      [LoggerSym]: logger,
+    });
     const deferred1 = new Deferred<Result<number>>();
     const deferred2 = new Deferred<Result<number>>();
 
@@ -113,7 +119,9 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.resolve());
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = inject(new ProcessingQueue<number>(processor), {
+      [LoggerSym]: logger,
+    });
     const deferred1 = new Deferred<Result<number>>();
     const deferred2 = new Deferred<Result<number>>();
 
