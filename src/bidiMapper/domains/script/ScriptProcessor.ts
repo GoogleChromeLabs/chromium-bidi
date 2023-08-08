@@ -22,31 +22,23 @@ import {
 } from '../../../protocol/protocol';
 import {eat} from '../../../utils/decorators';
 import {LoggerSym, type LoggerFn} from '../../../utils/log';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage';
+import {BrowsingContextStorage} from '../context/browsingContextStorage';
 import type {CdpTarget} from '../context/cdpTarget';
 
-import type {PreloadScriptStorage} from './PreloadScriptStorage';
+import {PreloadScriptStorage} from './PreloadScriptStorage';
 import {BidiPreloadScript} from './bidiPreloadScript';
 import type {Realm} from './realm';
-import type {RealmStorage} from './realmStorage';
+import {RealmStorage} from './realmStorage';
 
 export class ScriptProcessor {
-  readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #realmStorage: RealmStorage;
-  readonly #preloadScriptStorage;
-
+  @eat(BrowsingContextStorage)
+  readonly #browsingContextStorage!: BrowsingContextStorage;
   @eat(LoggerSym)
   readonly #logger!: LoggerFn | undefined;
-
-  constructor(
-    browsingContextStorage: BrowsingContextStorage,
-    realmStorage: RealmStorage,
-    preloadScriptStorage: PreloadScriptStorage
-  ) {
-    this.#browsingContextStorage = browsingContextStorage;
-    this.#realmStorage = realmStorage;
-    this.#preloadScriptStorage = preloadScriptStorage;
-  }
+  @eat(PreloadScriptStorage)
+  readonly #preloadScriptStorage!: PreloadScriptStorage;
+  @eat(RealmStorage)
+  readonly #realmStorage!: RealmStorage;
 
   async addPreloadScript(
     params: Script.AddPreloadScriptParameters

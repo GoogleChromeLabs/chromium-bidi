@@ -19,17 +19,13 @@ import {CdpConnection} from '../../../cdp/cdpConnection.js';
 import type {Cdp} from '../../../protocol/protocol.js';
 import {eat} from '../../../utils/decorators.js';
 import type {ICdpConnection} from '../../bidiMapper.js';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 export class CdpProcessor {
-  #browsingContextStorage: BrowsingContextStorage;
-
+  @eat(BrowsingContextStorage)
+  readonly #browsingContextStorage!: BrowsingContextStorage;
   @eat(CdpConnection)
   readonly #connection!: ICdpConnection;
-
-  constructor(browsingContextStorage: BrowsingContextStorage) {
-    this.#browsingContextStorage = browsingContextStorage;
-  }
 
   getSession(params: Cdp.GetSessionParameters): Cdp.GetSessionResult {
     const context = params.context;
