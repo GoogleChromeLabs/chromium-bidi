@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
 import {
   Exception,
   UnknownCommandException,
@@ -23,21 +22,18 @@ import {
   type ChromiumBidi,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
-import {LogType, type LoggerFn} from '../utils/log.js';
+import {eat, feed, pantry} from '../utils/decorators.js';
+import {LogType, LoggerSym, type LoggerFn} from '../utils/log.js';
 import type {Result} from '../utils/result.js';
 
-import {BidiNoOpParser} from './BidiNoOpParser.js';
-import type {IBidiParser} from './BidiParser.js';
+import {BidiParserSym, type IBidiParser} from './BidiParser.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {BrowserProcessor} from './domains/browser/BrowserProcessor.js';
 import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
-import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
-import type {EventManager} from './domains/events/EventManager.js';
 import {InputProcessor} from './domains/input/InputProcessor.js';
 import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
-import type {RealmStorage} from './domains/script/realmStorage.js';
 import {SessionProcessor} from './domains/session/SessionProcessor.js';
 
 type CommandProcessorEvents = {
@@ -45,56 +41,31 @@ type CommandProcessorEvents = {
 };
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
-  // keep-sorted start
-  #browserProcessor: BrowserProcessor;
-  #browsingContextProcessor: BrowsingContextProcessor;
-  #cdpProcessor: CdpProcessor;
-  #inputProcessor: InputProcessor;
-  #scriptProcessor: ScriptProcessor;
-  #sessionProcessor: SessionProcessor;
-  // keep-sorted end
+  @pantry(PreloadScriptStorage)
+  // @ts-expect-error This is injected.
+  readonly #preloadScriptStorage = new PreloadScriptStorage();
 
-  #parser: IBidiParser;
-  #logger?: LoggerFn;
+  @eat(LoggerSym)
+  readonly #logger!: LoggerFn | undefined;
+  @eat(BidiParserSym)
+  readonly #parser!: IBidiParser;
 
-  constructor(
-    cdpConnection: ICdpConnection,
-    eventManager: EventManager,
-    selfTargetId: string,
-    browsingContextStorage: BrowsingContextStorage,
-    realmStorage: RealmStorage,
-    parser: IBidiParser = new BidiNoOpParser(),
-    logger?: LoggerFn
-  ) {
+  @feed
+  accessor #browsingContextProcessor: BrowsingContextProcessor;
+  @feed
+  readonly #browserProcessor = new BrowserProcessor();
+  @feed
+  readonly #cdpProcessor = new CdpProcessor();
+  @feed
+  readonly #inputProcessor = new InputProcessor();
+  @feed
+  readonly #scriptProcessor = new ScriptProcessor();
+  @feed
+  readonly #sessionProcessor = new SessionProcessor();
+
+  constructor(selfTargetId: string) {
     super();
-    this.#parser = parser;
-    this.#logger = logger;
-    const preloadScriptStorage = new PreloadScriptStorage();
-
-    // keep-sorted start block=yes
-    this.#browserProcessor = new BrowserProcessor(cdpConnection);
-    this.#browsingContextProcessor = new BrowsingContextProcessor(
-      cdpConnection,
-      selfTargetId,
-      eventManager,
-      browsingContextStorage,
-      realmStorage,
-      preloadScriptStorage,
-      logger
-    );
-    this.#cdpProcessor = new CdpProcessor(
-      browsingContextStorage,
-      cdpConnection
-    );
-    this.#inputProcessor = new InputProcessor(browsingContextStorage);
-    this.#scriptProcessor = new ScriptProcessor(
-      browsingContextStorage,
-      realmStorage,
-      preloadScriptStorage,
-      logger
-    );
-    this.#sessionProcessor = new SessionProcessor(eventManager);
-    // keep-sorted end
+    this.#browsingContextProcessor = new BrowsingContextProcessor(selfTargetId);
   }
 
   async #processCommand(

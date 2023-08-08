@@ -26,3 +26,11 @@ export enum LogType {
 export type LogPrefix = LogType | `${LogType}:${string}`;
 
 export type LoggerFn = (type: LogPrefix, ...messages: unknown[]) => void;
+
+export const LoggerSym = Symbol('logger');
+
+declare module './decorators.js' {
+  interface InjectableRegistry {
+    [LoggerSym]: LoggerFn | undefined;
+  }
+}

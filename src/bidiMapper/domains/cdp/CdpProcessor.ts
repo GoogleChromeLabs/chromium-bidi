@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
+import {CdpConnection} from '../../../cdp/cdpConnection.js';
 import type {Cdp} from '../../../protocol/protocol.js';
+import {eat} from '../../../utils/decorators.js';
 import type {ICdpConnection} from '../../bidiMapper.js';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 export class CdpProcessor {
-  #browsingContextStorage: BrowsingContextStorage;
-  #cdpConnection: ICdpConnection;
-
-  constructor(
-    browsingContextStorage: BrowsingContextStorage,
-    cdpConnection: ICdpConnection
-  ) {
-    this.#browsingContextStorage = browsingContextStorage;
-    this.#cdpConnection = cdpConnection;
-  }
+  @eat(BrowsingContextStorage)
+  readonly #browsingContextStorage!: BrowsingContextStorage;
+  @eat(CdpConnection)
+  readonly #connection!: ICdpConnection;
 
   getSession(params: Cdp.GetSessionParameters): Cdp.GetSessionResult {
     const context = params.context;
@@ -45,8 +41,8 @@ export class CdpProcessor {
     params: Cdp.SendCommandParameters
   ): Promise<Cdp.SendCommandResult> {
     const client = params.session
-      ? this.#cdpConnection.getCdpClient(params.session)
-      : this.#cdpConnection.browserClient();
+      ? this.#connection.getCdpClient(params.session)
+      : this.#connection.browserClient();
     const result = await client.sendCommand(params.method, params.params);
     return {
       result,

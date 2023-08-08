@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
+import {CdpConnection, type ICdpConnection} from '../cdp/cdpConnection.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
-import {LogType, type LoggerFn} from '../utils/log.js';
+import {feed, pantry} from '../utils/decorators.js';
+import {LogType, LoggerSym, type LoggerFn} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
 import type {Result} from '../utils/result.js';
 
-import type {IBidiParser} from './BidiParser.js';
+import {BidiNoOpParser} from './BidiNoOpParser.js';
+import {BidiParserSym, type IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
 import {CommandProcessor} from './CommandProcessor.js';
 import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
@@ -35,11 +37,27 @@ type BidiServerEvent = {
 };
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
-  #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
   #transport: IBidiTransport;
-  #commandProcessor: CommandProcessor;
-  #browsingContextStorage = new BrowsingContextStorage();
-  #logger?: LoggerFn;
+
+  @pantry(BrowsingContextStorage)
+  readonly #browsingContextStorage = new BrowsingContextStorage();
+  @pantry(EventManager)
+  // @ts-expect-error This is injected.
+  readonly #eventManager = new EventManager(this);
+  @pantry(RealmStorage)
+  // @ts-expect-error This is injected.
+  readonly #realmStorage = new RealmStorage();
+  @pantry(LoggerSym)
+  accessor #logger: LoggerFn | undefined;
+  @pantry(CdpConnection)
+  accessor #connection: ICdpConnection;
+  @pantry(BidiParserSym)
+  accessor #parser: IBidiParser;
+
+  @feed
+  accessor #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
+  @feed
+  accessor #commandProcessor: CommandProcessor;
 
   #handleIncomingMessage = (message: ChromiumBidi.Command) => {
     void this.#commandProcessor.processCommand(message).catch((error) => {
@@ -59,28 +77,21 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
   private constructor(
     bidiTransport: IBidiTransport,
-    cdpConnection: ICdpConnection,
+    connection: ICdpConnection,
     selfTargetId: string,
     parser?: IBidiParser,
     logger?: LoggerFn
   ) {
     super();
     this.#logger = logger;
+    this.#connection = connection;
+    this.#parser = parser ?? new BidiNoOpParser();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
-      this.#processOutgoingMessage,
-      this.#logger
+      this.#processOutgoingMessage
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
-    this.#commandProcessor = new CommandProcessor(
-      cdpConnection,
-      new EventManager(this),
-      selfTargetId,
-      this.#browsingContextStorage,
-      new RealmStorage(),
-      parser,
-      this.#logger
-    );
+    this.#commandProcessor = new CommandProcessor(selfTargetId);
     this.#commandProcessor.on(
       'response',
       (response: Promise<Result<OutgoingBidiMessage>>) => {

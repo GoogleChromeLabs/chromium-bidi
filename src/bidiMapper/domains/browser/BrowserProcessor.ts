@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
+import {CdpConnection} from '../../../cdp/cdpConnection.js';
 import type {EmptyResult} from '../../../protocol/protocol.js';
+import {eat} from '../../../utils/decorators.js';
 import type {ICdpConnection} from '../../bidiMapper';
 
 export class BrowserProcessor {
-  #cdpConnection: ICdpConnection;
-
-  constructor(cdpConnection: ICdpConnection) {
-    this.#cdpConnection = cdpConnection;
-  }
+  @eat(CdpConnection)
+  readonly #cdpConnection!: ICdpConnection;
 
   close(): EmptyResult {
     const client = this.#cdpConnection.browserClient();

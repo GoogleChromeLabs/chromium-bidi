@@ -17,50 +17,50 @@
 import type Protocol from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
+import {
+  CdpConnection,
+  type ICdpConnection,
+} from '../../../cdp/cdpConnection.js';
 import {
   BrowsingContext,
   InvalidArgumentException,
   type EmptyResult,
 } from '../../../protocol/protocol.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
-import type {EventManager} from '../events/EventManager.js';
-import type {RealmStorage} from '../script/realmStorage.js';
-import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import {eat} from '../../../utils/decorators.js';
+import {LogType, LoggerSym, type LoggerFn} from '../../../utils/log.js';
+import {EventManager} from '../events/EventManager.js';
+import {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import {RealmStorage} from '../script/realmStorage.js';
 
 import {BrowsingContextImpl} from './browsingContextImpl.js';
-import type {BrowsingContextStorage} from './browsingContextStorage.js';
+import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {
-  readonly #cdpConnection: ICdpConnection;
+  #connection!: ICdpConnection;
+
+  @eat(CdpConnection)
+  // @ts-expect-error This is used by the decorator.
+  set #_connection(connection: ICdpConnection) {
+    this.#connection = connection;
+    this.#setEventListeners(this.#connection.browserClient());
+  }
+
+  @eat(BrowsingContextStorage)
+  readonly #browsingContextStorage!: BrowsingContextStorage;
+  @eat(EventManager)
+  readonly #eventManager!: EventManager;
+  @eat(LoggerSym)
+  readonly #logger!: LoggerFn | undefined;
+  @eat(PreloadScriptStorage)
+  readonly #preloadScriptStorage!: PreloadScriptStorage;
+  @eat(RealmStorage)
+  readonly #realmStorage!: RealmStorage;
+
   readonly #selfTargetId: string;
-  readonly #eventManager: EventManager;
 
-  readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #preloadScriptStorage: PreloadScriptStorage;
-  readonly #realmStorage: RealmStorage;
-
-  readonly #logger?: LoggerFn;
-
-  constructor(
-    cdpConnection: ICdpConnection,
-    selfTargetId: string,
-    eventManager: EventManager,
-    browsingContextStorage: BrowsingContextStorage,
-    realmStorage: RealmStorage,
-    preloadScriptStorage: PreloadScriptStorage,
-    logger?: LoggerFn
-  ) {
-    this.#cdpConnection = cdpConnection;
+  constructor(selfTargetId: string) {
     this.#selfTargetId = selfTargetId;
-    this.#eventManager = eventManager;
-    this.#browsingContextStorage = browsingContextStorage;
-    this.#preloadScriptStorage = preloadScriptStorage;
-    this.#realmStorage = realmStorage;
-    this.#logger = logger;
-
-    this.#setEventListeners(this.#cdpConnection.browserClient());
   }
 
   getTree(
@@ -81,7 +81,7 @@ export class BrowsingContextProcessor {
   async create(
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
-    const browserCdpClient = this.#cdpConnection.browserClient();
+    const browserCdpClient = this.#connection.browserClient();
 
     let referenceContext: BrowsingContextImpl | undefined;
     if (params.referenceContext !== undefined) {
@@ -206,7 +206,7 @@ export class BrowsingContextProcessor {
     }
 
     try {
-      const browserCdpClient = this.#cdpConnection.browserClient();
+      const browserCdpClient = this.#connection.browserClient();
       const detachedFromTargetPromise = new Promise<void>((resolve) => {
         const onContextDestroyed = (
           event: Protocol.Target.DetachedFromTargetEvent
@@ -304,7 +304,7 @@ export class BrowsingContextProcessor {
   ) {
     const {sessionId, targetInfo} = params;
 
-    const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+    const targetCdpClient = this.#connection.getCdpClient(sessionId);
 
     if (!this.#isValidTarget(targetInfo)) {
       // DevTools or some other not supported by BiDi target. Just release

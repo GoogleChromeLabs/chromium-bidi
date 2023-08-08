@@ -75,3 +75,11 @@ export interface IBidiParser {
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest;
   // keep-sorted end
 }
+
+export const BidiParserSym = Symbol('BidiParserSym');
+
+declare module '../utils/decorators.js' {
+  interface InjectableRegistry {
+    [BidiParserSym]: IBidiParser;
+  }
+}
