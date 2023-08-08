@@ -18,12 +18,13 @@
 import {CdpConnection, type ICdpConnection} from '../cdp/cdpConnection.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
+import {Required, feed, pantry} from '../utils/decorators.js';
 import {LogType, LoggerSym, type LoggerFn} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
 import type {Result} from '../utils/result.js';
-import {Required, feed, pantry} from '../utils/decorators.js';
 
-import type {IBidiParser} from './BidiParser.js';
+import {BidiNoOpParser} from './BidiNoOpParser.js';
+import {BidiParserSym, type IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
 import {CommandProcessor} from './CommandProcessor.js';
 import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
@@ -40,11 +41,18 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
   @pantry(BrowsingContextStorage)
   readonly #browsingContextStorage = new BrowsingContextStorage();
-
+  @pantry(EventManager)
+  // @ts-expect-error This is injected.
+  readonly #eventManager = new EventManager(this);
+  @pantry(RealmStorage)
+  // @ts-expect-error This is injected.
+  readonly #realmStorage = new RealmStorage();
   @pantry(LoggerSym)
   accessor #logger: LoggerFn | undefined;
   @pantry(CdpConnection)
   accessor #connection: ICdpConnection;
+  @pantry(BidiParserSym)
+  accessor #parser: IBidiParser;
 
   @feed(Required)
   accessor #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
@@ -77,17 +85,13 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     super();
     this.#logger = logger;
     this.#connection = connection;
+    this.#parser = parser ?? new BidiNoOpParser();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
       this.#processOutgoingMessage
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
-    this.#commandProcessor = new CommandProcessor(
-      new EventManager(this),
-      selfTargetId,
-      new RealmStorage(),
-      parser
-    );
+    this.#commandProcessor = new CommandProcessor(selfTargetId);
     this.#commandProcessor.on(
       'response',
       (response: Promise<Result<OutgoingBidiMessage>>) => {
