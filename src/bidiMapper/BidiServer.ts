@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
+import {CdpConnection, type ICdpConnection} from '../cdp/cdpConnection.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, LoggerSym, type LoggerFn} from '../utils/log.js';
@@ -41,6 +41,8 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
   @pantry(LoggerSym)
   accessor #logger: LoggerFn | undefined;
+  @pantry(CdpConnection)
+  accessor #connection: ICdpConnection;
 
   @feed(Required)
   accessor #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
@@ -65,20 +67,20 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
   private constructor(
     bidiTransport: IBidiTransport,
-    cdpConnection: ICdpConnection,
+    connection: ICdpConnection,
     selfTargetId: string,
     parser?: IBidiParser,
     logger?: LoggerFn
   ) {
     super();
     this.#logger = logger;
+    this.#connection = connection;
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
       this.#processOutgoingMessage
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
     this.#commandProcessor = new CommandProcessor(
-      cdpConnection,
       new EventManager(this),
       selfTargetId,
       this.#browsingContextStorage,

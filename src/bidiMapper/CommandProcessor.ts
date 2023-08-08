@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
 import {
   Exception,
   UnknownCommandException,
@@ -47,8 +46,6 @@ type CommandProcessorEvents = {
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   // keep-sorted start
-  #browserProcessor: BrowserProcessor;
-  #cdpProcessor: CdpProcessor;
   #inputProcessor: InputProcessor;
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
@@ -61,9 +58,12 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
 
   @feed(Required)
   accessor #browsingContextProcessor: BrowsingContextProcessor;
+  @feed(Required)
+  accessor #browserProcessor: BrowserProcessor;
+  @feed(Required)
+  accessor #cdpProcessor: CdpProcessor;
 
   constructor(
-    cdpConnection: ICdpConnection,
     eventManager: EventManager,
     selfTargetId: string,
     browsingContextStorage: BrowsingContextStorage,
@@ -75,19 +75,15 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     const preloadScriptStorage = new PreloadScriptStorage();
 
     // keep-sorted start block=yes
-    this.#browserProcessor = new BrowserProcessor(cdpConnection);
+    this.#browserProcessor = new BrowserProcessor();
     this.#browsingContextProcessor = new BrowsingContextProcessor(
-      cdpConnection,
       selfTargetId,
       eventManager,
       browsingContextStorage,
       realmStorage,
       preloadScriptStorage
     );
-    this.#cdpProcessor = new CdpProcessor(
-      browsingContextStorage,
-      cdpConnection
-    );
+    this.#cdpProcessor = new CdpProcessor(browsingContextStorage);
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,

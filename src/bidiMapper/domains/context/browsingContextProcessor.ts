@@ -17,7 +17,10 @@
 import type Protocol from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
+import {
+  CdpConnection,
+  type ICdpConnection,
+} from '../../../cdp/cdpConnection.js';
 import {
   BrowsingContext,
   InvalidArgumentException,
@@ -34,7 +37,15 @@ import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {
-  readonly #cdpConnection: ICdpConnection;
+  #connection!: ICdpConnection;
+
+  @eat(CdpConnection)
+  // @ts-expect-error This is used by the decorator.
+  set #_connection(connection: ICdpConnection) {
+    this.#connection = connection;
+    this.#setEventListeners(this.#connection.browserClient());
+  }
+
   readonly #selfTargetId: string;
   readonly #eventManager: EventManager;
 
@@ -46,21 +57,17 @@ export class BrowsingContextProcessor {
   readonly #logger!: LoggerFn | undefined;
 
   constructor(
-    cdpConnection: ICdpConnection,
     selfTargetId: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage
   ) {
-    this.#cdpConnection = cdpConnection;
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#realmStorage = realmStorage;
-
-    this.#setEventListeners(this.#cdpConnection.browserClient());
   }
 
   getTree(
@@ -81,7 +88,7 @@ export class BrowsingContextProcessor {
   async create(
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
-    const browserCdpClient = this.#cdpConnection.browserClient();
+    const browserCdpClient = this.#connection.browserClient();
 
     let referenceContext: BrowsingContextImpl | undefined;
     if (params.referenceContext !== undefined) {
@@ -206,7 +213,7 @@ export class BrowsingContextProcessor {
     }
 
     try {
-      const browserCdpClient = this.#cdpConnection.browserClient();
+      const browserCdpClient = this.#connection.browserClient();
       const detachedFromTargetPromise = new Promise<void>((resolve) => {
         const onContextDestroyed = (
           event: Protocol.Target.DetachedFromTargetEvent
@@ -304,7 +311,7 @@ export class BrowsingContextProcessor {
   ) {
     const {sessionId, targetInfo} = params;
 
-    const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+    const targetCdpClient = this.#connection.getCdpClient(sessionId);
 
     if (!this.#isValidTarget(targetInfo)) {
       // DevTools or some other not supported by BiDi target. Just release
