@@ -22,8 +22,8 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import type {Network} from '../../../protocol/protocol.js';
+import type {CdpTarget} from '../context/cdpTarget.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
@@ -36,23 +36,23 @@ export class NetworkManager {
   }
 
   static create(
-    cdpClient: ICdpClient,
+    cdpTarget: CdpTarget,
     networkStorage: NetworkStorage
   ): NetworkManager {
     const networkManager = new NetworkManager(networkStorage);
 
-    cdpClient
+    cdpTarget.cdpClient
       .browserClient()
       .on(
         'Target.detachedFromTarget',
         (params: Protocol.Target.DetachedFromTargetEvent) => {
-          if (cdpClient.sessionId === params.sessionId) {
+          if (cdpTarget.cdpClient.sessionId === params.sessionId) {
             networkManager.#networkStorage.disposeRequestMap();
           }
         }
       );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.requestWillBeSent',
       (params: Protocol.Network.RequestWillBeSentEvent) => {
         networkManager
@@ -61,7 +61,7 @@ export class NetworkManager {
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.requestWillBeSentExtraInfo',
       (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
         networkManager
@@ -70,7 +70,7 @@ export class NetworkManager {
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.responseReceived',
       (params: Protocol.Network.ResponseReceivedEvent) => {
         networkManager
@@ -79,7 +79,7 @@ export class NetworkManager {
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.responseReceivedExtraInfo',
       (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
         networkManager
@@ -88,7 +88,7 @@ export class NetworkManager {
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.requestServedFromCache',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
         networkManager
@@ -97,7 +97,7 @@ export class NetworkManager {
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.loadingFailed',
       (params: Protocol.Network.LoadingFailedEvent) => {
         networkManager
@@ -107,7 +107,7 @@ export class NetworkManager {
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.loadingFinished',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
         networkManager.#forgetRequest(params.requestId);

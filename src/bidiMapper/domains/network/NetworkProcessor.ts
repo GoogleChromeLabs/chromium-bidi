@@ -22,18 +22,18 @@ import {
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {ICdpClient} from '../../bidiMapper.js';
+import type {ICdpConnection} from '../../bidiMapper.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';
 
 export class NetworkProcessor {
+  readonly #cdpConnection: ICdpConnection;
   readonly #networkStorage: NetworkStorage;
-  readonly #cdpClient: ICdpClient;
 
   // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
-  constructor(networkStorage: NetworkStorage, cdpClient: ICdpClient) {
+  constructor(networkStorage: NetworkStorage, cdpConnection: ICdpConnection) {
+    this.#cdpConnection = cdpConnection;
     this.#networkStorage = networkStorage;
-    this.#cdpClient = cdpClient;
   }
 
   async addIntercept(
@@ -55,7 +55,8 @@ export class NetworkProcessor {
     }
 
     // TODO: Refine CDP `Fetch.enable`.
-    await this.#cdpClient.sendCommand('Fetch.enable', {
+    // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
+    await this.#cdpConnection.browserClient().sendCommand('Fetch.enable', {
       patterns: parsedPatterns.map((pattern) => ({
         urlPattern: pattern,
         // TODO: Populate requestStage.
@@ -108,8 +109,9 @@ export class NetworkProcessor {
     }
 
     // TODO: Refine CDP `Fetch.disable`.
-    // May need to call `enable` again for leftover intercept entries.
-    await this.#cdpClient.sendCommand('Fetch.disable');
+    // TODO: May need to call `enable` again for leftover intercept entries.
+    // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
+    await this.#cdpConnection.browserClient().sendCommand('Fetch.disable');
 
     interceptMap.delete(intercept);
 

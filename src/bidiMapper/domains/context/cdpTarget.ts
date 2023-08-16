@@ -56,7 +56,7 @@ export class CdpTarget {
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
-    NetworkManager.create(cdpClient, networkStorage);
+    NetworkManager.create(cdpTarget, networkStorage);
 
     cdpTarget.#setEventListeners();
 
