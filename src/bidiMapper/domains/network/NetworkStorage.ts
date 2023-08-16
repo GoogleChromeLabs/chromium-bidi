@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {Network} from '../../../protocol/protocol.js';
+import type Protocol from 'devtools-protocol';
+
+import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {EventManager} from '../events/EventManager.js';
 
@@ -55,17 +57,9 @@ export class NetworkStorage {
     this.#blockedRequestMap = new Map();
   }
 
-  // XXX: Replace getters with custom operations, just like Browsing Context Storage does so.
+  // XXX: Replace getters with custom operations, follow suit of Browsing Context Storage.
   get requestMap() {
     return this.#requestMap;
-  }
-
-  get interceptMap() {
-    return this.#interceptMap;
-  }
-
-  get blockedRequestMap() {
-    return this.#blockedRequestMap;
   }
 
   disposeRequestMap() {
@@ -74,5 +68,85 @@ export class NetworkStorage {
     }
 
     this.#requestMap.clear();
+  }
+
+  /**
+   * Adds the given intercept to the intercept map.
+   * URL patterns are assumed to be parsed.
+   */
+  addIntercept(
+    intercept: Network.Intercept,
+    value: {
+      urlPatterns: string[];
+      phases: Network.InterceptPhase[];
+    }
+  ) {
+    this.#interceptMap.set(intercept, value);
+  }
+
+  /**
+   * Removes the given intercept from the intercept map.
+   * Throws NoSuchInterceptException if the intercept does not exist.
+   */
+  removeIntercept(intercept: Network.Intercept) {
+    if (!this.#interceptMap.has(intercept)) {
+      throw new NoSuchInterceptException(
+        `Intercept '${intercept}' does not exist.`
+      );
+    }
+
+    this.#interceptMap.delete(intercept);
+  }
+
+  /** Gets parameters for CDP 'Fetch.enable' command from the intercept map. */
+  getFetchEnableParams(): Protocol.Fetch.EnableRequest {
+    const patterns: Protocol.Fetch.RequestPattern[] = [];
+
+    for (const value of this.#interceptMap.values()) {
+      for (const urlPattern of value.urlPatterns) {
+        for (const phase of value.phases) {
+          if (phase === Network.InterceptPhase.AuthRequired) {
+            continue;
+          }
+          patterns.push({
+            urlPattern,
+            requestStage: NetworkStorage.requestStageFromPhase(phase),
+          });
+        }
+      }
+    }
+
+    return {
+      patterns,
+      // If there's at least one intercept that requires auth, enable the
+      // 'Fetch.authRequired' event.
+      handleAuthRequests: [...this.#interceptMap.values()].some((param) => {
+        return param.phases.includes(Network.InterceptPhase.AuthRequired);
+      }),
+    };
+  }
+
+  /**
+   * Maps spec Network.InterceptPhase to CDP Fetch.RequestStage.
+   * AuthRequired has no CDP equivalent..
+   */
+  static requestStageFromPhase(
+    phase: Network.InterceptPhase
+  ): Protocol.Fetch.RequestStage {
+    switch (phase) {
+      case Network.InterceptPhase.BeforeRequestSent:
+        return 'Request';
+      case Network.InterceptPhase.ResponseStarted:
+        return 'Response';
+      case Network.InterceptPhase.AuthRequired:
+        throw new Error(
+          'AuthRequired is not a valid intercept phase for request stage.'
+        );
+    }
+  }
+
+  // XXX: Replace getters with custom operations, follow suit of Browsing Context Storage.
+  get blockedRequestMap() {
+    return this.#blockedRequestMap;
   }
 }

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 import {
-  Network,
+  type Network,
   type EmptyResult,
   UnknownCommandException,
-  NoSuchInterceptException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
@@ -35,6 +34,7 @@ export class NetworkProcessor {
   constructor(networkStorage: NetworkStorage, cdpConnection: ICdpConnection) {
     this.#cdpConnection = cdpConnection;
     this.#networkStorage = networkStorage;
+    console.log(this.#cdpConnection);
   }
 
   async addIntercept(
@@ -49,29 +49,17 @@ export class NetworkProcessor {
     const intercept = uuidv4();
 
     const urlPatterns: string[] = params.urlPatterns ?? [];
-    const parsedPatterns: string[] = [];
-    for (const urlPattern of urlPatterns) {
-      const parsed = urlPattern; // TODO: Parse the pattern.
-      parsedPatterns.push(parsed);
-    }
-
-    // TODO: Move the `Fetch.enable` logic to CdpTarget / BrowsingContextProcessor.
-    // TODO: Refine CDP `Fetch.enable`.
-    // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
-    await this.#cdpConnection.browserClient().sendCommand('Fetch.enable', {
-      patterns: parsedPatterns.map((pattern) => ({
-        urlPattern: pattern,
-        // TODO: Populate requestStage.
-      })),
-      handleAuthRequests: params.phases.includes(
-        Network.InterceptPhase.AuthRequired
-      ),
+    const parsedPatterns: string[] = urlPatterns.map((urlPattern) => {
+      return urlPattern; // TODO: Parse the pattern.
     });
 
-    this.#networkStorage.interceptMap.set(intercept, {
+    this.#networkStorage.addIntercept(intercept, {
       urlPatterns: parsedPatterns,
       phases: params.phases,
     });
+
+    // TODO: Call `Fetch.enable` via Browsing Context / Cdp Target.
+    // TODO: Add try/catch. Remove the intercept if `Fetch.enable` fails.
 
     return {
       intercept,
@@ -101,22 +89,12 @@ export class NetworkProcessor {
   async removeIntercept(
     params: Network.RemoveInterceptParameters
   ): Promise<EmptyResult> {
-    const intercept = params.intercept;
-    const interceptMap = this.#networkStorage.interceptMap;
+    this.#networkStorage.removeIntercept(params.intercept);
 
-    if (!interceptMap.has(intercept)) {
-      throw new NoSuchInterceptException(
-        `Intercept '${intercept}' does not exist.`
-      );
-    }
-
-    // TODO: Move the `Fetch.enable` logic to CdpTarget / BrowsingContextProcessor.
-    // TODO: Refine CDP `Fetch.disable`.
-    // TODO: May need to call `enable` again for leftover intercept entries.
+    // TODO: Call `Fetch.disable` via Browsing Context / Cdp Target.
     // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
-    await this.#cdpConnection.browserClient().sendCommand('Fetch.disable');
-
-    interceptMap.delete(intercept);
+    // TODO: May need to call `enable` again for leftover intercept entries.
+    // TODO: Add try/catch. Remove the intercept if `Fetch.disable` fails.
 
     return {};
   }
