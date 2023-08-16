@@ -20,6 +20,7 @@ import type {EventManager} from '../events/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
 
+/** Stores network and intercept maps. */
 export class NetworkStorage {
   /**
    * Map of request ID to NetworkRequest objects. Needed as long as information
@@ -54,7 +55,7 @@ export class NetworkStorage {
     this.#blockedRequestMap = new Map();
   }
 
-  // XXX: Replace getters with custom operations, like Browsing Context Storage.
+  // XXX: Replace getters with custom operations, just like Browsing Context Storage does so.
   get requestMap() {
     return this.#requestMap;
   }

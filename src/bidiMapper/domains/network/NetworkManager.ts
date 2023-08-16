@@ -28,18 +28,26 @@ import type {CdpTarget} from '../context/cdpTarget.js';
 import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
 
+/** Maps 1:1 to CdpTarget. */
 export class NetworkManager {
+  readonly #cdpTarget: CdpTarget;
   readonly #networkStorage: NetworkStorage;
 
-  private constructor(networkStorage: NetworkStorage) {
+  private constructor(cdpTarget: CdpTarget, networkStorage: NetworkStorage) {
+    this.#cdpTarget = cdpTarget;
     this.#networkStorage = networkStorage;
+  }
+
+  /** Returns the CDP Target associated with this NetworkManager instance. */
+  get cdpTarget(): CdpTarget {
+    return this.#cdpTarget;
   }
 
   static create(
     cdpTarget: CdpTarget,
     networkStorage: NetworkStorage
   ): NetworkManager {
-    const networkManager = new NetworkManager(networkStorage);
+    const networkManager = new NetworkManager(cdpTarget, networkStorage);
 
     cdpTarget.cdpClient
       .browserClient()

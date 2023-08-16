@@ -26,6 +26,7 @@ import type {ICdpConnection} from '../../bidiMapper.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';
 
+/** Dispatches Network domain commands. */
 export class NetworkProcessor {
   readonly #cdpConnection: ICdpConnection;
   readonly #networkStorage: NetworkStorage;
@@ -54,6 +55,7 @@ export class NetworkProcessor {
       parsedPatterns.push(parsed);
     }
 
+    // TODO: Move the `Fetch.enable` logic to CdpTarget / BrowsingContextProcessor.
     // TODO: Refine CDP `Fetch.enable`.
     // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
     await this.#cdpConnection.browserClient().sendCommand('Fetch.enable', {
@@ -108,6 +110,7 @@ export class NetworkProcessor {
       );
     }
 
+    // TODO: Move the `Fetch.enable` logic to CdpTarget / BrowsingContextProcessor.
     // TODO: Refine CDP `Fetch.disable`.
     // TODO: May need to call `enable` again for leftover intercept entries.
     // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.

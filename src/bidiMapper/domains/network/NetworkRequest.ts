@@ -31,6 +31,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {Result} from '../../../utils/result.js';
 
+/** Abstracts one individual network request. */
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';
 
