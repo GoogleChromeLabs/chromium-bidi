@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 import {expect} from 'chai';
+import * as sinon from 'sinon';
 
 import {Network} from '../../../protocol/protocol.js';
+import {EventManager} from '../events/EventManager.js';
 
 import {NetworkStorage} from './NetworkStorage.js';
 
+const UUID_REGEX =
+  /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
+
 describe('NetworkStorage', () => {
+  let eventManager: sinon.SinonStubbedInstance<EventManager>;
+  let networkStorage: NetworkStorage;
+
+  beforeEach(() => {
+    eventManager = sinon.createStubInstance(EventManager);
+    networkStorage = new NetworkStorage(eventManager);
+  });
+
   it('requestStageFromPhase', () => {
     expect(
       NetworkStorage.requestStageFromPhase(
@@ -37,13 +50,33 @@ describe('NetworkStorage', () => {
     ).to.throw();
   });
 
-  describe('getFetchEnableParams', () => {
-    let networkStorage: NetworkStorage;
+  describe('add intercept', () => {
+    it('once', () => {
+      const intercept = networkStorage.addIntercept({
+        urlPatterns: ['http://example.com'],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
 
-    beforeEach(() => {
-      networkStorage = new NetworkStorage({} as any);
+      expect(intercept).to.match(UUID_REGEX);
     });
 
+    it('twice', () => {
+      const intercept1 = networkStorage.addIntercept({
+        urlPatterns: ['http://example.com'],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      const intercept2 = networkStorage.addIntercept({
+        urlPatterns: ['http://example.org'],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      expect(intercept1).to.match(UUID_REGEX);
+      expect(intercept2).to.match(UUID_REGEX);
+      expect(intercept1).not.to.be.equal(intercept2);
+    });
+  });
+
+  describe('getFetchEnableParams', () => {
     it('no intercepts', () => {
       expect(networkStorage.getFetchEnableParams()).to.deep.equal({
         handleAuthRequests: false,
@@ -180,6 +213,5 @@ describe('NetworkStorage', () => {
   });
 
   // TODO: add more tests.
-  //   - addIntercept
   //   - removeIntercept
 });
