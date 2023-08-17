@@ -20,7 +20,6 @@ import {
   UnknownCommandException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
-import {uuidv4} from '../../../utils/uuid.js';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';
@@ -56,15 +55,13 @@ export class NetworkProcessor {
       );
     }
 
-    const intercept = uuidv4();
-
     const urlPatterns: string[] = params.urlPatterns ?? [];
     const parsedPatterns: string[] = urlPatterns.map((urlPattern) => {
       // TODO: Parse the pattern. Should fix a WPT test with the "foo" string.
       return urlPattern;
     });
 
-    this.#networkStorage.addIntercept(intercept, {
+    const intercept: Network.Intercept = this.#networkStorage.addIntercept({
       urlPatterns: parsedPatterns,
       phases: params.phases,
     });

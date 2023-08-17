@@ -16,6 +16,7 @@
  */
 import type Protocol from 'devtools-protocol';
 
+import {uuidv4} from '../../../utils/uuid.js';
 import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {EventManager} from '../events/EventManager.js';
@@ -71,17 +72,20 @@ export class NetworkStorage {
   }
 
   /**
-   * Adds the given intercept to the intercept map.
+   * Adds the given entry to the intercept map.
    * URL patterns are assumed to be parsed.
+   *
+   * @return The intercept ID.
    */
-  addIntercept(
-    intercept: Network.Intercept,
-    value: {
-      urlPatterns: string[];
-      phases: Network.InterceptPhase[];
-    }
-  ) {
+  addIntercept(value: {
+    urlPatterns: string[];
+    phases: Network.InterceptPhase[];
+  }): Network.Intercept {
+    const intercept: Network.Intercept = uuidv4();
+
     this.#interceptMap.set(intercept, value);
+
+    return intercept;
   }
 
   /**
@@ -106,12 +110,15 @@ export class NetworkStorage {
       for (const urlPattern of value.urlPatterns) {
         for (const phase of value.phases) {
           if (phase === Network.InterceptPhase.AuthRequired) {
-            continue;
+            patterns.push({
+              urlPattern,
+            });
+          } else {
+            patterns.push({
+              urlPattern,
+              requestStage: NetworkStorage.requestStageFromPhase(phase),
+            });
           }
-          patterns.push({
-            urlPattern,
-            requestStage: NetworkStorage.requestStageFromPhase(phase),
-          });
         }
       }
     }
