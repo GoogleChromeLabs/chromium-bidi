@@ -35,6 +35,7 @@ export class CdpTarget {
   readonly #cdpSessionId: Protocol.Target.SessionID;
   readonly #eventManager: EventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
+  readonly #networkStorage: NetworkStorage;
 
   readonly #targetUnblocked = new Deferred<Result<void>>();
 
@@ -52,7 +53,8 @@ export class CdpTarget {
       cdpClient,
       cdpSessionId,
       eventManager,
-      preloadScriptStorage
+      preloadScriptStorage,
+      networkStorage
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
@@ -72,13 +74,15 @@ export class CdpTarget {
     cdpClient: ICdpClient,
     cdpSessionId: Protocol.Target.SessionID,
     eventManager: EventManager,
-    preloadScriptStorage: PreloadScriptStorage
+    preloadScriptStorage: PreloadScriptStorage,
+    networkStorage: NetworkStorage
   ) {
     this.#targetId = targetId;
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
+    this.#networkStorage = networkStorage;
   }
 
   /** Returns a promise that resolves when the target is unblocked. */
@@ -94,11 +98,31 @@ export class CdpTarget {
     return this.#cdpClient;
   }
 
-  /**
-   * Needed for CDP escape path.
-   */
+  /** Needed for CDP escape path. */
   get cdpSessionId(): Protocol.Target.SessionID {
     return this.#cdpSessionId;
+  }
+
+  /** Calls `Fetch.enable` with the added network intercepts. */
+  async fetchEnable() {
+    await this.#cdpClient.sendCommand(
+      'Fetch.enable',
+      this.#networkStorage.getFetchEnableParams()
+    );
+  }
+
+  /** Calls `Fetch.disable`. */
+  async fetchDisable() {
+    await this.#cdpClient.sendCommand('Fetch.disable');
+  }
+
+  /**
+   * Calls `Fetch.disable` followed by `Fetch.enable`.
+   * The order is important. Do not use `Promise.all`.
+   */
+  async fetchApply() {
+    await this.fetchDisable();
+    await this.fetchEnable();
   }
 
   /**
@@ -119,6 +143,7 @@ export class CdpTarget {
         // XXX: #1080: Do not always enable the network domain globally.
         // TODO: enable Network domain for OOPiF targets.
         this.#cdpClient.sendCommand('Network.enable'),
+        this.fetchApply(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,

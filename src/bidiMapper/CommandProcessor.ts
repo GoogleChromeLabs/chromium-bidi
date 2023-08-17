@@ -101,8 +101,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     );
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
     this.#networkProcessor = new NetworkProcessor(
-      networkStorage,
-      cdpConnection
+      browsingContextStorage,
+      networkStorage
     );
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,

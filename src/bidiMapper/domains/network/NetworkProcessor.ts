@@ -21,20 +21,30 @@ import {
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {ICdpConnection} from '../../bidiMapper.js';
+import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';
 
 /** Dispatches Network domain commands. */
 export class NetworkProcessor {
-  readonly #cdpConnection: ICdpConnection;
+  readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
 
-  // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
-  constructor(networkStorage: NetworkStorage, cdpConnection: ICdpConnection) {
-    this.#cdpConnection = cdpConnection;
+  constructor(
+    browsingContextStorage: BrowsingContextStorage,
+    networkStorage: NetworkStorage
+  ) {
+    this.#browsingContextStorage = browsingContextStorage;
     this.#networkStorage = networkStorage;
-    console.log(this.#cdpConnection);
+  }
+
+  /** Applies all existing network intercepts to all CDP targets concurrently. */
+  async applyIntercepts() {
+    await Promise.all(
+      this.#browsingContextStorage.getAllContexts().map(async (context) => {
+        await context.cdpTarget.fetchApply();
+      })
+    );
   }
 
   async addIntercept(
@@ -50,7 +60,8 @@ export class NetworkProcessor {
 
     const urlPatterns: string[] = params.urlPatterns ?? [];
     const parsedPatterns: string[] = urlPatterns.map((urlPattern) => {
-      return urlPattern; // TODO: Parse the pattern.
+      // TODO: Parse the pattern. Should fix a WPT test with the "foo" string.
+      return urlPattern;
     });
 
     this.#networkStorage.addIntercept(intercept, {
@@ -58,8 +69,8 @@ export class NetworkProcessor {
       phases: params.phases,
     });
 
-    // TODO: Call `Fetch.enable` via Browsing Context / Cdp Target.
-    // TODO: Add try/catch. Remove the intercept if `Fetch.enable` fails.
+    // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
+    await this.applyIntercepts();
 
     return {
       intercept,
@@ -91,10 +102,8 @@ export class NetworkProcessor {
   ): Promise<EmptyResult> {
     this.#networkStorage.removeIntercept(params.intercept);
 
-    // TODO: Call `Fetch.disable` via Browsing Context / Cdp Target.
-    // TODO: Pass the correct cdpTarget, then use cdpTarget.cdpClient.
-    // TODO: May need to call `enable` again for leftover intercept entries.
-    // TODO: Add try/catch. Remove the intercept if `Fetch.disable` fails.
+    // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
+    await this.applyIntercepts();
 
     return {};
   }
