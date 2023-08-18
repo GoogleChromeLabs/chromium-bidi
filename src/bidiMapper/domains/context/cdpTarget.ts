@@ -119,6 +119,10 @@ export class CdpTarget {
   /**
    * Calls `Fetch.disable` followed by `Fetch.enable`.
    * The order is important. Do not use `Promise.all`.
+   *
+   * This is necessary because `Fetch.disable` removes all intercepts.
+   * In a situation where there are two or more intercepts and one of them is
+   * removed, the `Fetch.enable` call will restore the remaining intercepts.
    */
   async fetchApply() {
     await this.fetchDisable();
