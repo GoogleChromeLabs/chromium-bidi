@@ -778,27 +778,6 @@ export namespace Network {
   );
 }
 export namespace Network {
-  export const BodySchema = z.lazy(() =>
-    z.union([Network.StringBodySchema, Network.Base64BodySchema])
-  );
-}
-export namespace Network {
-  export const StringBodySchema = z.lazy(() =>
-    z.object({
-      type: z.literal('string'),
-      value: z.string(),
-    })
-  );
-}
-export namespace Network {
-  export const Base64BodySchema = z.lazy(() =>
-    z.object({
-      type: z.literal('base64'),
-      value: z.string(),
-    })
-  );
-}
-export namespace Network {
   export const BytesValueSchema = z.lazy(() =>
     z.union([Network.StringValueSchema, Network.Base64ValueSchema])
   );
@@ -933,10 +912,35 @@ export namespace Network {
       domain: z.string().optional(),
       httpOnly: z.boolean().optional(),
       expires: z.string().optional(),
-      maxAge: JsUintSchema.optional(),
+      maxAge: JsIntSchema.optional(),
       path: z.string().optional(),
       sameSite: z.enum(['strict', 'lax', 'none']).optional(),
       secure: z.boolean().optional(),
+    })
+  );
+}
+export namespace Network {
+  export const UrlPatternSchema = z.lazy(() =>
+    z.union([Network.UrlPatternPatternSchema, Network.UrlPatternStringSchema])
+  );
+}
+export namespace Network {
+  export const UrlPatternPatternSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('pattern'),
+      protocol: z.string().optional(),
+      hostname: z.string().optional(),
+      port: z.string().optional(),
+      pathname: z.string().optional(),
+      search: z.string().optional(),
+    })
+  );
+}
+export namespace Network {
+  export const UrlPatternStringSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('string'),
+      pattern: z.string(),
     })
   );
 }
@@ -952,7 +956,7 @@ export namespace Network {
   export const AddInterceptParametersSchema = z.lazy(() =>
     z.object({
       phases: z.array(Network.InterceptPhaseSchema),
-      urlPatterns: z.array(z.string()).optional(),
+      urlPatterns: z.array(Network.UrlPatternSchema).optional(),
     })
   );
 }

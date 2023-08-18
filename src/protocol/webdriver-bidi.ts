@@ -63,12 +63,10 @@ export type EventData =
 export type Extensible = {
   [key: string]: any;
 };
-
 /**
  * Must be between `-9007199254740991` and `9007199254740991`, inclusive.
  */
 export type JsInt = number;
-
 /**
  * Must be between `0` and `9007199254740991`, inclusive.
  */
@@ -634,21 +632,6 @@ export namespace Network {
   };
 }
 export namespace Network {
-  export type Body = Network.StringBody | Network.Base64Body;
-}
-export namespace Network {
-  export type StringBody = {
-    type: 'string';
-    value: string;
-  };
-}
-export namespace Network {
-  export type Base64Body = {
-    type: 'base64';
-    value: string;
-  };
-}
-export namespace Network {
   export type BytesValue = Network.StringValue | Network.Base64Value;
 }
 export namespace Network {
@@ -760,10 +743,29 @@ export namespace Network {
     domain?: string;
     httpOnly?: boolean;
     expires?: string;
-    maxAge?: JsUint;
+    maxAge?: JsInt;
     path?: string;
     sameSite?: 'strict' | 'lax' | 'none';
     secure?: boolean;
+  };
+}
+export namespace Network {
+  export type UrlPattern = Network.UrlPatternPattern | Network.UrlPatternString;
+}
+export namespace Network {
+  export type UrlPatternPattern = {
+    type: 'pattern';
+    protocol?: string;
+    hostname?: string;
+    port?: string;
+    pathname?: string;
+    search?: string;
+  };
+}
+export namespace Network {
+  export type UrlPatternString = {
+    type: 'string';
+    pattern: string;
   };
 }
 export namespace Network {
