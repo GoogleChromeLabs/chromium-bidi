@@ -35,7 +35,7 @@ export class NetworkStorage {
   readonly #interceptMap: Map<
     Network.Intercept,
     {
-      urlPatterns: string[];
+      urlPatterns: Network.UrlPattern[];
       phases: Network.InterceptPhase[];
     }
   >;
@@ -78,7 +78,7 @@ export class NetworkStorage {
    * @return The intercept ID.
    */
   addIntercept(value: {
-    urlPatterns: string[];
+    urlPatterns: Network.UrlPattern[];
     phases: Network.InterceptPhase[];
   }): Network.Intercept {
     const intercept: Network.Intercept = uuidv4();
@@ -107,7 +107,9 @@ export class NetworkStorage {
     const patterns: Protocol.Fetch.RequestPattern[] = [];
 
     for (const value of this.#interceptMap.values()) {
-      for (const urlPattern of value.urlPatterns) {
+      for (const urlPatternSpec of value.urlPatterns) {
+        const urlPattern: string =
+          NetworkStorage.cdpFromSpecUrlPattern(urlPatternSpec);
         for (const phase of value.phases) {
           if (phase === Network.InterceptPhase.AuthRequired) {
             patterns.push({
@@ -131,6 +133,49 @@ export class NetworkStorage {
         return param.phases.includes(Network.InterceptPhase.AuthRequired);
       }),
     };
+  }
+
+  /** Converts a URL pattern from the spec to a CDP URL pattern. */
+  static cdpFromSpecUrlPattern(urlPattern: Network.UrlPattern): string {
+    switch (urlPattern.type) {
+      case 'string':
+        return urlPattern.pattern;
+      case 'pattern':
+        return NetworkStorage.buildUrlPatternString(urlPattern);
+    }
+  }
+
+  static buildUrlPatternString({
+    protocol,
+    hostname,
+    port,
+    pathname,
+    search,
+  }: Network.UrlPatternPattern): string {
+    let url: string = '';
+
+    if (protocol) {
+      url += `${protocol}://`;
+    }
+
+    if (hostname) {
+      url += hostname;
+    }
+
+    if (port) {
+      url += `:${port}`;
+    }
+
+    if (pathname) {
+      // TODO: add slash?
+      url += pathname;
+    }
+
+    if (search) {
+      url += `?${search}`;
+    }
+
+    return url;
   }
 
   /**

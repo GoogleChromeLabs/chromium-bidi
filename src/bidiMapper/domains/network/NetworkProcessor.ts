@@ -55,14 +55,11 @@ export class NetworkProcessor {
       );
     }
 
-    const urlPatterns: string[] = params.urlPatterns ?? [];
-    const parsedPatterns: string[] = urlPatterns.map((urlPattern) => {
-      // TODO: Parse the pattern. Should fix a WPT test with the "foo" string.
-      return urlPattern;
-    });
+    // TODO: Parse the pattern. Should fix a WPT test with the "foo" string.
+    const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
 
     const intercept: Network.Intercept = this.#networkStorage.addIntercept({
-      urlPatterns: parsedPatterns,
+      urlPatterns,
       phases: params.phases,
     });
 

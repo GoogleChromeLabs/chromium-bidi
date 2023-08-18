@@ -53,7 +53,12 @@ describe('NetworkStorage', () => {
   describe('add intercept', () => {
     it('once', () => {
       const intercept = networkStorage.addIntercept({
-        urlPatterns: ['http://example.com'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          },
+        ],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
 
@@ -65,11 +70,21 @@ describe('NetworkStorage', () => {
 
     it('twice', () => {
       const intercept1 = networkStorage.addIntercept({
-        urlPatterns: ['http://example.com'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          },
+        ],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
       const intercept2 = networkStorage.addIntercept({
-        urlPatterns: ['http://example.org'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.org',
+          },
+        ],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
 
@@ -85,7 +100,12 @@ describe('NetworkStorage', () => {
 
   it('remove intercept', () => {
     const intercept = networkStorage.addIntercept({
-      urlPatterns: ['http://example.com'],
+      urlPatterns: [
+        {
+          type: 'string',
+          pattern: 'http://example.com',
+        },
+      ],
       phases: [Network.InterceptPhase.BeforeRequestSent],
     });
     networkStorage.removeIntercept(intercept);
@@ -107,7 +127,12 @@ describe('NetworkStorage', () => {
     [
       {
         description: 'one url pattern',
-        urlPatterns: ['http://example.com'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          } satisfies Network.UrlPattern,
+        ],
         phases: [Network.InterceptPhase.BeforeRequestSent],
         expected: {
           handleAuthRequests: false,
@@ -121,7 +146,16 @@ describe('NetworkStorage', () => {
       },
       {
         description: 'two url patterns',
-        urlPatterns: ['http://example.com', 'http://example.org'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          } satisfies Network.UrlPattern,
+          {
+            type: 'string',
+            pattern: 'http://example.org',
+          } satisfies Network.UrlPattern,
+        ],
         phases: [Network.InterceptPhase.ResponseStarted],
         expected: {
           handleAuthRequests: false,
@@ -139,7 +173,12 @@ describe('NetworkStorage', () => {
       },
       {
         description: 'auth required phase',
-        urlPatterns: ['http://example.org'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.org',
+          } satisfies Network.UrlPattern,
+        ],
         phases: [Network.InterceptPhase.AuthRequired],
         expected: {
           handleAuthRequests: true,
@@ -152,7 +191,12 @@ describe('NetworkStorage', () => {
       },
       {
         description: 'auth required and request phases',
-        urlPatterns: ['http://example.org'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.org',
+          } satisfies Network.UrlPattern,
+        ],
         phases: [
           Network.InterceptPhase.AuthRequired,
           Network.InterceptPhase.BeforeRequestSent,
@@ -172,7 +216,12 @@ describe('NetworkStorage', () => {
       },
       {
         description: 'two phases',
-        urlPatterns: ['http://example.com'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          } satisfies Network.UrlPattern,
+        ],
         phases: [
           Network.InterceptPhase.BeforeRequestSent,
           Network.InterceptPhase.ResponseStarted,
@@ -193,7 +242,16 @@ describe('NetworkStorage', () => {
       },
       {
         description: 'two patterns, two phases',
-        urlPatterns: ['http://example.com', 'http://example.org'],
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          } satisfies Network.UrlPattern,
+          {
+            type: 'string',
+            pattern: 'http://example.org',
+          } satisfies Network.UrlPattern,
+        ],
         phases: [
           Network.InterceptPhase.BeforeRequestSent,
           Network.InterceptPhase.ResponseStarted,
@@ -232,3 +290,5 @@ describe('NetworkStorage', () => {
     });
   });
 });
+
+// TODO: add test with UrlPatternPattern
