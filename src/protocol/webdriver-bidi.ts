@@ -602,7 +602,7 @@ export type NetworkCommand =
   | Network.FailRequest
   | Network.ProvideResponse
   | Network.RemoveIntercept;
-export type NetworkResult = {};
+export type NetworkResult = Network.AddInterceptResult;
 export type NetworkEvent =
   | Network.AuthRequired
   | Network.BeforeRequestSent
@@ -775,7 +775,7 @@ export namespace Network {
 export namespace Network {
   export type AddInterceptParameters = {
     phases: [...Network.InterceptPhase[]];
-    urlPatterns?: [...string[]];
+    urlPatterns?: [...Network.UrlPattern[]];
   };
 }
 export namespace Network {

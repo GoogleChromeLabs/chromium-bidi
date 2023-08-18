@@ -735,7 +735,9 @@ export const NetworkCommandSchema = z.lazy(() =>
     Network.RemoveInterceptSchema,
   ])
 );
-export const NetworkResultSchema = z.lazy(() => z.object({}));
+export const NetworkResultSchema = z.lazy(
+  () => Network.AddInterceptResultSchema
+);
 export const NetworkEventSchema = z.lazy(() =>
   z.union([
     Network.AuthRequiredSchema,
