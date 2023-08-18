@@ -15,8 +15,6 @@
 import pytest
 from test_helpers import execute_command
 
-# TODO: add basic test_remove_intercept test, check events.
-
 
 @pytest.mark.asyncio
 async def test_remove_intercept_no_such_intercept(websocket):
