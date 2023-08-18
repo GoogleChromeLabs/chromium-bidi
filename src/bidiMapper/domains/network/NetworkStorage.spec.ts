@@ -58,6 +58,9 @@ describe('NetworkStorage', () => {
       });
 
       expect(intercept).to.match(UUID_REGEX);
+      expect(networkStorage.getFetchEnableParams().patterns).to.have.lengthOf(
+        1
+      );
     });
 
     it('twice', () => {
@@ -73,6 +76,23 @@ describe('NetworkStorage', () => {
       expect(intercept1).to.match(UUID_REGEX);
       expect(intercept2).to.match(UUID_REGEX);
       expect(intercept1).not.to.be.equal(intercept2);
+
+      expect(networkStorage.getFetchEnableParams().patterns).to.have.lengthOf(
+        2
+      );
+    });
+  });
+
+  it('remove intercept', () => {
+    const intercept = networkStorage.addIntercept({
+      urlPatterns: ['http://example.com'],
+      phases: [Network.InterceptPhase.BeforeRequestSent],
+    });
+    networkStorage.removeIntercept(intercept);
+
+    expect(networkStorage.getFetchEnableParams()).to.deep.equal({
+      handleAuthRequests: false,
+      patterns: [],
     });
   });
 
@@ -211,7 +231,4 @@ describe('NetworkStorage', () => {
       });
     });
   });
-
-  // TODO: add more tests.
-  //   - removeIntercept
 });
