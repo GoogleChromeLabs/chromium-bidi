@@ -54,3 +54,24 @@ async def test_add_intercept_returns_intercept_id(websocket):
     assert result == {
         "intercept": ANY_UUID,
     }
+
+
+@pytest.mark.asyncio
+async def test_add_intercept_type_pattern(websocket):
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "pattern",
+                    "protocol": "https",
+                    "hostname": "www.example.com",
+                    "path": "/*",
+                }],
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
