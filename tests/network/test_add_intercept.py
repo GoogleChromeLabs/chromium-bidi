@@ -24,7 +24,10 @@ async def test_add_intercept_invalid_empty_phases(websocket):
                 "method": "network.addIntercept",
                 "params": {
                     "phases": [],
-                    "urlPatterns": ["https://www.example.com/*"],
+                    "urlPatterns": [{
+                        "type": 'string',
+                        "pattern": "https://www.example.com/*",
+                    }],
                 },
             })
 
@@ -41,7 +44,10 @@ async def test_add_intercept_returns_intercept_id(websocket):
             "method": "network.addIntercept",
             "params": {
                 "phases": ["beforeRequestSent"],
-                "urlPatterns": ["https://www.example.com/*"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": "https://www.example.com/*"
+                }],
             },
         })
 

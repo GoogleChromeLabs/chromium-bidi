@@ -40,7 +40,10 @@ async def test_remove_intercept_twice(websocket):
             "method": "network.addIntercept",
             "params": {
                 "phases": ["beforeRequestSent"],
-                "urlPatterns": ["https://www.example.com/*"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": "https://www.example.com/*"
+                }],
             },
         })
     intercept_id = result["intercept"]
