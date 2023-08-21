@@ -162,7 +162,7 @@ async def test_add_intercept_type_pattern_protocol_empty_invalid(websocket):
 
     assert {
         "error": "invalid argument",
-        "message": "TypeError: Failed to construct 'URL': Invalid URL"
+        "message": "URL pattern must specify a protocol"
     } == exception_info.value.args[0]
 
 
@@ -185,7 +185,7 @@ async def test_add_intercept_type_pattern_hostname_empty_invalid(websocket):
 
     assert {
         "error": "invalid argument",
-        "message": "TypeError: Failed to construct 'URL': Invalid URL"
+        "message": "URL pattern must specify a hostname"
     } == exception_info.value.args[0]
 
 
@@ -208,7 +208,7 @@ async def test_add_intercept_type_pattern_hostname_invalid(
 
     assert {
         "error": "invalid argument",
-        "message": "TypeError: Failed to construct 'URL': Invalid URL"
+        "message": "URL pattern hostname must not contain a colon"
     } == exception_info.value.args[0]
 
 
@@ -231,5 +231,5 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
 
     assert {
         "error": "invalid argument",
-        "message": "TypeError: Failed to construct 'URL': Invalid URL"
+        "message": "URL pattern must specify a port"
     } == exception_info.value.args[0]

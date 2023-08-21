@@ -119,6 +119,38 @@ export class NetworkProcessor {
           return urlPattern;
         }
         case 'pattern':
+          if (urlPattern.protocol === '') {
+            throw new InvalidArgumentException(
+              `URL pattern must specify a protocol`
+            );
+          }
+
+          if (urlPattern.hostname === '') {
+            throw new InvalidArgumentException(
+              `URL pattern must specify a hostname`
+            );
+          }
+
+          if ((urlPattern.hostname?.length ?? 0) > 0) {
+            if (urlPattern.protocol?.match(/^file/i)) {
+              throw new InvalidArgumentException(
+                `URL pattern protocol cannot be 'file'`
+              );
+            }
+
+            if (urlPattern.hostname?.includes(':')) {
+              throw new InvalidArgumentException(
+                `URL pattern hostname must not contain a colon`
+              );
+            }
+          }
+
+          if (urlPattern.port === '') {
+            throw new InvalidArgumentException(
+              `URL pattern must specify a port`
+            );
+          }
+
           try {
             new URL(NetworkStorage.buildUrlPatternString(urlPattern));
           } catch (error) {
