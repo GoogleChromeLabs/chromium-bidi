@@ -34,6 +34,12 @@ describe('NetworkStorage', () => {
     networkStorage = new NetworkStorage(eventManager);
   });
 
+  it('disposeRequestMap', () => {
+    networkStorage.disposeRequestMap();
+
+    expect(networkStorage.requestMap).to.be.empty;
+  });
+
   it('requestStageFromPhase', () => {
     expect(
       NetworkStorage.requestStageFromPhase(
@@ -289,8 +295,31 @@ describe('NetworkStorage', () => {
       });
     });
   });
+
+  describe('cdpFromSpecUrlPattern', () => {
+    it('string type', () => {
+      expect(
+        NetworkStorage.cdpFromSpecUrlPattern({
+          type: 'string',
+          pattern: 'https://example.com',
+        } satisfies Network.UrlPattern)
+      ).to.equal('https://example.com');
+    });
+
+    it('pattern type', () => {
+      expect(
+        NetworkStorage.cdpFromSpecUrlPattern({
+          type: 'pattern',
+          protocol: 'https',
+          hostname: 'example.com',
+          port: '80',
+          pathname: '/foo',
+          search: 'bar=baz',
+        } satisfies Network.UrlPattern)
+      ).to.equal('https://example.com:80/foo?bar=baz');
+    });
+  });
 });
 
 // TODO: add test with UrlPatternPattern
 // TODO: add test for buildUrlPatternString
-// TODO: add test for cdpFromSpecUrlPattern
