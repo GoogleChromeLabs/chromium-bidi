@@ -363,6 +363,141 @@ describe('NetworkStorage', () => {
       ).to.equal('https://example.com:80/foo?bar=baz');
     });
   });
-});
 
-// TODO: add test for buildUrlPatternString
+  describe('buildUrlPatternString', () => {
+    describe('protocol', () => {
+      it('empty', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: '',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('example.com:80');
+      });
+
+      it('without colon', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('with colon', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https:',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+    });
+
+    describe('port', () => {
+      it('empty', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com');
+      });
+
+      it('standard', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+    });
+
+    describe('pathname', () => {
+      it('empty', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('without slash', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: 'foo',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80/foo');
+      });
+
+      it('with slash', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '/foo',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80/foo');
+      });
+    });
+
+    describe('search', () => {
+      it('empty', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('without question mark', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: 'bar=baz',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80?bar=baz');
+      });
+
+      it('with question mark', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: '?bar=baz',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80?bar=baz');
+      });
+    });
+  });
+});

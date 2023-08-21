@@ -173,12 +173,19 @@ export class NetworkStorage {
     }
 
     if (pathname) {
-      // TODO: add slash?
+      if (!pathname.startsWith('/')) {
+        url += '/';
+      }
+
       url += pathname;
     }
 
     if (search) {
-      url += `?${search}`;
+      if (!search.startsWith('?')) {
+        url += '?';
+      }
+
+      url += `${search}`;
     }
 
     return url;
