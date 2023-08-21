@@ -57,13 +57,34 @@ describe('NetworkStorage', () => {
   });
 
   describe('add intercept', () => {
-    it('once', () => {
+    it('once with string type', () => {
       const intercept = networkStorage.addIntercept({
         urlPatterns: [
           {
             type: 'string',
             pattern: 'http://example.com',
           },
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      expect(intercept).to.match(UUID_REGEX);
+      expect(networkStorage.getFetchEnableParams().patterns).to.have.lengthOf(
+        1
+      );
+    });
+
+    it('once with pattern type', () => {
+      const intercept = networkStorage.addIntercept({
+        urlPatterns: [
+          {
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '/foo',
+            search: 'bar=baz',
+          } satisfies Network.UrlPattern,
         ],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
@@ -132,7 +153,7 @@ describe('NetworkStorage', () => {
 
     [
       {
-        description: 'one url pattern',
+        description: 'one url pattern of string type',
         urlPatterns: [
           {
             type: 'string',
@@ -146,6 +167,29 @@ describe('NetworkStorage', () => {
             {
               requestStage: 'Request',
               urlPattern: 'http://example.com',
+            },
+          ],
+        },
+      },
+      {
+        description: 'one url pattern of pattern type',
+        urlPatterns: [
+          {
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '/foo',
+            search: 'bar=baz',
+          } satisfies Network.UrlPattern,
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+        expected: {
+          handleAuthRequests: false,
+          patterns: [
+            {
+              requestStage: 'Request',
+              urlPattern: 'https://example.com:80/foo?bar=baz',
             },
           ],
         },
@@ -321,5 +365,4 @@ describe('NetworkStorage', () => {
   });
 });
 
-// TODO: add test with UrlPatternPattern
 // TODO: add test for buildUrlPatternString
