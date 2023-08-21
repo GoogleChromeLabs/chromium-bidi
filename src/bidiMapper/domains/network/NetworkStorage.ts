@@ -155,7 +155,13 @@ export class NetworkStorage {
     let url: string = '';
 
     if (protocol) {
-      url += `${protocol}://`;
+      url += `${protocol}`;
+
+      if (!protocol.endsWith(':')) {
+        url += ':';
+      }
+
+      url += '//';
     }
 
     if (hostname) {
