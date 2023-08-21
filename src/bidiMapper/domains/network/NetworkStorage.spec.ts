@@ -292,3 +292,5 @@ describe('NetworkStorage', () => {
 });
 
 // TODO: add test with UrlPatternPattern
+// TODO: add test for buildUrlPatternString
+// TODO: add test for cdpFromSpecUrlPattern

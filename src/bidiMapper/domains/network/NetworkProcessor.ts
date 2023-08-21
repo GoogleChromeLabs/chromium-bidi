@@ -22,7 +22,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
-import type {NetworkStorage} from './NetworkStorage.js';
+import {NetworkStorage} from './NetworkStorage.js';
 
 /** Dispatches Network domain commands. */
 export class NetworkProcessor {
@@ -106,7 +106,26 @@ export class NetworkProcessor {
   static parseUrlPatterns(
     urlPatterns: Network.UrlPattern[]
   ): Network.UrlPattern[] {
-    // TODO: Parse URL patterns.
-    return urlPatterns;
+    return urlPatterns.map((urlPattern) => {
+      switch (urlPattern.type) {
+        case 'string': {
+          try {
+            new URL(urlPattern.pattern);
+          } catch (error) {
+            throw new InvalidArgumentException(
+              `Invalid URL '${urlPattern.pattern}': ${error}`
+            );
+          }
+          return urlPattern;
+        }
+        case 'pattern':
+          try {
+            new URL(NetworkStorage.buildUrlPatternString(urlPattern));
+          } catch (error) {
+            throw new InvalidArgumentException(`${error}`);
+          }
+          return urlPattern;
+      }
+    });
   }
 }
