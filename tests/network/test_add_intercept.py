@@ -57,7 +57,7 @@ async def test_add_intercept_returns_intercept_id(websocket):
 
 
 @pytest.mark.asyncio
-async def test_add_intercept_type_pattern(websocket):
+async def test_add_intercept_type_pattern_valid(websocket):
     result = await execute_command(
         websocket, {
             "method": "network.addIntercept",
@@ -75,3 +75,24 @@ async def test_add_intercept_type_pattern(websocket):
     assert result == {
         "intercept": ANY_UUID,
     }
+
+
+@pytest.mark.asyncio
+async def test_add_intercept_type_pattern_invalid(websocket):
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {
+                "method": "network.addIntercept",
+                "params": {
+                    "phases": ["beforeRequestSent"],
+                    "urlPatterns": [{
+                        "type": "pattern",
+                        "hostname": "foo"
+                    }],
+                },
+            })
+
+    assert {
+        "error": "invalid argument",
+        "message": "TypeError: Failed to construct 'URL': Invalid URL"
+    } == exception_info.value.args[0]
