@@ -96,3 +96,24 @@ async def test_add_intercept_type_pattern_invalid(websocket):
         "error": "invalid argument",
         "message": "TypeError: Failed to construct 'URL': Invalid URL"
     } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
+async def test_add_intercept_type_string_invalid(websocket):
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {
+                "method": "network.addIntercept",
+                "params": {
+                    "phases": ["beforeRequestSent"],
+                    "urlPatterns": [{
+                        "type": "string",
+                        "hostname": "foo"
+                    }],
+                },
+            })
+
+    assert {
+        "error": "invalid argument",
+        "message": 'Invalid input in "urlPatterns"/0.'
+    } == exception_info.value.args[0]
