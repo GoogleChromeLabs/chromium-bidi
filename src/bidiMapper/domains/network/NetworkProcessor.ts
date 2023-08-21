@@ -37,15 +37,6 @@ export class NetworkProcessor {
     this.#networkStorage = networkStorage;
   }
 
-  /** Applies all existing network intercepts to all CDP targets concurrently. */
-  async applyIntercepts() {
-    await Promise.all(
-      this.#browsingContextStorage.getAllContexts().map(async (context) => {
-        await context.cdpTarget.fetchApply();
-      })
-    );
-  }
-
   async addIntercept(
     params: Network.AddInterceptParameters
   ): Promise<Network.AddInterceptResult> {
@@ -55,16 +46,17 @@ export class NetworkProcessor {
       );
     }
 
-    // TODO: Parse the pattern. Should fix a WPT test with the "foo" string.
     const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
+    const parsedUrlPatterns: Network.UrlPattern[] =
+      NetworkProcessor.parseUrlPatterns(urlPatterns);
 
     const intercept: Network.Intercept = this.#networkStorage.addIntercept({
-      urlPatterns,
+      urlPatterns: parsedUrlPatterns,
       phases: params.phases,
     });
 
     // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
-    await this.applyIntercepts();
+    await this.#applyIntercepts();
 
     return {
       intercept,
@@ -97,8 +89,24 @@ export class NetworkProcessor {
     this.#networkStorage.removeIntercept(params.intercept);
 
     // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
-    await this.applyIntercepts();
+    await this.#applyIntercepts();
 
     return {};
+  }
+
+  /** Applies all existing network intercepts to all CDP targets concurrently. */
+  async #applyIntercepts() {
+    await Promise.all(
+      this.#browsingContextStorage.getAllContexts().map(async (context) => {
+        await context.cdpTarget.fetchApply();
+      })
+    );
+  }
+
+  static parseUrlPatterns(
+    urlPatterns: Network.UrlPattern[]
+  ): Network.UrlPattern[] {
+    // TODO: Parse URL patterns.
+    return urlPatterns;
   }
 }
