@@ -133,7 +133,7 @@ function mergeSingleChildren(map) {
 }
 
 export function generateHtml(map) {
-  const date = new Intl.DateTimeFormat('en-GB', {}).format(new Date());
+  const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
 
   return `
     <!DOCTYPE html>
