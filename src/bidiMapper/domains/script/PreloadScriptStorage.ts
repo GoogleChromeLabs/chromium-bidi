@@ -31,7 +31,7 @@ export class PreloadScriptStorage {
   readonly #scripts = new Set<PreloadScript>();
 
   /** Finds all entries that match the given filter. */
-  findPreloadScripts(filter?: BidiPreloadScriptFilter): PreloadScript[] {
+  find(filter?: BidiPreloadScriptFilter): PreloadScript[] {
     if (!filter) {
       return [...this.#scripts];
     }
@@ -50,13 +50,13 @@ export class PreloadScriptStorage {
     });
   }
 
-  addPreloadScript(preloadScript: PreloadScript) {
+  add(preloadScript: PreloadScript) {
     this.#scripts.add(preloadScript);
   }
 
   /** Deletes all BiDi preload script entries that match the given filter. */
-  removeBiDiPreloadScripts(filter?: BidiPreloadScriptFilter) {
-    for (const preloadScript of this.findPreloadScripts(filter)) {
+  removeAll(filter?: BidiPreloadScriptFilter) {
+    for (const preloadScript of this.find(filter)) {
       this.#scripts.delete(preloadScript);
     }
   }
