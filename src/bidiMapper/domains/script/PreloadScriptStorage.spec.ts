@@ -73,7 +73,7 @@ describe('PreloadScriptStorage', () => {
 
     const preloadScripts = preloadScriptStorage.find();
 
-    preloadScriptStorage.removeAll({
+    preloadScriptStorage.remove({
       id: `${MOCKED_UUID_1}_NON_EXISTING`,
     });
 
@@ -100,7 +100,7 @@ describe('PreloadScriptStorage', () => {
     it(`remove preload scripts by ${filterDescription}`, () => {
       const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
       preloadScriptStorage.add(preloadScript1);
-      preloadScriptStorage.removeAll(filter);
+      preloadScriptStorage.remove(filter);
 
       expect(preloadScriptStorage.find(filter)).to.be.empty;
     });

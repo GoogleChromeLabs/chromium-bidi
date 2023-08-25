@@ -18,8 +18,8 @@ import type {CdpTarget} from '../context/CdpTarget.js';
 
 import type {PreloadScript} from './PreloadScript.js';
 
-/** BidiPreloadScripts can be filtered by BiDi ID or target ID. */
-export type BidiPreloadScriptFilter = Partial<
+/** PreloadScripts can be filtered by BiDi ID or target ID. */
+export type PreloadScriptFilter = Partial<
   Pick<PreloadScript, 'id'> & Pick<CdpTarget, 'targetId'>
 >;
 
@@ -31,7 +31,7 @@ export class PreloadScriptStorage {
   readonly #scripts = new Set<PreloadScript>();
 
   /** Finds all entries that match the given filter. */
-  find(filter?: BidiPreloadScriptFilter): PreloadScript[] {
+  find(filter?: PreloadScriptFilter): PreloadScript[] {
     if (!filter) {
       return [...this.#scripts];
     }
@@ -55,7 +55,7 @@ export class PreloadScriptStorage {
   }
 
   /** Deletes all BiDi preload script entries that match the given filter. */
-  removeAll(filter?: BidiPreloadScriptFilter) {
+  remove(filter?: PreloadScriptFilter) {
     for (const preloadScript of this.find(filter)) {
       this.#scripts.delete(preloadScript);
     }

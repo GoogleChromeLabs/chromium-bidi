@@ -83,7 +83,7 @@ export class ScriptProcessor {
 
     await Promise.all(scripts.map((script) => script.remove()));
 
-    this.#preloadScriptStorage.removeAll({
+    this.#preloadScriptStorage.remove({
       id: bidiId,
     });
 
