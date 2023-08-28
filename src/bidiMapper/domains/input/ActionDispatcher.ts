@@ -525,6 +525,10 @@ export class ActionDispatcher {
       );
     }
 
+    // --- Platform-specific code begins here ---
+    const devicePixelRatio = await this.#getDevicePixelRatio();
+    // --- Platform-specific code ends here ---
+
     let currentDeltaX = 0;
     let currentDeltaY = 0;
     let last: boolean;
@@ -550,8 +554,8 @@ export class ActionDispatcher {
           'Input.dispatchMouseEvent',
           {
             type: 'mouseWheel',
-            deltaX,
-            deltaY,
+            deltaX: deltaX / devicePixelRatio,
+            deltaY: deltaY / devicePixelRatio,
             x: targetX,
             y: targetY,
             modifiers,
@@ -563,6 +567,24 @@ export class ActionDispatcher {
         currentDeltaY += deltaY;
       }
     } while (!last);
+  }
+
+  async #getDevicePixelRatio() {
+    const result = await (
+      await this.#context.getOrCreateSandbox(undefined)
+    ).evaluate(
+      String(() => {
+        return window.devicePixelRatio ?? 1;
+      }),
+      false,
+      Script.ResultOwnership.None,
+      {},
+      false
+    );
+    assert(result.type === 'success');
+    assert(result.result.type === 'number');
+    assert(typeof result.result.value === 'number');
+    return result.result.value;
   }
 
   async #dispatchKeyDownAction(
