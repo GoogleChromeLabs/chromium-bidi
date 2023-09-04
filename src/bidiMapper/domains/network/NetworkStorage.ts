@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 import type Protocol from 'devtools-protocol';
+import {URLPattern} from 'urlpattern-polyfill';
 
 import {uuidv4} from '../../../utils/uuid.js';
-import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
+import {Network, NoSuchInterceptException, ChromiumBidi} from '../../../protocol/protocol.js';
 import type {EventManager} from '../events/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
@@ -72,11 +73,11 @@ export class NetworkStorage {
     urlPatterns: Network.UrlPattern[];
     phases: Network.InterceptPhase[];
   }): Network.Intercept {
-    const intercept: Network.Intercept = uuidv4();
+    const interceptId: Network.Intercept = uuidv4();
 
-    this.#interceptMap.set(intercept, value);
+    this.#interceptMap.set(interceptId, value);
 
-    return intercept;
+    return interceptId;
   }
 
   /**
@@ -238,5 +239,74 @@ export class NetworkStorage {
   // XXX: Replace getters with custom operations, follow suit of Browsing Context Storage.
   get blockedRequestMap() {
     return this.#blockedRequestMap;
+  }
+
+  /** #@see https://w3c.github.io/webdriver-bidi/#get-the-network-intercepts */
+  getNetworkIntercepts(
+    event: Exclude<
+      ChromiumBidi.Network.EventNames,
+      ChromiumBidi.Network.EventNames.FetchError
+    >,
+    requestId: Network.Request
+  ): Network.Intercept[] {
+    const interceptIds: Network.Intercept[] = [];
+
+    let phase: Network.InterceptPhase | undefined = undefined;
+    switch (event) {
+      case ChromiumBidi.Network.EventNames.BeforeRequestSent:
+        phase = Network.InterceptPhase.BeforeRequestSent;
+        break;
+      case ChromiumBidi.Network.EventNames.ResponseStarted:
+        phase = Network.InterceptPhase.ResponseStarted;
+        break;
+      case ChromiumBidi.Network.EventNames.AuthRequired:
+        phase = Network.InterceptPhase.AuthRequired;
+        break;
+      case ChromiumBidi.Network.EventNames.ResponseCompleted:
+        return interceptIds;
+    }
+
+    const request = this.#requestMap.get(requestId);
+
+    for (const [
+      interceptId,
+      {phases, urlPatterns},
+    ] of this.#interceptMap.entries()) {
+      if (phase && phases.includes(phase)) {
+        if (urlPatterns.length === 0) {
+          interceptIds.push(interceptId);
+        } else if (
+          urlPatterns.some((urlPattern) =>
+            NetworkStorage.matchUrlPattern(urlPattern, request.url)
+          )
+        ) {
+          interceptIds.push(interceptId);
+        }
+      }
+    }
+
+    return interceptIds;
+  }
+
+  /** Matches the given URLPattern against the given URL. */
+  static matchUrlPattern(
+    urlPattern: Network.UrlPattern,
+    url: string | undefined
+  ): boolean {
+    switch (urlPattern.type) {
+      case 'string':
+        return urlPattern.pattern === url;
+      case 'pattern': {
+        return (
+          new URLPattern({
+            protocol: urlPattern.protocol,
+            hostname: urlPattern.hostname,
+            port: urlPattern.port,
+            pathname: urlPattern.pathname,
+            search: urlPattern.search,
+          }).exec(url) !== null
+        );
+      }
+    }
   }
 }
