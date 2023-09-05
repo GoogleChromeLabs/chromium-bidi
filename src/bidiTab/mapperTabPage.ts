@@ -58,7 +58,7 @@ export function generatePage() {
   globalThis.document.documentElement.innerHTML = mapperPageSource;
 
   // Create main log containers in proper order.
-  findOrCreateTypeLogContainer(LogType.debug);
+  findOrCreateTypeLogContainer(LogType.debugInfo);
   findOrCreateTypeLogContainer(LogType.bidi);
   findOrCreateTypeLogContainer(LogType.cdp);
 }

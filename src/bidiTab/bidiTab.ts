@@ -68,7 +68,7 @@ void (async () => {
 
   const bidiServer = await createBidiServer(selfTargetId);
 
-  log(LogType.debug, 'Launched');
+  log(LogType.debugInfo, 'Launched');
 
   bidiServer.emitOutgoingMessage(
     OutgoingMessage.createResolved({
