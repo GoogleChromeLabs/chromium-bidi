@@ -69,8 +69,11 @@ export function log(logType: LogPrefix, ...messages: unknown[]) {
     return;
   }
 
-  // If `sendDebugMessage` is defined, send the log message there.
-  global.window?.sendDebugMessage?.(JSON.stringify({logType, messages}));
+  // Skip sending BiDi logs as they are logged once by `bidi:server:*`
+  if (!logType.startsWith(LogType.bidi)) {
+    // If `sendDebugMessage` is defined, send the log message there.
+    global.window?.sendDebugMessage?.(JSON.stringify({logType, messages}));
+  }
 
   const typeLogContainer = findOrCreateTypeLogContainer(logType);
 
