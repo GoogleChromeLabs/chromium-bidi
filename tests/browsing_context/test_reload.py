@@ -38,12 +38,15 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
         })
 
     # Assert command done.
-    response = await read_JSON_message(websocket)
-    assert response["result"] == {}
+    response1 = await read_JSON_message(websocket)
+    assert response1["result"] == {
+        "navigation": ANY_STR,
+        "url": url,
+    }
 
     # Wait for `browsingContext.domContentLoaded` event.
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response2 = await read_JSON_message(websocket)
+    assert response2 == {
         'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
@@ -55,8 +58,8 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
     }
 
     # Wait for `browsingContext.load` event.
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response3 = await read_JSON_message(websocket)
+    assert response3 == {
         'type': 'event',
         "method": "browsingContext.load",
         "params": {
@@ -77,7 +80,7 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await goto_url(websocket, context_id, url, "complete")
+    initial_navigation = await goto_url(websocket, context_id, url, "complete")
 
     await send_JSON_command(
         websocket, {
@@ -88,8 +91,8 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
             }
         })
     # Wait for `browsingContext.domContentLoaded` event.
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response1 = await read_JSON_message(websocket)
+    assert response1 == {
         'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
@@ -101,12 +104,15 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
     }
 
     # Assert command done.
-    response = await read_JSON_message(websocket)
-    assert response["result"] == {}
+    response2 = await read_JSON_message(websocket)
+    assert response2["result"] == {
+        "navigation": ANY_STR,
+        "url": url,
+    }
 
     # Wait for `browsingContext.load` event.
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response3 = await read_JSON_message(websocket)
+    assert response3 == {
         'type': 'event',
         "method": "browsingContext.load",
         "params": {
@@ -116,6 +122,10 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
             "url": url,
         }
     }
+
+    assert response3["params"]["navigation"] == response2["result"][
+        "navigation"] == response1["params"]["navigation"]
+    assert initial_navigation["navigation"] != response2["result"]["navigation"]
 
 
 @pytest.mark.asyncio
@@ -127,7 +137,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await goto_url(websocket, context_id, url, "complete")
+    initial_navigation = await goto_url(websocket, context_id, url, "complete")
 
     await send_JSON_command(
         websocket, {
@@ -139,8 +149,8 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
         })
 
     # Wait for `browsingContext.domContentLoaded` event.
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response1 = await read_JSON_message(websocket)
+    assert response1 == {
         'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
@@ -152,8 +162,8 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
     }
 
     # Wait for `browsingContext.load` event.
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response2 = await read_JSON_message(websocket)
+    assert response2 == {
         'type': 'event',
         "method": "browsingContext.load",
         "params": {
@@ -165,8 +175,15 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
     }
 
     # Assert command done.
-    response = await read_JSON_message(websocket)
-    assert response["result"] == {}
+    response3 = await read_JSON_message(websocket)
+    assert response3["result"] == {
+        "navigation": ANY_STR,
+        "url": url,
+    }
+
+    assert response3["result"]["navigation"] == response2["params"][
+        "navigation"] == response1["params"]["navigation"]
+    assert initial_navigation["navigation"] != response3["result"]["navigation"]
 
 
 @pytest.mark.asyncio
@@ -183,7 +200,7 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
         "network.responseCompleted",
     ])
 
-    await goto_url(websocket, context_id, url)
+    initial_navigation = await goto_url(websocket, context_id, url)
 
     id = await send_JSON_command(
         websocket, {
@@ -195,8 +212,8 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response1 = await read_JSON_message(websocket)
+    assert response1 == {
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
@@ -210,8 +227,8 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
         },
     }
 
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response2 = await read_JSON_message(websocket)
+    assert response2 == {
         'type': 'event',
         "method": "network.responseCompleted",
         "params": {
@@ -226,9 +243,16 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
     }
 
     # Assert command done.
-    response = await read_JSON_message(websocket)
-    assert response == {
+    response3 = await read_JSON_message(websocket)
+    assert response3 == {
         "id": id,
         "type": "success",
-        "result": {},
+        "result": {
+            "navigation": ANY_STR,
+            "url": url,
+        },
     }
+
+    assert response3["result"]["navigation"] == response2["params"][
+        "navigation"] == response1["params"]["navigation"]
+    assert initial_navigation["navigation"] != response3["result"]["navigation"]

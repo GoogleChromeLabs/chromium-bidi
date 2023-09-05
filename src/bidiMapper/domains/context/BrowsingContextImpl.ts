@@ -26,7 +26,10 @@ import {
   UnableToCaptureScreenException,
   UnknownErrorException,
   UnsupportedOperationException,
-  type EmptyResult,
+  InvalidArgumentException,
+  NoSuchElementException,
+  UnableToCaptureScreenException,
+  Script,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/deferred.js';
@@ -35,6 +38,8 @@ import {inchesFromCm} from '../../../utils/unitConversions.js';
 import type {EventManager} from '../events/EventManager.js';
 import {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
+import type {Result} from '../../../utils/result.js';
+import {assert} from '../../../utils/assert.js';
 
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import type {CdpTarget} from './CdpTarget.js';
@@ -650,7 +655,7 @@ export class BrowsingContextImpl {
   async reload(
     ignoreCache: boolean,
     wait: BrowsingContext.ReadinessState
-  ): Promise<EmptyResult> {
+  ): Promise<BrowsingContext.NavigateResult> {
     await this.targetUnblockedOrThrow();
 
     await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
@@ -670,7 +675,13 @@ export class BrowsingContextImpl {
         break;
     }
 
-    return {};
+    return {
+      navigation:
+        wait === BrowsingContext.ReadinessState.None
+          ? null
+          : this.navigableId ?? null,
+      url: this.url,
+    };
   }
 
   async setViewport(viewport: BrowsingContext.Viewport | null) {
