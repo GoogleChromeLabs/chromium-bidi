@@ -525,7 +525,8 @@ export class BrowsingContextImpl {
             context: this.id,
             type: params.type,
             message: params.message,
-            defaultValue: params.defaultPrompt,
+            // Don't set the value if empty string
+            defaultValue: params.defaultPrompt || undefined,
           },
         },
         this.id
