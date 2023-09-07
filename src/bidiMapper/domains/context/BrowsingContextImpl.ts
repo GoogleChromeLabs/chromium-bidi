@@ -510,12 +510,8 @@ export class BrowsingContextImpl {
           params: {
             context: this.id,
             accepted,
-            ...(accepted
-              ? {
-                  // Cast empty string to undefined
-                  userText: params.userInput ? params.userInput : undefined,
-                }
-              : {}),
+            userText:
+              accepted && params.userInput ? params.userInput : undefined,
           },
         },
         this.id
