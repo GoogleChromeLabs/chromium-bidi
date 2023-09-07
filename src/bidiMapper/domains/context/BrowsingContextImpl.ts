@@ -508,10 +508,8 @@ export class BrowsingContextImpl {
           type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
           params: {
-            ...{
-              context: this.id,
-              accepted,
-            },
+            context: this.id,
+            accepted,
             ...(accepted
               ? {
                   // Cast empty string to undefined
