@@ -565,8 +565,16 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export const PrintPageParametersSchema = z.lazy(() =>
     z.object({
-      height: z.number().gte(0).default(27.94).optional(),
-      width: z.number().gte(0).default(21.59).optional(),
+      height: z
+        .number()
+        .gte(z.union([z.literal(2.54), z.literal(72)]))
+        .default(27.94)
+        .optional(),
+      width: z
+        .number()
+        .gte(z.union([z.literal(2.54), z.literal(72)]))
+        .default(21.59)
+        .optional(),
     })
   );
 }
