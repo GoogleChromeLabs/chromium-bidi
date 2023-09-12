@@ -15,10 +15,16 @@
  * limitations under the License.
  */
 import type Protocol from 'devtools-protocol';
+// XXX: Switch to native URLPattern when available.
+// https://github.com/nodejs/node/issues/40844
 import {URLPattern} from 'urlpattern-polyfill';
 
 import {uuidv4} from '../../../utils/uuid.js';
-import {Network, NoSuchInterceptException, ChromiumBidi} from '../../../protocol/protocol.js';
+import {
+  Network,
+  NoSuchInterceptException,
+  ChromiumBidi,
+} from '../../../protocol/protocol.js';
 import type {EventManager} from '../events/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
@@ -249,7 +255,10 @@ export class NetworkStorage {
     >,
     requestId: Network.Request
   ): Network.Intercept[] {
-    const interceptIds: Network.Intercept[] = [];
+    const request = this.#requestMap.get(requestId);
+    if (!request) {
+      return [];
+    }
 
     let phase: Network.InterceptPhase | undefined = undefined;
     switch (event) {
@@ -263,10 +272,10 @@ export class NetworkStorage {
         phase = Network.InterceptPhase.AuthRequired;
         break;
       case ChromiumBidi.Network.EventNames.ResponseCompleted:
-        return interceptIds;
+        return [];
     }
 
-    const request = this.#requestMap.get(requestId);
+    const interceptIds: Network.Intercept[] = [];
 
     for (const [
       interceptId,

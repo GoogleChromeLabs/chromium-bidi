@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {URLPattern} from 'urlpattern-polyfill';
-
 import {
   type Network,
   type EmptyResult,
@@ -112,9 +110,7 @@ export class NetworkProcessor {
       switch (urlPattern.type) {
         case 'string': {
           try {
-            // XXX: Switch to native URLPattern when available.
-            // https://github.com/nodejs/node/issues/40844
-            new URLPattern(urlPattern.pattern);
+            new URL(urlPattern.pattern);
           } catch (error) {
             throw new InvalidArgumentException(
               `Invalid URL '${urlPattern.pattern}': ${error}`
