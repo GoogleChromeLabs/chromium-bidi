@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 import type Protocol from 'devtools-protocol';
-// XXX: Switch to native URLPattern when available.
-// https://github.com/nodejs/node/issues/40844
-import {URLPattern} from 'urlpattern-polyfill';
 
+import {URLPattern} from '../../../utils/UrlPattern.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import {
   Network,
