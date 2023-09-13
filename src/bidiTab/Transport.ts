@@ -12,18 +12,16 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
+ * limitations under the License. *
  */
-import type {BidiTransport} from '../bidiMapper/bidiMapper';
+import type {BidiTransport} from '../bidiMapper/bidiMapper.js';
 import {
   type ChromiumBidi,
   ErrorCode,
   type ErrorResponse,
-} from '../protocol/protocol';
-import {LogType} from '../utils/log';
-import type {ITransport} from '../utils/transport';
+} from '../protocol/protocol.js';
+import {LogType} from '../utils/log.js';
+import type {ITransport} from '../utils/transport.js';
 
 import {log} from './mapperTabPage.js';
 
