@@ -131,14 +131,22 @@ export class SubscriptionManager {
     // Get all the subscription priorities.
     const priorities: number[] = relevantContexts
       .map((context) => {
+        // Get the priority for exact event name
         const priority = contextToEventMap.get(context)?.get(eventMethod);
+        // For CDP we can't provide specific event name when subscribing
+        // to the module directly.
+        // Because of that we need to see event `cdp` exits in the map.
         if (eventMethod.startsWith(ChromiumBidi.BiDiModule.Cdp)) {
           const cdpPriority = contextToEventMap
             .get(context)
             ?.get(ChromiumBidi.BiDiModule.Cdp);
+          // If we subscribe to the event directly and `cdp` module as well
+          // priority will be different we take the one with higher priority
           return priority && cdpPriority
             ? Math.min(priority, cdpPriority)
-            : priority ?? cdpPriority;
+            : // At this point we know that we have subscribed
+              //to only one of the two
+              priority ?? cdpPriority;
         }
         return priority;
       })
