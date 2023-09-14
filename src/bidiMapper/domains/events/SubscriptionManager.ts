@@ -130,7 +130,18 @@ export class SubscriptionManager {
 
     // Get all the subscription priorities.
     const priorities: number[] = relevantContexts
-      .map((c) => contextToEventMap.get(c)?.get(eventMethod))
+      .map((context) => {
+        const priority = contextToEventMap.get(context)?.get(eventMethod);
+        if (eventMethod.startsWith(ChromiumBidi.BiDiModule.Cdp)) {
+          const cdpPriority = contextToEventMap
+            .get(context)
+            ?.get(ChromiumBidi.BiDiModule.Cdp);
+          return priority && cdpPriority
+            ? Math.min(priority, cdpPriority)
+            : priority ?? cdpPriority;
+        }
+        return priority;
+      })
       .filter((p) => p !== undefined) as number[];
 
     if (priorities.length === 0) {
