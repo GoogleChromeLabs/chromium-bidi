@@ -157,7 +157,7 @@ export class EventManager {
     channel: string | null
   ): void {
     for (const name of eventNames) {
-      EventManager.isSupportedEvent(name);
+      EventManager.assertSupportedEvent(name);
     }
 
     // First check if all the contexts are known.
@@ -193,7 +193,7 @@ export class EventManager {
     channel: string | null
   ) {
     for (const name of eventNames) {
-      EventManager.isSupportedEvent(name);
+      EventManager.assertSupportedEvent(name);
     }
     this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
   }
@@ -286,10 +286,12 @@ export class EventManager {
     return result.sort((e1, e2) => e1.id - e2.id);
   }
 
-  static isSupportedEvent(name: string) {
+  static assertSupportedEvent(
+    name: string
+  ): asserts name is ChromiumBidi.EventNames {
     if (
       !EVENT_NAMES.has(name as never) &&
-      !name.startsWith(ChromiumBidi.BiDiModule.Cdp)
+      !SubscriptionManager.isCdpEvent(name)
     ) {
       throw new InvalidArgumentException(`Unknown event: ${name}`);
     }
