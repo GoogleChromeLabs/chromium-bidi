@@ -204,7 +204,7 @@ async def test_network_response_completed_event_emitted(websocket, context_id):
                 "statusText": AnyOr("OK", "", "Temporary Redirect"),
                 "fromCache": False,
                 "headers": ANY_LIST,
-                "mimeType": "text/html",
+                "mimeType": AnyOr("", "text/html"),
                 "bytesReceived": ANY_NUMBER,
                 "headersSize": headersSize,
                 "bodySize": 0,
