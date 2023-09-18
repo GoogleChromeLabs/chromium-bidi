@@ -26,7 +26,7 @@ import type {Result} from '../../../utils/result.js';
 import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingMessage} from '../../OutgoingMessage.js';
 
-import * as events from './events.js';
+import {assertSupportedEvent} from './events.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
 
 class EventWrapper {
@@ -147,7 +147,7 @@ export class EventManager {
     channel: string | null
   ): void {
     for (const name of eventNames) {
-      events.assertSupportedEvent(name);
+      assertSupportedEvent(name);
     }
 
     // First check if all the contexts are known.
@@ -183,7 +183,7 @@ export class EventManager {
     channel: string | null
   ) {
     for (const name of eventNames) {
-      events.assertSupportedEvent(name);
+      assertSupportedEvent(name);
     }
     this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
   }

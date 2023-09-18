@@ -22,7 +22,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
-import * as events from './events.js';
+import {isCdpEvent} from './events.js';
 
 /**
  * Returns the cartesian product of the given arrays.
@@ -138,7 +138,7 @@ export class SubscriptionManager {
         // For CDP we can't provide specific event name when subscribing
         // to the module directly.
         // Because of that we need to see event `cdp` exits in the map.
-        if (events.isCdpEvent(eventMethod)) {
+        if (isCdpEvent(eventMethod)) {
           const cdpPriority = contextToEventMap
             .get(context)
             ?.get(ChromiumBidi.BiDiModule.Cdp);
