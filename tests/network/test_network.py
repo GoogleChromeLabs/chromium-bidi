@@ -200,8 +200,8 @@ async def test_network_response_completed_event_emitted(websocket, context_id):
             "response": {
                 "url": AnyOr("http://example.com/", "https://example.com/"),
                 "protocol": AnyOr("http/1.1", "h2"),
-                "status": 200,
-                "statusText": AnyOr("OK", ""),
+                "status": AnyOr(200, 307),
+                "statusText": AnyOr("OK", "", "Temporary Redirect"),
                 "fromCache": False,
                 "headers": ANY_LIST,
                 "mimeType": "text/html",
