@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {
-  type Network,
+  Network,
   type EmptyResult,
   UnknownCommandException,
   InvalidArgumentException,
@@ -75,8 +75,29 @@ export class NetworkProcessor {
     throw new UnknownCommandException('Not implemented yet.');
   }
 
-  failRequest(_params: Network.FailRequestParameters): EmptyResult {
-    throw new UnknownCommandException('Not implemented yet.');
+  failRequest(params: Network.FailRequestParameters): EmptyResult {
+    const networkId = params.request;
+    const blockedRequest = this.#networkStorage.getBlockedRequest(networkId);
+    // const {request: fetchId, phase} = blockedRequest;
+    const {phase} = blockedRequest;
+
+    if (phase === Network.InterceptPhase.AuthRequired) {
+      throw new InvalidArgumentException(
+        `Blocked request for network id '${networkId}' is in 'AuthRequired' phase`
+      );
+    }
+
+    // TODO: How to get cdpTarget?
+    // cdpTarget.cdpClient.sendCommand('Fetch.failRequest', {
+    //   requestId: fetchId,
+    //   errorReason: 'Failed',
+    // });
+
+    this.#networkStorage.removeBlockedRequest(networkId);
+
+    // TODO: Remove from network request map?
+
+    return {};
   }
 
   provideResponse(_params: Network.ProvideResponseParameters): EmptyResult {

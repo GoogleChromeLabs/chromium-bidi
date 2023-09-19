@@ -140,7 +140,7 @@ export class NetworkManager {
       (params: Protocol.Fetch.RequestPausedEvent) => {
         if (params.networkId) {
           networkManager.#networkStorage.addBlockedRequest(params.networkId, {
-            request: params.requestId,
+            request: params.requestId, // intercept request id
             // TODO: Populate phase.
             // TODO: Populate response / ResponseData.
           });
