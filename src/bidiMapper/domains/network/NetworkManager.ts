@@ -43,12 +43,19 @@ export class NetworkManager {
     return this.#cdpTarget;
   }
 
-  #getOrCreateNetworkRequest(id: Network.Request): NetworkRequest {
+  /**
+   * Gets the network request with the given ID, if any.
+   * Otherwise, creates a new network request with the given ID and cdp target.
+   */
+  #getOrCreateNetworkRequest(
+    id: Network.Request,
+    cdpTarget: CdpTarget
+  ): NetworkRequest {
     const request = this.#networkStorage.getRequest(id);
     if (request) {
       return request;
     }
-    return this.#networkStorage.createRequest(id);
+    return this.#networkStorage.createRequest(id, {cdpTarget});
   }
 
   static create(
@@ -78,13 +85,16 @@ export class NetworkManager {
           request.handleRedirect(params);
           networkManager.#networkStorage.deleteRequest(params.requestId);
           networkManager.#networkStorage
-            .createRequest(params.requestId, request.redirectCount + 1)
+            .createRequest(params.requestId, {
+              cdpTarget,
+              redirectCount: request.redirectCount + 1,
+            })
             .onRequestWillBeSentEvent(params);
         } else if (request) {
           request.onRequestWillBeSentEvent(params);
         } else {
           networkManager.#networkStorage
-            .createRequest(params.requestId)
+            .createRequest(params.requestId, {cdpTarget})
             .onRequestWillBeSentEvent(params);
         }
       }
@@ -94,7 +104,7 @@ export class NetworkManager {
       'Network.requestWillBeSentExtraInfo',
       (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId)
+          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
           .onRequestWillBeSentExtraInfoEvent(params);
       }
     );
@@ -103,7 +113,7 @@ export class NetworkManager {
       'Network.responseReceived',
       (params: Protocol.Network.ResponseReceivedEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId)
+          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
           .onResponseReceivedEvent(params);
       }
     );
@@ -112,7 +122,7 @@ export class NetworkManager {
       'Network.responseReceivedExtraInfo',
       (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId)
+          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
           .onResponseReceivedExtraInfoEvent(params);
       }
     );
@@ -121,7 +131,7 @@ export class NetworkManager {
       'Network.requestServedFromCache',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId)
+          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
           .onServedFromCache();
       }
     );
@@ -130,7 +140,7 @@ export class NetworkManager {
       'Network.loadingFailed',
       (params: Protocol.Network.LoadingFailedEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId)
+          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
           .onLoadingFailedEvent(params);
       }
     );
@@ -145,7 +155,7 @@ export class NetworkManager {
             // TODO: Populate response / ResponseData.
           });
           networkManager
-            .#getOrCreateNetworkRequest(params.networkId)
+            .#getOrCreateNetworkRequest(params.networkId, cdpTarget)
             .onRequestPaused(params);
         }
       }

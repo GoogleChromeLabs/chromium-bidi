@@ -75,11 +75,12 @@ export class NetworkProcessor {
     throw new UnknownCommandException('Not implemented yet.');
   }
 
-  failRequest(params: Network.FailRequestParameters): EmptyResult {
+  async failRequest(
+    params: Network.FailRequestParameters
+  ): Promise<EmptyResult> {
     const networkId = params.request;
     const blockedRequest = this.#networkStorage.getBlockedRequest(networkId);
-    // const {request: fetchId, phase} = blockedRequest;
-    const {phase} = blockedRequest;
+    const {request: fetchId, phase} = blockedRequest;
 
     if (phase === Network.InterceptPhase.AuthRequired) {
       throw new InvalidArgumentException(
@@ -87,11 +88,11 @@ export class NetworkProcessor {
       );
     }
 
-    // TODO: How to get cdpTarget?
-    // cdpTarget.cdpClient.sendCommand('Fetch.failRequest', {
-    //   requestId: fetchId,
-    //   errorReason: 'Failed',
-    // });
+    const cdpTarget = this.#networkStorage.getRequest(networkId)?.cdpTarget;
+    await cdpTarget?.cdpClient.sendCommand('Fetch.failRequest', {
+      requestId: fetchId,
+      errorReason: 'Failed',
+    });
 
     this.#networkStorage.removeBlockedRequest(networkId);
 

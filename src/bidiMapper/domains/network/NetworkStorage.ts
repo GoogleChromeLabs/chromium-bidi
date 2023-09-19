@@ -16,6 +16,7 @@
  */
 import type Protocol from 'devtools-protocol';
 
+import type {CdpTarget} from '../context/CdpTarget.js';
 import {URLPattern} from '../../../utils/UrlPattern.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import {
@@ -133,12 +134,24 @@ export class NetworkStorage {
     };
   }
 
-  getRequest(id: Network.Request) {
+  getRequest(id: Network.Request): NetworkRequest | undefined {
     return this.#requestMap.get(id);
   }
 
-  createRequest(id: Network.Request, redirectCount?: number) {
-    const request = new NetworkRequest(id, this.#eventManager, redirectCount);
+  createRequest(
+    id: Network.Request,
+    value: {
+      cdpTarget: CdpTarget;
+      redirectCount?: number;
+    }
+  ) {
+    const {cdpTarget, redirectCount} = value;
+    const request = new NetworkRequest(
+      id,
+      this.#eventManager,
+      cdpTarget,
+      redirectCount
+    );
     this.#requestMap.set(id, request);
     return request;
   }
