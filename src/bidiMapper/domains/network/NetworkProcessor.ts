@@ -14,10 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type Protocol from 'devtools-protocol';
+
 import {
   Network,
   type EmptyResult,
   UnknownCommandException,
+  NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -79,7 +82,7 @@ export class NetworkProcessor {
     params: Network.FailRequestParameters
   ): Promise<EmptyResult> {
     const networkId = params.request;
-    const blockedRequest = this.#networkStorage.getBlockedRequest(networkId);
+    const blockedRequest = this.#getBlockedRequest(networkId);
     const {request: fetchId, phase} = blockedRequest;
 
     if (phase === Network.InterceptPhase.AuthRequired) {
@@ -121,6 +124,24 @@ export class NetworkProcessor {
         await context.cdpTarget.fetchApply();
       })
     );
+  }
+
+  /**
+   * Returns the blocked request associated with the given network ID.
+   * If none, throws a NoSuchRequestException.
+   */
+  #getBlockedRequest(networkId: Network.Request): {
+    request: Protocol.Fetch.RequestId;
+    phase?: Network.InterceptPhase; // TODO: make non-optional.
+    response?: Network.ResponseData; // TODO: make non-optional.
+  } {
+    const blockedRequest = this.#networkStorage.getBlockedRequest(networkId);
+    if (!blockedRequest) {
+      throw new NoSuchRequestException(
+        `No blocked request found for network id '${networkId}'`
+      );
+    }
+    return blockedRequest;
   }
 
   static parseUrlPatterns(

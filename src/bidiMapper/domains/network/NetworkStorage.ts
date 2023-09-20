@@ -22,7 +22,6 @@ import {
   Network,
   NoSuchInterceptException,
   ChromiumBidi,
-  NoSuchRequestException,
 } from '../../../protocol/protocol.js';
 import type {EventManager} from '../events/EventManager.js';
 
@@ -262,18 +261,14 @@ export class NetworkStorage {
   /**
    * Returns the blocked request associated with the given network ID, if any.
    */
-  getBlockedRequest(networkId: Network.Request): {
-    request: Protocol.Fetch.RequestId;
-    phase?: Network.InterceptPhase; // TODO: make non-optional.
-    response?: Network.ResponseData; // TODO: make non-optional.
-  } {
-    const blockedRequest = this.#blockedRequestMap.get(networkId);
-    if (!blockedRequest) {
-      throw new NoSuchRequestException(
-        `No blocked request found for network id '${networkId}'`
-      );
-    }
-    return blockedRequest;
+  getBlockedRequest(networkId: Network.Request):
+    | {
+        request: Protocol.Fetch.RequestId;
+        phase?: Network.InterceptPhase; // TODO: make non-optional.
+        response?: Network.ResponseData; // TODO: make non-optional.
+      }
+    | undefined {
+    return this.#blockedRequestMap.get(networkId);
   }
 
   /** #@see https://w3c.github.io/webdriver-bidi/#get-the-network-intercepts */
