@@ -19,7 +19,6 @@ import * as sinon from 'sinon';
 
 import {Network} from '../../../protocol/protocol.js';
 import {EventManager} from '../events/EventManager.js';
-import {CdpTarget} from '../context/CdpTarget.js';
 
 import {NetworkStorage} from './NetworkStorage.js';
 
@@ -29,23 +28,10 @@ const UUID_REGEX =
 describe('NetworkStorage', () => {
   let eventManager: sinon.SinonStubbedInstance<EventManager>;
   let networkStorage: NetworkStorage;
-  let cdpTarget: CdpTarget;
 
   beforeEach(() => {
     eventManager = sinon.createStubInstance(EventManager);
     networkStorage = new NetworkStorage(eventManager);
-    cdpTarget = sinon.createStubInstance(CdpTarget);
-  });
-
-  it('disposeRequestMap', () => {
-    const dispose = sinon.stub(
-      networkStorage.createRequest('_test_', {cdpTarget}),
-      'dispose'
-    );
-
-    networkStorage.disposeRequestMap();
-
-    sinon.assert.called(dispose);
   });
 
   it('requestStageFromPhase', () => {

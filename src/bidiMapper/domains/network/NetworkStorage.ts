@@ -16,7 +16,6 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import type {CdpTarget} from '../context/CdpTarget.js';
 import {URLPattern} from '../../../utils/UrlPattern.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import {
@@ -27,7 +26,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {EventManager} from '../events/EventManager.js';
 
-import {NetworkRequest} from './NetworkRequest.js';
+import type {NetworkRequest} from './NetworkRequest.js';
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
@@ -60,6 +59,10 @@ export class NetworkStorage {
 
   constructor(eventManager: EventManager) {
     this.#eventManager = eventManager;
+  }
+
+  get eventManager() {
+    return this.#eventManager;
   }
 
   disposeRequestMap() {
@@ -138,22 +141,8 @@ export class NetworkStorage {
     return this.#requestMap.get(id);
   }
 
-  createRequest(
-    id: Network.Request,
-    value: {
-      cdpTarget: CdpTarget;
-      redirectCount?: number;
-    }
-  ) {
-    const {cdpTarget, redirectCount} = value;
-    const request = new NetworkRequest(
-      id,
-      this.#eventManager,
-      cdpTarget,
-      redirectCount
-    );
-    this.#requestMap.set(id, request);
-    return request;
+  addRequest(request: NetworkRequest) {
+    this.#requestMap.set(request.requestId, request);
   }
 
   deleteRequest(id: Network.Request) {
