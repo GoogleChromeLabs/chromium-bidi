@@ -202,6 +202,16 @@ export class NetworkRequest {
     this.#isBlocked = true;
   }
 
+  async failRequest(
+    fetchRequestId: Protocol.Fetch.RequestId,
+    errorReason: Protocol.Network.ErrorReason
+  ) {
+    await this.#cdpTarget.cdpClient.sendCommand('Fetch.failRequest', {
+      requestId: fetchRequestId,
+      errorReason,
+    });
+  }
+
   dispose() {
     const result = {
       kind: 'error' as const,

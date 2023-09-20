@@ -88,11 +88,9 @@ export class NetworkProcessor {
       );
     }
 
-    const cdpTarget = this.#networkStorage.getRequest(networkId)?.cdpTarget;
-    await cdpTarget?.cdpClient.sendCommand('Fetch.failRequest', {
-      requestId: fetchId,
-      errorReason: 'Failed',
-    });
+    await this.#networkStorage
+      .getRequest(networkId)
+      ?.failRequest(fetchId, 'Failed');
 
     this.#networkStorage.removeBlockedRequest(networkId);
 

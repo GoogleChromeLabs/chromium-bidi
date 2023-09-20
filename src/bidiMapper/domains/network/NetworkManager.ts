@@ -47,15 +47,12 @@ export class NetworkManager {
    * Gets the network request with the given ID, if any.
    * Otherwise, creates a new network request with the given ID and cdp target.
    */
-  #getOrCreateNetworkRequest(
-    id: Network.Request,
-    cdpTarget: CdpTarget
-  ): NetworkRequest {
+  #getOrCreateNetworkRequest(id: Network.Request): NetworkRequest {
     const request = this.#networkStorage.getRequest(id);
     if (request) {
       return request;
     }
-    return this.#networkStorage.createRequest(id, {cdpTarget});
+    return this.#networkStorage.createRequest(id, {cdpTarget: this.#cdpTarget});
   }
 
   static create(
@@ -104,7 +101,7 @@ export class NetworkManager {
       'Network.requestWillBeSentExtraInfo',
       (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
+          .#getOrCreateNetworkRequest(params.requestId)
           .onRequestWillBeSentExtraInfoEvent(params);
       }
     );
@@ -113,7 +110,7 @@ export class NetworkManager {
       'Network.responseReceived',
       (params: Protocol.Network.ResponseReceivedEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
+          .#getOrCreateNetworkRequest(params.requestId)
           .onResponseReceivedEvent(params);
       }
     );
@@ -122,7 +119,7 @@ export class NetworkManager {
       'Network.responseReceivedExtraInfo',
       (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
+          .#getOrCreateNetworkRequest(params.requestId)
           .onResponseReceivedExtraInfoEvent(params);
       }
     );
@@ -131,7 +128,7 @@ export class NetworkManager {
       'Network.requestServedFromCache',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
+          .#getOrCreateNetworkRequest(params.requestId)
           .onServedFromCache();
       }
     );
@@ -140,7 +137,7 @@ export class NetworkManager {
       'Network.loadingFailed',
       (params: Protocol.Network.LoadingFailedEvent) => {
         networkManager
-          .#getOrCreateNetworkRequest(params.requestId, cdpTarget)
+          .#getOrCreateNetworkRequest(params.requestId)
           .onLoadingFailedEvent(params);
       }
     );
@@ -155,7 +152,7 @@ export class NetworkManager {
             // TODO: Populate response / ResponseData.
           });
           networkManager
-            .#getOrCreateNetworkRequest(params.networkId, cdpTarget)
+            .#getOrCreateNetworkRequest(params.networkId)
             .onRequestPaused(params);
         }
       }
