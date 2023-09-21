@@ -13,9 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_UUID, AnyExtending, execute_command,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (execute_command, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -32,3 +31,55 @@ async def test_continue_request_non_existent_request(websocket):
         "error": "no such request",
         "message": "No blocked request found for network id '_UNKNOWN_'"
     } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
+async def test_continue_request_invalid_phase(websocket, context_id):
+    # TODO: make offline.
+    url = "https://www.example.com/"
+
+    network_id = await create_dummy_blocked_request(websocket, context_id, url)
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {
+                "method": "network.continueRequest",
+                "params": {
+                    "request": network_id,
+                    "url": url,
+                },
+            })
+    assert {
+        "error": "invalid argument",
+        "message": f"Blocked request for network id '{network_id}' is not in 'BeforeRequestSent' phase"
+    } == exception_info.value.args[0]
+
+
+async def create_dummy_blocked_request(websocket, context_id: str, url: str):
+    """Creates a dummy blocked network request and returns its network id."""
+
+    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+
+    await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": url,
+                }, ],
+            },
+        })
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+            }
+        })
+    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
+    network_id = event_response["params"]["params"]["networkId"]
+
+    return network_id
