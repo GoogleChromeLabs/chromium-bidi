@@ -79,6 +79,10 @@ export class NetworkProcessor {
       );
     }
 
+    if (params.url !== undefined) {
+      NetworkProcessor.parseUrlString(params.url);
+    }
+
     // TODO: Expand.
     console.log(fetchId);
 
@@ -159,19 +163,25 @@ export class NetworkProcessor {
     return blockedRequest;
   }
 
+  /**
+   * Attempts to parse the given url.
+   * Throws an InvalidArgumentException if the url is invalid.
+   */
+  static parseUrlString(url: string): URL {
+    try {
+      return new URL(url);
+    } catch (error) {
+      throw new InvalidArgumentException(`Invalid URL '${url}': ${error}`);
+    }
+  }
+
   static parseUrlPatterns(
     urlPatterns: Network.UrlPattern[]
   ): Network.UrlPattern[] {
     return urlPatterns.map((urlPattern) => {
       switch (urlPattern.type) {
         case 'string': {
-          try {
-            new URL(urlPattern.pattern);
-          } catch (error) {
-            throw new InvalidArgumentException(
-              `Invalid URL '${urlPattern.pattern}': ${error}`
-            );
-          }
+          NetworkProcessor.parseUrlString(urlPattern.pattern);
           return urlPattern;
         }
         case 'pattern':

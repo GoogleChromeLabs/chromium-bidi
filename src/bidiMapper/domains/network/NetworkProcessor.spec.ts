@@ -19,6 +19,18 @@ import {expect} from 'chai';
 import {NetworkProcessor} from './NetworkProcessor.js';
 
 describe('NetworkProcessor', () => {
+  describe('parse url string', () => {
+    it('invalid string', () => {
+      expect(() => NetworkProcessor.parseUrlString('invalid.url%%')).to.throw(
+        `Invalid URL 'invalid.url%%'`
+      );
+    });
+
+    it('valid string', () => {
+      expect(NetworkProcessor.parseUrlString('https://example.com/')).not.to
+        .throw;
+    });
+  });
   describe('parse url patterns', () => {
     it('invalid string', () => {
       expect(() =>
