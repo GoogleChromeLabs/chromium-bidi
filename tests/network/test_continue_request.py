@@ -12,6 +12,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from typing import Literal
+
 import pytest
 from test_helpers import (execute_command, send_JSON_command, subscribe,
                           wait_for_event)
@@ -38,7 +40,10 @@ async def test_continue_request_invalid_phase(websocket, context_id):
     # TODO: make offline.
     url = "https://www.example.com/"
 
-    network_id = await create_dummy_blocked_request(websocket, context_id, url)
+    network_id = await create_dummy_blocked_request(websocket,
+                                                    context_id,
+                                                    url=url,
+                                                    phases=["responseStarted"])
 
     with pytest.raises(Exception) as exception_info:
         await execute_command(
@@ -55,7 +60,36 @@ async def test_continue_request_invalid_phase(websocket, context_id):
     } == exception_info.value.args[0]
 
 
-async def create_dummy_blocked_request(websocket, context_id: str, url: str):
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="TODO: #644: Blocked on populating network intercept phases.")
+async def test_continue_request_invalid_url(websocket, context_id):
+    # TODO: make offline.
+    url = "https://www.example.com/"
+    invalid_url = '%invalid%'
+
+    network_id = await create_dummy_blocked_request(
+        websocket, context_id, url=url, phases=["beforeRequestSent"])
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {
+                "method": "network.continueRequest",
+                "params": {
+                    "request": network_id,
+                    "url": invalid_url,
+                },
+            })
+    assert {
+        "error": "invalid argument",
+        "message": f"Invalid URL '{invalid_url}': TODO_ERROR"
+    } == exception_info.value.args[0]
+
+
+async def create_dummy_blocked_request(
+    websocket, context_id: str, *, url: str,
+    phases: list[Literal["beforeRequestSent", "responseStarted",
+                         "authRequired"]]):
     """Creates a dummy blocked network request and returns its network id."""
 
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
@@ -64,7 +98,7 @@ async def create_dummy_blocked_request(websocket, context_id: str, url: str):
         websocket, {
             "method": "network.addIntercept",
             "params": {
-                "phases": ["beforeRequestSent"],
+                "phases": phases,
                 "urlPatterns": [{
                     "type": "string",
                     "pattern": url,
