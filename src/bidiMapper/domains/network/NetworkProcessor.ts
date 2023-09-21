@@ -83,8 +83,18 @@ export class NetworkProcessor {
       NetworkProcessor.parseUrlString(params.url);
     }
 
-    // TODO: Expand.
-    console.log(fetchId);
+    const {url, method} = params;
+    // TODO: Set / expand.
+    // ; headers
+    // ; cookies
+    // ; body
+
+    await this.#networkStorage
+      .getRequest(networkId)
+      ?.continueRequest(fetchId, url, method);
+
+    // TODO: Remove from blocked request map?
+    // TODO: Remove from network request map?
 
     return {};
   }

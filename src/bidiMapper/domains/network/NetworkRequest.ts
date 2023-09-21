@@ -202,6 +202,7 @@ export class NetworkRequest {
     this.#isBlocked = true;
   }
 
+  /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
   async failRequest(
     fetchRequestId: Protocol.Fetch.RequestId,
     errorReason: Protocol.Network.ErrorReason
@@ -209,6 +210,24 @@ export class NetworkRequest {
     await this.#cdpTarget.cdpClient.sendCommand('Fetch.failRequest', {
       requestId: fetchRequestId,
       errorReason,
+    });
+  }
+
+  /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
+  async continueRequest(
+    fetchRequestId: Protocol.Fetch.RequestId,
+    url?: string,
+    method?: string
+  ) {
+    // TODO: Expand.
+    await this.#cdpTarget.cdpClient.sendCommand('Fetch.continueRequest', {
+      requestId: fetchRequestId,
+      url,
+      method,
+      // TODO: Set?
+      // postData:,
+      // headers:,
+      // interceptResponse:,
     });
   }
 
