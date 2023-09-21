@@ -66,8 +66,23 @@ export class NetworkProcessor {
     };
   }
 
-  continueRequest(_params: Network.ContinueRequestParameters): EmptyResult {
-    throw new UnknownCommandException('Not implemented yet.');
+  async continueRequest(
+    params: Network.ContinueRequestParameters
+  ): Promise<EmptyResult> {
+    const networkId = params.request;
+    const blockedRequest = this.#getBlockedRequest(networkId);
+    const {request: fetchId, phase} = blockedRequest;
+
+    if (phase !== Network.InterceptPhase.BeforeRequestSent) {
+      throw new InvalidArgumentException(
+        `Blocked request for network id '${networkId}' is not in 'BeforeRequestSent' phase`
+      );
+    }
+
+    // TODO: Expand.
+    console.log(fetchId);
+
+    return {};
   }
 
   continueResponse(_params: Network.ContinueResponseParameters): EmptyResult {
