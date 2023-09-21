@@ -86,6 +86,49 @@ async def test_continue_request_invalid_url(websocket, context_id):
     } == exception_info.value.args[0]
 
 
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="TODO: #644: Blocked on populating network intercept phases.")
+async def test_continue_request_completes(websocket, context_id):
+    # TODO: make offline.
+    url = "https://www.example.com/"
+
+    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+
+    await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": url,
+                }, ],
+            },
+        })
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+            }
+        })
+    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
+    network_id = event_response["params"]["params"]["networkId"]
+
+    await execute_command(
+        websocket, {
+            "method": "network.continueRequest",
+            "params": {
+                "request": network_id,
+                "url": url,
+            },
+        })
+
+    # TODO: assert that the request is completed.
+
+
 async def create_dummy_blocked_request(
     websocket, context_id: str, *, url: str,
     phases: list[Literal["beforeRequestSent", "responseStarted",
