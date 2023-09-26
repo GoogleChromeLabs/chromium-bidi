@@ -757,13 +757,24 @@ export class BrowsingContextImpl {
       );
     }
 
-    const result = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.captureScreenshot',
-      {clip: {...rect, scale: 1.0}}
-    );
-    return {
-      data: result.data,
-    };
+    try {
+      await this.#cdpTarget.cdpClient.sendCommand(
+        'Emulation.setDefaultBackgroundColorOverride',
+        {
+          color: {r: 0, g: 0, b: 0, a: 0},
+        }
+      );
+      return await this.#cdpTarget.cdpClient.sendCommand(
+        'Page.captureScreenshot',
+        {clip: {...rect, scale: 1.0}}
+      );
+    } finally {
+      await this.#cdpTarget.cdpClient
+        .sendCommand('Emulation.setDefaultBackgroundColorOverride', {
+          color: undefined,
+        })
+        .catch((error) => this.#logger?.(error));
+    }
   }
 
   async print(
