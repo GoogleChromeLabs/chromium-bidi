@@ -15,8 +15,9 @@
 from typing import Literal
 
 import pytest
-from test_helpers import (execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+from anys import ANY_DICT, ANY_STR
+from test_helpers import (ANY_TIMESTAMP, execute_command, send_JSON_command,
+                          subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -119,6 +120,8 @@ async def test_continue_request_completes(websocket, context_id):
     event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
     network_id = event_response["params"]["params"]["networkId"]
 
+    await subscribe(websocket, ["network.responseCompleted"])
+
     await execute_command(
         websocket, {
             "method": "network.continueRequest",
@@ -128,7 +131,21 @@ async def test_continue_request_completes(websocket, context_id):
             },
         })
 
-    # TODO: assert that the request is completed.
+    event_response = await wait_for_event(websocket,
+                                          "network.responseCompleted")
+    assert event_response == {
+        "method": "network.responseCompleted",
+        "params": {
+            "context": context_id,
+            "isBlocked": True,  # TODO: fix/update
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": ANY_DICT,
+            "response": ANY_DICT,
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
 
 
 async def create_dummy_blocked_request(
