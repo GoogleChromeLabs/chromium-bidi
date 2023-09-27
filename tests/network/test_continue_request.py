@@ -137,7 +137,7 @@ async def test_continue_request_completes(websocket, context_id):
         "method": "network.responseCompleted",
         "params": {
             "context": context_id,
-            "isBlocked": True,  # TODO: fix/update
+            "isBlocked": False,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": ANY_DICT,

@@ -229,6 +229,8 @@ export class NetworkRequest {
       // headers:,
       // interceptResponse:,
     });
+
+    this.#isBlocked = false;
   }
 
   dispose() {

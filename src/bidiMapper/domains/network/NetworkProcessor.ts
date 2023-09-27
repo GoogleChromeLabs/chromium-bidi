@@ -93,7 +93,8 @@ export class NetworkProcessor {
       .getRequest(networkId)
       ?.continueRequest(fetchId, url, method);
 
-    // TODO: Remove from blocked request map?
+    this.#networkStorage.removeBlockedRequest(networkId);
+
     // TODO: Remove from network request map?
 
     return {};
