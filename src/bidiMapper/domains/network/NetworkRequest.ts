@@ -211,6 +211,9 @@ export class NetworkRequest {
       requestId: fetchRequestId,
       errorReason,
     });
+
+    // TODO: mark is as non-blocked?
+    // this.#isBlocked = false;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */

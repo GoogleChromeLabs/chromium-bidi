@@ -148,6 +148,64 @@ async def test_continue_request_completes(websocket, context_id):
     }
 
 
+@pytest.mark.asyncio
+async def test_continue_request_twice(websocket, context_id):
+    # TODO: make offline.
+    url = "https://www.example.com/"
+
+    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+
+    await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": url,
+                }, ],
+            },
+        })
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+            }
+        })
+    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
+    network_id = event_response["params"]["params"]["networkId"]
+
+    await subscribe(websocket, ["network.responseCompleted"])
+
+    await execute_command(
+        websocket, {
+            "method": "network.continueRequest",
+            "params": {
+                "request": network_id,
+                "url": url,
+            },
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.responseCompleted")
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {
+                "method": "network.continueRequest",
+                "params": {
+                    "request": network_id,
+                    "url": url,
+                },
+            })
+    assert {
+        "error": "no such request",
+        "message": f"No blocked request found for network id '{network_id}'"
+    } == exception_info.value.args[0]
+
+
 async def create_dummy_blocked_request(
     websocket, context_id: str, *, url: str,
     phases: list[Literal["beforeRequestSent", "responseStarted",
@@ -179,3 +237,5 @@ async def create_dummy_blocked_request(
     network_id = event_response["params"]["params"]["networkId"]
 
     return network_id
+
+    # TODO: assertion with isBlocked: true

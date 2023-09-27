@@ -459,3 +459,4 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
 
 # TODO: AuthRequired + exception test
+# TODO: assertion with isBlocked: true
