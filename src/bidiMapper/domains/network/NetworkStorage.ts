@@ -51,7 +51,7 @@ export class NetworkStorage {
     {
       // intercept request id; form: 'interception-job-1.0'
       request: Protocol.Fetch.RequestId;
-      phase?: Network.InterceptPhase; // TODO: make non-optional.
+      phase: Network.InterceptPhase;
       response?: Network.ResponseData; // TODO: make non-optional.
     }
   >();
@@ -247,7 +247,7 @@ export class NetworkStorage {
     requestId: Network.Request,
     value: {
       request: Protocol.Fetch.RequestId;
-      phase?: Network.InterceptPhase; // TODO: make non-optional.
+      phase: Network.InterceptPhase;
       response?: Network.ResponseData; // TODO: make non-optional.
     }
   ) {
@@ -264,7 +264,7 @@ export class NetworkStorage {
   getBlockedRequest(networkId: Network.Request):
     | {
         request: Protocol.Fetch.RequestId;
-        phase?: Network.InterceptPhase; // TODO: make non-optional.
+        phase: Network.InterceptPhase;
         response?: Network.ResponseData; // TODO: make non-optional.
       }
     | undefined {

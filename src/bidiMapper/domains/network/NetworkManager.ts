@@ -22,7 +22,7 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import type {Network} from '../../../protocol/protocol.js';
+import {Network} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
@@ -155,13 +155,29 @@ export class NetworkManager {
       }
     );
 
+    // https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     cdpTarget.cdpClient.on(
       'Fetch.requestPaused',
       (params: Protocol.Fetch.RequestPausedEvent) => {
         if (params.networkId) {
+          // The stage of the request can be determined by presence of
+          // responseErrorReason and responseStatusCode -- the request is at
+          // the response stage if either of these fields is present and in the
+          // request stage otherwise.
+          // TODO: Populate the "authRequired" phase.
+          let phase: Network.InterceptPhase;
+          if (
+            params.responseErrorReason === undefined &&
+            params.responseStatusCode === undefined
+          ) {
+            phase = Network.InterceptPhase.BeforeRequestSent;
+          } else {
+            phase = Network.InterceptPhase.ResponseStarted;
+          }
+
           networkManager.#networkStorage.addBlockedRequest(params.networkId, {
             request: params.requestId, // intercept request id
-            // TODO: Populate phase.
+            phase,
             // TODO: Populate response / ResponseData.
           });
           networkManager

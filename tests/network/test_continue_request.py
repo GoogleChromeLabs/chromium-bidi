@@ -36,14 +36,20 @@ async def test_continue_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-async def test_continue_request_invalid_phase(websocket, context_id):
+@pytest.mark.parametrize("phase", [
+    "responseStarted",
+    pytest.param("authRequired",
+                 marks=pytest.mark.xfail(
+                     reason='TODO: #644: implement "authRequired" phase'))
+])
+async def test_continue_request_invalid_phase(websocket, context_id, phase):
     # TODO: make offline.
     url = "https://www.example.com/"
 
     network_id = await create_dummy_blocked_request(websocket,
                                                     context_id,
                                                     url=url,
-                                                    phases=["responseStarted"])
+                                                    phases=[phase])
 
     with pytest.raises(Exception) as exception_info:
         await execute_command(
@@ -61,8 +67,6 @@ async def test_continue_request_invalid_phase(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason="TODO: #644: Blocked on populating network intercept phases.")
 async def test_continue_request_invalid_url(websocket, context_id):
     # TODO: make offline.
     url = "https://www.example.com/"
@@ -82,13 +86,11 @@ async def test_continue_request_invalid_url(websocket, context_id):
             })
     assert {
         "error": "invalid argument",
-        "message": f"Invalid URL '{invalid_url}': TODO_ERROR"
+        "message": f"Invalid URL '{invalid_url}': TypeError: Failed to construct 'URL': Invalid URL",
     } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason="TODO: #644: Blocked on populating network intercept phases.")
 async def test_continue_request_completes(websocket, context_id):
     # TODO: make offline.
     url = "https://www.example.com/"

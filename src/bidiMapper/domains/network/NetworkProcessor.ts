@@ -161,7 +161,7 @@ export class NetworkProcessor {
    */
   #getBlockedRequest(networkId: Network.Request): {
     request: Protocol.Fetch.RequestId;
-    phase?: Network.InterceptPhase; // TODO: make non-optional.
+    phase: Network.InterceptPhase;
     response?: Network.ResponseData; // TODO: make non-optional.
   } {
     const blockedRequest = this.#networkStorage.getBlockedRequest(networkId);
