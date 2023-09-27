@@ -751,12 +751,6 @@ export class BrowsingContextImpl {
       ? getIntersectionRect(await this.#parseRect(params.clip), viewport)
       : viewport;
 
-    if (rect.width === 0 || rect.height === 0) {
-      throw new UnableToCaptureScreenException(
-        `Unable to capture screenshot with zero dimensions: width=${rect.width}, height=${rect.height}`
-      );
-    }
-
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
       {clip: {...rect, scale: 1.0}}
