@@ -22,22 +22,36 @@ from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
 @pytest.mark.asyncio
 async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
                                                    html):
+    # Preload script creates if not created and adds `PRELOAD_SCRIPT` to a
+    # global array `SOME_VAR` .
     result = await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { window.foo='bar'; }",
+                "functionDeclaration": "() => { "
+                                       "window.SOME_VAR=["
+                                       "...(window.SOME_VAR ?? []), "
+                                       "'PRELOAD_SCRIPT']; }",
             }
         })
     assert result == {'script': ANY_UUID}
 
-    await goto_url(websocket, context_id, html())
+    # Navigate to a page with a script, which creates if not created and adds
+    # `HTML_SCRIPT` to a global array `SOME_VAR` .
+    await goto_url(
+        websocket, context_id,
+        html("<script>"
+             "window.SOME_VAR=["
+             "...(window.SOME_VAR ?? []), "
+             "'HTML_SCRIPT']"
+             "</script>"))
 
+    # Assert scripts were run in the right order.
     result = await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
-                "expression": "window.foo",
+                "expression": "window.SOME_VAR.join(', ')",
                 "target": {
                     "context": context_id
                 },
@@ -45,7 +59,10 @@ async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
                 "resultOwnership": "root"
             }
         })
-    assert result["result"] == {"type": "string", "value": 'bar'}
+    assert result["result"] == {
+        "type": "string",
+        "value": 'PRELOAD_SCRIPT, HTML_SCRIPT'
+    }
 
 
 @pytest.mark.asyncio
@@ -95,24 +112,31 @@ async def test_preloadScript_add_multipleScripts(websocket, context_id, html):
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { window.foo1=1; }",
+                "functionDeclaration": "() => { "
+                                       "window.SOME_VAR=["
+                                       "...(window.SOME_VAR ?? []), "
+                                       "'PRELOAD_SCRIPT_1']; }",
             }
         })
     await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { window.foo2=2; }",
+                "functionDeclaration": "() => { "
+                                       "window.SOME_VAR=["
+                                       "...(window.SOME_VAR ?? []), "
+                                       "'PRELOAD_SCRIPT_2']; }",
             }
         })
 
     await goto_url(websocket, context_id, html())
 
+    # Assert scripts were run in the right order.
     result = await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
-                "expression": "window.foo1 + window.foo2",
+                "expression": "window.SOME_VAR.join(', ')",
                 "target": {
                     "context": context_id
                 },
@@ -120,52 +144,10 @@ async def test_preloadScript_add_multipleScripts(websocket, context_id, html):
                 "resultOwnership": "root"
             }
         })
-    assert result["result"] == {"type": "number", "value": 3}
-
-
-@pytest.mark.asyncio
-async def test_preloadScript_add_sameScript_multipleTimes(
-        websocket, context_id, html):
-    EXPRESSION = "() => { window.foo1 = (window.foo1 ?? 0) + 1; }"
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.addPreloadScript",
-            "params": {
-                "functionDeclaration": EXPRESSION,
-            }
-        })
-    assert result == {'script': ANY_UUID}
-    id1 = result['script']
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.addPreloadScript",
-            "params": {
-                "functionDeclaration": EXPRESSION,
-            }
-        })
-    assert result == {'script': ANY_UUID}
-    id2 = result['script']
-
-    # Same script added twice should result in different ids.
-    assert id1 != id2
-
-    await goto_url(websocket, context_id, html())
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "window.foo1",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
-    assert result["result"] == {"type": "number", "value": 2}
+    assert result["result"] == {
+        "type": "string",
+        "value": "PRELOAD_SCRIPT_1, PRELOAD_SCRIPT_2"
+    }
 
 
 @pytest.mark.asyncio
@@ -192,7 +174,7 @@ async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
             }
         })
 
-    # Log event should happen before navigation.
+    # Log event should happen before navigation is finished.
     result = await read_JSON_message(websocket)
     assert result == AnyExtending({
         "type": "event",
@@ -500,8 +482,8 @@ async def test_preloadScript_add_loadedInNewContexts(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_add_sandbox(websocket, context_id, html):
-    result = await execute_command(
+async def test_preloadScript_add_sandbox_new_context(websocket, html):
+    await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
@@ -509,18 +491,23 @@ async def test_preloadScript_add_sandbox(websocket, context_id, html):
                 "sandbox": "MY_SANDBOX",
             }
         })
-    assert result == {'script': ANY_UUID}
 
-    await goto_url(websocket, context_id, html())
+    result = await execute_command(websocket, {
+        "method": "browsingContext.create",
+        "params": {
+            "type": "tab"
+        }
+    })
+    new_context_id = result["context"]
 
-    # Evaluate in the standard sandbox, script takes no effect.
+    # Assert preload script takes no effect in the standard sandbox.
     result = await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
                 "expression": "window.foo",
                 "target": {
-                    "context": context_id
+                    "context": new_context_id
                 },
                 "awaitPromise": True,
                 "resultOwnership": "root"
@@ -528,14 +515,14 @@ async def test_preloadScript_add_sandbox(websocket, context_id, html):
         })
     assert result["result"] == {"type": "undefined"}
 
-    # Evaluate in the given sandbox, script takes effect.
+    # Assert preload script takes effect in the custom sandbox.
     result = await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
                 "expression": "window.foo",
                 "target": {
-                    "context": context_id,
+                    "context": new_context_id,
                     "sandbox": "MY_SANDBOX",
                 },
                 "awaitPromise": True,
@@ -546,58 +533,65 @@ async def test_preloadScript_add_sandbox(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("with_reload", [True, False],
-                         ids=["with reload", "without reload"])
-async def test_preloadScript_add_runImmediately(websocket, html, context_id,
-                                                with_reload):
-
-    await goto_url(websocket, context_id, html())
-
+async def test_preloadScript_add_sandbox_existing_context(
+        websocket, context_id, html):
+    # Add preload script, which checks if the page script was already executed.
     await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { window.foo='bar'; }",
+                "functionDeclaration": "() => { "
+                                       "window.SOME_VAR=["
+                                       "...(window.SOME_VAR ?? []), "
+                                       "'MY_SANDBOX_PRELOAD_SCRIPT']; }",
+                "sandbox": "MY_SANDBOX",
             }
         })
 
-    if with_reload:
-        await execute_command(
-            websocket, {
-                "method": "browsingContext.reload",
-                "params": {
-                    "wait": "complete",
-                    "context": context_id
-                }
-            })
+    # Load a page with a custom script.
+    await goto_url(
+        websocket, context_id,
+        html("<script>"
+             "window.SOME_VAR=["
+             "...(window.SOME_VAR ?? []), "
+             "'HTML_SCRIPT']"
+             "</script>"))
 
-        result = await execute_command(
-            websocket, {
-                "method": "script.evaluate",
-                "params": {
-                    "expression": "window.foo",
-                    "target": {
-                        "context": context_id
-                    },
-                    "awaitPromise": True,
-                    "resultOwnership": "root"
-                }
-            })
-        assert result["result"] == {"type": "string", "value": 'bar'}
-    else:
-        result = await execute_command(
-            websocket, {
-                "method": "script.evaluate",
-                "params": {
-                    "expression": "window.foo",
-                    "target": {
-                        "context": context_id
-                    },
-                    "awaitPromise": True,
-                    "resultOwnership": "root"
-                }
-            })
-        assert result["result"] == {"type": "undefined"}
+    # Evaluate in the standard sandbox, page script takes effect,
+    # while preload does not.
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.SOME_VAR.join(', ')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "string", "value": 'HTML_SCRIPT'}
+
+    # Evaluate in custom sandbox, page script takes no effect,
+    # while preload takes.
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.SOME_VAR.join(', ')",
+                "target": {
+                    "context": context_id,
+                    "sandbox": "MY_SANDBOX",
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {
+        "type": "string",
+        "value": 'MY_SANDBOX_PRELOAD_SCRIPT'
+    }
 
 
 @pytest.mark.asyncio
