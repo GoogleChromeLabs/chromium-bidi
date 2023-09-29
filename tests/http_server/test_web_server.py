@@ -126,11 +126,11 @@ class StaticWebServer:
         self._server.shutdown()
         self._thread.join()
 
-    def url(self, code=200, content=b'', headers=None):
+    def url(self, code, content, headers):
         """
         :param code: HTTP status code to be sent.
-        :param content: binary content to be sent.Defaults to empty content.
-        Provide `None` to have it omitted.
+        :param content: binary content to be sent. Provide `None` to have it
+        omitted.
         :param headers: dictionary of headers to be sent. Will be extended with
         `Content-Length` header, if `content` is not `None`.
         :return: url to navigate to in order to get the required response.

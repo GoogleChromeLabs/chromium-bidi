@@ -33,18 +33,26 @@ def static_web_server():
     server.shutdown()
 
 
-@pytest_asyncio.fixture(scope='session')
-def url_200(static_web_server):
+@pytest_asyncio.fixture
+def url(static_web_server):
+    def url(code=200, content=b'', headers=None):
+        return static_web_server.url(code, content, headers)
+
+    return url
+
+
+@pytest_asyncio.fixture
+def url_200(url):
     def url_200(content='<html><body>default 200 page</body></html>'):
-        return static_web_server.url(200, bytes(content, 'utf-8'))
+        return url(200, bytes(content, 'utf-8'))
 
     return url_200
 
 
-@pytest_asyncio.fixture(scope='session')
-def url_301(static_web_server, url_200):
+@pytest_asyncio.fixture
+def url_301(url, url_200):
     def url_301(location=url_200()):
-        return static_web_server.url(301, headers={"Location": location})
+        return url(301, headers={"Location": location})
 
     return url_301
 
