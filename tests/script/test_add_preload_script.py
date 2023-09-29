@@ -28,10 +28,12 @@ async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { "
-                                       "window.SOME_VAR=["
-                                       "...(window.SOME_VAR ?? []), "
-                                       "'PRELOAD_SCRIPT']; }",
+                "functionDeclaration": """
+                    () => {
+                        window.SOME_VAR=[
+                            ...(window.SOME_VAR ?? []),
+                            'PRELOAD_SCRIPT'];
+                    }""",
             }
         })
     assert result == {'script': ANY_UUID}
@@ -108,26 +110,38 @@ async def test_preloadScript_add_logging(websocket, context_id, html):
 
 @pytest.mark.asyncio
 async def test_preloadScript_add_multipleScripts(websocket, context_id, html):
-    await execute_command(
+    result = await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { "
-                                       "window.SOME_VAR=["
-                                       "...(window.SOME_VAR ?? []), "
-                                       "'PRELOAD_SCRIPT_1']; }",
+                "functionDeclaration": """
+                    () => {
+                        window.SOME_VAR=[
+                            ...(window.SOME_VAR ?? []),
+                            'PRELOAD_SCRIPT_1'];
+                   }""",
             }
         })
-    await execute_command(
+    id1 = result['script']
+    assert id1 == ANY_UUID
+
+    result = await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { "
-                                       "window.SOME_VAR=["
-                                       "...(window.SOME_VAR ?? []), "
-                                       "'PRELOAD_SCRIPT_2']; }",
+                "functionDeclaration": """
+                    () => {
+                        window.SOME_VAR=[
+                            ...(window.SOME_VAR ?? []),
+                            'PRELOAD_SCRIPT_2'];
+                    }""",
             }
         })
+    id2 = result['script']
+    assert id2 == ANY_UUID
+
+    # Assert scripts have different IDs.
+    assert id1 != id2
 
     await goto_url(websocket, context_id, html())
 
@@ -147,6 +161,60 @@ async def test_preloadScript_add_multipleScripts(websocket, context_id, html):
     assert result["result"] == {
         "type": "string",
         "value": "PRELOAD_SCRIPT_1, PRELOAD_SCRIPT_2"
+    }
+
+
+@pytest.mark.asyncio
+async def test_preloadScript_add_sameScriptMultipleTimes(
+        websocket, context_id, html):
+    preload_script = """
+        () => {
+            window.SOME_VAR=[
+                ...(window.SOME_VAR ?? []),
+                'PRELOAD_SCRIPT'];
+        }"""
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": preload_script
+            }
+        })
+    id1 = result['script']
+    assert id1 == ANY_UUID
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": preload_script
+            }
+        })
+    id2 = result['script']
+    assert id2 == ANY_UUID
+
+    # Assert scripts have different IDs.
+    assert id1 != id2
+
+    await goto_url(websocket, context_id, html())
+
+    # Assert scripts were run in the right order.
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.SOME_VAR.join(', ')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {
+        "type": "string",
+        "value": "PRELOAD_SCRIPT, PRELOAD_SCRIPT"
     }
 
 
@@ -483,7 +551,7 @@ async def test_preloadScript_add_loadedInNewContexts(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_preloadScript_add_sandbox_new_context(websocket, html):
-    await execute_command(
+    result = await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
@@ -491,6 +559,7 @@ async def test_preloadScript_add_sandbox_new_context(websocket, html):
                 "sandbox": "MY_SANDBOX",
             }
         })
+    assert result == {'script': ANY_UUID}
 
     result = await execute_command(websocket, {
         "method": "browsingContext.create",
@@ -540,10 +609,12 @@ async def test_preloadScript_add_sandbox_existing_context(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { "
-                                       "window.SOME_VAR=["
-                                       "...(window.SOME_VAR ?? []), "
-                                       "'MY_SANDBOX_PRELOAD_SCRIPT']; }",
+                "functionDeclaration": """
+                    () => {
+                        window.SOME_VAR=[
+                            ...(window.SOME_VAR ?? []),
+                            'MY_SANDBOX_PRELOAD_SCRIPT'];
+                    }""",
                 "sandbox": "MY_SANDBOX",
             }
         })
@@ -604,9 +675,10 @@ async def test_preloadScript_add_withUserGesture_blankTargetLink(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": """() => {
-                    console.log('my preload script', window.location.href);
-                }""",
+                "functionDeclaration": """
+                    () => {
+                        console.log('my preload script', window.location.href);
+                    }""",
             }
         })
 
@@ -658,11 +730,11 @@ async def test_preloadScript_channel_navigate(websocket, context_id, html,
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": """
-                (channel) => {
-                    setTimeout(() => {
-                        channel({'foo': 'bar', 'baz': {'1': 2}})
-                    }, 1);
-                }""",
+                    (channel) => {
+                        setTimeout(() => {
+                            channel({'foo': 'bar', 'baz': {'1': 2}})
+                        }, 1);
+                    }""",
                 "arguments": [{
                     "type": "channel",
                     "value": {
@@ -720,9 +792,9 @@ async def test_preloadScript_channel_newContext(websocket,
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": """
-                (channel) => {
-                    channel({'foo': 'bar', 'baz': {'1': 2}});
-                }""",
+                    (channel) => {
+                        channel({'foo': 'bar', 'baz': {'1': 2}});
+                    }""",
                 "arguments": [{
                     "type": "channel",
                     "value": {
