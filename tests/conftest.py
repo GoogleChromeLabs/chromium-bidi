@@ -20,7 +20,33 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 import websockets
+from http_server.test_web_server import StaticWebServer
 from test_helpers import execute_command, get_tree, goto_url, read_JSON_message
+
+
+@pytest_asyncio.fixture(scope='session')
+def static_web_server():
+    # TODO: provide a path to a certificate for HTTPS once `ignoreHTTPSErrors`
+    # capability is implemented.
+    server = StaticWebServer()
+    yield server
+    server.shutdown()
+
+
+@pytest_asyncio.fixture(scope='session')
+def url_200(static_web_server):
+    def url_200(content='<html><body>default 200 page</body></html>'):
+        return static_web_server.url_200(content)
+
+    return url_200
+
+
+@pytest_asyncio.fixture(scope='session')
+def url_301(static_web_server, url_200):
+    def url_301(location=url_200()):
+        return static_web_server.url_301(location)
+
+    return url_301
 
 
 @pytest_asyncio.fixture
