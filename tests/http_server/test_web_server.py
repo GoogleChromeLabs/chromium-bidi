@@ -92,22 +92,16 @@ class StaticWebServer:
 
         self._path_maps_lock.acquire()
         try:
-            print("path", path)
             if path in self._path_data_map:
                 data = self._path_data_map[path]
-                print("data", data)
                 content = data["content"]
+                headers = data["headers"]
                 handler.send_response(data["code"])
 
-                if "headers" in data:
-                    headers = data["headers"]
-                else:
+                if headers is None:
                     headers = {}
 
-                print("headers", headers)
-                print(headers.items())
                 for field, value in headers.items():
-                    print("qwe", field, value)
                     handler.send_header(field, value)
 
                 if content is not None:
@@ -132,23 +126,19 @@ class StaticWebServer:
         self._server.shutdown()
         self._thread.join()
 
-    def url_200(self, content="<html><body>some page</body></html>"):
-        id = "/" + str(next(self._counter))
-        self._path_data_map[id] = {
-            "code": 200,
-            "content": bytes(content, 'utf-8')
+    def url(self, code=200, content=b'', headers=None):
+        """
+        :param code: HTTP status code to be sent.
+        :param content: binary content to be sent.Defaults to empty content.
+        Provide `None` to have it omitted.
+        :param headers: dictionary of headers to be sent. Will be extended with
+        `Content-Length` header, if `content` is not `None`.
+        :return: url to navigate to in order to get the required response.
+        """
+        path = "/" + str(next(self._counter))
+        self._path_data_map[path] = {
+            "code": code,
+            "headers": headers,
+            "content": content
         }
-        return self._get_url() + id
-
-    def url_301(self, location=None):
-        if location is None:
-            location = self.url_200()
-        id = "/" + str(next(self._counter))
-        self._path_data_map[id] = {
-            "code": 301,
-            "content": bytes("some_content", 'utf-8'),
-            "headers": {
-                "Location": location
-            }
-        }
-        return self._get_url() + id
+        return self._get_url() + path

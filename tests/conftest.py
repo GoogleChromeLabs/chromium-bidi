@@ -36,7 +36,7 @@ def static_web_server():
 @pytest_asyncio.fixture(scope='session')
 def url_200(static_web_server):
     def url_200(content='<html><body>default 200 page</body></html>'):
-        return static_web_server.url_200(content)
+        return static_web_server.url(200, bytes(content, 'utf-8'))
 
     return url_200
 
@@ -44,7 +44,7 @@ def url_200(static_web_server):
 @pytest_asyncio.fixture(scope='session')
 def url_301(static_web_server, url_200):
     def url_301(location=url_200()):
-        return static_web_server.url_301(location)
+        return static_web_server.url(301, headers={"Location": location})
 
     return url_301
 
