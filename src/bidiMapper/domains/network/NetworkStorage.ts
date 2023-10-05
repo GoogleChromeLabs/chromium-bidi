@@ -115,6 +115,7 @@ export class NetworkStorage {
           if (phase === Network.InterceptPhase.AuthRequired) {
             patterns.push({
               urlPattern,
+              requestStage: 'Response',
             });
           } else {
             patterns.push({
