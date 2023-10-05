@@ -212,8 +212,7 @@ export class NetworkRequest {
       errorReason,
     });
 
-    // TODO: mark is as non-blocked?
-    // this.#isBlocked = false;
+    this.#isBlocked = false;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
