@@ -21,6 +21,7 @@ import websocket from 'websocket';
 
 import type {ITransport} from '../utils/transport.js';
 import {CloseBrowserDelegate} from './index';
+import {ErrorCode} from '../protocol/webdriver-bidi';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
@@ -143,7 +144,7 @@ export class BidiServerRunner {
           this.#respondWithError(
             connection,
             {},
-            'invalid argument',
+            ErrorCode.InvalidArgument,
             `not supported type (${message.type})`
           );
           return;
@@ -160,7 +161,7 @@ export class BidiServerRunner {
           this.#respondWithError(
             connection,
             {},
-            'invalid argument',
+            ErrorCode.InvalidArgument,
             `Cannot parse data as JSON`
           );
           return;
