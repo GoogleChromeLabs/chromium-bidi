@@ -95,8 +95,6 @@ export class NetworkProcessor {
 
     this.#networkStorage.removeBlockedRequest(networkId);
 
-    // TODO: Remove from network request map?
-
     return {};
   }
 
@@ -126,8 +124,6 @@ export class NetworkProcessor {
       ?.failRequest(fetchId, 'Failed');
 
     this.#networkStorage.removeBlockedRequest(networkId);
-
-    // TODO: Remove from network request map?
 
     return {};
   }
