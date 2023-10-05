@@ -136,7 +136,7 @@ describe('NetworkProcessor', () => {
             protocol: '%',
           },
         ])
-      ).to.throw('TypeError [ERR_INVALID_URL]: Invalid URL');
+      ).to.throw('TypeError: Invalid URL');
     });
 
     it('valid pattern', () => {
