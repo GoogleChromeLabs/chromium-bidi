@@ -34,6 +34,8 @@ import {BidiServerRunner, debugInfo} from './bidiServerRunner.js';
 import {MapperServer} from './MapperServer.js';
 import {readMapperTabFile} from './reader.js';
 
+export type CloseBrowserDelegate = () => Promise<void>;
+
 function parseArguments(): {
   channel: ChromeReleaseChannel;
   headless: string;
@@ -112,7 +114,7 @@ async function onNewBidiConnectionOpen(
   bidiTransport: ITransport,
   verbose: boolean,
   chromeArgs?: string[]
-) {
+): Promise<CloseBrowserDelegate> {
   // 1. Launch the browser using @puppeteer/browsers.
   const profileDir = await mkdtemp(
     path.join(os.tmpdir(), 'web-driver-bidi-server-')
