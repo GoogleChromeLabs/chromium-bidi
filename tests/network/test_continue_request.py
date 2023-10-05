@@ -238,4 +238,6 @@ async def create_dummy_blocked_request(
 
     return network_id
 
-    # TODO: assertion with isBlocked: true
+
+# TODO: AuthRequired + exception test
+# TODO: assertion with isBlocked: true
