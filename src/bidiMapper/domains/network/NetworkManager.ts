@@ -175,6 +175,10 @@ export class NetworkManager {
             params.responseStatusCode === undefined
           ) {
             phase = Network.InterceptPhase.BeforeRequestSent;
+          } else if (params.responseStatusCode === 401) {
+            // TODO: Write a test for this phase.
+            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+            phase = Network.InterceptPhase.AuthRequired;
           } else {
             phase = Network.InterceptPhase.ResponseStarted;
           }
