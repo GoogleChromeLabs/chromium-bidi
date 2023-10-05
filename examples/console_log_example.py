@@ -33,7 +33,7 @@ logging.basicConfig(
 async def main():
     # Part 1. Open a page.
 
-    # Open browser
+    # Open browser. qweqwe
     websocket = await get_websocket()
     await run_and_wait_command(
         {
