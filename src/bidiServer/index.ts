@@ -34,6 +34,10 @@ import {BidiServerRunner, debugInfo} from './bidiServerRunner.js';
 import {MapperServer} from './MapperServer.js';
 import {readMapperTabFile} from './reader.js';
 
+/**
+ * Delegate to be called to close the browser. It is used when the
+ * `browser.close` command is called.
+ */
 export type CloseBrowserDelegate = () => Promise<void>;
 
 function parseArguments(): {
