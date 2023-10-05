@@ -33,6 +33,11 @@ import type {Result} from '../../../utils/result.js';
 import {assert} from '../../../utils/assert.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 
+import {
+  computeResponseHeadersSize,
+  bidiNetworkHeadersFromCdpNetworkHeaders,
+} from './NetworkUtils.js';
+
 /** Abstracts one individual network request. */
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';
@@ -279,11 +284,15 @@ export class NetworkRequest {
       ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
       : [];
 
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
+      this.#request.info?.request.headers
+    );
+
     return {
       request: this.#request.info?.requestId ?? NetworkRequest.#unknown,
       url: this.#request.info?.request.url ?? NetworkRequest.#unknown,
       method: this.#request.info?.request.method ?? NetworkRequest.#unknown,
-      headers: NetworkRequest.#getHeaders(this.#request.info?.request.headers),
+      headers,
       cookies,
       // TODO: implement.
       headersSize: -1,
@@ -380,7 +389,7 @@ export class NetworkRequest {
       this.#response.extraInfo = undefined;
     }
 
-    const headers = NetworkRequest.#getHeaders(
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
       this.#response.info.response.headers
     );
 
@@ -402,7 +411,7 @@ export class NetworkRequest {
           headers,
           mimeType: this.#response.info.response.mimeType,
           bytesReceived: this.#response.info.response.encodedDataLength,
-          headersSize: this.#computeResponseHeadersSize(headers),
+          headersSize: computeResponseHeadersSize(headers),
           // TODO: consider removing from spec.
           bodySize: 0,
           content: {
@@ -414,30 +423,8 @@ export class NetworkRequest {
     };
   }
 
-  #computeResponseHeadersSize(headers: Network.Header[]): number {
-    return headers.reduce((total, header) => {
-      return (
-        total + header.name.length + header.value.value.length + 4 // 4 = ': ' + '\r\n'
-      );
-    }, 0);
-  }
-
   #isIgnoredEvent(): boolean {
     return this.#request.info?.request.url.endsWith('/favicon.ico') ?? false;
-  }
-
-  static #getHeaders(headers?: Protocol.Network.Headers): Network.Header[] {
-    if (!headers) {
-      return [];
-    }
-
-    return Object.entries(headers).map(([name, value]) => ({
-      name,
-      value: {
-        type: 'string',
-        value,
-      },
-    }));
   }
 
   static #getInitiatorType(

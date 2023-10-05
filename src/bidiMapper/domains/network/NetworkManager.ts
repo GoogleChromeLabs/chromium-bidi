@@ -27,6 +27,10 @@ import type {CdpTarget} from '../context/CdpTarget.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
+import {
+  computeResponseHeadersSize,
+  bidiNetworkHeadersFromCdpFetchHeaderEntryArray,
+} from './NetworkUtils.js';
 
 /** Maps 1:1 to CdpTarget. */
 export class NetworkManager {
@@ -175,10 +179,38 @@ export class NetworkManager {
             phase = Network.InterceptPhase.ResponseStarted;
           }
 
+          const headers = bidiNetworkHeadersFromCdpFetchHeaderEntryArray(
+            // TODO: Use params.request.headers if request?
+            params.responseHeaders
+          );
+
           networkManager.#networkStorage.addBlockedRequest(params.networkId, {
             request: params.requestId, // intercept request id
             phase,
-            // TODO: Populate response / ResponseData.
+            // TODO: Finish populate response / ResponseData.
+            response: {
+              url: params.request.url,
+              // TODO: populate.
+              protocol: '',
+              status: params.responseStatusCode ?? 0,
+              statusText: params.responseStatusText ?? '',
+              // TODO: populate.
+              fromCache: false,
+              headers,
+              // TODO: populate.
+              mimeType: '',
+              // TODO: populate.
+              bytesReceived: 0,
+              headersSize: computeResponseHeadersSize(headers),
+              // TODO: consider removing from spec.
+              bodySize: 0,
+              // TODO: consider removing from spec.
+              content: {
+                size: 0,
+              },
+              // TODO: populate.
+              authChallenge: undefined,
+            },
           });
           networkManager
             .#getOrCreateNetworkRequest(params.networkId)
