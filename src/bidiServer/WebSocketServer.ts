@@ -22,7 +22,7 @@ import type {ChromeReleaseChannel} from '@puppeteer/browsers';
 
 import {ErrorCode} from '../protocol/webdriver-bidi.js';
 
-import {BrowserManager} from './BrowserManager.js';
+import {BrowserInstance} from './BrowserInstance.js';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
@@ -130,7 +130,7 @@ export class WebSocketServer {
         jsonBody?.capabilities?.alwaysMatch?.['goog:chromeOptions'];
       debugInternal('new WS request received:', request.resourceURL.path);
 
-      const browserManager = await BrowserManager.runBrowser(
+      const browserInstance = await BrowserInstance.run(
         channel,
         headless,
         verbose,
@@ -138,7 +138,7 @@ export class WebSocketServer {
       );
 
       // Forward messages from BiDi Mapper to the client unconditionally.
-      browserManager.on('message', (message) => {
+      browserInstance.on('message', (message) => {
         void this.#sendClientMessageString(message, connection);
       });
 
@@ -175,7 +175,7 @@ export class WebSocketServer {
 
         // Handle `browser.close` command.
         if (parsedCommandData.method === 'browser.close') {
-          await browserManager.closeBrowser();
+          await browserInstance.close();
           await this.#sendClientMessage(
             {
               id: parsedCommandData.id,
@@ -188,7 +188,7 @@ export class WebSocketServer {
         }
 
         // Forward all other commands to BiDi Mapper.
-        await browserManager.sendCommand(plainCommandData);
+        await browserInstance.sendCommand(plainCommandData);
       });
 
       connection.on('close', async () => {
@@ -199,7 +199,7 @@ export class WebSocketServer {
         );
         // TODO: handle reconnection which is used in WPT. Until then, close the
         //  browser after each WS connection is closed.
-        await browserManager.closeBrowser();
+        await browserInstance.close();
       });
     });
   }

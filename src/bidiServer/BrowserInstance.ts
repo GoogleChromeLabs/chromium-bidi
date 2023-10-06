@@ -31,33 +31,34 @@ import {
 import debug from 'debug';
 import WebSocket from 'ws';
 
-import {CdpConnection} from '../cdp/CdpConnection';
-import {WebSocketTransport} from '../utils/WebsocketTransport';
-import {EventEmitter} from '../utils/EventEmitter';
+import {CdpConnection} from '../cdp/CdpConnection.js';
+import {WebSocketTransport} from '../utils/WebsocketTransport.js';
+import {EventEmitter} from '../utils/EventEmitter.js';
 
-import {MapperCdpConnection} from './MapperCdpConnection';
-import {readMapperTabFile} from './reader';
+import {MapperCdpConnection} from './MapperCdpConnection.js';
+import {readMapperTabFile} from './reader.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 
 /**
- * BrowserManager is responsible for running the browser with BiDi Mapper.
+ * BrowserProcess is responsible for running the browser and BiDi Mapper within
+ * it.
  * 1. Launch Chromium (using Puppeteer for now).
  * 2. Get `BiDi-CDP` mapper JS binaries using `MapperReader`.
  * 3. Run `BiDi-CDP` mapper in launched browser using `MapperRunner`.
  * 4. Bind `BiDi-CDP` mapper to the `BiDi server` to forward messages from BiDi
  * Mapper to the client.
  */
-export class BrowserManager extends EventEmitter<Record<'message', string>> {
+export class BrowserInstance extends EventEmitter<Record<'message', string>> {
   #mapperCdpConnection: MapperCdpConnection;
   #browserProcess: Process;
 
-  static async runBrowser(
+  static async run(
     channel: ChromeReleaseChannel,
     headless: boolean,
     verbose: boolean,
     chromeArgs?: string[]
-  ): Promise<BrowserManager> {
+  ): Promise<BrowserInstance> {
     const profileDir = await mkdtemp(
       path.join(os.tmpdir(), 'web-driver-bidi-server-')
     );
@@ -106,7 +107,7 @@ export class BrowserManager extends EventEmitter<Record<'message', string>> {
 
     // There is a conflict between prettier and eslint here.
     // prettier-ignore
-    const cdpConnection = await BrowserManager.#establishCdpConnection(
+    const cdpConnection = await this.#establishCdpConnection(
       cdpEndpoint
     );
 
@@ -120,7 +121,7 @@ export class BrowserManager extends EventEmitter<Record<'message', string>> {
       verbose
     );
 
-    const browserManager = new BrowserManager(
+    const browserInstance = new BrowserInstance(
       mapperCdpConnection,
       browserProcess
     );
@@ -128,10 +129,10 @@ export class BrowserManager extends EventEmitter<Record<'message', string>> {
     // 4. Bind `BiDi-CDP` mapper to the `BiDi server` to forward messages from
     // BiDi Mapper to the client.
     mapperCdpConnection.on('message', (message) => {
-      browserManager.emit('message', message);
+      browserInstance.emit('message', message);
     });
 
-    return browserManager;
+    return browserInstance;
   }
 
   constructor(
@@ -148,7 +149,7 @@ export class BrowserManager extends EventEmitter<Record<'message', string>> {
     await this.#mapperCdpConnection.sendMessage(plainCommand);
   }
 
-  async closeBrowser() {
+  async close() {
     // Close the mapper tab.
     this.#mapperCdpConnection.close();
 
