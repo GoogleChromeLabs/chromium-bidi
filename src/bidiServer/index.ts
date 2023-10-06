@@ -18,7 +18,7 @@
 import argparse from 'argparse';
 import {ChromeReleaseChannel} from '@puppeteer/browsers';
 
-import {debugInfo, WebSocketServer} from './WebSocketServer';
+import {debugInfo, WebSocketServer} from './WebSocketServer.js';
 
 function parseArguments(): {
   channel: ChromeReleaseChannel;

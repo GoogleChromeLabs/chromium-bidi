@@ -21,7 +21,7 @@ import debug, {type Debugger} from 'debug';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
 import type {CdpClient} from '../cdp/CdpClient.js';
 import type {LogType, LogPrefix} from '../utils/log.js';
-import {EventEmitter} from '../utils/EventEmitter';
+import {EventEmitter} from '../utils/EventEmitter.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 const debugInfo = debug('bidi:mapper:info');
