@@ -168,7 +168,6 @@ export class NetworkManager {
           // responseErrorReason and responseStatusCode -- the request is at
           // the response stage if either of these fields is present and in the
           // request stage otherwise.
-          // TODO: Populate the "authRequired" phase.
           let phase: Network.InterceptPhase;
           if (
             params.responseErrorReason === undefined &&
