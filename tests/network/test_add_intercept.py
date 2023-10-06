@@ -13,7 +13,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_STR
 from test_helpers import (ANY_UUID, AnyExtending, execute_command,
                           send_JSON_command, subscribe, wait_for_event)
 
@@ -297,7 +296,7 @@ async def test_add_intercept_blocks(websocket, context_id, url_patterns):
     # TODO: make offline.
     url = "https://www.example.com/"
 
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+    await subscribe(websocket, ["network.beforeRequestSent"])
 
     result = await execute_command(
         websocket, {
@@ -321,22 +320,12 @@ async def test_add_intercept_blocks(websocket, context_id, url_patterns):
             }
         })
 
-    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
-    assert event_response == {
-        "method": "cdp.Fetch.requestPaused",
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == AnyExtending({
+        "method": "network.beforeRequestSent",
         "params": {
-            "event": "Fetch.requestPaused",
-            "params": {
-                "frameId": context_id,
-                "networkId": ANY_STR,
-                "request": AnyExtending({
-                    "headers": ANY_DICT,
-                    "url": url,
-                }),
-                "requestId": ANY_STR,
-                "resourceType": "Document",
-            },
-            "session": ANY_STR,
-        },
-        "type": "event",
-    }
+            "isBlocked": True,
+            "context": context_id,
+        }
+    })

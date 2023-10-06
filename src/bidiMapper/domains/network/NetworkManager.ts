@@ -22,7 +22,7 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import type {Network} from '../../../protocol/protocol.js';
+import {Network} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
@@ -164,9 +164,26 @@ export class NetworkManager {
             // TODO: Populate phase.
             // TODO: Populate response / ResponseData.
           });
+
+          let phase: Network.InterceptPhase;
+          if (
+            params.responseErrorReason === undefined &&
+            params.responseStatusCode === undefined
+          ) {
+            phase = Network.InterceptPhase.BeforeRequestSent;
+          } else if (
+            params.responseStatusCode === 401 &&
+            params.responseStatusText === 'Unauthorized'
+          ) {
+            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+            phase = Network.InterceptPhase.AuthRequired;
+          } else {
+            phase = Network.InterceptPhase.ResponseStarted;
+          }
+
           networkManager
             .#getOrCreateNetworkRequest(params.networkId)
-            .onRequestPaused(params);
+            .onRequestPaused(phase);
         }
       }
     );

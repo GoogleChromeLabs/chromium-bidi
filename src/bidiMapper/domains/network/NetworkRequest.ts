@@ -25,9 +25,9 @@ import type Protocol from 'devtools-protocol';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {EventManager} from '../events/EventManager.js';
 import {
-  type Network,
   type BrowsingContext,
   ChromiumBidi,
+  Network,
 } from '../../../protocol/protocol.js';
 import type {Result} from '../../../utils/result.js';
 import {assert} from '../../../utils/assert.js';
@@ -47,7 +47,7 @@ export class NetworkRequest {
   readonly requestId: Network.Request;
 
   /** Indicates whether the request is blocked by a network intercept. */
-  #isBlocked = false;
+  #isBlocked: Network.InterceptPhase | undefined = undefined;
 
   #servedFromCache = false;
 
@@ -119,7 +119,8 @@ export class NetworkRequest {
       this.#servedFromCache ||
       // Sometimes there is no extra info and the response
       // is the only place we can find out
-      Boolean(this.#response.info && !this.#response.info.hasExtraInfo);
+      Boolean(this.#response.info && !this.#response.info.hasExtraInfo) ||
+      this.#isBlocked === Network.InterceptPhase.BeforeRequestSent;
 
     if (this.#request.info && requestExtraInfoCompleted) {
       this.#beforeRequestSentDeferred.resolve({
@@ -133,7 +134,8 @@ export class NetworkRequest {
       // Response from cache don't have extra info
       this.#servedFromCache ||
       // Don't expect extra info if the flag is false
-      Boolean(this.#response.info && !this.#response.info.hasExtraInfo);
+      Boolean(this.#response.info && !this.#response.info.hasExtraInfo) ||
+      this.#isBlocked === Network.InterceptPhase.ResponseStarted;
 
     if (this.#response.info && responseExtraInfoCompleted) {
       this.#responseCompletedDeferred.resolve({
@@ -189,7 +191,7 @@ export class NetworkRequest {
         type: 'event',
         method: ChromiumBidi.Network.EventNames.FetchError,
         params: {
-          ...this.#getBaseEventParams(),
+          ...this.#getBaseEventParams(undefined),
           errorText: event.errorText,
         },
       },
@@ -198,8 +200,9 @@ export class NetworkRequest {
   }
 
   /** Fired whenever a network request interception is hit. */
-  onRequestPaused(_event: Protocol.Fetch.RequestPausedEvent) {
-    this.#isBlocked = true;
+  onRequestPaused(phase: Network.InterceptPhase) {
+    this.#isBlocked = phase;
+    this.#emitEventsIfReady();
   }
 
   async failRequest(
@@ -225,9 +228,11 @@ export class NetworkRequest {
     return this.#request.info?.frameId ?? null;
   }
 
-  #getBaseEventParams(): Network.BaseParameters {
+  #getBaseEventParams(
+    phase: Network.InterceptPhase | undefined
+  ): Network.BaseParameters {
     return {
-      isBlocked: this.#isBlocked,
+      isBlocked: phase !== undefined && this.#isBlocked === phase,
       context: this.#context,
       navigation: this.#getNavigationId(),
       redirectCount: this.#redirectCount,
@@ -315,7 +320,7 @@ export class NetworkRequest {
     return {
       method: ChromiumBidi.Network.EventNames.BeforeRequestSent,
       params: {
-        ...this.#getBaseEventParams(),
+        ...this.#getBaseEventParams(Network.InterceptPhase.BeforeRequestSent),
         initiator: {
           type: NetworkRequest.#getInitiatorType(
             this.#request.info.initiator.type
@@ -364,7 +369,7 @@ export class NetworkRequest {
     return {
       method: ChromiumBidi.Network.EventNames.ResponseCompleted,
       params: {
-        ...this.#getBaseEventParams(),
+        ...this.#getBaseEventParams(undefined),
         response: {
           url: this.#response.info.response.url ?? NetworkRequest.#unknown,
           protocol: this.#response.info.response.protocol ?? '',
