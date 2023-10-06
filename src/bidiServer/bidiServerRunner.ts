@@ -20,9 +20,9 @@ import debug from 'debug';
 import websocket from 'websocket';
 
 import type {ITransport} from '../utils/transport.js';
-import {ErrorCode} from '../protocol/webdriver-bidi';
+import {ErrorCode} from '../protocol/webdriver-bidi.js';
 
-import type {CloseBrowserDelegate} from './index';
+import type {CloseBrowserDelegate} from './index.js';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
