@@ -35,6 +35,49 @@ async def test_fail_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
+async def test_fail_request_non_blocked_request(websocket, context_id,
+                                                assert_no_event_in_queue):
+    # TODO: make offline.
+    # TODO: replace with a request that hangs forever.
+    url = "https://www.example.com/"
+
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "cdp.Network.loadingFailed"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    before_request_sent_event = await wait_for_event(
+        websocket, "network.beforeRequestSent")
+
+    # Assert this event never happens, otherwise the test is ineffective.
+    await assert_no_event_in_queue("cdp.Network.loadingFailed", timeout=1.0)
+
+    assert not before_request_sent_event["params"]["isBlocked"]
+
+    network_id = before_request_sent_event["params"]["request"]["request"]
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(websocket, {
+            "method": "network.failRequest",
+            "params": {
+                "request": network_id,
+            },
+        })
+    assert {
+        "error": "no such request",
+        "message": f"No blocked request found for network id '{network_id}'",
+    } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
 async def test_fail_request_twice(websocket, context_id):
     # TODO: make offline.
     url = "https://www.example.com/"
