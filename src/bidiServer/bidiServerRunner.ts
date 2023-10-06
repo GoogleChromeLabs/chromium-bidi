@@ -186,13 +186,15 @@ export class BidiServerRunner {
         transport.onMessage(plainCommandData);
       });
 
-      connection.on('close', () => {
+      connection.on('close', async () => {
         debugInternal(
           `${new Date().toString()} Peer ${
             connection.remoteAddress
           } disconnected.`
         );
-        // TODO: handle reconnection.
+        // TODO: handle reconnection which is used in WPT. Until then, close the
+        //  browser after eachWS connection is closed.
+        await closeBrowserDelegate();
       });
 
       transport.initialize((message) => {
