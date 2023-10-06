@@ -22,15 +22,11 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import {Network} from '../../../protocol/protocol.js';
+import type {Network} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
-import {
-  computeResponseHeadersSize,
-  bidiNetworkHeadersFromCdpFetchHeaderEntryArray,
-} from './NetworkUtils.js';
 
 /** Maps 1:1 to CdpTarget. */
 export class NetworkManager {
@@ -164,62 +160,9 @@ export class NetworkManager {
       'Fetch.requestPaused',
       (params: Protocol.Fetch.RequestPausedEvent) => {
         if (params.networkId) {
-          // The stage of the request can be determined by presence of
-          // responseErrorReason and responseStatusCode -- the request is at
-          // the response stage if either of these fields is present and in the
-          // request stage otherwise.
-          let phase: Network.InterceptPhase;
-          if (
-            params.responseErrorReason === undefined &&
-            params.responseStatusCode === undefined
-          ) {
-            phase = Network.InterceptPhase.BeforeRequestSent;
-          } else if (
-            params.responseStatusCode === 401 &&
-            params.responseStatusText === 'Unauthorized'
-          ) {
-            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
-            phase = Network.InterceptPhase.AuthRequired;
-          } else {
-            phase = Network.InterceptPhase.ResponseStarted;
-          }
-
-          const headers = bidiNetworkHeadersFromCdpFetchHeaderEntryArray(
-            // TODO: Use params.request.headers if request?
-            params.responseHeaders
-          );
-
-          networkManager.#networkStorage.addBlockedRequest(params.networkId, {
-            request: params.requestId, // intercept request id
-            phase,
-            // TODO: Finish populating response / ResponseData.
-            response: {
-              url: params.request.url,
-              // TODO: populate.
-              protocol: '',
-              status: params.responseStatusCode ?? 0,
-              statusText: params.responseStatusText ?? '',
-              // TODO: populate.
-              fromCache: false,
-              headers,
-              // TODO: populate.
-              mimeType: '',
-              // TODO: populate.
-              bytesReceived: 0,
-              headersSize: computeResponseHeadersSize(headers),
-              // TODO: consider removing from spec.
-              bodySize: 0,
-              // TODO: consider removing from spec.
-              content: {
-                size: 0,
-              },
-              // TODO: populate.
-              authChallenge: undefined,
-            },
-          });
           networkManager
             .#getOrCreateNetworkRequest(params.networkId)
-            .onRequestPaused(params);
+            .onRequestPaused(params, networkManager.#networkStorage);
         }
       }
     );
