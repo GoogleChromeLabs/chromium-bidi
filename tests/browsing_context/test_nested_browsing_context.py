@@ -152,7 +152,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
     response = await read_JSON_message(websocket)
     assert response['result'] == {"navigation": navigation_id, "url": url}
 
-    await assert_no_more_messages()
+    await assert_no_more_messages(timeout=1.0)
 
 
 @pytest.mark.asyncio
