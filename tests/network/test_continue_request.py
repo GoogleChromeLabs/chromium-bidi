@@ -37,15 +37,12 @@ async def test_continue_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("phase", [
-    "responseStarted",
-    pytest.param("authRequired",
-                 marks=pytest.mark.xfail(
-                     reason='TODO: #644: implement "authRequired" phase'))
-])
-async def test_continue_request_invalid_phase(websocket, context_id, phase):
+@pytest.mark.parametrize("phase, url", [
     # TODO: make offline.
-    url = "https://www.example.com/"
+    # ("responseStarted", "https://www.example.com/"),
+    ("authRequired", "http://httpstat.us/401"),  # or https://authenticationtest.com/HTTPAuth/
+])
+async def test_continue_request_invalid_phase(websocket, context_id, phase, url):
 
     network_id = await create_dummy_blocked_request(websocket,
                                                     context_id,
