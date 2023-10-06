@@ -99,12 +99,14 @@ export class BrowserManager extends EventEmitter<Record<'message', string>> {
       args: chromeArguments,
     });
 
-    const wsEndpoint = await browser.waitForLineOutput(
+    const cdpEndpoint = await browser.waitForLineOutput(
       CDP_WEBSOCKET_ENDPOINT_REGEX
     );
 
+    // There is a conflict between prettier and eslint here.
+    // prettier-ignore
     const cdpConnection = await BrowserManager.#establishCdpConnection(
-      wsEndpoint
+      cdpEndpoint
     );
 
     // 2. Get `BiDi-CDP` mapper JS binaries using `readMapperTabFile`.
