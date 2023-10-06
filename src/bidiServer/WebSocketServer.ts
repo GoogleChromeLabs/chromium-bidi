@@ -21,9 +21,10 @@ import websocket from 'websocket';
 import type {ChromeReleaseChannel} from '@puppeteer/browsers';
 
 import {ErrorCode} from '../protocol/webdriver-bidi.js';
+import {uuidv4} from '../utils/uuid';
 
 import {BrowserInstance} from './BrowserInstance.js';
-import {SessionManager} from './SessionManager';
+import type {SessionManager} from './SessionManager';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
@@ -65,6 +66,7 @@ export class WebSocketServer {
               });
 
               const session = sessionManager.createSession(
+                uuidv4(),
                 jsonBody?.capabilities
               );
 
@@ -81,6 +83,24 @@ export class WebSocketServer {
               return response.end();
             });
           return;
+        } else if (
+          request.url.startsWith('/session') &&
+          request.method === 'DELETE'
+        ) {
+          const sessionId = this.#getSessionId(request.url);
+
+          debugInternal('Deleting Session ID:', sessionId);
+          await sessionManager.closeSession(sessionId);
+
+          response.writeHead(200, {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Cache-Control': 'no-cache',
+          });
+          response.write(
+            JSON.stringify({
+              value: {},
+            })
+          );
         } else if (request.url.startsWith('/session')) {
           debugInternal(
             `Unknown session command ${
@@ -128,7 +148,7 @@ export class WebSocketServer {
     wsServer.on('request', async (request: websocket.request) => {
       debugInternal('new WS request received:', request.resourceURL.path);
 
-      const sessionId = (request.resourceURL.path ?? '/').split('/')[1] ?? '';
+      const sessionId = this.#getSessionId(request.resourceURL.path);
       debugInternal('Session ID:', sessionId);
 
       let session;
@@ -138,7 +158,7 @@ export class WebSocketServer {
       if (sessionId === '') {
         session =
           sessionManager.getSession(sessionId) ??
-          sessionManager.createSession(undefined);
+          sessionManager.createSession(sessionId);
       } else {
         session = sessionManager.getSession(sessionId);
         if (session === undefined) {
@@ -206,7 +226,7 @@ export class WebSocketServer {
 
         // Handle `browser.close` command.
         if (parsedCommandData.method === 'browser.close') {
-          sessionManager.closeSession(sessionId);
+          await sessionManager.closeSession(sessionId);
           await this.#sendClientMessage(
             {
               id: parsedCommandData.id,
@@ -228,11 +248,13 @@ export class WebSocketServer {
             connection.remoteAddress
           } disconnected.`
         );
-        // TODO: handle reconnection which is used in WPT. Until then, close the
-        //  browser after each WS connection is closed.
-        sessionManager.closeSession(sessionId);
       });
     });
+  }
+
+  // URL should be like `/session/SOME_SESSION_ID`.
+  static #getSessionId(path: string | null) {
+    return (path ?? '').split('/')[2] ?? '';
   }
 
   static #sendClientMessageString(

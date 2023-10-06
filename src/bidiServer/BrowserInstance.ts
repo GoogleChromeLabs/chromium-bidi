@@ -26,7 +26,7 @@ import {
   type ChromeReleaseChannel,
   computeSystemExecutablePath,
   launch,
-  Process,
+  type Process,
 } from '@puppeteer/browsers';
 import debug from 'debug';
 import WebSocket from 'ws';

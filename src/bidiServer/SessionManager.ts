@@ -17,25 +17,30 @@
  */
 
 import {Session} from './Session';
-import {BrowserInstance} from './BrowserInstance';
+import type {BrowserInstance} from './BrowserInstance';
 
 export class SessionManager {
-  #sessions: Map<string, Session> = new Map();
+  #sessions = new Map<string, Session>();
 
   createSession(
+    sessionId: string,
     capabilities?: any,
     browserInstance?: BrowserInstance
   ): Session {
-    if (this.#sessions.size > 0) {
-      throw new Error('Only one session is supported');
+    if (sessionId !== undefined && this.#sessions.has(sessionId)) {
+      throw new Error(`Session with id ${sessionId} already exists`);
     }
-    const session = new Session(capabilities, browserInstance);
+
+    if (this.#sessions.size > 0) {
+      throw new Error(`Only one session is supported`);
+    }
+    const session = new Session(sessionId, capabilities, browserInstance);
     this.#sessions.set(session.sessionId, session);
     return session;
   }
 
-  closeSession(sessionId: string) {
-    this.#sessions.get(sessionId)?.browserInstance?.close();
+  async closeSession(sessionId: string) {
+    await this.#sessions.get(sessionId)?.browserInstance?.close();
     this.#sessions.delete(sessionId);
   }
 

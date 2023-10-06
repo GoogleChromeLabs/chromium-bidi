@@ -16,11 +16,10 @@
  *
  */
 
-import {BrowserInstance} from './BrowserInstance';
-import {uuidv4} from '../utils/uuid';
+import type {BrowserInstance} from './BrowserInstance';
 
 export class Session {
-  #sessionId: string = uuidv4();
+  #sessionId: string;
   #capabilities?: any;
   #browserInstance?: BrowserInstance;
 
@@ -43,7 +42,12 @@ export class Session {
     this.#browserInstance = value;
   }
 
-  constructor(capabilities?: any, browserInstance?: BrowserInstance) {
+  constructor(
+    sessionId: string,
+    capabilities?: any,
+    browserInstance?: BrowserInstance
+  ) {
+    this.#sessionId = sessionId;
     this.#capabilities = capabilities;
     this.#browserInstance = browserInstance;
   }
