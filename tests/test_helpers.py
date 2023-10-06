@@ -139,12 +139,20 @@ async def set_html_content(websocket, context_id: str, html_content: str):
 
 # TODO: Rewrite this method in terms of wait_for_events.
 async def wait_for_event(websocket, event_method: str) -> dict:
-    """Wait and return a specific event from BiDi server."""
+    """
+    Wait for and return a specific event prefix from BiDi server.
+
+    The following examples match the `browsingContext.domContentLoaded` event:
+
+        wait_for_event(websocket, "browsingContext.domContentLoaded")
+        wait_for_event(websocket, "browsingContext.")
+        wait_for_event(websocket, "browsingContext")
+    """
     logger.info(f"Waiting for event '{event_method}'...")
     while True:
         event_response = await read_JSON_message(websocket)
-        if "method" in event_response and event_response[
-                "method"] == event_method:
+        if "method" in event_response and event_response["method"].startswith(
+                event_method):
             return event_response
 
 
