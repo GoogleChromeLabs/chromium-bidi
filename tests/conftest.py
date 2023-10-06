@@ -147,7 +147,7 @@ def read_sorted_messages(websocket):
 @pytest.fixture
 def assert_no_more_messages(websocket):
     """Assert that there are no more messages on the websocket."""
-    async def assert_no_more_messages(timeout: float = 0.0):
+    async def assert_no_more_messages(timeout: float | None):
         with pytest.raises(asyncio.TimeoutError):
             await asyncio.wait_for(read_JSON_message(websocket),
                                    timeout=timeout)
@@ -155,6 +155,7 @@ def assert_no_more_messages(websocket):
     return assert_no_more_messages
 
 
+# TODO: Rewrite this fixture in terms of assert_no_events_in_queue.
 @pytest.fixture
 def assert_no_event_in_queue(websocket):
     """Assert that there are no more events of the given type on the websocket within the given timeout."""

@@ -137,6 +137,7 @@ async def set_html_content(websocket, context_id: str, html_content: str):
         })
 
 
+# TODO: Rewrite this method in terms of wait_for_events.
 async def wait_for_event(websocket, event_method: str) -> dict:
     """Wait and return a specific event from BiDi server."""
     logger.info(f"Waiting for event '{event_method}'...")
