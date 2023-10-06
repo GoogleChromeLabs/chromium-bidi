@@ -175,16 +175,20 @@ export class WebSocketServer {
         const chromeOptions =
           session.capabilities?.alwaysMatch?.['goog:chromeOptions'];
 
-        debugInternal(
-          'Browser instance is not created for the session. Creating one...'
-        );
+        debugInternal('Creating Browser Instance for the session...');
 
-        session.browserInstance = await BrowserInstance.run(
-          channel,
-          headless,
-          verbose,
-          chromeOptions?.args
-        );
+        try {
+          session.browserInstance = await BrowserInstance.run(
+            channel,
+            headless,
+            verbose,
+            chromeOptions?.args
+          );
+        } catch (e) {
+          debugInternal('Failed to create Browser Instance for the session', e);
+          request.reject(500, 'Cannot create browser instance');
+          return;
+        }
       }
 
       const browserInstance = session.browserInstance;
