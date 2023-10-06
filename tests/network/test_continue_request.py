@@ -40,11 +40,13 @@ async def test_continue_request_non_existent_request(websocket):
 @pytest.mark.parametrize(
     "phase, url",
     [
-        # TODO: make offline.
-        # ("responseStarted", "https://www.example.com/"),
-        ("authRequired", "http://httpstat.us/401"
-         ),  # or https://authenticationtest.com/HTTPAuth/
-    ])
+        ("responseStarted", "https://www.example.com/"),  # TODO: make offline.
+        pytest.param(
+            "authRequired",
+            "http://httpstat.us/401",
+            marks=pytest.mark.skip(reason='TODO: Use our own test server.')),
+    ],
+    ids=["responseStarted", "authRequired"])
 async def test_continue_request_invalid_phase(websocket, context_id, phase,
                                               url):
 

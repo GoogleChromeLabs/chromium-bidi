@@ -193,7 +193,7 @@ export class NetworkManager {
           networkManager.#networkStorage.addBlockedRequest(params.networkId, {
             request: params.requestId, // intercept request id
             phase,
-            // TODO: Finish populate response / ResponseData.
+            // TODO: Finish populating response / ResponseData.
             response: {
               url: params.request.url,
               // TODO: populate.

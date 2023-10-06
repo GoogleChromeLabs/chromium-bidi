@@ -162,12 +162,19 @@ async def test_fail_request_twice(websocket, context_id):
     (["authRequired", "responseStarted"], True),
     (["beforeRequestSent"], False),
     (["beforeRequestSent", "authRequired"], False),
-])
+],
+                         ids=[
+                             "authRequired",
+                             "responseStarted",
+                             "authRequired and responseStarted",
+                             "beforeRequestSent",
+                             "beforeRequestSent and authRequired",
+                         ])
 @pytest.mark.skip(reason="TODO: Use our own test server.")
 async def test_fail_request_with_auth_required_phase(
         websocket, context_id, phases, exception_and_response_expected):
     # TODO: make offline.
-    # All of these URLs work.
+    # All of these URLs work, just pick one.
     # url = "https://authenticationtest.com/HTTPAuth/"
     # url = "http://the-internet.herokuapp.com/basic_auth"
     url = "http://httpstat.us/401"
