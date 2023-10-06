@@ -228,6 +228,7 @@ describe('NetworkStorage', () => {
           handleAuthRequests: true,
           patterns: [
             {
+              requestStage: 'Response',
               urlPattern: 'http://example.org',
             },
           ],
@@ -249,6 +250,7 @@ describe('NetworkStorage', () => {
           handleAuthRequests: true,
           patterns: [
             {
+              requestStage: 'Response',
               urlPattern: 'http://example.org',
             },
             {
