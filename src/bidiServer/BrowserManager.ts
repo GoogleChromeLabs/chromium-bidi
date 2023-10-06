@@ -26,6 +26,7 @@ import {
   type ChromeReleaseChannel,
   computeSystemExecutablePath,
   launch,
+  Process,
 } from '@puppeteer/browsers';
 import debug from 'debug';
 import WebSocket from 'ws';
@@ -34,7 +35,7 @@ import {CdpConnection} from '../cdp/CdpConnection';
 import {WebSocketTransport} from '../utils/WebsocketTransport';
 import {EventEmitter} from '../utils/EventEmitter';
 
-import {MapperRunner} from './MapperRunner';
+import {MapperCdpConnection} from './MapperCdpConnection';
 import {readMapperTabFile} from './reader';
 
 const debugInternal = debug('bidi:mapper:internal');
@@ -48,8 +49,8 @@ const debugInternal = debug('bidi:mapper:internal');
  * Mapper to the client.
  */
 export class BrowserManager extends EventEmitter<Record<'message', string>> {
-  #mapperServer: MapperRunner;
-  #browser: any;
+  #mapperCdpConnection: MapperCdpConnection;
+  #browserProcess: Process;
 
   static async runBrowser(
     channel: ChromeReleaseChannel,
@@ -94,12 +95,12 @@ export class BrowserManager extends EventEmitter<Record<'message', string>> {
       throw new Error('Could not find Chrome binary');
     }
 
-    const browser = launch({
+    const browserProcess = launch({
       executablePath,
       args: chromeArguments,
     });
 
-    const cdpEndpoint = await browser.waitForLineOutput(
+    const cdpEndpoint = await browserProcess.waitForLineOutput(
       CDP_WEBSOCKET_ENDPOINT_REGEX
     );
 
@@ -113,40 +114,46 @@ export class BrowserManager extends EventEmitter<Record<'message', string>> {
     const bidiMapperScript = await readMapperTabFile();
 
     // 3. Run `BiDi-CDP` mapper in launched browser using `MapperRunner`.
-    const mapperServer = await MapperRunner.create(
+    const mapperCdpConnection = await MapperCdpConnection.create(
       cdpConnection,
       bidiMapperScript,
       verbose
     );
 
-    const mapperRunner = new BrowserManager(mapperServer, browser);
+    const browserManager = new BrowserManager(
+      mapperCdpConnection,
+      browserProcess
+    );
 
     // 4. Bind `BiDi-CDP` mapper to the `BiDi server` to forward messages from
     // BiDi Mapper to the client.
-    mapperServer.on('message', (message) => {
-      mapperRunner.emit('message', message);
+    mapperCdpConnection.on('message', (message) => {
+      browserManager.emit('message', message);
     });
 
-    return mapperRunner;
+    return browserManager;
   }
 
-  constructor(mapperServer: MapperRunner, browser: any) {
+  constructor(
+    mapperCdpConnection: MapperCdpConnection,
+    browserProcess: Process
+  ) {
     super();
-    this.#mapperServer = mapperServer;
-    this.#browser = browser;
+    this.#mapperCdpConnection = mapperCdpConnection;
+    this.#browserProcess = browserProcess;
   }
 
   // Forward messages from the client to BiDi Mapper.
   async sendCommand(plainCommand: string) {
-    await this.#mapperServer.sendMessage(plainCommand);
+    await this.#mapperCdpConnection.sendMessage(plainCommand);
   }
 
   async closeBrowser() {
-    // Close the mapper server.
-    this.#mapperServer.close();
+    // Close the mapper tab.
+    this.#mapperCdpConnection.close();
 
     // Close browser.
-    await this.#browser.close();
+    await this.#browserProcess.close();
   }
 
   static #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {

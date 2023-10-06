@@ -38,7 +38,9 @@ const getLogger = (type: LogPrefix) => {
   return logger;
 };
 
-export class MapperRunner extends EventEmitter<Record<'message', string>> {
+export class MapperCdpConnection extends EventEmitter<
+  Record<'message', string>
+> {
   #cdpConnection: CdpConnection;
   #mapperCdpClient: CdpClient;
 
@@ -46,14 +48,14 @@ export class MapperRunner extends EventEmitter<Record<'message', string>> {
     cdpConnection: CdpConnection,
     mapperContent: string,
     verbose: boolean
-  ): Promise<MapperRunner> {
+  ): Promise<MapperCdpConnection> {
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
         mapperContent,
         verbose
       );
-      return new MapperRunner(cdpConnection, mapperCdpClient);
+      return new MapperCdpConnection(cdpConnection, mapperCdpClient);
     } catch (e) {
       cdpConnection.close();
       throw e;
