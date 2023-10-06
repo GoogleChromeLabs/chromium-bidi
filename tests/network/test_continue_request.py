@@ -93,12 +93,16 @@ async def test_continue_request_invalid_url(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_continue_request_non_blocked_request(websocket, context_id):
-    # TODO: make offline.
-    # TODO: replace with a request that hangs forever.
-    url = "https://www.example.com/"
+@pytest.mark.skip(
+    reason="TODO: replace url with a server whose requests hang forever.")
+async def test_continue_request_non_blocked_request(websocket, context_id,
+                                                    assert_no_events_in_queue):
+    url = "http://127.0.0.1:5000/hang"
 
-    await subscribe(websocket, ["network.beforeRequestSent"])
+    await subscribe(websocket, [
+        "network.beforeRequestSent", "cdp.Network.responseReceived",
+        "cdp.Network.loadingFailed"
+    ])
 
     await send_JSON_command(
         websocket, {
@@ -112,6 +116,12 @@ async def test_continue_request_non_blocked_request(websocket, context_id):
 
     before_request_sent_event = await wait_for_event(
         websocket, "network.beforeRequestSent")
+
+    # Assert these events never happen, otherwise the test is ineffective.
+    await assert_no_events_in_queue(
+        ["cdp.Network.responseReceived", "cdp.Network.loadingFailed"],
+        timeout=1.0)
+
     assert not before_request_sent_event["params"]["isBlocked"]
 
     network_id = before_request_sent_event["params"]["request"]["request"]

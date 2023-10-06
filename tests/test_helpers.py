@@ -147,6 +147,16 @@ async def wait_for_event(websocket, event_method: str) -> dict:
             return event_response
 
 
+async def wait_for_events(websocket, event_methods: list[str]) -> dict:
+    """Wait and return any of the given events from BiDi server."""
+    logger.info(f"Waiting for any of the events '{event_methods}'...")
+    while True:
+        event_response = await read_JSON_message(websocket)
+        if "method" in event_response and event_response[
+                "method"] in event_methods:
+            return event_response
+
+
 ANY_SHARED_ID = ANY_STR & AnyContains("_element_")
 
 # Check if the timestamp has the proper order of magnitude between
