@@ -71,6 +71,6 @@ function parseArguments(): {
     WebSocketServer.run(port, channel, headless, verbose);
     debugInfo('BiDi server launched');
   } catch (e) {
-    debugInfo('Error', e);
+    debugInfo('Error launching BiDi server', e);
   }
 })();
