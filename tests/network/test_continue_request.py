@@ -37,12 +37,16 @@ async def test_continue_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("phase, url", [
-    # TODO: make offline.
-    # ("responseStarted", "https://www.example.com/"),
-    ("authRequired", "http://httpstat.us/401"),  # or https://authenticationtest.com/HTTPAuth/
-])
-async def test_continue_request_invalid_phase(websocket, context_id, phase, url):
+@pytest.mark.parametrize(
+    "phase, url",
+    [
+        # TODO: make offline.
+        # ("responseStarted", "https://www.example.com/"),
+        ("authRequired", "http://httpstat.us/401"
+         ),  # or https://authenticationtest.com/HTTPAuth/
+    ])
+async def test_continue_request_invalid_phase(websocket, context_id, phase,
+                                              url):
 
     network_id = await create_dummy_blocked_request(websocket,
                                                     context_id,
@@ -85,6 +89,45 @@ async def test_continue_request_invalid_url(websocket, context_id):
     assert {
         "error": "invalid argument",
         "message": f"Invalid URL '{invalid_url}': TypeError: Failed to construct 'URL': Invalid URL",
+    } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
+async def test_continue_request_non_blocked_request(websocket, context_id):
+    # TODO: make offline.
+    # TODO: replace with a request that hangs forever.
+    url = "https://www.example.com/"
+
+    await subscribe(websocket, ["network.beforeRequestSent"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    before_request_sent_event = await wait_for_event(
+        websocket, "network.beforeRequestSent")
+    assert not before_request_sent_event["params"]["isBlocked"]
+
+    network_id = before_request_sent_event["params"]["request"]["request"]
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {
+                "method": "network.continueRequest",
+                "params": {
+                    "request": network_id,
+                    "url": url,
+                },
+            })
+    assert {
+        "error": "no such request",
+        "message": f"No blocked request found for network id '{network_id}'",
     } == exception_info.value.args[0]
 
 
