@@ -19,6 +19,7 @@ import argparse from 'argparse';
 import {ChromeReleaseChannel} from '@puppeteer/browsers';
 
 import {debugInfo, WebSocketServer} from './WebSocketServer.js';
+import {SessionManager} from './SessionManager.js';
 
 function parseArguments(): {
   channel: ChromeReleaseChannel;
@@ -68,7 +69,7 @@ function parseArguments(): {
 
     debugInfo('Launching BiDi server...');
 
-    WebSocketServer.run(port, channel, headless, verbose);
+    WebSocketServer.run(port, channel, headless, verbose, new SessionManager());
     debugInfo('BiDi server launched');
   } catch (e) {
     debugInfo('Error', e);

@@ -23,6 +23,7 @@ import type {ChromeReleaseChannel} from '@puppeteer/browsers';
 import {ErrorCode} from '../protocol/webdriver-bidi.js';
 
 import {BrowserInstance} from './BrowserInstance.js';
+import {SessionManager} from './SessionManager';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
@@ -30,18 +31,12 @@ const debugSend = debug('bidi:server:SEND ▸');
 const debugRecv = debug('bidi:server:RECV ◂');
 
 export class WebSocketServer {
-  /**
-   *
-   * @param bidiPort port to start ws server on.
-   * @param channel
-   * @param headless
-   * @param verbose
-   */
   static run(
     bidiPort: number,
     channel: ChromeReleaseChannel,
     headless: boolean,
-    verbose: boolean
+    verbose: boolean,
+    sessionManager: SessionManager
   ) {
     let jsonBody: any;
     const server = http.createServer(
@@ -56,7 +51,7 @@ export class WebSocketServer {
         }
 
         // https://w3c.github.io/webdriver-bidi/#transport, step 2.
-        if (request.url === '/session') {
+        if (request.url === '/session' && request.method === 'POST') {
           const body: Uint8Array[] = [];
           request
             .on('data', (chunk) => {
@@ -68,10 +63,15 @@ export class WebSocketServer {
                 'Content-Type': 'application/json;charset=utf-8',
                 'Cache-Control': 'no-cache',
               });
+
+              const session = sessionManager.createSession(
+                jsonBody?.capabilities
+              );
+
               response.write(
                 JSON.stringify({
                   value: {
-                    sessionId: '1',
+                    sessionId: session.sessionId,
                     capabilities: {
                       webSocketUrl: `ws://localhost:${bidiPort}`,
                     },
@@ -126,17 +126,48 @@ export class WebSocketServer {
     });
 
     wsServer.on('request', async (request: websocket.request) => {
-      const chromeOptions =
-        jsonBody?.capabilities?.alwaysMatch?.['goog:chromeOptions'];
       debugInternal('new WS request received:', request.resourceURL.path);
 
-      const browserInstance = await BrowserInstance.run(
-        channel,
-        headless,
-        verbose,
-        chromeOptions?.args
-      );
+      const sessionId = (request.resourceURL.path ?? '/').split('/')[1] ?? '';
+      debugInternal('Session ID:', sessionId);
 
+      let session;
+      // If no `sessionId` is provided, create a new session.
+      // TODO: wait for `session.new` command, and create session only after
+      //  that.
+      if (sessionId === '') {
+        session =
+          sessionManager.getSession(sessionId) ??
+          sessionManager.createSession(undefined);
+      } else {
+        session = sessionManager.getSession(sessionId);
+        if (session === undefined) {
+          debugInternal(
+            'Session not found. Rejecting WS connection.',
+            request.resourceURL.path
+          );
+          request.reject(404, 'Session not found');
+          return;
+        }
+      }
+
+      if (session.browserInstance === undefined) {
+        const chromeOptions =
+          session.capabilities?.alwaysMatch?.['goog:chromeOptions'];
+
+        debugInternal(
+          'Browser instance is not created for the session. Creating one...'
+        );
+
+        session.browserInstance = await BrowserInstance.run(
+          channel,
+          headless,
+          verbose,
+          chromeOptions?.args
+        );
+      }
+
+      const browserInstance = session.browserInstance;
       // Forward messages from BiDi Mapper to the client unconditionally.
       browserInstance.on('message', (message) => {
         void this.#sendClientMessageString(message, connection);
@@ -175,7 +206,7 @@ export class WebSocketServer {
 
         // Handle `browser.close` command.
         if (parsedCommandData.method === 'browser.close') {
-          await browserInstance.close();
+          sessionManager.closeSession(sessionId);
           await this.#sendClientMessage(
             {
               id: parsedCommandData.id,
@@ -199,7 +230,7 @@ export class WebSocketServer {
         );
         // TODO: handle reconnection which is used in WPT. Until then, close the
         //  browser after each WS connection is closed.
-        await browserInstance.close();
+        sessionManager.closeSession(sessionId);
       });
     });
   }
