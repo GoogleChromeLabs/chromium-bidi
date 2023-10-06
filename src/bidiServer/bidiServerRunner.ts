@@ -193,7 +193,7 @@ export class BidiServerRunner {
           } disconnected.`
         );
         // TODO: handle reconnection which is used in WPT. Until then, close the
-        //  browser after eachWS connection is closed.
+        //  browser after each WS connection is closed.
         await closeBrowserDelegate();
       });
 
