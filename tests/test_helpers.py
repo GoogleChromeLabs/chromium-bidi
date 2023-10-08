@@ -157,12 +157,14 @@ async def wait_for_event(websocket, event_method: str) -> dict:
 
 
 async def wait_for_events(websocket, event_methods: list[str]) -> dict:
-    """Wait and return any of the given events from BiDi server."""
+    """Wait and return any of the given event prefixes from BiDi server."""
     logger.info(f"Waiting for any of the events '{event_methods}'...")
     while True:
         event_response = await read_JSON_message(websocket)
-        if "method" in event_response and event_response[
-                "method"] in event_methods:
+        if "method" in event_response and any([
+                event_response["method"].startswith(event_method)
+                for event_method in event_methods
+        ]):
             return event_response
 
 
