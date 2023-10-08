@@ -112,17 +112,10 @@ export class NetworkStorage {
         const urlPattern: string =
           NetworkStorage.cdpFromSpecUrlPattern(urlPatternSpec);
         for (const phase of value.phases) {
-          if (phase === Network.InterceptPhase.AuthRequired) {
-            patterns.push({
-              urlPattern,
-              requestStage: 'Response',
-            });
-          } else {
-            patterns.push({
-              urlPattern,
-              requestStage: NetworkStorage.requestStageFromPhase(phase),
-            });
-          }
+          patterns.push({
+            urlPattern,
+            requestStage: NetworkStorage.requestStageFromPhase(phase),
+          });
         }
       }
     }
@@ -222,11 +215,8 @@ export class NetworkStorage {
       case Network.InterceptPhase.BeforeRequestSent:
         return 'Request';
       case Network.InterceptPhase.ResponseStarted:
-        return 'Response';
       case Network.InterceptPhase.AuthRequired:
-        throw new Error(
-          'AuthRequired is not a valid intercept phase for request stage.'
-        );
+        return 'Response';
     }
   }
 
