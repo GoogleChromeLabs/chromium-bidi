@@ -208,7 +208,7 @@ async def test_fail_request_with_auth_required_phase(
 
     network_event_response = await wait_for_event(websocket,
                                                   "network.beforeRequestSent")
-    assert network_event_response == AnyExtending({
+    assert network_event_response == {
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -231,7 +231,7 @@ async def test_fail_request_with_auth_required_phase(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    })
+    }
     network_id_from_bidi_event = network_event_response["params"]["request"][
         "request"]
 
@@ -313,7 +313,7 @@ async def test_fail_request_completes(websocket, context_id, example_url):
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == AnyExtending({
+    assert event_response == {
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -336,7 +336,7 @@ async def test_fail_request_completes(websocket, context_id, example_url):
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    })
+    }
     network_id = event_response["params"]["request"]["request"]
 
     await subscribe(websocket, ["cdp.Network.loadingFailed"])
@@ -400,7 +400,7 @@ async def test_fail_request_completes_new_request_still_blocks(
 
     event_response1 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
-    assert event_response1 == AnyExtending({
+    assert event_response1 == {
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -423,7 +423,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    })
+    }
     network_id_1 = event_response1["params"]["request"]["request"]
 
     await subscribe(websocket, ["cdp.Network.loadingFailed"])
@@ -466,7 +466,7 @@ async def test_fail_request_completes_new_request_still_blocks(
 
     event_response2 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
-    assert event_response2 == AnyExtending({
+    assert event_response2 == {
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -489,7 +489,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    })
+    }
     network_id_2 = event_response2["params"]["request"]["request"]
 
     assert event_response1 != event_response2
@@ -531,7 +531,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
     event_response1 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
-    assert event_response1 == AnyExtending({
+    assert event_response1 == {
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -554,7 +554,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    })
+    }
     network_id_1 = event_response1["params"]["request"]["request"]
 
     # Navigation in second context.
@@ -569,7 +569,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
     event_response2 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
-    assert event_response2 == AnyExtending({
+    assert event_response2 == {
         "method": "network.beforeRequestSent",
         "params": {
             "context": another_context_id,
@@ -592,7 +592,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    })
+    }
     network_id_2 = event_response2["params"]["request"]["request"]
 
     assert network_id_1 != network_id_2
