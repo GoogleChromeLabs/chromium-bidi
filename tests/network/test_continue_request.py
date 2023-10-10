@@ -15,7 +15,7 @@
 from typing import Literal
 
 import pytest
-from anys import ANY_DICT, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, execute_command, send_JSON_command,
                           subscribe, wait_for_event)
 
@@ -159,7 +159,7 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_continue_request_completes(websocket, context_id, example_url):
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await execute_command(
         websocket, {
@@ -172,6 +172,7 @@ async def test_continue_request_completes(websocket, context_id, example_url):
                 }, ],
             },
         })
+
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -180,8 +181,34 @@ async def test_continue_request_completes(websocket, context_id, example_url):
                 "context": context_id,
             }
         })
-    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
-    network_id = event_response["params"]["params"]["networkId"]
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": {
+                "type": "other",
+            },
+            "isBlocked": True,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT,
+            },
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["request"]["request"]
 
     await subscribe(websocket, ["network.responseCompleted"])
 
@@ -213,7 +240,7 @@ async def test_continue_request_completes(websocket, context_id, example_url):
 
 @pytest.mark.asyncio
 async def test_continue_request_twice(websocket, context_id, example_url):
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await execute_command(
         websocket, {
@@ -226,6 +253,7 @@ async def test_continue_request_twice(websocket, context_id, example_url):
                 }, ],
             },
         })
+
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -234,8 +262,34 @@ async def test_continue_request_twice(websocket, context_id, example_url):
                 "context": context_id,
             }
         })
-    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
-    network_id = event_response["params"]["params"]["networkId"]
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": {
+                "type": "other",
+            },
+            "isBlocked": True,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT,
+            },
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["request"]["request"]
 
     await subscribe(websocket, ["network.responseCompleted"])
 
