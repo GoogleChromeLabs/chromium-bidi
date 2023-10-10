@@ -117,6 +117,35 @@ describe('NetworkStorage', () => {
         2
       );
     });
+
+    it('is idempotent', () => {
+      const intercept1 = networkStorage.addIntercept({
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          },
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      const intercept2 = networkStorage.addIntercept({
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          },
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      expect(intercept1).to.match(UUID_REGEX);
+      expect(intercept2).to.match(UUID_REGEX);
+      expect(intercept1).to.be.equal(intercept2);
+
+      expect(networkStorage.getFetchEnableParams().patterns).to.have.lengthOf(
+        1
+      );
+    });
   });
 
   it('remove intercept', () => {

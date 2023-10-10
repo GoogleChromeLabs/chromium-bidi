@@ -82,8 +82,20 @@ export class NetworkStorage {
     urlPatterns: Network.UrlPattern[];
     phases: Network.InterceptPhase[];
   }): Network.Intercept {
-    const interceptId: Network.Intercept = uuidv4();
+    // Check if the given intercept entry already exists.
+    for (const [
+      interceptId,
+      {urlPatterns, phases},
+    ] of this.#interceptMap.entries()) {
+      if (
+        JSON.stringify(value.urlPatterns) === JSON.stringify(urlPatterns) &&
+        JSON.stringify(value.phases) === JSON.stringify(phases)
+      ) {
+        return interceptId;
+      }
+    }
 
+    const interceptId: Network.Intercept = uuidv4();
     this.#interceptMap.set(interceptId, value);
 
     return interceptId;
