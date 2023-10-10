@@ -283,7 +283,88 @@ async def test_fail_request_with_auth_required_phase(
 
 
 @pytest.mark.asyncio
-async def test_fail_request_completes(websocket, context_id, example_url):
+async def test_fail_request_completes_use_cdp_events(websocket, context_id,
+                                                     example_url):
+    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": example_url,
+                }, ],
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
+    assert event_response == {
+        "method": "cdp.Fetch.requestPaused",
+        "params": {
+            "event": "Fetch.requestPaused",
+            "params": {
+                "frameId": context_id,
+                "networkId": ANY_STR,
+                "request": AnyExtending({
+                    "headers": ANY_DICT,
+                    "url": example_url,
+                }),
+                "requestId": ANY_STR,
+                "resourceType": "Document",
+            },
+            "session": ANY_STR,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["params"]["networkId"]
+
+    await subscribe(websocket, ["cdp.Network.loadingFailed"])
+
+    result = await execute_command(websocket, {
+        "method": "network.failRequest",
+        "params": {
+            "request": network_id,
+        },
+    })
+    assert result == {}
+
+    loading_failed_response = await wait_for_event(
+        websocket, "cdp.Network.loadingFailed")
+    assert loading_failed_response == {
+        "method": "cdp.Network.loadingFailed",
+        "params": {
+            "event": "Network.loadingFailed",
+            "params": {
+                "canceled": False,
+                "errorText": "net::ERR_FAILED",
+                "requestId": network_id,
+                "timestamp": ANY_NUMBER,
+                "type": "Document",
+            },
+            "session": ANY_STR,
+        },
+        "type": "event",
+    }
+
+
+@pytest.mark.asyncio
+async def test_fail_request_completes_use_bidi_events(websocket, context_id,
+                                                      example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     result = await execute_command(
