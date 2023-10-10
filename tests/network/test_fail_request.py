@@ -657,7 +657,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 @pytest.mark.asyncio
 async def test_fail_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     result = await execute_command(
         websocket, {
@@ -685,26 +685,33 @@ async def test_fail_request_remove_intercept_inflight_request(
             }
         })
 
-    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
     assert event_response == {
-        "method": "cdp.Fetch.requestPaused",
+        "method": "network.beforeRequestSent",
         "params": {
-            "event": "Fetch.requestPaused",
-            "params": {
-                "frameId": context_id,
-                "networkId": ANY_STR,
-                "request": AnyExtending({
-                    "headers": ANY_DICT,
-                    "url": example_url,
-                }),
-                "requestId": ANY_STR,
-                "resourceType": "Document",
+            "context": context_id,
+            "initiator": {
+                "type": "other",
             },
-            "session": ANY_STR,
+            "isBlocked": True,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT,
+            },
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
-    network_id = event_response["params"]["params"]["networkId"]
+    network_id = event_response["params"]["request"]["request"]
 
     result = await execute_command(
         websocket, {
