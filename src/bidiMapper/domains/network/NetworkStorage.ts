@@ -103,6 +103,11 @@ export class NetworkStorage {
     this.#interceptMap.delete(intercept);
   }
 
+  /** Returns true iff there's at least one added intercept. */
+  hasIntercepts() {
+    return this.#interceptMap.size > 0;
+  }
+
   /** Gets parameters for CDP 'Fetch.enable' command from the intercept map. */
   getFetchEnableParams(): Protocol.Fetch.EnableRequest {
     const patterns: Protocol.Fetch.RequestPattern[] = [];
@@ -144,6 +149,11 @@ export class NetworkStorage {
       request.dispose();
       this.#requestMap.delete(id);
     }
+  }
+
+  /** Returns true iff there's at least one blocked network request. */
+  hasBlockedRequests() {
+    return this.#blockedRequestMap.size > 0;
   }
 
   /** Converts a URL pattern from the spec to a CDP URL pattern. */
