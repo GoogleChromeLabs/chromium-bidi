@@ -130,6 +130,7 @@ export class CdpTarget {
         // XXX: #1080: Do not always enable the network domain globally.
         // TODO: enable Network domain for OOPiF targets.
         this.#cdpClient.sendCommand('Network.enable'),
+        // XXX: #1080: Do not always enable the fetch domain globally.
         this.fetchEnable(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
