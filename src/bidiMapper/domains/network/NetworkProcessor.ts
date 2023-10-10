@@ -147,7 +147,7 @@ export class NetworkProcessor {
   async #applyIntercepts() {
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map(async (context) => {
-        await context.cdpTarget.fetchApply();
+        await context.cdpTarget.fetchEnable();
       })
     );
   }
