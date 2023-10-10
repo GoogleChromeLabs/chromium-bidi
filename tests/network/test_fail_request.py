@@ -749,3 +749,6 @@ async def test_fail_request_remove_intercept_inflight_request(
         },
         "type": "event",
     }
+
+
+# TODO: Replace cdp.Network.loadingFailed with network.fetchError BiDi event when it is implemented?

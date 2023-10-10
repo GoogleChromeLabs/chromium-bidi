@@ -301,3 +301,4 @@ async def create_dummy_blocked_request(
 
 
 # TODO: assertion with isBlocked: true
+# TODO: Replace cdp.Network.loadingFailed with network.fetchError BiDi event when it is implemented?
