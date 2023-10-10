@@ -95,8 +95,6 @@ export class NetworkProcessor {
 
     this.#networkStorage.removeBlockedRequest(networkId);
 
-    // TODO: Emit event?
-
     return {};
   }
 
@@ -126,8 +124,6 @@ export class NetworkProcessor {
       ?.failRequest(fetchId, 'Failed');
 
     this.#networkStorage.removeBlockedRequest(networkId);
-
-    // TODO: Emit event?
 
     return {};
   }
