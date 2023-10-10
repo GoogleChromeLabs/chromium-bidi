@@ -38,23 +38,13 @@ async def test_continue_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "phase, url",
-    [
-        ("responseStarted", "https://www.example.com/"),  # TODO: make offline.
-        pytest.param(
-            "authRequired",
-            "http://httpstat.us/401",
-            marks=pytest.mark.skip(reason='TODO: Use our own test server.')),
-    ],
-    ids=["responseStarted", "authRequired"])
-async def test_continue_request_invalid_phase(websocket, context_id, phase,
-                                              url):
+async def test_continue_request_invalid_phase_response_started(
+        websocket, context_id, example_url):
 
     network_id = await create_dummy_blocked_request(websocket,
                                                     context_id,
-                                                    url=url,
-                                                    phases=[phase])
+                                                    url=example_url,
+                                                    phases=["responseStarted"])
 
     with pytest.raises(
             Exception,
@@ -67,7 +57,31 @@ async def test_continue_request_invalid_phase(websocket, context_id, phase,
                 "method": "network.continueRequest",
                 "params": {
                     "request": network_id,
-                    "url": url,
+                    "url": example_url,
+                },
+            })
+
+
+async def test_continue_request_invalid_phase_auth_required(
+        websocket, context_id, auth_required_url):
+
+    network_id = await create_dummy_blocked_request(websocket,
+                                                    context_id,
+                                                    url=auth_required_url,
+                                                    phases=["authRequired"])
+
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": f"Blocked request for network id '{network_id}' is not in 'BeforeRequestSent' phase"
+            })):
+        await execute_command(
+            websocket, {
+                "method": "network.continueRequest",
+                "params": {
+                    "request": network_id,
+                    "url": auth_required_url,
                 },
             })
 
@@ -97,12 +111,9 @@ async def test_continue_request_invalid_url(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason="TODO: replace url with a server whose requests hang forever.")
 async def test_continue_request_non_blocked_request(websocket, context_id,
-                                                    assert_no_events_in_queue):
-    url = "http://127.0.0.1:5000/hang"
-
+                                                    assert_no_events_in_queue,
+                                                    hang_url):
     await subscribe(websocket, [
         "network.beforeRequestSent", "cdp.Network.responseReceived",
         "cdp.Network.loadingFailed"
@@ -113,7 +124,7 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
             "method": "browsingContext.navigate",
             "params": {
                 "context": context_id,
-                "url": url,
+                "url": hang_url,
                 "wait": "complete",
             }
         })
@@ -141,7 +152,7 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
                 "method": "network.continueRequest",
                 "params": {
                     "request": network_id,
-                    "url": url,
+                    "url": hang_url,
                 },
             })
 

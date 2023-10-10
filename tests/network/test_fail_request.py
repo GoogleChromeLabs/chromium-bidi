@@ -37,12 +37,9 @@ async def test_fail_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason="TODO: replace url with a server whose requests hang forever.")
 async def test_fail_request_non_blocked_request(websocket, context_id,
-                                                assert_no_events_in_queue):
-    url = "http://127.0.0.1:5000/hang"
-
+                                                assert_no_events_in_queue,
+                                                hang_url):
     await subscribe(websocket, [
         "network.beforeRequestSent", "cdp.Network.responseReceived",
         "cdp.Network.loadingFailed"
@@ -53,7 +50,7 @@ async def test_fail_request_non_blocked_request(websocket, context_id,
             "method": "browsingContext.navigate",
             "params": {
                 "context": context_id,
-                "url": url,
+                "url": hang_url,
                 "wait": "complete",
             }
         })
@@ -178,7 +175,6 @@ async def test_fail_request_twice(websocket, context_id, example_url):
                              "beforeRequestSent",
                              "beforeRequestSent and authRequired",
                          ])
-@pytest.mark.skip(reason="TODO: Use our own test server.")
 async def test_fail_request_with_auth_required_phase(
         websocket, context_id, phases, exception_and_response_expected,
         auth_required_url):
