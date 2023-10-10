@@ -16,8 +16,8 @@ from typing import Literal
 
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, send_JSON_command,
-                          subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -352,6 +352,102 @@ async def create_dummy_blocked_request(
     network_id = event_response["params"]["params"]["networkId"]
 
     return network_id
+
+
+@pytest.mark.asyncio
+async def test_continue_request_remove_intercept_inflight_request(
+        websocket, context_id, example_url):
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": example_url,
+                }, ],
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+    intercept_id = result["intercept"]
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": {
+                "type": "other",
+            },
+            "isBlocked": True,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT,
+            },
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["request"]["request"]
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.removeIntercept",
+            "params": {
+                "intercept": intercept_id,
+            },
+        })
+    assert result == {}
+
+    await subscribe(websocket, ["network.responseCompleted"])
+
+    await execute_command(
+        websocket, {
+            "method": "network.continueRequest",
+            "params": {
+                "request": network_id,
+                "url": example_url,
+            },
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.responseCompleted")
+    assert event_response == {
+        "method": "network.responseCompleted",
+        "params": {
+            "context": context_id,
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": ANY_DICT,
+            "response": ANY_DICT,
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
 
 
 # TODO: Replace cdp.Network.loadingFailed with network.fetchError BiDi event when it is implemented?
