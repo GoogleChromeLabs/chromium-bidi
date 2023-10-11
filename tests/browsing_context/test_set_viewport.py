@@ -29,7 +29,8 @@ async def test_set_viewport(websocket, context_id, html):
                 "viewport": {
                     "width": 300,
                     "height": 300,
-                }
+                },
+                "devicePixelRatio": None
             }
         })
 
@@ -118,6 +119,7 @@ async def test_set_viewport_unsupported(websocket, context_id, html, width,
                     "viewport": {
                         "width": width,
                         "height": height,
-                    }
+                    },
+                    "devicePixelRatio": None
                 }
             })

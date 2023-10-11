@@ -616,10 +616,7 @@ export namespace BrowsingContext {
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
       viewport: z.union([BrowsingContext.ViewportSchema, z.null()]),
-      devicePixelRatio: z.union([
-        BrowsingContext.DevicePixelRatioSchema,
-        z.null(),
-      ]),
+      devicePixelRatio: z.union([z.number().gt(0), z.null()]).optional(),
     })
   );
 }
@@ -630,7 +627,6 @@ export namespace BrowsingContext {
       height: JsUintSchema,
     })
   );
-  export const DevicePixelRatioSchema = z.lazy(() => z.number().gt(0));
 }
 export namespace BrowsingContext {
   export const ContextCreatedSchema = z.lazy(() =>

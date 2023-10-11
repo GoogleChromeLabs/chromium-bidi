@@ -680,7 +680,7 @@ export class BrowsingContextImpl {
 
   async setViewport(
     viewport: BrowsingContext.Viewport | null,
-    devicePixelRatio: number | null
+    devicePixelRatio?: number | null
   ) {
     if (viewport === null && devicePixelRatio === null) {
       await this.#cdpTarget.cdpClient.sendCommand(
