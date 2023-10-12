@@ -19,6 +19,7 @@ from tests.test_helpers import execute_command
 
 
 async def get_content(websocket, context_id, url):
+    """Get the body innerText content from the page with the given url."""
     await execute_command(
         websocket, {
             "method": "browsingContext.navigate",
