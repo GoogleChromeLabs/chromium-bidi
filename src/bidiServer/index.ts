@@ -20,7 +20,6 @@ import {ChromeReleaseChannel} from '@puppeteer/browsers';
 
 import {debugInfo, WebSocketServer} from './WebSocketServer.js';
 
-function foo() {}
 function parseArguments(): {
   channel: ChromeReleaseChannel;
   headless: string;
