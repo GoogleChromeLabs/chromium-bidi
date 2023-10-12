@@ -866,7 +866,7 @@ export class BrowsingContextImpl {
    */
   async #parseRect(clip: BrowsingContext.ClipRectangle) {
     switch (clip.type) {
-      case 'viewport':
+      case 'box':
         return {x: clip.x, y: clip.y, width: clip.width, height: clip.height};
       case 'element': {
         if (clip.scrollIntoView) {
