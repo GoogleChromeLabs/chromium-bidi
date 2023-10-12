@@ -12,6 +12,19 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+#
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
 
 from pytest_httpserver import httpserver
 
@@ -20,7 +33,7 @@ class LocalHttpServer:
     __http_server: httpserver = None
     __path_200 = "/200"
     __path_permanent_redirect = "/301"
-    default_200_page_content = 'default 200 page'
+    default_200_page_content: str = 'default 200 page'
 
     def __init__(self, http_server: httpserver) -> None:
         super().__init__()
@@ -38,8 +51,8 @@ class LocalHttpServer:
             .expect_request(self.__path_permanent_redirect) \
             .respond_with_data('', 301, {"Location": self.url_200()})
 
-    def url_200(self):
+    def url_200(self) -> str:
         return self.__http_server.url_for(self.__path_200)
 
-    def url_permanent_redirect(self):
+    def url_permanent_redirect(self) -> str:
         return self.__http_server.url_for(self.__path_permanent_redirect)
