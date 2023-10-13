@@ -176,38 +176,17 @@ export class MapperCdpConnection extends EventEmitter<
       });
     }
 
-    const launchedPromise = new Promise<void>((resolve, reject) => {
-      const onBindingCalled = ({
-        name,
-        payload,
-      }: Protocol.Runtime.BindingCalledEvent) => {
-        // Needed to check when Mapper is launched on the frontend.
-        if (name === 'sendBidiResponse') {
-          try {
-            const parsed = JSON.parse(payload);
-            if (parsed.launched) {
-              mapperCdpClient.off('Runtime.bindingCalled', onBindingCalled);
-              resolve();
-            }
-          } catch (e) {
-            reject(new Error('Could not parse initial bidi response as JSON'));
-          }
-        }
-      };
-
-      mapperCdpClient.on('Runtime.bindingCalled', onBindingCalled);
-    });
-
+    // Evaluate Mapper sources in the tab.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: mapperContent,
     });
 
-    // Let Mapper know its TargetId to filter out related targets.
+    // Run Mapper instance.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `window.setSelfTargetId('${targetId}')`,
+      expression: `window.runMapper('${targetId}')`,
+      awaitPromise: true,
     });
 
-    await launchedPromise;
     debugInternal('Launched!');
     return mapperCdpClient;
   }

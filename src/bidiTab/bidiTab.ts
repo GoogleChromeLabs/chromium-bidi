@@ -17,7 +17,7 @@
  * @license
  */
 
-import {BidiServer, OutgoingMessage} from '../bidiMapper/BidiMapper.js';
+import {BidiServer} from '../bidiMapper/BidiMapper.js';
 import {CdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
 
@@ -27,6 +27,11 @@ import {generatePage, log} from './mapperTabPage.js';
 
 declare global {
   interface Window {
+    // `runMapper` function will be defined by the Mapper in the Tab, and will
+    // be evaluated via `Runtime.evaluate` by the Node runner, providing all the
+    // required parameters.
+    runMapper: ((...args: any) => Promise<string>) | null;
+
     // `window.cdp` is exposed by `Target.exposeDevToolsProtocol` from the server side.
     // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
     cdp: {
@@ -42,49 +47,35 @@ declare global {
 
     // Set from the server side if verbose logging is required.
     sendDebugMessage?: ((message: string) => void) | null;
-
-    // `window.setSelfTargetId` is called via `Runtime.evaluate` from the server side.
-    setSelfTargetId: (targetId: string) => void;
   }
 }
 
-// Initiate `setSelfTargetId` as soon as possible to prevent race condition.
-const waitSelfTargetIdPromise = waitSelfTargetId();
-
 void (async () => {
   generatePage();
+  const mapperTabToServerTransport = new WindowBidiTransport();
+  const cdpTransport = new WindowCdpTransport();
 
-  // Needed to filter out info related to BiDi target.
-  const selfTargetId = await waitSelfTargetIdPromise;
+  /**
+   * Launches the BiDi mapper.
+   * @param selfTargetId Needed to filter out info related to BiDi target.
+   */
+  window.runMapper = async (selfTargetId) => {
+    console.log('launching with selfTargetId: ', selfTargetId);
 
-  const bidiServer = await BidiServer.createAndStart(
-    new WindowBidiTransport(),
-    /**
-     * A CdpTransport implementation that uses the window.cdp bindings
-     * injected by Target.exposeDevToolsProtocol.
-     */
-    new CdpConnection(new WindowCdpTransport(), log),
-    selfTargetId,
-    new BidiParser(),
-    log
-  );
+    await BidiServer.createAndStart(
+      mapperTabToServerTransport,
+      /**
+       * A CdpTransport implementation that uses the window.cdp bindings
+       * injected by Target.exposeDevToolsProtocol.
+       */
+      new CdpConnection(cdpTransport, log),
+      selfTargetId,
+      new BidiParser(),
+      log
+    );
 
-  log(LogType.debugInfo, 'Launched');
+    log(LogType.debugInfo, 'Launched');
 
-  bidiServer.emitOutgoingMessage(
-    OutgoingMessage.createResolved({
-      launched: true,
-    }),
-    'launched'
-  );
+    return 'launched';
+  };
 })();
-
-// Needed to filter out info related to BiDi target.
-async function waitSelfTargetId(): Promise<string> {
-  return new Promise((resolve) => {
-    window.setSelfTargetId = (targetId) => {
-      log(LogType.debugInfo, 'Current target ID:', targetId);
-      resolve(targetId);
-    };
-  });
-}
