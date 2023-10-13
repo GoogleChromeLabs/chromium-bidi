@@ -679,7 +679,7 @@ export class BrowsingContextImpl {
   }
 
   async setViewport(
-    viewport: BrowsingContext.Viewport | null,
+    viewport?: BrowsingContext.Viewport | null,
     devicePixelRatio?: number | null
   ) {
     if (viewport === null && devicePixelRatio === null) {
@@ -869,7 +869,7 @@ export class BrowsingContextImpl {
    */
   async #parseRect(clip: BrowsingContext.ClipRectangle) {
     switch (clip.type) {
-      case 'viewport':
+      case 'box':
         return {x: clip.x, y: clip.y, width: clip.width, height: clip.height};
       case 'element': {
         if (clip.scrollIntoView) {
@@ -952,7 +952,10 @@ function getImageFormatParameters(
       } as const;
     }
     case 'image/webp': {
-      return {format: 'webp'} as const;
+      return {
+        format: 'webp',
+        ...(quality === undefined ? {} : {quality: Math.round(quality * 100)}),
+      } as const;
     }
   }
   throw new UnsupportedOperationException(
