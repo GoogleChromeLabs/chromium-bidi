@@ -18,7 +18,7 @@ import sys
 
 from pytest_httpserver import HTTPServer
 
-# Current directory is noit a module, so to import `LocalHttpServer`, it's path
+# Current directory is not a module, so to import `LocalHttpServer`, its path
 # has to be added to `sys.path`. It is done relative to this file's directory.
 # The `flake8` is disabled for this reason.
 sys.path.append(os.path.dirname(__file__) + '/../tests/tools/')
