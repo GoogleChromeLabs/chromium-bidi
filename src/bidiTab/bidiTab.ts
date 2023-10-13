@@ -50,32 +50,30 @@ declare global {
   }
 }
 
-void (async () => {
-  generatePage();
-  const mapperTabToServerTransport = new WindowBidiTransport();
-  const cdpTransport = new WindowCdpTransport();
+generatePage();
+const mapperTabToServerTransport = new WindowBidiTransport();
+const cdpTransport = new WindowCdpTransport();
 
-  /**
-   * Launches the BiDi mapper.
-   * @param selfTargetId Needed to filter out info related to BiDi target.
-   */
-  window.runMapper = async (selfTargetId) => {
-    console.log('launching with selfTargetId: ', selfTargetId);
+/**
+ * Set `window.runMapper` to a function which launches the BiDi mapper instance.
+ * @param selfTargetId Needed to filter out info related to BiDi target.
+ */
+window.runMapper = async (selfTargetId) => {
+  console.log('launching with selfTargetId: ', selfTargetId);
 
-    await BidiServer.createAndStart(
-      mapperTabToServerTransport,
-      /**
-       * A CdpTransport implementation that uses the window.cdp bindings
-       * injected by Target.exposeDevToolsProtocol.
-       */
-      new CdpConnection(cdpTransport, log),
-      selfTargetId,
-      new BidiParser(),
-      log
-    );
+  await BidiServer.createAndStart(
+    mapperTabToServerTransport,
+    /**
+     * A CdpTransport implementation that uses the window.cdp bindings
+     * injected by Target.exposeDevToolsProtocol.
+     */
+    new CdpConnection(cdpTransport, log),
+    selfTargetId,
+    new BidiParser(),
+    log
+  );
 
-    log(LogType.debugInfo, 'Launched');
+  log(LogType.debugInfo, 'Launched');
 
-    return 'launched';
-  };
-})();
+  return 'launched';
+};
