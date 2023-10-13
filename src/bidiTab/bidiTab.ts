@@ -30,7 +30,7 @@ declare global {
     // `runMapper` function will be defined by the Mapper in the Tab, and will
     // be evaluated via `Runtime.evaluate` by the Node runner, providing all the
     // required parameters.
-    runMapper: ((...args: any) => Promise<string>) | null;
+    runMapperInstance: ((...args: any) => Promise<void>) | null;
 
     // `window.cdp` is exposed by `Target.exposeDevToolsProtocol` from the server side.
     // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
@@ -58,8 +58,8 @@ const cdpTransport = new WindowCdpTransport();
  * Set `window.runMapper` to a function which launches the BiDi mapper instance.
  * @param selfTargetId Needed to filter out info related to BiDi target.
  */
-window.runMapper = async (selfTargetId) => {
-  console.log('launching with selfTargetId: ', selfTargetId);
+window.runMapperInstance = async (selfTargetId) => {
+  console.log('Launching Mapper instance with selfTargetId: ', selfTargetId);
 
   await BidiServer.createAndStart(
     mapperTabToServerTransport,
@@ -73,7 +73,5 @@ window.runMapper = async (selfTargetId) => {
     log
   );
 
-  log(LogType.debugInfo, 'Launched');
-
-  return 'launched';
+  log(LogType.debugInfo, 'Mapper instance has been launched');
 };

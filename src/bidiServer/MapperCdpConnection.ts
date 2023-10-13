@@ -46,13 +46,13 @@ export class MapperCdpConnection extends EventEmitter<
 
   static async create(
     cdpConnection: CdpConnection,
-    mapperContent: string,
+    mapperTabSource: string,
     verbose: boolean
   ): Promise<MapperCdpConnection> {
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
-        mapperContent,
+        mapperTabSource,
         verbose
       );
       return new MapperCdpConnection(cdpConnection, mapperCdpClient);
@@ -141,19 +141,22 @@ export class MapperCdpConnection extends EventEmitter<
 
   static async #initMapper(
     cdpConnection: CdpConnection,
-    mapperContent: string,
+    mapperTabSource: string,
     verbose: boolean
   ): Promise<CdpClient> {
     debugInternal('Connection opened.');
 
     const browserClient = cdpConnection.browserClient();
 
-    const {targetId} = await browserClient.sendCommand('Target.createTarget', {
-      url: 'about:blank',
-    });
+    const {targetId: mapperTabTargetId} = await browserClient.sendCommand(
+      'Target.createTarget',
+      {
+        url: 'about:blank',
+      }
+    );
     const {sessionId: mapperSessionId} = await browserClient.sendCommand(
       'Target.attachToTarget',
-      {targetId, flatten: true}
+      {targetId: mapperTabTargetId, flatten: true}
     );
 
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
@@ -162,7 +165,7 @@ export class MapperCdpConnection extends EventEmitter<
 
     await browserClient.sendCommand('Target.exposeDevToolsProtocol', {
       bindingName: 'cdp',
-      targetId,
+      targetId: mapperTabTargetId,
     });
 
     await mapperCdpClient.sendCommand('Runtime.addBinding', {
@@ -176,14 +179,14 @@ export class MapperCdpConnection extends EventEmitter<
       });
     }
 
-    // Evaluate Mapper sources in the tab.
+    // Evaluate Mapper Tab sources in the tab.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: mapperContent,
+      expression: mapperTabSource,
     });
 
     // Run Mapper instance.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `window.runMapper('${targetId}')`,
+      expression: `window.runMapperInstance('${mapperTabTargetId}')`,
       awaitPromise: true,
     });
 
