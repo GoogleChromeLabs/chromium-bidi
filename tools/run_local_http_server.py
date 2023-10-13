@@ -15,19 +15,20 @@
 
 import os
 import sys
+from pathlib import Path
 
 from pytest_httpserver import HTTPServer
 
 # Current directory is not a module, so to import `LocalHttpServer`, its path
 # has to be added to `sys.path`. It is done relative to this file's directory.
 # The `flake8` is disabled for this reason.
-sys.path.append(os.path.dirname(__file__) + '/../tests/tools/')
+sys.path.append(f'{Path(__file__).parent.resolve()}/../tests/tools/')
 
 import local_http_server  # noqa: E402
 
 httpserver = HTTPServer()
 httpserver.start()
 local_http_server = local_http_server.LocalHttpServer(httpserver)
-print("qweqwe Local http server started...")
+print("Local http server started...")
 print("200: ", local_http_server.url_200())
 print("permanent redirect: ", local_http_server.url_permanent_redirect())
