@@ -272,7 +272,7 @@ PORT=8081 npm run e2e
 
 ### Local http server
 
-E2e tests use local http
+E2E tests use local http
 server [`pytest-httpserver`](https://pytest-httpserver.readthedocs.io/), which is run
 automatically with the tests. However,
 sometimes it is useful to run the http server outside the test
