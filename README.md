@@ -279,7 +279,7 @@ sometimes it is useful to run the http server outside the test
 case, for example for manual debugging. This can be done by running:
 
 ```sh
-python tools/run_local_http_server.py
+python3 tools/run_local_http_server.py
 ```
 
 or use npm:
