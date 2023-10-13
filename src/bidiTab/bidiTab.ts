@@ -59,7 +59,7 @@ const cdpTransport = new WindowCdpTransport();
  * @param selfTargetId Needed to filter out info related to BiDi target.
  */
 window.runMapperInstance = async (selfTargetId) => {
-  console.log('Launching Mapper instance with selfTargetId: ', selfTargetId);
+  console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 
   await BidiServer.createAndStart(
     mapperTabToServerTransport,
