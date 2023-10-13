@@ -112,7 +112,7 @@ export class BrowserInstance extends EventEmitter<Record<'message', string>> {
       cdpEndpoint
     );
 
-    // 2. Get `BiDi-CDP` mapper JS binaries using `readMapperTabFile`.
+    // 2. Get `BiDi-CDP` mapper JS binaries.
     const mapperTabSource = await getMapperTabSource();
 
     // 3. Run `BiDi-CDP` mapper in launched browser using `MapperRunner`.
