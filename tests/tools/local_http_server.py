@@ -24,10 +24,12 @@ class LocalHttpServer:
     """A wrapper of `pytest_httpserver.httpserver` to simplify the usage. Sets
     up common use cases and provides url for them."""
     __http_server: HTTPServer
+
     __path_200 = "/200"
     __path_permanent_redirect = "/301"
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
+
     default_200_page_content: str = 'default 200 page'
 
     def __init__(self, http_server: HTTPServer) -> None:
@@ -68,7 +70,7 @@ class LocalHttpServer:
             .expect_request(self.__path_basic_auth) \
             .respond_with_handler(process_auth)
 
-        def hang_forever(request):
+        def hang_forever(_):
             while True:
                 time.sleep(60)
             raise Exception("Should not reach here")
@@ -87,7 +89,14 @@ class LocalHttpServer:
         return self.__http_server.url_for(self.__path_permanent_redirect)
 
     def url_basic_auth(self) -> str:
-        """Returns the url for the page with a basic auth."""
+        """
+        Returns the url for the page with a basic auth (401).
+
+        To test with non-local servers, use one of the following URLs:
+            - "https://authenticationtest.com/HTTPAuth/"
+            - "http://the-internet.herokuapp.com/basic_auth"
+            - "http://httpstat.us/401"
+        """
         return self.__http_server.url_for(self.__path_basic_auth)
 
     def url_hang_forever(self) -> str:

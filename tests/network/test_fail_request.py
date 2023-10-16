@@ -254,7 +254,7 @@ async def test_fail_request_with_auth_required_phase(
                 "resourceType": "Document",
             } | ({
                 "responseStatusCode": 401,
-                "responseStatusText": "Unauthorized",
+                "responseStatusText": "UNAUTHORIZED",
                 "responseHeaders": ANY_LIST,
             } if exception_and_response_expected else {}),
             "session": ANY_STR,
