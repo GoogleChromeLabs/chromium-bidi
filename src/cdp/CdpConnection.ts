@@ -63,7 +63,7 @@ export class CdpConnection implements ICdpConnection {
     this.#transport.setOnMessage(this.#onMessage);
 
     // Create Browser CDP Session.
-    this.#createCdpSession(undefined);
+    this.#createCdpClient(undefined);
   }
 
   /** Closes the connection to the browser. */
@@ -132,7 +132,7 @@ export class CdpConnection implements ICdpConnection {
     // Listen for these events on every session.
     if (message.method === 'Target.attachedToTarget') {
       const {sessionId} = message.params;
-      this.#createCdpSession(sessionId);
+      this.#createCdpClient(sessionId);
     }
 
     if (message.id !== undefined) {
@@ -165,7 +165,7 @@ export class CdpConnection implements ICdpConnection {
     }
   };
 
-  #createCdpSession(
+  #createCdpClient(
     sessionId: Protocol.Target.SessionID | undefined
   ): CdpClient {
     const cdpClient = new CdpClient(this, sessionId);

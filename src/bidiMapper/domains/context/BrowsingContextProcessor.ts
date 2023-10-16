@@ -338,6 +338,7 @@ export class BrowsingContextProcessor {
     const cdpTarget = CdpTarget.create(
       targetInfo.targetId,
       targetCdpClient,
+      this.#cdpConnection.browserClient(),
       sessionId,
       this.#realmStorage,
       this.#eventManager,
