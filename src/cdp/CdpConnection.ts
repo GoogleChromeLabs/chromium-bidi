@@ -31,8 +31,6 @@ interface CdpCallbacks {
 }
 
 export interface ICdpConnection {
-  browserClient(): ICdpClient;
-
   getCdpClient(sessionId: Protocol.Target.SessionID): ICdpClient;
 }
 
@@ -46,6 +44,7 @@ export class CdpConnection implements ICdpConnection {
   static readonly LOGGER_PREFIX_RECV = `${LogType.cdp}:RECV ◂` as const;
   static readonly LOGGER_PREFIX_SEND = `${LogType.cdp}:SEND ▸` as const;
 
+  readonly #mainBrowserCdpClient: ICdpClient;
   readonly #transport: ITransport;
 
   /** Map from session ID to CdpClient. */
@@ -62,8 +61,8 @@ export class CdpConnection implements ICdpConnection {
     this.#logger = logger;
     this.#transport.setOnMessage(this.#onMessage);
 
-    // Create Browser CDP Session.
-    this.#createCdpClient(undefined);
+    // Create default Browser CDP Session.
+    this.#mainBrowserCdpClient = this.#createCdpClient(undefined);
   }
 
   /** Closes the connection to the browser. */
@@ -76,16 +75,18 @@ export class CdpConnection implements ICdpConnection {
     this.#sessionCdpClients.clear();
   }
 
-  /** The CdpClient object attached to the root browser session. */
-  browserClient(): CdpClient {
-    return this.getCdpClient(undefined);
+  async createBrowserSession(): Promise<ICdpClient> {
+    const {sessionId} = await this.#mainBrowserCdpClient.sendCommand(
+      'Target.attachToBrowserTarget'
+    );
+    return this.#createCdpClient(sessionId);
   }
 
   /**
    * Gets a CdpClient instance attached to the given session ID,
    * or null if the session is not attached.
    */
-  getCdpClient(sessionId: Protocol.Target.SessionID | undefined): CdpClient {
+  getCdpClient(sessionId: Protocol.Target.SessionID): CdpClient {
     const cdpClient = this.#sessionCdpClients.get(sessionId);
     if (!cdpClient) {
       throw new Error(`Unknown CDP session ID: ${sessionId}`);
