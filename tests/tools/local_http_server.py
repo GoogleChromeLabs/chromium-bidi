@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import time
+
 from pytest_httpserver import HTTPServer
 
 
@@ -22,6 +24,7 @@ class LocalHttpServer:
     __http_server: HTTPServer
     __path_200 = "/200"
     __path_permanent_redirect = "/301"
+    __path_hang_forever = "/hang_forever"
     default_200_page_content: str = 'default 200 page'
 
     def __init__(self, http_server: HTTPServer) -> None:
@@ -40,6 +43,14 @@ class LocalHttpServer:
             .expect_request(self.__path_permanent_redirect) \
             .respond_with_data('', 301, {"Location": self.url_200()})
 
+        def hang_forever(request):
+            while True:
+                time.sleep(60)
+            raise Exception("Should not reach here")
+
+        self.__http_server.expect_request(self.__path_hang_forever) \
+            .respond_with_handler(hang_forever)
+
     def url_200(self) -> str:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
@@ -49,3 +60,7 @@ class LocalHttpServer:
         """Returns the url for the permanent redirect page, redirecting to the
         200 page."""
         return self.__http_server.url_for(self.__path_permanent_redirect)
+
+    def url_hang_forever(self) -> str:
+        """Returns the url for the page, request to which will never be finished."""
+        return self.__http_server.url_for(self.__path_hang_forever)
