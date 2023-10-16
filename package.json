@@ -13,7 +13,7 @@
     "eslint": "wireit",
     "flake8": "flake8 examples/ tests/",
     "format": "npm run pre-commit --",
-    "pre-commit": "pre-commit run --all-files",
+    "pre-commit": "pre-commit run --hook-stage manual --all-files",
     "prepare": "wireit",
     "prettier": "prettier --write .",
     "rollup": "wireit",
