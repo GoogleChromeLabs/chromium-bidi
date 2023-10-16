@@ -32,6 +32,7 @@ interface CdpCallbacks {
 
 export interface ICdpConnection {
   browserClient(): ICdpClient;
+
   getCdpClient(sessionId: Protocol.Target.SessionID): ICdpClient;
 }
 
@@ -47,12 +48,11 @@ export class CdpConnection implements ICdpConnection {
 
   readonly #transport: ITransport;
 
-  /** The CdpClient object attached to the root browser session. */
-  readonly #browserCdpClient: CdpClient;
-
   /** Map from session ID to CdpClient. */
-  readonly #sessionCdpClients = new Map<Protocol.Target.SessionID, CdpClient>();
-
+  readonly #sessionCdpClients = new Map<
+    Protocol.Target.SessionID | undefined,
+    CdpClient
+  >();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #logger?: LoggerFn;
   #nextId = 0;
@@ -61,7 +61,9 @@ export class CdpConnection implements ICdpConnection {
     this.#transport = transport;
     this.#logger = logger;
     this.#transport.setOnMessage(this.#onMessage);
-    this.#browserCdpClient = new CdpClient(this, undefined);
+
+    // Create Browser CDP Session.
+    this.#createCdpSession(undefined);
   }
 
   /** Closes the connection to the browser. */
@@ -76,14 +78,14 @@ export class CdpConnection implements ICdpConnection {
 
   /** The CdpClient object attached to the root browser session. */
   browserClient(): CdpClient {
-    return this.#browserCdpClient;
+    return this.getCdpClient(undefined);
   }
 
   /**
    * Gets a CdpClient instance attached to the given session ID,
    * or null if the session is not attached.
    */
-  getCdpClient(sessionId: Protocol.Target.SessionID): CdpClient {
+  getCdpClient(sessionId: Protocol.Target.SessionID | undefined): CdpClient {
     const cdpClient = this.#sessionCdpClients.get(sessionId);
     if (!cdpClient) {
       throw new Error(`Unknown CDP session ID: ${sessionId}`);
@@ -130,7 +132,7 @@ export class CdpConnection implements ICdpConnection {
     // Listen for these events on every session.
     if (message.method === 'Target.attachedToTarget') {
       const {sessionId} = message.params;
-      this.#sessionCdpClients.set(sessionId, new CdpClient(this, sessionId));
+      this.#createCdpSession(sessionId);
     }
 
     if (message.id !== undefined) {
@@ -145,9 +147,9 @@ export class CdpConnection implements ICdpConnection {
         }
       }
     } else if (message.method) {
-      const client = message.sessionId
-        ? this.#sessionCdpClients.get(message.sessionId)
-        : this.#browserCdpClient;
+      const client = this.#sessionCdpClients.get(
+        message.sessionId ?? undefined
+      );
       client?.emit(message.method, message.params || {});
 
       // Update client map if a session is detached
@@ -162,4 +164,12 @@ export class CdpConnection implements ICdpConnection {
       }
     }
   };
+
+  #createCdpSession(
+    sessionId: Protocol.Target.SessionID | undefined
+  ): CdpClient {
+    const cdpClient = new CdpClient(this, sessionId);
+    this.#sessionCdpClients.set(sessionId, cdpClient);
+    return cdpClient;
+  }
 }
