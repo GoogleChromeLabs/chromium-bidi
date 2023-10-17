@@ -41,10 +41,6 @@ async def websocket():
     url = f"ws://localhost:{port}"
     async with websockets.connect(url) as connection:
         yield connection
-        await execute_command(connection, {
-            "method": "browser.close",
-            "params": {}
-        })
 
 
 @pytest_asyncio.fixture
