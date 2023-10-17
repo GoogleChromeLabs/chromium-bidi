@@ -97,7 +97,7 @@ export class MapperCdpConnection {
     this.#cdpConnection.close();
   }
 
-  get bidiSession(): SimpleTransport {
+  bidiSession(): SimpleTransport {
     return this.#bidiSession;
   }
 

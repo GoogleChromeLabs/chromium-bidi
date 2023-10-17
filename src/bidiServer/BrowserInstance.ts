@@ -141,8 +141,8 @@ export class BrowserInstance {
     await this.#browserProcess.close();
   }
 
-  get bidiSession(): SimpleTransport {
-    return this.#mapperCdpConnection.bidiSession;
+  bidiSession(): SimpleTransport {
+    return this.#mapperCdpConnection.bidiSession();
   }
 
   static #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
