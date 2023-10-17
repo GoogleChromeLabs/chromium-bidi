@@ -154,6 +154,7 @@ def auth_required_url(local_server: LocalHttpServer):
     # All of these URLs work, just pick one.
     # url = "https://authenticationtest.com/HTTPAuth/"
     # url = "http://the-internet.herokuapp.com/basic_auth"
+    # url = "http://httpstat.us/401"
     pytest.skip(reason='TODO: Use our own test server.')
     return local_server.url_basic_auth()
 
