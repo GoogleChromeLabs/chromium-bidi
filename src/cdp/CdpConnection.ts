@@ -47,7 +47,8 @@ export class CdpConnection implements ICdpConnection {
   readonly #mainBrowserCdpClient: ICdpClient;
   readonly #transport: ITransport;
 
-  /** Map from session ID to CdpClient. */
+  /** Map from session ID to CdpClient.
+   * `undefined` points to the main browser session. */
   readonly #sessionCdpClients = new Map<
     Protocol.Target.SessionID | undefined,
     CdpClient
@@ -166,6 +167,12 @@ export class CdpConnection implements ICdpConnection {
     }
   };
 
+  /**
+   * Creates a new CdpClient instance for the given session ID.
+   * @param sessionId either a string, or undefined for the main browser session.
+   * The main browser session is used only to create new browser sessions.
+   * @private
+   */
   #createCdpClient(
     sessionId: Protocol.Target.SessionID | undefined
   ): CdpClient {
