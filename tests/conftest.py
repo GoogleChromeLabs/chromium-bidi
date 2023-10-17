@@ -155,16 +155,22 @@ def another_example_url():
 
 
 @pytest.fixture
-def auth_required_url(local_server):
+def auth_required_url():
     """Return a URL that requires authentication (status code 401)."""
-    return local_server.url_basic_auth()
+    # TODO: Switch to a local server so that it works off-line.
+    # All of these URLs work, just pick one.
+    # url = "https://authenticationtest.com/HTTPAuth/"
+    # url = "http://the-internet.herokuapp.com/basic_auth"
+    pytest.skip(reason='TODO: Use our own test server.')
+    return "http://httpstat.us/401"
 
 
 @pytest.fixture
-def hang_url(local_server):
+def hang_url():
     # TODO: Start a local server alongside tests that use this fixture.
     """Return a URL that hangs forever."""
-    return local_server.url_hang_forever()
+    pytest.skip(reason='TODO: Use our own test server.')
+    return "http://127.0.0.1:5000/hang"
 
 
 @pytest.fixture
