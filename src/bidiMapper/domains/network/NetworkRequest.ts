@@ -326,6 +326,25 @@ export class NetworkRequest {
     this.#interceptPhase = undefined;
   }
 
+  /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
+  async provideResponse(
+    cdpFetchRequestId: Protocol.Fetch.RequestId,
+    responseCode: JsUint,
+    responsePhrase?: string,
+    responseHeaders?: Protocol.Fetch.HeaderEntry[],
+    body?: string
+  ) {
+    await this.#cdpTarget.cdpClient.sendCommand('Fetch.fulfillRequest', {
+      requestId: cdpFetchRequestId,
+      responseCode,
+      responsePhrase,
+      responseHeaders,
+      ...(body ? {body: btoa(body)} : {}), // TODO: Double-check if btoa usage is correct.
+    });
+
+    this.#interceptPhase = undefined;
+  }
+
   dispose() {
     const result = {
       kind: 'error' as const,
