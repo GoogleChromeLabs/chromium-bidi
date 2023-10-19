@@ -17,9 +17,16 @@
 
 import {EventEmitter} from '../utils/EventEmitter';
 
+/**
+ * Implements simple transport that allows sending string messages via
+ * `sendCommand` and receiving them via `on('message')`.
+ */
 export class SimpleTransport extends EventEmitter<Record<'message', string>> {
   readonly #sendCommandDelegate: (plainCommand: string) => Promise<void>;
 
+  /**
+   * @param sendCommandDelegate delegate to be called in `sendCommand`.
+   */
   constructor(sendCommandDelegate: (plainCommand: string) => Promise<void>) {
     super();
     this.#sendCommandDelegate = sendCommandDelegate;
