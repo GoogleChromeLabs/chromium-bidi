@@ -358,6 +358,15 @@ export class NetworkRequest {
     return this.#request.info?.frameId ?? null;
   }
 
+  /** Returns the HTTP status code associated with this request if any. */
+  get statusCode(): number {
+    return (
+      this.#response.extraInfo?.statusCode ??
+      this.#response.info?.response.status ??
+      200 // TODO: Throw an exception or use some other status code?
+    );
+  }
+
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {
     return {
       isBlocked: phase !== undefined && phase === this.#interceptPhase,
@@ -505,9 +514,7 @@ export class NetworkRequest {
         response: {
           url: this.#response.info.response.url ?? NetworkRequest.#unknown,
           protocol: this.#response.info.response.protocol ?? '',
-          status:
-            this.#response.extraInfo?.statusCode ??
-            this.#response.info.response.status,
+          status: this.statusCode,
           statusText: this.#response.info.response.statusText,
           fromCache:
             this.#response.info.response.fromDiskCache ||

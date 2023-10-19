@@ -531,6 +531,7 @@ async def test_continue_response_remove_intercept_inflight_request(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 

@@ -185,7 +185,7 @@ export class NetworkProcessor {
 
     await request.provideResponse(
       fetchId,
-      statusCode!, // TODO: What if the status code is not present?
+      statusCode ?? request.statusCode,
       reasonPhrase,
       responseHeaders,
       body?.value // TODO: Differ base64 / string

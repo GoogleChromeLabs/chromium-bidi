@@ -370,6 +370,7 @@ async def test_provide_response_completes_use_bidi_events(
             "redirectCount": 0,
             "request": ANY_DICT,
             "response": AnyExtending({
+                # TODO: Ensure body is "my body".
                 "headers": [{
                     "name": "header1",
                     "value": {
