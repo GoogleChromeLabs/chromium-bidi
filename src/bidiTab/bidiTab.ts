@@ -26,26 +26,54 @@ import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
 import {generatePage, log} from './mapperTabPage.js';
 
 declare global {
+  /**
+   * Mapper is run by Runner (either NodeJS or ChromeDriver). In order to provide
+   * communication channels, the `window` object of the tab where the Mapper is running,
+   * is extended with the following properties.
+   */
   interface Window {
-    // `runMapper` function will be defined by the Mapper in the Tab, and will
-    // be evaluated via `Runtime.evaluate` by the Node runner, providing all the
-    // required parameters.
-    runMapperInstance: ((...args: any) => Promise<void>) | null;
+    /**
+     * Launch the BiDi mapper instance.
+     * Is set by the Mapper when Mapper script is initialized, and will be evaluated via
+     * `Runtime.evaluate` by the runner via `Runtime.evaluate`.
+     * @param selfTargetId CDP TargetId of the tab, where Mapper is running. Needed to
+     * filter out info related to BiDi target.
+     * @param bidiSessionId Unique ID of the BiDi session. Will be used to direct the
+     * messages
+     */
+    runMapperInstance:
+      | ((selfTargetId: string, bidiSessionId: string) => Promise<void>)
+      | null;
 
-    // `window.cdp` is exposed by `Target.exposeDevToolsProtocol` from the server side.
-    // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
+    /**
+     * CDP bindings. Used by Mapper to communicate to CDP. It is exposed by Runner via
+     * `Target.exposeDevToolsProtocol`.
+     * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol.
+     */
     cdp: {
       send: (message: string) => void;
       onmessage: ((message: string) => void) | null;
     };
 
-    // `window.sendBidiResponse` is exposed by `Runtime.addBinding` from the server side.
+    /**
+     * Send BiDi response (either a command result or an event) from Mapper to client.
+     * It set by Runner via `Runtime.addBinding`.
+     * @param {string} response JSON stringified BiDi response.
+     */
     sendBidiResponse: (response: string) => void;
 
-    // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
+    /**
+     * Process BiDi command from client. It is set by the Mapper, and is called by Runner
+     * via `Runtime.evaluate` by the runner (NodeJS or ChromeDriver).
+     * @param {string} message JSON stringified BiDi command.
+     */
     onBidiMessage: ((message: string) => void) | null;
 
-    // Set from the server side if verbose logging is required.
+    /**
+     * Send debug messages from Mapper to Runner. They are not supposed to be forwarded to
+     * client. It is set by the Runner via `Runtime.addBinding` and is called by the
+     * Mapper.
+     */
     sendDebugMessage?: ((message: string) => void) | null;
   }
 }
@@ -53,16 +81,13 @@ declare global {
 generatePage();
 const mapperTabToServerTransport = new WindowBidiTransport();
 const cdpTransport = new WindowCdpTransport();
+
 /**
  * A CdpTransport implementation that uses the window.cdp bindings
  * injected by Target.exposeDevToolsProtocol.
  */
 const cdpConnection = new CdpConnection(cdpTransport, log);
 
-/**
- * Set `window.runMapper` to a function which launches the BiDi mapper instance.
- * @param selfTargetId Needed to filter out info related to BiDi target.
- */
 window.runMapperInstance = async (selfTargetId) => {
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 
