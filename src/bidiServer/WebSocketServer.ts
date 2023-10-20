@@ -31,6 +31,12 @@ const debugRecv = debug('bidi:server:RECV ◂');
 
 export class WebSocketServer {
   /**
+   * A promise that resolves to a singleton instance of the browser.
+   * @private
+   */
+  static #browserInstance: Promise<BrowserInstance> | undefined;
+
+  /**
    *
    * @param bidiPort port to start ws server on.
    * @param channel
@@ -43,7 +49,6 @@ export class WebSocketServer {
     headless: boolean,
     verbose: boolean
   ) {
-    let jsonBody: any;
     const server = http.createServer(
       async (request: http.IncomingMessage, response: http.ServerResponse) => {
         debugInternal(
@@ -62,12 +67,24 @@ export class WebSocketServer {
             .on('data', (chunk) => {
               body.push(chunk);
             })
-            .on('end', () => {
-              jsonBody = JSON.parse(Buffer.concat(body).toString());
+            .on('end', async () => {
+              const jsonBody = JSON.parse(Buffer.concat(body).toString());
               response.writeHead(200, {
                 'Content-Type': 'application/json;charset=utf-8',
                 'Cache-Control': 'no-cache',
               });
+
+              const chromeOptions =
+                jsonBody?.capabilities?.alwaysMatch?.['goog:chromeOptions'];
+
+              // Run
+              await this.#runOrGetBrowserInstance(
+                channel,
+                headless,
+                verbose,
+                chromeOptions
+              );
+
               response.write(
                 JSON.stringify({
                   value: {
@@ -126,19 +143,18 @@ export class WebSocketServer {
     });
 
     wsServer.on('request', async (request: websocket.request) => {
-      const chromeOptions =
-        jsonBody?.capabilities?.alwaysMatch?.['goog:chromeOptions'];
       debugInternal('new WS request received:', request.resourceURL.path);
 
-      const browserInstance = await BrowserInstance.run(
+      const browserInstance = await this.#runOrGetBrowserInstance(
         channel,
         headless,
         verbose,
-        chromeOptions?.args
+        undefined
       );
 
       // Forward messages from BiDi Mapper to the client unconditionally.
-      browserInstance.bidiSession().on('message', (message) => {
+      const bidiSession = browserInstance.bidiSession();
+      bidiSession.on('message', (message) => {
         void this.#sendClientMessageString(message, connection);
       });
 
@@ -188,7 +204,7 @@ export class WebSocketServer {
         }
 
         // Forward all other commands to BiDi Mapper.
-        await browserInstance.bidiSession().sendCommand(plainCommandData);
+        await bidiSession.sendCommand(plainCommandData);
       });
 
       connection.on('close', async () => {
@@ -202,6 +218,23 @@ export class WebSocketServer {
         await browserInstance.close();
       });
     });
+  }
+
+  static #runOrGetBrowserInstance(
+    channel: ChromeReleaseChannel,
+    headless: boolean,
+    verbose: boolean,
+    chromeOptions: {args: string[]} | undefined
+  ): Promise<BrowserInstance> {
+    if (this.#browserInstance === undefined) {
+      this.#browserInstance = BrowserInstance.run(
+        channel,
+        headless,
+        verbose,
+        chromeOptions?.args
+      );
+    }
+    return this.#browserInstance;
   }
 
   static #sendClientMessageString(
