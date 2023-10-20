@@ -66,6 +66,10 @@ const cdpTransport = new WindowCdpTransport();
  */
 const cdpConnection = new CdpConnection(cdpTransport, log);
 
+/**
+ * Launches the BiDi mapper instance.
+ * @param {string} selfTargetId
+ */
 async function runMapperInstance(selfTargetId: string) {
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 
