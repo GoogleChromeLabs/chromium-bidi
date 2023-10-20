@@ -53,6 +53,13 @@ export class BrowserInstance {
   #mapperCdpConnection: MapperCdpConnection;
   #browserProcess: Process;
 
+  /**
+   * Launches a browser and runs the BiDi Mapper within it.
+   * @param channel Chrome release channel.
+   * @param headless Whether to launch the browser in headless mode.
+   * @param verbose Whether to log verbose messages.
+   * @param chromeArgs Additional Chrome arguments to pass to the browser.
+   */
   static async run(
     channel: ChromeReleaseChannel,
     headless: boolean,
