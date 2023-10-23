@@ -88,9 +88,6 @@ repos:
     rev: v0.1.1
     hooks:
       - id: keep-sorted
-
-  # ESLint is the slowest hook, so keep it last.
-
   - repo: local
     hooks:
       - id: copyright
@@ -114,24 +111,22 @@ repos:
         files: \.js$|\.cjs$|\.mjs$|\.ts$|\.py$
         exclude: __init__\.py$
         args: [--negate, --multiline]
-
       - id: node-self
         name: check nodejs `self.`
         entry: '\bself\.'
         language: pygrep
         files: \.ts$
-
+      - id: prettier
+        name: prettier
+        entry: 'npx prettier --check .'
+        language: system
+        files: \.[jt]s$
+        types: [file]
+      # ESLint is the slowest hook, so keep it last.
       - id: eslint
-        name: EsLint format
+        name: eslint
         entry: 'npx eslint --fix'
         language: system
         verbose: true
-        files: \.[jt]s$
-        types: [file]
-
-      - id: prettier
-        name: Prettier format
-        entry: 'npx prettier --check .'
-        language: system
         files: \.[jt]s$
         types: [file]
