@@ -19,6 +19,7 @@ import {
   type EmptyResult,
   Script,
   NoSuchScriptException,
+  InvalidArgumentException,
 } from '../../../protocol/protocol';
 import type {LoggerFn} from '../../../utils/log';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
@@ -50,6 +51,21 @@ export class ScriptProcessor {
   async addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
+    if (params.contexts) {
+      if (params.contexts.length === 0) {
+        throw new InvalidArgumentException('Invalid empty contexts list.');
+      }
+
+      for (const contextId of params.contexts) {
+        const context = this.#browsingContextStorage.getContext(contextId);
+        if (!context.isTopLevelContext()) {
+          throw new InvalidArgumentException(
+            `addPreloadScript only supported on the top-level contexts, ${contextId} given.`
+          );
+        }
+      }
+    }
+
     const preloadScript = new PreloadScript(params, this.#logger);
     this.#preloadScriptStorage.add(preloadScript);
 
