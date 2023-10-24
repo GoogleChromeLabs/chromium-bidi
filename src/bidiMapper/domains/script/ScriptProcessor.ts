@@ -52,15 +52,16 @@ export class ScriptProcessor {
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
     if (params.contexts) {
+      // Remove once https://github.com/google/cddlconv/issues/16 is implemented
       if (params.contexts.length === 0) {
-        throw new InvalidArgumentException('Invalid empty contexts list.');
+        throw new InvalidArgumentException('Contexts list is empty.');
       }
 
       for (const contextId of params.contexts) {
         const context = this.#browsingContextStorage.getContext(contextId);
         if (!context.isTopLevelContext()) {
           throw new InvalidArgumentException(
-            `addPreloadScript only supported on the top-level contexts, ${contextId} given.`
+            `Non top-level contexts given '${contextId}'.`
           );
         }
       }
