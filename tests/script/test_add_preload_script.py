@@ -837,8 +837,8 @@ async def test_preloadScript_channel_newContext(websocket,
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_add_respectContextsForOldContexts(websocket, context_id,
-                                                   html):
+async def test_preloadScript_add_respectContextsForOldContexts(
+        websocket, context_id, html):
 
     # Create a new context prior to adding PreloadScript
     result = await execute_command(websocket, {
@@ -863,12 +863,8 @@ async def test_preloadScript_add_respectContextsForOldContexts(websocket, contex
         })
 
     # NAvigate both contexts to trigger PreloadScripts
-    await goto_url(
-        websocket, context_id,
-        html())
-    await goto_url(
-        websocket, new_context_id,
-        html())
+    await goto_url(websocket, context_id, html())
+    await goto_url(websocket, new_context_id, html())
 
     # Expect context with context_id to be affected by PreloadScript
     result = await execute_command(
@@ -883,10 +879,7 @@ async def test_preloadScript_add_respectContextsForOldContexts(websocket, contex
                 "resultOwnership": "root"
             }
         })
-    assert result["result"] == {
-        "type": "string",
-        "value": 'BAR'
-    }
+    assert result["result"] == {"type": "string", "value": 'BAR'}
 
     # Expect context with new_context_id to not be affected by PreloadScript
     result = await execute_command(
