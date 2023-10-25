@@ -52,7 +52,7 @@ export class ScriptProcessor {
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
     if (params.contexts) {
-      // Remove once https://github.com/google/cddlconv/issues/16 is implemented
+      // XXX: Remove once https://github.com/google/cddlconv/issues/16 is implemented
       if (params.contexts.length === 0) {
         throw new InvalidArgumentException('Contexts list is empty.');
       }
@@ -61,7 +61,7 @@ export class ScriptProcessor {
         const context = this.#browsingContextStorage.getContext(contextId);
         if (!context.isTopLevelContext()) {
           throw new InvalidArgumentException(
-            `Non top-level contexts given '${contextId}'.`
+            `Non top-level context '${contextId}' given.`
           );
         }
       }
