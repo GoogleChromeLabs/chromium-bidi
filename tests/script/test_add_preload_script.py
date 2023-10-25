@@ -862,7 +862,7 @@ async def test_preloadScript_add_respectContextsForOldContexts(
             }
         })
 
-    # NAvigate both contexts to trigger PreloadScripts
+    # Navigate both contexts to trigger PreloadScripts
     await goto_url(websocket, context_id, html())
     await goto_url(websocket, new_context_id, html())
 

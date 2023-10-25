@@ -55,7 +55,7 @@ export class PreloadScript {
   readonly #channels: ChannelProxy[];
   /** The script sandbox / world name. */
   readonly #sandbox?: string;
-  /** The script contexts to execute in */
+  /** The browsing contexts to execute the preload scripts in, if any. */
   readonly #contexts?: BrowsingContext.BrowsingContext[];
 
   get id(): string {
