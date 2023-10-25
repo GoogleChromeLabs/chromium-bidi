@@ -108,14 +108,14 @@ repos:
           .* See the License for the specific language governing permissions and
           .* limitations under the License.
         language: pygrep
-        files: \.js$|\.cjs$|\.mjs$|\.ts$|\.py$
+        types_or: [javascript, ts, python]
         exclude: __init__\.py$
         args: [--negate, --multiline]
       - id: node-self
         name: check nodejs `self.`
         entry: '\bself\.'
         language: pygrep
-        files: \.ts$
+        types_or: [ts]
       # ESLint is the slowest hook, so keep it at the bottom.
       - id: eslint
         name: eslint
