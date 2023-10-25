@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 import base64
-import time
+from threading import Event
 
 from pytest_httpserver import HTTPServer
 from werkzeug.wrappers import Request, Response
@@ -72,15 +72,15 @@ class LocalHttpServer:
             .respond_with_handler(process_auth)
 
         def hang_forever(_):
-            self.hang_forever_active = True
-            while self.hang_forever_active:
-                time.sleep(1)
+            self.hang_forever_stop_flag = Event()
+            while not self.hang_forever_stop_flag.is_set():
+                self.hang_forever_stop_flag.wait(60)
 
         self.__http_server.expect_request(self.__path_hang_forever) \
             .respond_with_handler(hang_forever)
 
     def hang_forever_stop(self):
-        self.hang_forever_active = False
+        self.hang_forever_stop_flag.set()
 
     def _url_for(self, suffix: str, host: str = 'localhost') -> str:
         """
