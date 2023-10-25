@@ -127,7 +127,7 @@ repos:
       # ESLint may update code style (formatting) so keep prettier last.
       - id: prettier
         name: prettier
-        entry: 'npx prettier --check .'
+        entry: 'npx prettier --write --ignore-unknown --check .'
         language: system
         files: \.[jt]s$
-        types: [file]
+        types: [text]
