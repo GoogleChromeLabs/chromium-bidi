@@ -116,7 +116,7 @@ repos:
         entry: '\bself\.'
         language: pygrep
         files: \.ts$
-      # ESLint is the slowest hook, so keep it last.
+      # ESLint is the slowest hook, so keep it at the bottom.
       - id: eslint
         name: eslint
         entry: 'npx eslint --fix'
@@ -124,8 +124,7 @@ repos:
         verbose: true
         files: \.[jt]s$
         types: [file]
-      # EsLint may update code style so the last format
-      # should be done by Prettier
+      # ESLint may update code style (formatting) so keep prettier last.
       - id: prettier
         name: prettier
         entry: 'npx prettier --check .'
