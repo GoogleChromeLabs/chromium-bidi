@@ -122,12 +122,10 @@ repos:
         entry: 'npx eslint --fix'
         language: system
         verbose: true
-        files: \.[jt]s$
-        types: [file]
+        types_or: [javascript, ts]
       # ESLint may update code style (formatting) so keep prettier last.
       - id: prettier
         name: prettier
         entry: 'npx prettier --write --ignore-unknown --check .'
         language: system
-        files: \.[jt]s$
-        types: [text]
+        types_or: [text]
