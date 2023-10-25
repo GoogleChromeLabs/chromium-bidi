@@ -126,6 +126,6 @@ repos:
       # ESLint may update code style (formatting) so keep prettier last.
       - id: prettier
         name: prettier
-        entry: 'npx prettier --write --ignore-unknown --check .'
+        entry: 'npx prettier --write --ignore-unknown --check'
         language: system
         types_or: [text]
