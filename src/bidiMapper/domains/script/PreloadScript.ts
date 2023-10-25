@@ -79,7 +79,7 @@ export class PreloadScript {
     return this.#channels;
   }
 
-  /** Channels of the preload script. */
+  /** Contexts of the preload script, if any */
   get contexts(): BrowsingContext.BrowsingContext[] | undefined {
     return this.#contexts;
   }
