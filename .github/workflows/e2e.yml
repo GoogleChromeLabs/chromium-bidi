@@ -62,7 +62,7 @@ jobs:
           python-version: '3.11'
           cache: pipenv
       - name: Install pipenv
-        run: pip install pipenv
+        run: sudo apt-get -y install pipenv
       - name: Install python dependencies
         run: pipenv install
       - name: Run E2E tests

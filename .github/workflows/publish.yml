@@ -32,7 +32,7 @@ jobs:
           python-version: '3.11'
           cache: pipenv
       - name: Install pipenv
-        run: pip install pipenv
+        run: sudo apt-get install -y pipenv
       - name: Install python dependencies
         run: pipenv install
       - name: Test
