@@ -156,10 +156,13 @@ export class WebSocketServer {
         }
 
         const plainCommandData = message.utf8Data;
-        try {
-          debugRecv(JSON.parse(plainCommandData));
-        } catch {
-          debugRecv(plainCommandData);
+
+        if (debugRecv.enabled) {
+          try {
+            debugRecv(JSON.parse(plainCommandData));
+          } catch {
+            debugRecv(plainCommandData);
+          }
         }
 
         // Try to parse the message to handle some of BiDi commands.
@@ -211,10 +214,12 @@ export class WebSocketServer {
     message: string,
     connection: websocket.connection
   ): Promise<void> {
-    try {
-      debugSend(JSON.parse(message));
-    } catch {
-      debugSend(message);
+    if (debugSend.enabled) {
+      try {
+        debugSend(JSON.parse(message));
+      } catch {
+        debugSend(message);
+      }
     }
     connection.sendUTF(message);
     return Promise.resolve();
