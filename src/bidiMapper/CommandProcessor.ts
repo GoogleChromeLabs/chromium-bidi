@@ -143,6 +143,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#browsingContextProcessor.captureScreenshot(
           this.#parser.parseCaptureScreenshotParams(command.params)
         );
+      // @ts-ignore
+      case 'browsingContext.locateNodes':
+        // @ts-ignore
+        return await this.#browsingContextProcessor.locateNodes(command.params);
       case 'browsingContext.close':
         return await this.#browsingContextProcessor.close(
           this.#parser.parseCloseParams(command.params)

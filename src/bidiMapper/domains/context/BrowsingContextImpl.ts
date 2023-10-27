@@ -805,6 +805,36 @@ export class BrowsingContextImpl {
     );
   }
 
+  async locateNodes(params: any): Promise<any> {
+    const realm = await this.getOrCreateSandbox(undefined);
+
+    switch (params.locator.type) {
+      case 'css':
+        const array = await realm.callFunction(
+          String((selector: string) => {
+            const results = document.querySelectorAll(selector);
+            const array = [];
+            for (const item of results) {
+              array.push(item);
+            }
+            return array;
+          }),
+          {type: 'undefined'},
+          [{type: 'string', value: params.locator.value}],
+          false,
+          Script.ResultOwnership.None,
+          {},
+          false
+        );
+        this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'array', array);
+        return {
+          context: this.id,
+          // @ts-ignore
+          nodes: array.result.value,
+        };
+    }
+  }
+
   async print(
     params: BrowsingContext.PrintParameters
   ): Promise<BrowsingContext.PrintResult> {

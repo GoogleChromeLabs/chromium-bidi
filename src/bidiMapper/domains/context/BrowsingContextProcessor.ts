@@ -176,6 +176,11 @@ export class BrowsingContextProcessor {
     return await context.captureScreenshot(params);
   }
 
+  async locateNodes(params: any): Promise<any> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    return await context.locateNodes(params);
+  }
+
   async print(
     params: BrowsingContext.PrintParameters
   ): Promise<BrowsingContext.PrintResult> {
