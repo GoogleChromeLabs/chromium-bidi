@@ -247,7 +247,7 @@ async def test_continue_response_must_specify_both_status_and_headers(
 
 
 @pytest.mark.asyncio
-async def test_continue_response_completes_use_bidi_events(
+async def test_continue_response_completes(
         websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 

@@ -112,7 +112,7 @@ async def test_continue_with_auth_non_blocked_request(
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: Fix this test")
-async def test_continue_with_auth_completes_use_bidi_events(
+async def test_continue_with_auth_completes(
         websocket, context_id, auth_required_url):
     await subscribe(websocket,
                     ["network.beforeRequestSent", "network.authRequired"],

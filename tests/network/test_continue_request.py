@@ -159,7 +159,7 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_continue_request_completes_use_bidi_events(
+async def test_continue_request_completes(
         websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
