@@ -291,30 +291,12 @@ export class NetworkStorage {
 
   /** #@see https://w3c.github.io/webdriver-bidi/#get-the-network-intercepts */
   getNetworkIntercepts(
-    event: Exclude<
-      ChromiumBidi.Network.EventNames,
-      ChromiumBidi.Network.EventNames.FetchError
-    >,
-    requestId: Network.Request
+    requestId: Network.Request,
+    phase: Network.InterceptPhase
   ): Network.Intercept[] {
     const request = this.#requestMap.get(requestId);
     if (!request) {
       return [];
-    }
-
-    let phase: Network.InterceptPhase | undefined = undefined;
-    switch (event) {
-      case ChromiumBidi.Network.EventNames.BeforeRequestSent:
-        phase = Network.InterceptPhase.BeforeRequestSent;
-        break;
-      case ChromiumBidi.Network.EventNames.ResponseStarted:
-        phase = Network.InterceptPhase.ResponseStarted;
-        break;
-      case ChromiumBidi.Network.EventNames.AuthRequired:
-        phase = Network.InterceptPhase.AuthRequired;
-        break;
-      case ChromiumBidi.Network.EventNames.ResponseCompleted:
-        return [];
     }
 
     const interceptIds: Network.Intercept[] = [];

@@ -408,6 +408,14 @@ export class NetworkRequest {
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
       timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
+      ...(isBlocked
+        ? {
+            intercepts: this.#networkStorage.getNetworkIntercepts(
+              this.#requestId,
+              phase
+            ),
+          }
+        : {}),
     };
   }
 
