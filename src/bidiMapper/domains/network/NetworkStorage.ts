@@ -29,7 +29,6 @@ import type {NetworkRequest} from './NetworkRequest.js';
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
-  #eventManager: EventManager;
   /**
    * A map from network request ID to Network Request objects.
    * Needed as long as information about requests comes from different events.
@@ -55,14 +54,6 @@ export class NetworkStorage {
       response: Network.ResponseData;
     }
   >();
-
-  constructor(eventManager: EventManager) {
-    this.#eventManager = eventManager;
-  }
-
-  get eventManager() {
-    return this.#eventManager;
-  }
 
   disposeRequestMap() {
     for (const request of this.#requestMap.values()) {

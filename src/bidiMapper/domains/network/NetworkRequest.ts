@@ -65,6 +65,7 @@ export class NetworkRequest {
 
   #redirectCount: number;
 
+  #eventManager: EventManager;
   #networkStorage: NetworkStorage;
 
   #request: {
@@ -86,11 +87,13 @@ export class NetworkRequest {
 
   constructor(
     requestId: Network.Request,
+    eventManager: EventManager,
     networkStorage: NetworkStorage,
     cdpTarget: CdpTarget,
     redirectCount = 0
   ) {
     this.#requestId = requestId;
+    this.#eventManager = eventManager;
     this.#networkStorage = networkStorage;
     this.#cdpTarget = cdpTarget;
     this.#redirectCount = redirectCount;
@@ -210,7 +213,7 @@ export class NetworkRequest {
       error: new Error('Network event loading failed'),
     });
 
-    this.#networkStorage.eventManager.registerEvent(
+    this.#eventManager.registerEvent(
       {
         type: 'event',
         method: ChromiumBidi.Network.EventNames.FetchError,
@@ -478,7 +481,7 @@ export class NetworkRequest {
     if (this.#isIgnoredEvent()) {
       return;
     }
-    this.#networkStorage.eventManager.registerPromiseEvent(
+    this.#eventManager.registerPromiseEvent(
       this.#beforeRequestSentDeferred.then((result) => {
         if (result.kind === 'success') {
           try {
@@ -522,7 +525,7 @@ export class NetworkRequest {
     if (this.#isIgnoredEvent()) {
       return;
     }
-    this.#networkStorage.eventManager.registerPromiseEvent(
+    this.#eventManager.registerPromiseEvent(
       this.#responseStartedDeferred.then((result) => {
         if (result.kind === 'success') {
           try {
@@ -593,7 +596,7 @@ export class NetworkRequest {
     if (this.#isIgnoredEvent()) {
       return;
     }
-    this.#networkStorage.eventManager.registerPromiseEvent(
+    this.#eventManager.registerPromiseEvent(
       this.#responseCompletedDeferred.then((result) => {
         if (result.kind === 'success') {
           try {
