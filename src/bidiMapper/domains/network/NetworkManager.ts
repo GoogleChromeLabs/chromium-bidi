@@ -58,7 +58,7 @@ export class NetworkManager {
 
     request = new NetworkRequest(
       id,
-      this.#networkStorage.eventManager,
+      this.#networkStorage,
       this.#cdpTarget,
       redirectCount
     );

@@ -52,7 +52,7 @@ export class NetworkRequest {
    * The identifier for a request resulting from a redirect matches that of the
    * request that initiated it.
    */
-  readonly requestId: Network.Request;
+  #requestId: Network.Request;
 
   // TODO: Handle auth required?
   /**
@@ -65,7 +65,7 @@ export class NetworkRequest {
 
   #redirectCount: number;
 
-  #eventManager: EventManager;
+  #networkStorage: NetworkStorage;
 
   #request: {
     info?: Protocol.Network.RequestWillBeSentEvent;
@@ -86,14 +86,18 @@ export class NetworkRequest {
 
   constructor(
     requestId: Network.Request,
-    eventManager: EventManager,
+    networkStorage: NetworkStorage,
     cdpTarget: CdpTarget,
     redirectCount = 0
   ) {
-    this.requestId = requestId;
-    this.#eventManager = eventManager;
+    this.#requestId = requestId;
+    this.#networkStorage = networkStorage;
     this.#cdpTarget = cdpTarget;
     this.#redirectCount = redirectCount;
+  }
+
+  get requestId(): string {
+    return this.#requestId;
   }
 
   get url(): string | undefined {
@@ -206,7 +210,7 @@ export class NetworkRequest {
       error: new Error('Network event loading failed'),
     });
 
-    this.#eventManager.registerEvent(
+    this.#networkStorage.eventManager.registerEvent(
       {
         type: 'event',
         method: ChromiumBidi.Network.EventNames.FetchError,
@@ -394,8 +398,10 @@ export class NetworkRequest {
   }
 
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {
+    const isBlocked = phase !== undefined && phase === this.#interceptPhase; // TODO: Set this in terms of intercepts?
+
     return {
-      isBlocked: phase !== undefined && phase === this.#interceptPhase,
+      isBlocked,
       context: this.#context,
       navigation: this.#getNavigationId(),
       redirectCount: this.#redirectCount,
@@ -464,7 +470,7 @@ export class NetworkRequest {
     if (this.#isIgnoredEvent()) {
       return;
     }
-    this.#eventManager.registerPromiseEvent(
+    this.#networkStorage.eventManager.registerPromiseEvent(
       this.#beforeRequestSentDeferred.then((result) => {
         if (result.kind === 'success') {
           try {
@@ -508,7 +514,7 @@ export class NetworkRequest {
     if (this.#isIgnoredEvent()) {
       return;
     }
-    this.#eventManager.registerPromiseEvent(
+    this.#networkStorage.eventManager.registerPromiseEvent(
       this.#responseStartedDeferred.then((result) => {
         if (result.kind === 'success') {
           try {
@@ -579,7 +585,7 @@ export class NetworkRequest {
     if (this.#isIgnoredEvent()) {
       return;
     }
-    this.#eventManager.registerPromiseEvent(
+    this.#networkStorage.eventManager.registerPromiseEvent(
       this.#responseCompletedDeferred.then((result) => {
         if (result.kind === 'success') {
           try {
