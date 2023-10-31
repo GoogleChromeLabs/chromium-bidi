@@ -14,8 +14,9 @@
 # limitations under the License.
 import pytest
 from syrupy.filters import paths
-from test_helpers import (execute_command, get_tree, read_JSON_message,goto_url, send_JSON_command,
-                          subscribe, wait_for_event)
+from test_helpers import (execute_command, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -52,22 +53,20 @@ async def test_browsingContext_close(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_close_prompt(websocket, context_id, html, snapshot):
+async def test_browsingContext_close_prompt(websocket, context_id, html,
+                                            snapshot):
     await subscribe(websocket, [
-        "browsingContext.userPromptOpened",
-        "browsingContext.contextDestroyed"
+        "browsingContext.userPromptOpened", "browsingContext.contextDestroyed"
     ])
 
-    url = html(
-        f"""
+    url = html("""
         <script>
             window.addEventListener('beforeunload', event => {{
                 event.returnValue = 'Leave?';
                 event.preventDefault();
             }});
         </script>
-        """
-    )
+        """)
 
     await goto_url(websocket, context_id, url)
 
@@ -85,13 +84,14 @@ async def test_browsingContext_close_prompt(websocket, context_id, html, snapsho
             }
         })
 
-    command_id = await send_JSON_command(websocket, {
-        "method": "browsingContext.close",
-        "params": {
-            "context": context_id,
-            "promptUnload": True
-        }
-    })
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.close",
+            "params": {
+                "context": context_id,
+                "promptUnload": True
+            }
+        })
 
     # Assert "browsingContext.userPromptOpened" event emitted.
     resp = await read_JSON_message(websocket)
@@ -114,10 +114,10 @@ async def test_browsingContext_close_prompt(websocket, context_id, html, snapsho
         })
 
     # Assert "browsingContext.contextDestroyed"" event emitted.
-    response = await wait_for_event(websocket, "browsingContext.contextDestroyed")
+    response = await wait_for_event(websocket,
+                                    "browsingContext.contextDestroyed")
     assert response == snapshot(exclude=paths("params.context"))
     assert response['params']['context'] == context_id
-
 
     resp = await read_JSON_message(websocket)
     assert resp == {"type": "success", "id": command_id, "result": {}}
