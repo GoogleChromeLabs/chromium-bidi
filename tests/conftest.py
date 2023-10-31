@@ -184,7 +184,7 @@ def bad_ssl_url():
 
 @pytest.fixture
 def cacheable_url(local_server: LocalHttpServer):
-    """Return a generic example URL that can be cached"""
+    """Return a generic example URL that can be cached."""
     return local_server.url_cacheable()
 
 

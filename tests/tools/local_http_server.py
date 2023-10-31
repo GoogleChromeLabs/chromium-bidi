@@ -14,8 +14,8 @@
 #  limitations under the License.
 
 import base64
-from threading import Event
 from datetime import datetime
+from threading import Event
 
 from pytest_httpserver import HTTPServer
 from werkzeug.wrappers import Request, Response
@@ -98,7 +98,8 @@ class LocalHttpServer:
                     content_type="text/html",
                     headers={
                         "Cache-Control": 'public, max-age=31536000',
-                        'Last-Modified': self.__start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+                        'Last-Modified':
+                            self.__start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
                     })
 
         self.__http_server.expect_request(self.__path_cacheable) \
