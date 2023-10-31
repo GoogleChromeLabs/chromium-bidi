@@ -150,6 +150,5 @@ class LocalHttpServer:
         return self._url_for(self.__path_hang_forever)
 
     def url_cacheable(self, host='localhost') -> str:
-        """Returns the url for the 200 page with the `default_200_page_content`.
-        """
+        """Returns the url for the cacheable page with the `default_200_page_content`."""
         return self._url_for(self.__path_cacheable, host)
