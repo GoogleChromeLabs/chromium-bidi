@@ -61,10 +61,10 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
 
     url = html("""
         <script>
-            window.addEventListener('beforeunload', event => {{
+            window.addEventListener('beforeunload', event => {
                 event.returnValue = 'Leave?';
                 event.preventDefault();
-            }});
+            });
         </script>
         """)
 
