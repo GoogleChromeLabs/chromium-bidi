@@ -19,18 +19,15 @@ import sinon from 'sinon';
 
 import {Network} from '../../../protocol/protocol.js';
 
-import {NetworkRequest} from './NetworkRequest.js';
 import {NetworkStorage} from './NetworkStorage.js';
 
 const UUID_REGEX =
   /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
 
 describe('NetworkStorage', () => {
-  let networkRequest: sinon.SinonStubbedInstance<NetworkRequest>;
   let networkStorage: NetworkStorage;
 
   beforeEach(() => {
-    networkRequest = sinon.createStubInstance(NetworkRequest);
     networkStorage = new NetworkStorage();
   });
 

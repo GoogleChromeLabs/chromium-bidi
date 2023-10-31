@@ -401,7 +401,12 @@ export class NetworkRequest {
   }
 
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {
-    const isBlocked = phase !== undefined && phase === this.#interceptPhase; // TODO: Set this in terms of intercepts?
+    // TODO: Set this in terms of intercepts?
+    const isBlocked = phase !== undefined && phase === this.#interceptPhase;
+    const intercepts = this.#networkStorage.getNetworkIntercepts(
+      this.#requestId,
+      phase
+    );
 
     return {
       isBlocked,
@@ -411,14 +416,7 @@ export class NetworkRequest {
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
       timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
-      ...(isBlocked
-        ? {
-            intercepts: this.#networkStorage.getNetworkIntercepts(
-              this.#requestId,
-              phase
-            ),
-          }
-        : {}),
+      intercepts: isBlocked ? intercepts : undefined,
     };
   }
 

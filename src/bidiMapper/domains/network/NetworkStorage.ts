@@ -283,7 +283,7 @@ export class NetworkStorage {
   /** #@see https://w3c.github.io/webdriver-bidi/#get-the-network-intercepts */
   getNetworkIntercepts(
     requestId: Network.Request,
-    phase: Network.InterceptPhase
+    phase?: Network.InterceptPhase
   ): Network.Intercept[] {
     const request = this.#requestMap.get(requestId);
     if (!request) {
