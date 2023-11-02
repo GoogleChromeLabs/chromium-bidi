@@ -124,7 +124,7 @@ export class NetworkStorage {
     }
 
     return {
-      patterns,
+      patterns: patterns.length === 0 ? undefined : patterns,
       // If there's at least one intercept that requires auth, enable the
       // 'Fetch.authRequired' event.
       handleAuthRequests: [...this.#interceptMap.values()].some((param) => {

@@ -158,7 +158,7 @@ describe('NetworkStorage', () => {
 
     expect(networkStorage.getFetchEnableParams()).to.deep.equal({
       handleAuthRequests: false,
-      patterns: [],
+      patterns: undefined,
     });
   });
 
@@ -211,7 +211,7 @@ describe('NetworkStorage', () => {
     it('no intercepts', () => {
       expect(networkStorage.getFetchEnableParams()).to.deep.equal({
         handleAuthRequests: false,
-        patterns: [],
+        patterns: undefined,
       });
     });
 
