@@ -185,7 +185,7 @@ def ssl_context_err_cert_authority_invalid():
 
 
 @pytest.fixture(scope="session")
-def ssl_httpserver_err_cert_authority_invalid(
+def https_server_err_cert_authority_invalid(
         ssl_context_err_cert_authority_invalid):
     """Return a HTTPServer instance with SSL enabled.
     See https://pytest-httpserver.readthedocs.io/en/latest/fixtures.html#make-httpserver"""
@@ -200,7 +200,7 @@ def ssl_httpserver_err_cert_authority_invalid(
 
 
 @pytest.fixture(scope="session")
-def bad_ssl_url(ssl_httpserver_err_cert_authority_invalid):
+def bad_ssl_url(https_server_err_cert_authority_invalid):
     """
     Return a URL with an invalid certificate authority from a SSL certificate.
     In Chromium, this generates the following error:
@@ -208,7 +208,7 @@ def bad_ssl_url(ssl_httpserver_err_cert_authority_invalid):
     > Your connection is not private
     > NET::ERR_CERT_AUTHORITY_INVALID
     """
-    return ssl_httpserver_err_cert_authority_invalid.url_for("/")
+    return https_server_err_cert_authority_invalid.url_for("/")
 
 
 @pytest.fixture
