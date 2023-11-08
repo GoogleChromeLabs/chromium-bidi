@@ -224,7 +224,10 @@ describe('NetworkStorage', () => {
             pattern: 'http://example.com',
           } satisfies Network.UrlPattern,
         ],
-        phases: [Network.InterceptPhase.BeforeRequestSent],
+        phases: [Network.InterceptPhase.BeforeRequestSent] satisfies [
+          Network.InterceptPhase,
+          ...Network.InterceptPhase[],
+        ],
         expected: {
           handleAuthRequests: false,
           patterns: [
@@ -247,7 +250,10 @@ describe('NetworkStorage', () => {
             search: 'bar=baz',
           } satisfies Network.UrlPattern,
         ],
-        phases: [Network.InterceptPhase.BeforeRequestSent],
+        phases: [Network.InterceptPhase.BeforeRequestSent] satisfies [
+          Network.InterceptPhase,
+          ...Network.InterceptPhase[],
+        ],
         expected: {
           handleAuthRequests: false,
           patterns: [
@@ -270,7 +276,10 @@ describe('NetworkStorage', () => {
             pattern: 'http://example.org',
           } satisfies Network.UrlPattern,
         ],
-        phases: [Network.InterceptPhase.ResponseStarted],
+        phases: [Network.InterceptPhase.ResponseStarted] satisfies [
+          Network.InterceptPhase,
+          ...Network.InterceptPhase[],
+        ],
         expected: {
           handleAuthRequests: false,
           patterns: [
@@ -293,7 +302,10 @@ describe('NetworkStorage', () => {
             pattern: 'http://example.org',
           } satisfies Network.UrlPattern,
         ],
-        phases: [Network.InterceptPhase.AuthRequired],
+        phases: [Network.InterceptPhase.AuthRequired] satisfies [
+          Network.InterceptPhase,
+          ...Network.InterceptPhase[],
+        ],
         expected: {
           handleAuthRequests: true,
           patterns: [
@@ -315,7 +327,7 @@ describe('NetworkStorage', () => {
         phases: [
           Network.InterceptPhase.AuthRequired,
           Network.InterceptPhase.BeforeRequestSent,
-        ],
+        ] satisfies [Network.InterceptPhase, ...Network.InterceptPhase[]],
         expected: {
           handleAuthRequests: true,
           patterns: [
@@ -341,7 +353,7 @@ describe('NetworkStorage', () => {
         phases: [
           Network.InterceptPhase.BeforeRequestSent,
           Network.InterceptPhase.ResponseStarted,
-        ],
+        ] satisfies [Network.InterceptPhase, ...Network.InterceptPhase[]],
         expected: {
           handleAuthRequests: false,
           patterns: [
@@ -371,7 +383,7 @@ describe('NetworkStorage', () => {
         phases: [
           Network.InterceptPhase.BeforeRequestSent,
           Network.InterceptPhase.ResponseStarted,
-        ],
+        ] satisfies [Network.InterceptPhase, ...Network.InterceptPhase[]],
         expected: {
           handleAuthRequests: false,
           patterns: [
@@ -380,12 +392,12 @@ describe('NetworkStorage', () => {
               urlPattern: 'http://example.com',
             },
             {
-              requestStage: 'Response',
-              urlPattern: 'http://example.com',
-            },
-            {
               requestStage: 'Request',
               urlPattern: 'http://example.org',
+            },
+            {
+              requestStage: 'Response',
+              urlPattern: 'http://example.com',
             },
             {
               requestStage: 'Response',

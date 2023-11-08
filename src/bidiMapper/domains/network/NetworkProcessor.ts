@@ -68,7 +68,11 @@ export class NetworkProcessor {
 
     const intercept: Network.Intercept = this.#networkStorage.addIntercept({
       urlPatterns: parsedUrlPatterns,
-      phases: params.phases,
+      // We checked that phases has at least one entry
+      phases: params.phases as [
+        Network.InterceptPhase,
+        ...Network.InterceptPhase[],
+      ],
     });
 
     await this.#fetchApply();
@@ -334,6 +338,17 @@ export class NetworkProcessor {
           return urlPattern;
         }
         case 'pattern':
+          // No params signifies intercept all
+          if (
+            !urlPattern.protocol &&
+            !urlPattern.hostname &&
+            !urlPattern.port &&
+            !urlPattern.pathname &&
+            !urlPattern.search
+          ) {
+            return urlPattern;
+          }
+
           if (urlPattern.protocol === '') {
             throw new InvalidArgumentException(
               `URL pattern must specify a protocol`
@@ -367,6 +382,8 @@ export class NetworkProcessor {
           }
 
           try {
+            // TODO: change this as if we have a single param form Pattern
+            // It will fail to produce a valid URL
             new URL(NetworkStorage.buildUrlPatternString(urlPattern));
           } catch (error) {
             throw new InvalidArgumentException(`${error}`);
