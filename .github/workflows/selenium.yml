@@ -1,0 +1,69 @@
+# This workflow will run headful selenium tests.
+
+name: Selenium tests
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  merge_group:
+  pull_request:
+  push:
+    branches: 'main'
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: Verbose logging
+        default: false
+        required: false
+        type: boolean
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  selenium:
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(#876): Add Windows CI.
+        os: [macos-latest] # ubuntu-latest,
+        # head: [headful, headless]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+      - name: Set up Node.js
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          node-version: lts/*
+          cache: npm
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Setup cache for browser binaries
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/chromium-bidi
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
+      - name: Install pinned browser
+        id: browser
+        run: node tools/install-browser.mjs
+      - name: Install pinned driver
+        id: driver
+        run: node tools/install-driver.mjs
+      - name: Set up Python
+        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        with:
+          python-version: '3.11'
+          cache: pipenv
+      - name: Install pipenv
+        run: pip install pipenv
+      - name: Install python dependencies
+        run: pipenv install
+      - name: Run Selenium test
+        timeout-minutes: 20
+        run: >
+          xvfb-run --auto-servernum
+          node tools/selenium.mjs
