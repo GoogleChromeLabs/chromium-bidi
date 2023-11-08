@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         # TODO(#876): Add Windows CI.
-        os: [macos-latest] # ubuntu-latest,
+        os: [ubuntu-latest] # macos-latest,
         # head: [headful, headless]
     runs-on: ${{ matrix.os }}
     steps:
