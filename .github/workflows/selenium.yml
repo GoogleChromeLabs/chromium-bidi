@@ -66,4 +66,4 @@ jobs:
         timeout-minutes: 20
         run: >
           xvfb-run --auto-servernum
-          node tools/selenium.mjs
+          node tests_external/selenium.mjs
