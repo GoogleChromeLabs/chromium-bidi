@@ -98,7 +98,7 @@ try {
   // Constants for checking the file format.
   const startIndex = 0;
   const endIndex = 5;
-  const pngMagicNumber = 'iVBOR';
+  const pngMagicNumber = 'iVBOR_SOME_NONSENSE';
 
   const base64code = response.slice(startIndex, endIndex);
   assert.equal(base64code, pngMagicNumber);
