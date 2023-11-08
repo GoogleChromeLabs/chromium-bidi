@@ -15,6 +15,13 @@
  * limitations under the License.
  */
 
+/**
+ * @fileoverview smoke test for Selenium integration.
+ *
+ * Runs Selenium with the latest CfT + ChromeDriver + current Mapper version.
+ * Inspired by https://github.com/SeleniumHQ/selenium/blob/0c86525184355bddc44b6193ae7236f11a7fb129/javascript/node/selenium-webdriver/test/bidi/bidi_test.js#L300
+ */
+
 import * as assert from 'node:assert';
 import {Builder, ScriptManager, BrowsingContext} from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
@@ -64,10 +71,6 @@ const driver = new Builder()
     .build();
 
 try {
-  let startIndex = 0
-  let endIndex = 5
-  let pngMagicNumber = 'iVBOR'
-
   // Create a tab.
   const browsingContext = await BrowsingContext(driver, {
     type: 'tab',
@@ -92,6 +95,12 @@ try {
   const response = await browsingContext.captureElementScreenshot(
       elementId
   )
+
+  // Constants for checking the file format.
+  const startIndex = 0
+  const endIndex = 5
+  const pngMagicNumber = 'iVBOR'
+
   const base64code = response.slice(startIndex, endIndex)
   assert.equal(base64code, pngMagicNumber)
 } finally {
