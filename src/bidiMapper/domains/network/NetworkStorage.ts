@@ -35,7 +35,7 @@ export class NetworkStorage {
     Network.Intercept,
     {
       urlPatterns: Network.UrlPattern[];
-      phases: [Network.InterceptPhase, ...Network.InterceptPhase[]];
+      phases: Network.AddInterceptParameters['phases'];
     }
   >();
 
@@ -66,7 +66,7 @@ export class NetworkStorage {
    */
   addIntercept(value: {
     urlPatterns: Network.UrlPattern[];
-    phases: [Network.InterceptPhase, ...Network.InterceptPhase[]];
+    phases: Network.AddInterceptParameters['phases'];
   }): Network.Intercept {
     // Check if the given intercept entry already exists.
     for (const [
