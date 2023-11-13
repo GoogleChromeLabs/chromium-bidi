@@ -385,7 +385,7 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavigationEnded_navigationFailed(
-        websocket, context_id, hang_url):
+        websocket, context_id, read_sorted_messages, hang_url):
     navigate_command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -403,16 +403,18 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         }
     })
 
-    response = await read_JSON_message(websocket)
-    assert response == AnyExtending({
+    # Command result order is not guaranteed.
+    [navigation_command_result,
+     close_command_result] = await read_sorted_messages(2)
+
+    assert navigation_command_result == AnyExtending({
         'id': navigate_command_id,
         'type': 'error',
         'error': 'unknown error',
         'message': 'navigation canceled',
     })
 
-    response = await read_JSON_message(websocket)
-    assert response == AnyExtending({
+    assert close_command_result == AnyExtending({
         'id': close_command_id,
         'type': 'success',
     })
