@@ -70,8 +70,6 @@ export class BrowsingContextImpl {
   };
 
   #url = 'about:blank';
-  // Required to provide navigation info in case of navigation was canceled.
-  #ongoingNavigationUrl?: string;
   readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
   #loaderId?: Protocol.Network.LoaderId;
@@ -636,8 +634,6 @@ export class BrowsingContextImpl {
       throw new UnknownErrorException(cdpNavigateResult.errorText);
     }
 
-    this.#ongoingNavigationUrl = url;
-
     this.#documentChanged(cdpNavigateResult.loaderId);
 
     switch (wait) {
@@ -661,7 +657,6 @@ export class BrowsingContextImpl {
         break;
     }
 
-    this.#ongoingNavigationUrl = undefined;
     return {
       navigation: cdpNavigateResult.loaderId ?? null,
       // Url can change due to redirect get the latest one.
