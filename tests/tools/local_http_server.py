@@ -77,8 +77,6 @@ class LocalHttpServer:
             .expect_request(self.__path_basic_auth) \
             .respond_with_handler(process_auth)
 
-        self.hang_forever_stop_flag = None
-
         def hang_forever(_):
             self.hang_forever_stop_flag = Event()
             while not self.hang_forever_stop_flag.is_set():
@@ -108,8 +106,7 @@ class LocalHttpServer:
             .respond_with_handler(cache)
 
     def hang_forever_stop(self):
-        if self.hang_forever_stop_flag is not None:
-            self.hang_forever_stop_flag.set()
+        self.hang_forever_stop_flag.set()
 
     def _url_for(self, suffix: str, host: str = 'localhost') -> str:
         """
