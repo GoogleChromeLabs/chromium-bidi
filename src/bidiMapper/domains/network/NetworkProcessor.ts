@@ -336,11 +336,11 @@ export class NetworkProcessor {
         case 'pattern':
           // No params signifies intercept all
           if (
-            !urlPattern.protocol &&
-            !urlPattern.hostname &&
-            !urlPattern.port &&
-            !urlPattern.pathname &&
-            !urlPattern.search
+            urlPattern.protocol === undefined &&
+            urlPattern.hostname === undefined &&
+            urlPattern.port === undefined &&
+            urlPattern.pathname === undefined &&
+            urlPattern.search === undefined
           ) {
             return urlPattern;
           }
