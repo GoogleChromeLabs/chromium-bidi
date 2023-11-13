@@ -384,10 +384,8 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavigationEnded_navigationAborted(
+async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavigationEnded_navigationFailed(
         websocket, context_id, hang_url):
-    await subscribe(websocket, ["browsingContext.navigationAborted"])
-
     navigate_command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -404,18 +402,6 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
             "context": context_id
         }
     })
-
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        'method': 'browsingContext.navigationAborted',
-        'params': {
-            'context': context_id,
-            'url': hang_url,
-            'navigation': ANY_STR,
-            'timestamp': ANY_TIMESTAMP,
-        }
-    }
 
     response = await read_JSON_message(websocket)
     assert response == AnyExtending({
