@@ -70,6 +70,8 @@ export class BrowsingContextImpl {
   };
 
   #url = 'about:blank';
+  // Required to provide navigation info in case of navigation was canceled.
+  #ongoingNavigationUrl?: string;
   readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
   #loaderId?: Protocol.Network.LoaderId;
@@ -325,6 +327,31 @@ export class BrowsingContextImpl {
         // previous page are detached and realms are destroyed.
         // Remove children from context.
         this.#deleteAllChildren();
+      }
+    );
+
+    this.#cdpTarget.cdpClient.on(
+      'Network.loadingFailed',
+      (params: Protocol.Network.LoadingFailedEvent) => {
+        if (this.#loaderId !== params.requestId) {
+          return;
+        }
+        // TODO: consider process only specific `errorText === 'net::ERR_ABORTED'`.
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+            params: {
+              context: this.id,
+              navigation: this.#loaderId ?? null,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url: this.#ongoingNavigationUrl ?? this.#url,
+            },
+          },
+          this.id
+        );
+
+        this.#failDeferredsIfNotFinished();
       }
     );
 
@@ -592,6 +619,20 @@ export class BrowsingContextImpl {
     }
   }
 
+  #failDeferredsIfNotFinished() {
+    if (!this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
+      this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.reject(
+        new UnknownErrorException('navigation canceled')
+      );
+    }
+
+    if (!this.#deferreds.Page.lifecycleEvent.load.isFinished) {
+      this.#deferreds.Page.lifecycleEvent.load.reject(
+        new UnknownErrorException('navigation canceled')
+      );
+    }
+  }
+
   async navigate(
     url: string,
     wait: BrowsingContext.ReadinessState
@@ -617,6 +658,8 @@ export class BrowsingContextImpl {
       throw new UnknownErrorException(cdpNavigateResult.errorText);
     }
 
+    this.#ongoingNavigationUrl = url;
+
     this.#documentChanged(cdpNavigateResult.loaderId);
 
     switch (wait) {
@@ -640,6 +683,7 @@ export class BrowsingContextImpl {
         break;
     }
 
+    this.#ongoingNavigationUrl = undefined;
     return {
       navigation: cdpNavigateResult.loaderId ?? null,
       // Url can change due to redirect get the latest one.
