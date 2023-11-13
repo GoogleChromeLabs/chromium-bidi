@@ -137,6 +137,7 @@ export class WebSocketServer {
       // Schedule browser instance creation, but don't wait for it.
       void (async () => {
         try {
+          debugInfo('Scheduling browser launch...');
           const browserInstance = await BrowserInstance.run(
             channel,
             headless,
@@ -148,6 +149,8 @@ export class WebSocketServer {
           browserInstance.bidiSession().on('message', (message) => {
             void this.#sendClientMessageString(message, connection);
           });
+
+          debugInfo('Browser is launched!');
           browserInstanceDeferred.resolve(browserInstance);
         } catch (e) {
           debugInfo('Error while creating browser instance', e);
