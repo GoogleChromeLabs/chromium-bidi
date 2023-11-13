@@ -162,6 +162,9 @@ export class BrowsingContextImpl {
       this.parent!.#children.delete(this.id);
     }
 
+    // Fail all ongoing navigations.
+    this.#failDeferredsIfNotFinished();
+
     this.#eventManager.registerEvent(
       {
         type: 'event',
@@ -327,31 +330,6 @@ export class BrowsingContextImpl {
         // previous page are detached and realms are destroyed.
         // Remove children from context.
         this.#deleteAllChildren();
-      }
-    );
-
-    this.#cdpTarget.cdpClient.on(
-      'Network.loadingFailed',
-      (params: Protocol.Network.LoadingFailedEvent) => {
-        if (this.#loaderId !== params.requestId) {
-          return;
-        }
-        // TODO: consider process only specific `errorText === 'net::ERR_ABORTED'`.
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-            params: {
-              context: this.id,
-              navigation: this.#loaderId ?? null,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url: this.#ongoingNavigationUrl ?? this.#url,
-            },
-          },
-          this.id
-        );
-
-        this.#failDeferredsIfNotFinished();
       }
     );
 
