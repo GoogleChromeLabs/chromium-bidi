@@ -220,8 +220,10 @@ export class WebSocketServer {
           this.#sendClientMessage(
             {
               id: parsedCommandData.id,
-              sessionId: '1',
-              capabilities: {},
+              result: {
+                sessionId: '1',
+                capabilities: {},
+              },
             },
             connection
           );

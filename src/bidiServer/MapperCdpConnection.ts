@@ -149,7 +149,7 @@ export class MapperCdpConnection {
     verbose: boolean,
     acceptInsecureCerts: boolean
   ): Promise<CdpClient> {
-    debugInternal('Initializing Mapper.');
+    debugInternal('Initializing Mapper.', {verbose, acceptInsecureCerts});
 
     const browserClient = await cdpConnection.createBrowserSession();
 

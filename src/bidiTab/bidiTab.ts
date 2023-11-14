@@ -73,7 +73,7 @@ const cdpConnection = new CdpConnection(cdpTransport, log);
  */
 async function runMapperInstance(
   selfTargetId: string,
-  acceptInsecureCerts: boolean = false
+  acceptInsecureCerts: boolean
 ) {
   // eslint-disable-next-line no-console
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
@@ -99,9 +99,13 @@ async function runMapperInstance(
 /**
  * Set `window.runMapper` to a function which launches the BiDi mapper instance.
  * @param selfTargetId Needed to filter out info related to BiDi target.
+ * @param acceptInsecureCerts
  */
-window.runMapperInstance = async (selfTargetId) => {
-  await runMapperInstance(selfTargetId);
+window.runMapperInstance = async (
+  selfTargetId,
+  acceptInsecureCerts: boolean = false
+) => {
+  await runMapperInstance(selfTargetId, acceptInsecureCerts);
 };
 
 /**
@@ -110,7 +114,7 @@ window.runMapperInstance = async (selfTargetId) => {
  */
 // TODO: Remove this after https://crrev.com/c/4952609 reaches stable.
 window.setSelfTargetId = async (selfTargetId) => {
-  const bidiServer = await runMapperInstance(selfTargetId);
+  const bidiServer = await runMapperInstance(selfTargetId, false);
   bidiServer.emitOutgoingMessage(
     OutgoingMessage.createResolved({
       launched: true,

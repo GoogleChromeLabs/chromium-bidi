@@ -14,8 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_tree, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -418,3 +419,59 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': close_command_id,
         'type': 'success',
     })
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigateBadSsl_notNavigated(
+        websocket, context_id):
+    # TODO: make offline.
+    url = 'https://expired.badssl.com/'
+
+    with pytest.raises(Exception,
+                       match=str({
+                           'error': 'unknown error',
+                           'message': 'net::ERR_CERT_DATE_INVALID'
+                       })):
+        await execute_command(
+            websocket, {
+                'method': "browsingContext.navigate",
+                'params': {
+                    'url': url,
+                    'wait': 'complete',
+                    'context': context_id
+                }
+            })
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigateBadSslAndAcceptInsecureCerts_navigated(
+        websocket_connection):
+    # Cannot use fixtures `websocket` and `context_id` here because it uses
+    # a session which does not accept insecure certs.
+    await execute_command(
+        websocket_connection, {
+            "method": "session.new",
+            "params": {
+                "capabilities": {
+                    "alwaysMatch": {
+                        "acceptInsecureCerts": True
+                    }
+                }
+            }
+        })
+
+    result = await get_tree(websocket_connection)
+    context_id = result["contexts"][0]["context"]
+
+    # TODO: make offline.
+    url = 'https://expired.badssl.com/'
+
+    await execute_command(
+        websocket_connection, {
+            'method': "browsingContext.navigate",
+            'params': {
+                'url': url,
+                'wait': 'complete',
+                'context': context_id
+            }
+        })
