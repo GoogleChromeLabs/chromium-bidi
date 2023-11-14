@@ -30,7 +30,7 @@ on:
         type: string
       verbose:
         description: Verbose logging
-        default: false
+        default: true
         required: false
         type: boolean
 
@@ -153,7 +153,7 @@ jobs:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: false
           UPDATE_EXPECTATIONS: true
-          VERBOSE: ${{ github.event.inputs.verbose }}
+          VERBOSE: true
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests (mapper, headless)
         if: matrix.head == 'headless' && matrix.kind == 'mapper'
@@ -163,7 +163,7 @@ jobs:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: true
           UPDATE_EXPECTATIONS: true
-          VERBOSE: ${{ github.event.inputs.verbose }}
+          VERBOSE: true
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests (chromedriver, new headless)
         if: matrix.head == 'headless' && matrix.kind == 'chromedriver'
@@ -173,7 +173,7 @@ jobs:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true
           UPDATE_EXPECTATIONS: true
-          VERBOSE: ${{ github.event.inputs.verbose }}
+          VERBOSE: true
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
         if: success() || failure()
