@@ -116,6 +116,7 @@ const wptRunArgs = [
   'backlog',
   '--timeout-multiplier',
   TIMEOUT_MULTIPLIER,
+  '--fully-parallel',
 ];
 
 if (VERBOSE === 'true') {
