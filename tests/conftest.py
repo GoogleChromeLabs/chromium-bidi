@@ -46,6 +46,12 @@ async def websocket():
         yield connection
 
 
+@pytest_asyncio.fixture(autouse=True)
+async def create_bidi_session(websocket):
+    """Create a new BiDi session."""
+    await execute_command(websocket, {"method": "session.new", "params": {}})
+
+
 @pytest_asyncio.fixture
 async def context_id(websocket):
     """Return the context id from the first browsing context."""

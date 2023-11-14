@@ -47,13 +47,15 @@ export class MapperCdpConnection {
   static async create(
     cdpConnection: CdpConnection,
     mapperTabSource: string,
-    verbose: boolean
+    verbose: boolean,
+    acceptInsecureCerts: boolean
   ): Promise<MapperCdpConnection> {
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
         mapperTabSource,
-        verbose
+        verbose,
+        acceptInsecureCerts
       );
       return new MapperCdpConnection(cdpConnection, mapperCdpClient);
     } catch (e) {
@@ -144,7 +146,8 @@ export class MapperCdpConnection {
   static async #initMapper(
     cdpConnection: CdpConnection,
     mapperTabSource: string,
-    verbose: boolean
+    verbose: boolean,
+    acceptInsecureCerts: boolean
   ): Promise<CdpClient> {
     debugInternal('Initializing Mapper.');
 
@@ -188,7 +191,7 @@ export class MapperCdpConnection {
 
     // Run Mapper instance.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `window.runMapperInstance('${mapperTabTargetId}')`,
+      expression: `window.runMapperInstance('${mapperTabTargetId}', ${acceptInsecureCerts})`,
       awaitPromise: true,
     });
 

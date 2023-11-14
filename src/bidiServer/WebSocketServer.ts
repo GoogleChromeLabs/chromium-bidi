@@ -134,35 +134,7 @@ export class WebSocketServer {
 
       const browserInstanceDeferred = new Deferred<BrowserInstance>();
 
-      // Schedule browser instance creation, but don't wait for it.
-      void (async () => {
-        try {
-          debugInfo('Scheduling browser launch...');
-          const browserInstance = await BrowserInstance.run(
-            channel,
-            headless,
-            verbose,
-            chromeOptions?.args
-          );
-
-          // Forward messages from BiDi Mapper to the client unconditionally.
-          browserInstance.bidiSession().on('message', (message) => {
-            void this.#sendClientMessageString(message, connection);
-          });
-
-          debugInfo('Browser is launched!');
-          browserInstanceDeferred.resolve(browserInstance);
-        } catch (e) {
-          debugInfo('Error while creating browser instance', e);
-          connection.close(500, 'Error while creating browser instance');
-          return;
-        }
-      })();
-
       connection.on('message', async (message) => {
-        // Wait for browser instance to be created.
-        const browserInstance = await browserInstanceDeferred;
-
         // If |type| is not text, return a error.
         if (message.type !== 'utf8') {
           this.#respondWithError(
@@ -198,10 +170,71 @@ export class WebSocketServer {
           return;
         }
 
+        // Handle `newSession` command.
+        if (parsedCommandData.method === 'session.new') {
+          const acceptInsecureCerts =
+            (parsedCommandData as any).params?.capabilities?.alwaysMatch
+              ?.acceptInsecureCerts ?? false;
+
+          if (browserInstanceDeferred.isFinished) {
+            this.#respondWithError(
+              connection,
+              plainCommandData,
+              ErrorCode.SessionNotCreated,
+              'Browser instance is already created'
+            );
+            return;
+          }
+
+          // Schedule browser instance creation, but don't wait for it.
+          try {
+            debugInfo('Scheduling browser launch...');
+            const browserInstance = await BrowserInstance.run(
+              channel,
+              headless,
+              verbose,
+              acceptInsecureCerts,
+              chromeOptions?.args
+            );
+
+            // Forward messages from BiDi Mapper to the client unconditionally.
+            browserInstance.bidiSession().on('message', (message) => {
+              this.#sendClientMessageString(message, connection);
+            });
+
+            debugInfo('Browser is launched!');
+            browserInstanceDeferred.resolve(browserInstance);
+          } catch (e) {
+            debugInfo('Error while creating browser instance', e);
+
+            this.#respondWithError(
+              connection,
+              plainCommandData,
+              ErrorCode.SessionNotCreated,
+              'Cannot launch browser'
+            );
+            return;
+          }
+
+          // TODO: extend with capabilities.
+          this.#sendClientMessage(
+            {
+              id: parsedCommandData.id,
+              sessionId: '1',
+              capabilities: {},
+            },
+            connection
+          );
+          return;
+        }
+
+        // Wait for browser instance to be created.
+        const browserInstance = await browserInstanceDeferred;
+
         // Handle `browser.close` command.
         if (parsedCommandData.method === 'browser.close') {
           await browserInstance.close();
-          await this.#sendClientMessage(
+          this.#sendClientMessage(
             {
               id: parsedCommandData.id,
               type: 'success',
@@ -236,7 +269,7 @@ export class WebSocketServer {
   static #sendClientMessageString(
     message: string,
     connection: websocket.connection
-  ): Promise<void> {
+  ): void {
     if (debugSend.enabled) {
       try {
         debugSend(JSON.parse(message));
@@ -245,13 +278,12 @@ export class WebSocketServer {
       }
     }
     connection.sendUTF(message);
-    return Promise.resolve();
   }
 
   static #sendClientMessage(
     object: unknown,
     connection: websocket.connection
-  ): Promise<void> {
+  ): void {
     const json = JSON.stringify(object);
     return this.#sendClientMessageString(json, connection);
   }

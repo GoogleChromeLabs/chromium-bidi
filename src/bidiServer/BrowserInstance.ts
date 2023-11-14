@@ -57,6 +57,7 @@ export class BrowserInstance {
     channel: ChromeReleaseChannel,
     headless: boolean,
     verbose: boolean,
+    acceptInsecureCerts: boolean,
     chromeArgs?: string[]
   ): Promise<BrowserInstance> {
     const profileDir = await mkdtemp(
@@ -120,7 +121,8 @@ export class BrowserInstance {
     const mapperCdpConnection = await MapperCdpConnection.create(
       cdpConnection,
       mapperTabSource,
-      verbose
+      verbose,
+      acceptInsecureCerts
     );
 
     return new BrowserInstance(mapperCdpConnection, browserProcess);
