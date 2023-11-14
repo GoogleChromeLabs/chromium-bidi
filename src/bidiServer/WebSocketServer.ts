@@ -170,7 +170,7 @@ export class WebSocketServer {
           return;
         }
 
-        // Handle `newSession` command.
+        // Handle creating new session.
         if (parsedCommandData.method === 'session.new') {
           const acceptInsecureCerts =
             (parsedCommandData as any).params?.capabilities?.alwaysMatch
