@@ -115,6 +115,8 @@ const wptRunArgs = [
   'backlog',
   '--timeout-multiplier',
   TIMEOUT_MULTIPLIER,
+  '--run-by-dir',
+  '1',
 ];
 
 if (VERBOSE === 'true') {
