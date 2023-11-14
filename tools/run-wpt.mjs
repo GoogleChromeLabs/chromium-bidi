@@ -18,6 +18,7 @@
  */
 
 import {execSync, spawnSync} from 'child_process';
+import {cpus} from 'os';
 import {join, resolve} from 'path';
 
 import {packageDirectorySync} from 'pkg-dir';
@@ -127,6 +128,9 @@ if (VERBOSE === 'true') {
     '--log-mach-level',
     'info'
   );
+} else if (process.env.CI === 'true' && HEADLESS === 'true') {
+  // Parallelization is flaky in headful mode.
+  wptRunArgs.push('--processes', cpus().length);
 }
 
 if (CHROMEDRIVER === 'true') {
