@@ -63,6 +63,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     cdpConnection: ICdpConnection,
     browserCdpClient: ICdpClient,
     selfTargetId: string,
+    acceptInsecureCerts: boolean,
     parser?: IBidiParser,
     logger?: LoggerFn
   ) {
@@ -81,6 +82,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       selfTargetId,
       this.#browsingContextStorage,
       new RealmStorage(),
+      acceptInsecureCerts,
       parser,
       this.#logger
     );
@@ -97,6 +99,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     cdpConnection: ICdpConnection,
     browserCdpClient: ICdpClient,
     selfTargetId: string,
+    acceptInsecureCerts: boolean,
     parser?: IBidiParser,
     logger?: LoggerFn
   ): Promise<BidiServer> {
@@ -105,6 +108,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       cdpConnection,
       browserCdpClient,
       selfTargetId,
+      acceptInsecureCerts,
       parser,
       logger
     );

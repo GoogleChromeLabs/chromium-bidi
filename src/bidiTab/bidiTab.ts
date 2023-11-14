@@ -69,8 +69,12 @@ const cdpConnection = new CdpConnection(cdpTransport, log);
 /**
  * Launches the BiDi mapper instance.
  * @param {string} selfTargetId
+ * @param acceptInsecureCerts Whether to accept insecure certs.
  */
-async function runMapperInstance(selfTargetId: string) {
+async function runMapperInstance(
+  selfTargetId: string,
+  acceptInsecureCerts: boolean = false
+) {
   // eslint-disable-next-line no-console
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 
@@ -82,6 +86,7 @@ async function runMapperInstance(selfTargetId: string) {
      */
     await cdpConnection.createBrowserSession(),
     selfTargetId,
+    acceptInsecureCerts,
     new BidiParser(),
     log
   );
