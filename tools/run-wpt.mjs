@@ -118,6 +118,7 @@ const wptRunArgs = [
   TIMEOUT_MULTIPLIER,
   '--run-by-dir',
   '1',
+  '--restart-on-new-group',
 ];
 
 if (VERBOSE === 'true') {
