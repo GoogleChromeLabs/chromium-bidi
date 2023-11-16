@@ -77,6 +77,16 @@ const VERBOSE = process.env.VERBOSE || 'false';
 // The path to the WPT report file.
 const WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
 
+const LOG_DIR = process.env.LOG_DIR || 'logs';
+const LOG_FILE =
+  process.env.LOG_FILE ||
+  join(
+    LOG_DIR,
+    `${new Date().toISOString().replace(/[:]/g, '-')}.${
+      CHROMEDRIVER ? 'chromeDriver' : 'mapper'
+    }.log`
+  );
+
 // Only set WPT_METADATA if it's not already set.
 let WPT_METADATA;
 if (typeof process.env.WPT_METADATA === 'undefined') {
@@ -101,8 +111,6 @@ if (HEADLESS === 'true') {
 const wptRunArgs = [
   '--binary',
   BROWSER_BIN,
-  '--webdriver-binary',
-  'tools/run-bidi-server.mjs',
   `--webdriver-arg=--headless=${HEADLESS}`,
   '--log-wptreport',
   WPT_REPORT,
@@ -135,11 +143,12 @@ if (CHROMEDRIVER === 'true') {
     '--binary-arg=--headless=new',
     '--install-webdriver',
     `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
-    `--webdriver-arg=--log-path=${join('out', 'chromedriver.log')}`,
+    `--webdriver-arg=--log-path=${LOG_FILE}`,
     '--webdriver-arg=--verbose',
     '--yes'
   );
 } else {
+  wptRunArgs.push('--webdriver-binary', 'tools/run-bidi-server.mjs');
   log('Using pure mapper...');
 }
 
