@@ -148,7 +148,7 @@ if (CHROMEDRIVER === 'true') {
     '--yes'
   );
 } else {
-  wptRunArgs.push('--webdriver-binary', 'tools/run-bidi-server.mjs');
+  wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
   log('Using pure mapper...');
 }
 
