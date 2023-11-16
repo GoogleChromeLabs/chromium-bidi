@@ -423,10 +423,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateBadSsl_notNavigated(
-        websocket, context_id):
-    # TODO: make offline.
-    url = 'https://expired.badssl.com/'
-
+        websocket, context_id, bad_ssl_url):
     with pytest.raises(Exception,
                        match=str({
                            'error': 'unknown error',
@@ -436,7 +433,7 @@ async def test_browsingContext_navigateBadSsl_notNavigated(
             websocket, {
                 'method': "browsingContext.navigate",
                 'params': {
-                    'url': url,
+                    'url': bad_ssl_url,
                     'wait': 'complete',
                     'context': context_id
                 }
