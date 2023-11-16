@@ -33,21 +33,25 @@ const debugRecv = debug('bidi:server:RECV ◂');
 
 type Session = {
   sessionId: string;
-  browserInstance?: BrowserInstance;
-  sessionOptions: SessionOptions;
+  // Promised is used to decrease WebSocket handshake latency. If session is set via
+  // WebDriver Classic, we need to launch Browser instance for each new WebSocket
+  // connection before processing BiDi commands.
+  // TODO: replace with BrowserInstance, make readonly, remove promise and undefined.
+  browserInstancePromise: Promise<BrowserInstance> | undefined;
+  sessionOptions: Readonly<SessionOptions>;
 };
 
 type ChromeOptions = {
-  chromeArgs: string[];
-  chromeBinary?: string;
-  channel: ChromeReleaseChannel;
-  headless: boolean;
+  readonly chromeArgs: string[];
+  readonly chromeBinary?: string;
+  readonly channel: ChromeReleaseChannel;
+  readonly headless: boolean;
 };
 
 type SessionOptions = {
-  mapperOptions: MapperOptions;
-  chromeOptions: ChromeOptions;
-  verbose: boolean;
+  readonly mapperOptions: MapperOptions;
+  readonly chromeOptions: ChromeOptions;
+  readonly verbose: boolean;
 };
 
 export class WebSocketServer {
@@ -68,9 +72,9 @@ export class WebSocketServer {
     const server = http.createServer(
       async (request: http.IncomingMessage, response: http.ServerResponse) => {
         debugInternal(
-          `${new Date().toString()} Received ${
-            request.method ?? 'UNKNOWN METHOD'
-          } request for ${request.url ?? 'UNKNOWN URL'}`
+          `${new Date().toString()} Received HTTP ${JSON.stringify(
+            request.method
+          )} request for ${JSON.stringify(request.url)}`
         );
         if (!request.url) {
           return response.end(404);
@@ -92,9 +96,9 @@ export class WebSocketServer {
               const sessionId = uuidv4();
               const session: Session = {
                 sessionId,
-                // TODO: launch browser instance and bind it to the session after WPT
+                // TODO: launch browser instance and set it to the session after WPT
                 //  tests clean up is switched to pure BiDi.
-                browserInstance: undefined,
+                browserInstancePromise: undefined,
                 sessionOptions: {
                   chromeOptions: this.#getChromeOptions(
                     jsonBody.capabilities,
@@ -194,15 +198,19 @@ export class WebSocketServer {
         // tests, but cleans up tests using WebDriver Classic commands, which is
         // not implemented in this Mapper runner.
         // TODO: connect to an existing BrowserInstance instead.
-        await this.#closeBrowserInstanceIfLaunched(session);
-        try {
-          session.browserInstance = await this.#launchBrowserInstance(
-            connection,
-            session.sessionOptions
-          );
-        } catch (e) {
-          connection.close(500, 'cannot create browser instance');
-        }
+        const sessionOptions = session.sessionOptions;
+        session.browserInstancePromise = this.#closeBrowserInstanceIfLaunched(
+          session
+        )
+          .then(
+            async () =>
+              await this.#launchBrowserInstance(connection, sessionOptions)
+          )
+          .catch((e) => {
+            debugInternal('Error while creating session', e);
+            connection.close(500, 'cannot create browser instance');
+            throw e;
+          });
       }
 
       connection.on('message', async (message) => {
@@ -276,7 +284,7 @@ export class WebSocketServer {
             const sessionId = uuidv4();
             session = {
               sessionId,
-              browserInstance: browserInstance,
+              browserInstancePromise: Promise.resolve(browserInstance),
               sessionOptions,
             };
             this.#sessions.set(sessionId, session);
@@ -318,7 +326,7 @@ export class WebSocketServer {
           return;
         }
 
-        if (session.browserInstance === undefined) {
+        if (session.browserInstancePromise === undefined) {
           debugInfo('Browser instance is not launched.');
 
           this.#respondWithError(
@@ -330,7 +338,7 @@ export class WebSocketServer {
           return;
         }
 
-        const browserInstance = session.browserInstance;
+        const browserInstance = await session.browserInstancePromise;
 
         // Handle `browser.close` command.
         if (parsedCommandData.method === 'browser.close') {
@@ -357,8 +365,7 @@ export class WebSocketServer {
           } disconnected.`
         );
 
-        // TODO: handle reconnection which is used in WPT. Until then, close the
-        // browser after each WS connection is closed.
+        // TODO: don't close Browser instance to allow re-connecting to the session.
         await this.#closeBrowserInstanceIfLaunched(session);
       });
     });
@@ -367,11 +374,13 @@ export class WebSocketServer {
   static async #closeBrowserInstanceIfLaunched(
     session?: Session
   ): Promise<void> {
-    if (session === undefined) {
+    if (session === undefined || session.browserInstancePromise === undefined) {
       return;
     }
-    await session.browserInstance?.close();
-    session.browserInstance = undefined;
+
+    const browserInstance = await session.browserInstancePromise;
+    await browserInstance.close();
+    session.browserInstancePromise = undefined;
   }
 
   static #getMapperOptions(capabilities: any): MapperOptions {
