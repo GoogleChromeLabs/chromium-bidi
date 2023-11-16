@@ -143,7 +143,7 @@ if (CHROMEDRIVER === 'true') {
     '--binary-arg=--headless=new',
     '--install-webdriver',
     `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
-    `--webdriver-arg=--log-path=${LOG_FILE}`,
+    `--webdriver-arg=--log-path="${LOG_FILE}"`,
     '--webdriver-arg=--verbose',
     '--yes'
   );
