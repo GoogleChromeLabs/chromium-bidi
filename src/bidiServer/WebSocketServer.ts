@@ -214,7 +214,7 @@ export class WebSocketServer {
               await this.#launchBrowserInstance(connection, sessionOptions)
           )
           .catch((e) => {
-            debugInternal('Error while creating session', e);
+            debugInfo('Error while creating session', e);
             connection.close(500, 'cannot create browser instance');
             throw e;
           });
