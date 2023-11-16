@@ -58,9 +58,7 @@ if (!BROWSER_BIN || !DRIVER_BIN) {
   const installOutput = execSync(
     `node ${join('tools', 'install-browser.mjs')} '--shell'`
   );
-  let {browserExecutablePath, driverExecutablePath} = JSON.parse(
-    installOutput
-  );
+  let {browserExecutablePath, driverExecutablePath} = JSON.parse(installOutput);
 
   if (!BROWSER_BIN) {
     BROWSER_BIN = browserExecutablePath;
