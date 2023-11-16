@@ -41,6 +41,13 @@ import {MapperOptions} from '../bidiMapper/BidiServer';
 
 const debugInternal = debug('bidi:mapper:internal');
 
+type ChromeOptions = {
+  chromeArgs: string[];
+  chromeBinary?: string;
+  channel: ChromeReleaseChannel;
+  headless: boolean;
+};
+
 /**
  * BrowserProcess is responsible for running the browser and BiDi Mapper within
  * it.
@@ -55,18 +62,18 @@ export class BrowserInstance {
   #browserProcess: Process;
 
   static async run(
-    channel: ChromeReleaseChannel,
-    headless: boolean,
-    verbose: boolean,
+    chromeOptions: ChromeOptions,
     mapperOptions: MapperOptions,
-    chromeArgs?: string[]
+    verbose: boolean
   ): Promise<BrowserInstance> {
     const profileDir = await mkdtemp(
       path.join(os.tmpdir(), 'web-driver-bidi-server-')
     );
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
     const chromeArguments = [
-      ...(headless ? ['--headless', '--hide-scrollbars', '--mute-audio'] : []),
+      ...(chromeOptions.headless
+        ? ['--headless', '--hide-scrollbars', '--mute-audio']
+        : []),
       // keep-sorted start
       '--allow-browser-signin=false',
       '--disable-component-update',
@@ -83,17 +90,18 @@ export class BrowserInstance {
       '--use-mock-keychain',
       `--user-data-dir=${profileDir}`,
       // keep-sorted end
-      ...(chromeArgs
-        ? chromeArgs.filter((arg) => !arg.startsWith('--headless'))
-        : []),
+      ...chromeOptions.chromeArgs.filter(
+        (arg) => !arg.startsWith('--headless')
+      ),
       'about:blank',
     ];
 
     const executablePath =
+      chromeOptions.chromeBinary ??
       process.env['BROWSER_BIN'] ??
       computeSystemExecutablePath({
         browser: Browser.CHROME,
-        channel,
+        channel: chromeOptions.channel,
       });
 
     if (!executablePath) {
