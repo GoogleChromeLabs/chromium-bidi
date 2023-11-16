@@ -45,7 +45,6 @@ if (
 }
 
 // Whether to use Chromedriver with mapper.
-// Whether to use Chromedriver with mapper.
 const CHROMEDRIVER = process.env.CHROMEDRIVER || 'false';
 
 let BROWSER_BIN = process.env.BROWSER_BIN;
