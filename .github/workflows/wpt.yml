@@ -104,10 +104,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - kind: mapper
-          #   head: headful
-          # - kind: mapper
-          #   head: headless
+          - kind: mapper
+            head: headful
+          - kind: mapper
+            head: headless
           - kind: chromedriver
             head: headless
     steps:
