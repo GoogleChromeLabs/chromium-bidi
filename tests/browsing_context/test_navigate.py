@@ -427,7 +427,7 @@ async def test_browsingContext_navigateBadSsl_notNavigated(
     with pytest.raises(Exception,
                        match=str({
                            'error': 'unknown error',
-                           'message': 'net::ERR_CERT_DATE_INVALID'
+                           'message': 'net::ERR_CERT_AUTHORITY_INVALID'
                        })):
         await execute_command(
             websocket, {
@@ -441,27 +441,16 @@ async def test_browsingContext_navigateBadSsl_notNavigated(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('websocket', [{
+    'capabilities': {
+        'acceptInsecureCerts': True
+    }
+}],
+                         indirect=['websocket'])
 async def test_browsingContext_navigateBadSslAndAcceptInsecureCerts_navigated(
-        websocket_connection, bad_ssl_url):
-    # Cannot use fixtures `websocket` and `context_id` here because it uses
-    # a session which does not accept insecure certs.
+        websocket, context_id, bad_ssl_url):
     await execute_command(
-        websocket_connection, {
-            "method": "session.new",
-            "params": {
-                "capabilities": {
-                    "alwaysMatch": {
-                        "acceptInsecureCerts": True
-                    }
-                }
-            }
-        })
-
-    result = await get_tree(websocket_connection)
-    context_id = result["contexts"][0]["context"]
-
-    await execute_command(
-        websocket_connection, {
+        websocket, {
             'method': "browsingContext.navigate",
             'params': {
                 'url': bad_ssl_url,

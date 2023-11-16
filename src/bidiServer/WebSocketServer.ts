@@ -179,26 +179,26 @@ export class WebSocketServer {
       // Session is set either by Classic or BiDi commands.
       let session: Session | undefined;
 
-      const sessionId = (request.resource ?? '').split('/').pop();
+      const requestSessionId = (request.resource ?? '').split('/').pop();
       debugInternal(
         `new WS request received. Path: ${JSON.stringify(
           request.resourceURL.path
-        )}, sessionId: ${JSON.stringify(sessionId)}`
+        )}, sessionId: ${JSON.stringify(requestSessionId)}`
       );
 
       if (
-        sessionId !== '' &&
-        sessionId !== undefined &&
-        !this.#sessions.has(sessionId)
+        requestSessionId !== '' &&
+        requestSessionId !== undefined &&
+        !this.#sessions.has(requestSessionId)
       ) {
-        debugInternal('Unknown session id:', sessionId);
+        debugInternal('Unknown session id:', requestSessionId);
         request.reject();
         return;
       }
 
       const connection = request.accept();
 
-      session = this.#sessions.get(sessionId ?? '');
+      session = this.#sessions.get(requestSessionId ?? '');
       if (session !== undefined) {
         // BrowserInstance is created for each new WS connection, even for the
         // same SessionId. This is because WPT uses a single session for all the
@@ -313,7 +313,7 @@ export class WebSocketServer {
               id: parsedCommandData.id,
               type: 'success',
               result: {
-                sessionId: '1',
+                sessionId: session.sessionId,
                 capabilities: {},
               },
             },

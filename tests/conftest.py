@@ -38,7 +38,7 @@ def local_server(httpserver) -> LocalHttpServer:
 
 
 @pytest_asyncio.fixture
-async def websocket_connection():
+async def _websocket_connection():
     """ Return a websocket connection to the browser on localhost without an
     active BiDi session.
     """
@@ -48,14 +48,20 @@ async def websocket_connection():
         yield connection
 
 
-@pytest_asyncio.fixture
-async def websocket(websocket_connection):
+@pytest_asyncio.fixture(params=[{"capabilities": {}}])
+async def websocket(request, _websocket_connection):
+    capabilities = request.param['capabilities']
     """Return a websocket with an active BiDi session."""
-    await execute_command(websocket_connection, {
-        "method": "session.new",
-        "params": {}
-    })
-    return websocket_connection
+    await execute_command(
+        _websocket_connection, {
+            "method": "session.new",
+            "params": {
+                "capabilities": {
+                    "alwaysMatch": capabilities
+                }
+            }
+        })
+    return _websocket_connection
 
 
 @pytest_asyncio.fixture
