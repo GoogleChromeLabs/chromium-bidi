@@ -159,7 +159,7 @@ if (CHROMEDRIVER === 'true') {
   wptRunArgs.push(
     '--binary-arg=--headless=new',
     `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
-    `--webdriver-arg=--log-path="${LOG_FILE}"`,
+    `--webdriver-arg=--log-path=${LOG_FILE}`,
     '--webdriver-arg=--verbose',
     '--yes'
   );
