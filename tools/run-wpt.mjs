@@ -59,6 +59,16 @@ const CHROMEDRIVER = process.env.CHROMEDRIVER || 'false';
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
 
+const LOG_DIR = process.env.LOG_DIR || 'logs';
+const LOG_FILE =
+  process.env.LOG_FILE ||
+  join(
+    LOG_DIR,
+    `${new Date().toISOString().replace(/[:]/g, '-')}.${
+      CHROMEDRIVER ? 'chromedriver' : 'mapper'
+    }.log`
+  );
+
 // The path to the WPT manifest file.
 const MANIFEST = process.env.MANIFEST || 'MANIFEST.json';
 
@@ -76,16 +86,6 @@ const VERBOSE = process.env.VERBOSE || 'false';
 
 // The path to the WPT report file.
 const WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
-
-const LOG_DIR = process.env.LOG_DIR || 'logs';
-const LOG_FILE =
-  process.env.LOG_FILE ||
-  join(
-    LOG_DIR,
-    `${new Date().toISOString().replace(/[:]/g, '-')}.${
-      CHROMEDRIVER ? 'chromedriver' : 'mapper'
-    }.log`
-  );
 
 // Only set WPT_METADATA if it's not already set.
 let WPT_METADATA;
