@@ -83,7 +83,7 @@ const LOG_FILE =
   join(
     LOG_DIR,
     `${new Date().toISOString().replace(/[:]/g, '-')}.${
-      CHROMEDRIVER ? 'chromeDriver' : 'mapper'
+      CHROMEDRIVER ? 'chromedriver' : 'mapper'
     }.log`
   );
 
