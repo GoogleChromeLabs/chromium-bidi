@@ -55,7 +55,7 @@ async def websocket(websocket_connection):
         "method": "session.new",
         "params": {}
     })
-    yield websocket_connection
+    return websocket_connection
 
 
 @pytest_asyncio.fixture
