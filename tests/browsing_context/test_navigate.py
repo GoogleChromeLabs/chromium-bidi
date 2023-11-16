@@ -445,7 +445,7 @@ async def test_browsingContext_navigateBadSsl_notNavigated(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateBadSslAndAcceptInsecureCerts_navigated(
-        websocket_connection):
+        websocket_connection, bad_ssl_url):
     # Cannot use fixtures `websocket` and `context_id` here because it uses
     # a session which does not accept insecure certs.
     await execute_command(
@@ -463,14 +463,11 @@ async def test_browsingContext_navigateBadSslAndAcceptInsecureCerts_navigated(
     result = await get_tree(websocket_connection)
     context_id = result["contexts"][0]["context"]
 
-    # TODO: make offline.
-    url = 'https://expired.badssl.com/'
-
     await execute_command(
         websocket_connection, {
             'method': "browsingContext.navigate",
             'params': {
-                'url': url,
+                'url': bad_ssl_url,
                 'wait': 'complete',
                 'context': context_id
             }
