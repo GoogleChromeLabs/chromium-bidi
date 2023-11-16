@@ -20,11 +20,11 @@ import type {ChromeReleaseChannel} from '@puppeteer/browsers';
 import debug from 'debug';
 import * as websocket from 'websocket';
 
+import type {MapperOptions} from '../bidiMapper/BidiServer.js';
 import {ErrorCode} from '../protocol/webdriver-bidi.js';
+import {uuidv4} from '../utils/uuid.js';
 
 import {BrowserInstance} from './BrowserInstance.js';
-import {MapperOptions} from '../bidiMapper/BidiServer';
-import {uuidv4} from '../utils/uuid.js';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
@@ -55,7 +55,7 @@ type SessionOptions = {
 };
 
 export class WebSocketServer {
-  static #sessions: Map<string, Session> = new Map();
+  static #sessions = new Map<string, Session>();
 
   /**
    * @param bidiPort Port to start ws server on.
@@ -114,7 +114,7 @@ export class WebSocketServer {
               response.write(
                 JSON.stringify({
                   value: {
-                    sessionId: sessionId,
+                    sessionId,
                     capabilities: {
                       webSocketUrl: `ws://localhost:${bidiPort}/${sessionId}`,
                     },
@@ -304,6 +304,7 @@ export class WebSocketServer {
           this.#sendClientMessage(
             {
               id: parsedCommandData.id,
+              type: 'success',
               result: {
                 sessionId: '1',
                 capabilities: {},
@@ -390,7 +391,7 @@ export class WebSocketServer {
   }
 
   static #getChromeOptions(
-    capabilities: any | undefined,
+    capabilities: any,
     channel: ChromeReleaseChannel,
     headless: boolean
   ): ChromeOptions {

@@ -18,13 +18,13 @@
  */
 
 import {BidiServer, OutgoingMessage} from '../bidiMapper/BidiMapper.js';
+import type {MapperOptions} from '../bidiMapper/BidiServer';
 import {CdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
 
 import {BidiParser} from './BidiParser.js';
 import {generatePage, log} from './mapperTabPage.js';
 import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
-import {MapperOptions} from '../bidiMapper/BidiServer';
 
 declare global {
   interface Window {

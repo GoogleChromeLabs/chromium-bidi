@@ -31,13 +31,13 @@ import {
 import debug from 'debug';
 import WebSocket from 'ws';
 
+import type {MapperOptions} from '../bidiMapper/BidiServer.js';
 import {CdpConnection} from '../cdp/CdpConnection.js';
 import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
 import {MapperCdpConnection} from './MapperCdpConnection.js';
 import {getMapperTabSource} from './reader.js';
 import type {SimpleTransport} from './SimpleTransport.js';
-import {MapperOptions} from '../bidiMapper/BidiServer';
 
 const debugInternal = debug('bidi:mapper:internal');
 

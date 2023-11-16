@@ -18,12 +18,12 @@
 import debug, {type Debugger} from 'debug';
 import type {Protocol} from 'devtools-protocol';
 
+import type {MapperOptions} from '../bidiMapper/BidiServer.js';
 import type {CdpClient} from '../cdp/CdpClient.js';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
 import type {LogPrefix, LogType} from '../utils/log.js';
 
 import {SimpleTransport} from './SimpleTransport.js';
-import {MapperOptions} from '../bidiMapper/BidiServer';
 
 const debugInternal = debug('bidi:mapper:internal');
 const debugInfo = debug('bidi:mapper:info');
