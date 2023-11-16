@@ -341,7 +341,7 @@ export class WebSocketServer {
             connection,
             plainCommandData,
             ErrorCode.InvalidSessionId,
-            'Session is not yet initialized.'
+            'Browser instance is not launched.'
           );
           return;
         }
