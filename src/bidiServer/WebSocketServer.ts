@@ -111,12 +111,19 @@ export class WebSocketServer {
               };
               this.#sessions.set(sessionId, session);
 
+              const webSocketUrl = `ws://localhost:${bidiPort}/session/${sessionId}`;
+              debugInternal(
+                `Session created. WebSocket URL: ${JSON.stringify(
+                  webSocketUrl
+                )}.`
+              );
+
               response.write(
                 JSON.stringify({
                   value: {
                     sessionId,
                     capabilities: {
-                      webSocketUrl: `ws://localhost:${bidiPort}/${sessionId}`,
+                      webSocketUrl,
                     },
                   },
                 })
@@ -172,7 +179,7 @@ export class WebSocketServer {
       // Session is set either by Classic or BiDi commands.
       let session: Session | undefined;
 
-      const sessionId = (request.resource ?? '').split('/')[1];
+      const sessionId = (request.resource ?? '').split('/').pop();
       debugInternal(
         `new WS request received. Path: ${JSON.stringify(
           request.resourceURL.path
