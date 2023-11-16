@@ -19,10 +19,11 @@
  */
 
 /**
- * @fileoverview Installs a browser defined in `.browser` using
- * `@puppeteer/browsers` to the directory provided as the first argument
- * (default: cwd). The executable path is written to the `executablePath` output
- * param for GitHub actions.
+ * @fileoverview Installs a browser defined in `.browser` and corresponding
+ * driver using `@puppeteer/browsers` to the directory provided as the first
+ * argument (default: cwd). The executable path is written to the
+ * `browserExecutablePath` and `driverExecutablePath` output param for GitHub
+ * actions, or as a JSON in the shell output.
  *
  * Examples:
  *  - `node tools/install-browser.mjs`
