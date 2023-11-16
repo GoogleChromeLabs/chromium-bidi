@@ -44,17 +44,32 @@ if (
   process.exit(0);
 }
 
-let BROWSER_BIN = process.env.BROWSER_BIN;
-if (!BROWSER_BIN) {
-  BROWSER_BIN = execSync(
-    `node ${join('tools', 'install-browser.mjs')} '--shell'`
-  )
-    .toString()
-    .trim();
-}
-
+// Whether to use Chromedriver with mapper.
 // Whether to use Chromedriver with mapper.
 const CHROMEDRIVER = process.env.CHROMEDRIVER || 'false';
+
+let BROWSER_BIN = process.env.BROWSER_BIN;
+let DRIVER_BIN =
+  CHROMEDRIVER === 'true'
+    ? process.env.DRIVER_BIN
+    : join('tools/run-bidi-server.mjs');
+
+if (!BROWSER_BIN || !DRIVER_BIN) {
+  const installOutput = execSync(
+    `node ${join('tools', 'install-browser.mjs')} '--shell'`
+  );
+  let {browserExecutablePath, driverExecutablePath} = JSON.parse(
+    installOutput
+  );
+
+  if (!BROWSER_BIN) {
+    BROWSER_BIN = browserExecutablePath;
+  }
+
+  if (!DRIVER_BIN) {
+    DRIVER_BIN = driverExecutablePath;
+  }
+}
 
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
@@ -65,7 +80,7 @@ const LOG_FILE =
   join(
     LOG_DIR,
     `${new Date().toISOString().replace(/[:]/g, '-')}.${
-      CHROMEDRIVER ? 'chromedriver' : 'mapper'
+      CHROMEDRIVER === 'true' ? 'chromedriver' : 'mapper'
     }.log`
   );
 
@@ -111,6 +126,8 @@ if (HEADLESS === 'true') {
 const wptRunArgs = [
   '--binary',
   BROWSER_BIN,
+  '--webdriver-binary',
+  DRIVER_BIN,
   `--webdriver-arg=--headless=${HEADLESS}`,
   '--log-wptreport',
   WPT_REPORT,
@@ -141,14 +158,12 @@ if (CHROMEDRIVER === 'true') {
   log('Using chromedriver with mapper...');
   wptRunArgs.push(
     '--binary-arg=--headless=new',
-    '--install-webdriver',
     `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
     `--webdriver-arg=--log-path="${LOG_FILE}"`,
     '--webdriver-arg=--verbose',
     '--yes'
   );
 } else {
-  wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
   log('Using pure mapper...');
 }
 
@@ -174,6 +189,9 @@ wptRunArgs.push(
 );
 
 const wptBinary = resolve(join('wpt', 'wpt'));
+
+log(`args: ${wptRunArgs.join(' ')}`);
+
 const {status} = spawnSync(wptBinary, ['run', ...wptRunArgs], {
   stdio: 'inherit',
 });

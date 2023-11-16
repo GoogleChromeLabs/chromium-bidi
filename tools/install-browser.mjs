@@ -54,15 +54,29 @@ try {
     buildId,
     cacheDir,
   });
-  const executablePath = computeExecutablePath({
+  // Install chrome driver as well.
+  await install({
+    browser: 'chromedriver',
+    buildId,
+    cacheDir,
+  });
+
+  const browserExecutablePath = computeExecutablePath({
     cacheDir,
     browser,
     buildId,
   });
+  const driverExecutablePath = computeExecutablePath({
+    cacheDir,
+    browser: 'chromedriver',
+    buildId,
+  });
+
   if (!process.argv.includes(SHELL_ARG)) {
-    setOutput('executablePath', executablePath);
+    setOutput('browserExecutablePath', browserExecutablePath);
+    setOutput('driverExecutablePath', driverExecutablePath);
   }
-  console.log(executablePath);
+  console.log(JSON.stringify({browserExecutablePath, driverExecutablePath}));
 } catch (err) {
   setFailed(`Failed to download the browser: ${err.message}`);
 }

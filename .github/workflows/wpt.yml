@@ -150,7 +150,7 @@ jobs:
           xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          BROWSER_BIN: ${{ steps.browser.outputs.browserExecutablePath }}
           HEADLESS: false
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
@@ -160,7 +160,7 @@ jobs:
         timeout-minutes: 60
         run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          BROWSER_BIN: ${{ steps.browser.outputs.browserExecutablePath }}
           HEADLESS: true
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
@@ -170,7 +170,7 @@ jobs:
         timeout-minutes: 60
         run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          BROWSER_BIN: ${{ steps.browser.outputs.browserExecutablePath }}
           CHROMEDRIVER: true
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
