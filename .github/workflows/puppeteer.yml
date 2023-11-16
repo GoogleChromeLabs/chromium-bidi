@@ -66,5 +66,5 @@ jobs:
       - name: Run tests
         working-directory: puppeteer
         env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.browserExecutablePath }}
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
         run: npm run test:chrome:bidi

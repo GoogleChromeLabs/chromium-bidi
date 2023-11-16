@@ -19,11 +19,10 @@
  */
 
 /**
- * @fileoverview Installs a browser defined in `.browser` and corresponding
- * driver using `@puppeteer/browsers` to the directory provided as the first
- * argument (default: cwd). The executable path is written to the
- * `browserExecutablePath` and `driverExecutablePath` output param for GitHub
- * actions, or as a JSON in the shell output.
+ * @fileoverview Installs a browser defined in `.browser` using
+ * `@puppeteer/browsers` to the directory provided as the first argument
+ * (default: cwd). The executable path is written to the `executablePath` output
+ * param for GitHub actions.
  *
  * Examples:
  *  - `node tools/install-browser.mjs`
@@ -55,29 +54,15 @@ try {
     buildId,
     cacheDir,
   });
-  // Install chrome driver as well.
-  await install({
-    browser: 'chromedriver',
-    buildId,
-    cacheDir,
-  });
-
-  const browserExecutablePath = computeExecutablePath({
+  const executablePath = computeExecutablePath({
     cacheDir,
     browser,
     buildId,
   });
-  const driverExecutablePath = computeExecutablePath({
-    cacheDir,
-    browser: 'chromedriver',
-    buildId,
-  });
-
   if (!process.argv.includes(SHELL_ARG)) {
-    setOutput('browserExecutablePath', browserExecutablePath);
-    setOutput('driverExecutablePath', driverExecutablePath);
+    setOutput('executablePath', executablePath);
   }
-  console.log(JSON.stringify({browserExecutablePath, driverExecutablePath}));
+  console.log(executablePath);
 } catch (err) {
   setFailed(`Failed to download the browser: ${err.message}`);
 }
