@@ -37,6 +37,7 @@ import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 import {MapperCdpConnection} from './MapperCdpConnection.js';
 import {getMapperTabSource} from './reader.js';
 import type {SimpleTransport} from './SimpleTransport.js';
+import {MapperOptions} from '../bidiMapper/BidiServer';
 
 const debugInternal = debug('bidi:mapper:internal');
 
@@ -57,7 +58,7 @@ export class BrowserInstance {
     channel: ChromeReleaseChannel,
     headless: boolean,
     verbose: boolean,
-    acceptInsecureCerts: boolean,
+    mapperOptions: MapperOptions,
     chromeArgs?: string[]
   ): Promise<BrowserInstance> {
     const profileDir = await mkdtemp(
@@ -122,7 +123,7 @@ export class BrowserInstance {
       cdpConnection,
       mapperTabSource,
       verbose,
-      acceptInsecureCerts
+      mapperOptions
     );
 
     return new BrowserInstance(mapperCdpConnection, browserProcess);

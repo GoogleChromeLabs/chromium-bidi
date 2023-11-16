@@ -23,6 +23,7 @@ import type {CdpConnection} from '../cdp/CdpConnection.js';
 import type {LogPrefix, LogType} from '../utils/log.js';
 
 import {SimpleTransport} from './SimpleTransport.js';
+import {MapperOptions} from '../bidiMapper/BidiServer';
 
 const debugInternal = debug('bidi:mapper:internal');
 const debugInfo = debug('bidi:mapper:info');
@@ -48,14 +49,14 @@ export class MapperCdpConnection {
     cdpConnection: CdpConnection,
     mapperTabSource: string,
     verbose: boolean,
-    acceptInsecureCerts: boolean
+    mapperOptions: MapperOptions
   ): Promise<MapperCdpConnection> {
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
         mapperTabSource,
         verbose,
-        acceptInsecureCerts
+        mapperOptions
       );
       return new MapperCdpConnection(cdpConnection, mapperCdpClient);
     } catch (e) {
@@ -147,9 +148,9 @@ export class MapperCdpConnection {
     cdpConnection: CdpConnection,
     mapperTabSource: string,
     verbose: boolean,
-    acceptInsecureCerts: boolean
+    mapperOptions: MapperOptions
   ): Promise<CdpClient> {
-    debugInternal('Initializing Mapper.', {verbose, acceptInsecureCerts});
+    debugInternal('Initializing Mapper.', mapperOptions);
 
     const browserClient = await cdpConnection.createBrowserSession();
 
@@ -189,9 +190,10 @@ export class MapperCdpConnection {
       expression: mapperTabSource,
     });
 
-    // Run Mapper instance.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `window.runMapperInstance('${mapperTabTargetId}', ${acceptInsecureCerts})`,
+      expression: `window.runMapperInstance('${mapperTabTargetId}', ${JSON.stringify(
+        mapperOptions
+      )})`,
       awaitPromise: true,
     });
 

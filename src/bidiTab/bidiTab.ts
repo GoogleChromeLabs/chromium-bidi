@@ -24,6 +24,7 @@ import {LogType} from '../utils/log.js';
 import {BidiParser} from './BidiParser.js';
 import {generatePage, log} from './mapperTabPage.js';
 import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
+import {MapperOptions} from '../bidiMapper/BidiServer';
 
 declare global {
   interface Window {
@@ -69,11 +70,11 @@ const cdpConnection = new CdpConnection(cdpTransport, log);
 /**
  * Launches the BiDi mapper instance.
  * @param {string} selfTargetId
- * @param acceptInsecureCerts Whether to accept insecure certs.
+ * @param options Mapper options. E.g. `acceptInsecureCerts`.
  */
 async function runMapperInstance(
   selfTargetId: string,
-  acceptInsecureCerts: boolean
+  options?: MapperOptions
 ) {
   // eslint-disable-next-line no-console
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
@@ -86,7 +87,7 @@ async function runMapperInstance(
      */
     await cdpConnection.createBrowserSession(),
     selfTargetId,
-    acceptInsecureCerts,
+    options,
     new BidiParser(),
     log
   );
@@ -99,13 +100,9 @@ async function runMapperInstance(
 /**
  * Set `window.runMapper` to a function which launches the BiDi mapper instance.
  * @param selfTargetId Needed to filter out info related to BiDi target.
- * @param acceptInsecureCerts
- */
-window.runMapperInstance = async (
-  selfTargetId,
-  acceptInsecureCerts: boolean = false
-) => {
-  await runMapperInstance(selfTargetId, acceptInsecureCerts);
+ * @param options Mapper options. E.g. `acceptInsecureCerts`. */
+window.runMapperInstance = async (selfTargetId, options?: MapperOptions) => {
+  await runMapperInstance(selfTargetId, options);
 };
 
 /**
@@ -114,7 +111,7 @@ window.runMapperInstance = async (
  */
 // TODO: Remove this after https://crrev.com/c/4952609 reaches stable.
 window.setSelfTargetId = async (selfTargetId) => {
-  const bidiServer = await runMapperInstance(selfTargetId, false);
+  const bidiServer = await runMapperInstance(selfTargetId);
   bidiServer.emitOutgoingMessage(
     OutgoingMessage.createResolved({
       launched: true,

@@ -24,6 +24,7 @@ import {ErrorCode} from '../protocol/webdriver-bidi.js';
 import {Deferred} from '../utils/Deferred.js';
 
 import {BrowserInstance} from './BrowserInstance.js';
+import {MapperOptions} from '../bidiMapper/BidiServer';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
@@ -172,9 +173,7 @@ export class WebSocketServer {
 
         // Handle creating new session.
         if (parsedCommandData.method === 'session.new') {
-          const acceptInsecureCerts =
-            (parsedCommandData as any).params?.capabilities?.alwaysMatch
-              ?.acceptInsecureCerts ?? false;
+          const mapperOptions = this.getMapperOptions(parsedCommandData);
 
           if (browserInstanceDeferred.isFinished) {
             this.#respondWithError(
@@ -193,7 +192,7 @@ export class WebSocketServer {
               channel,
               headless,
               verbose,
-              acceptInsecureCerts,
+              mapperOptions,
               chromeOptions?.args
             );
 
@@ -266,6 +265,14 @@ export class WebSocketServer {
         await browserInstance.close();
       });
     });
+  }
+
+  private static getMapperOptions(parsedCommandData: unknown): MapperOptions {
+    // `parsedCommandData` is `unknown`, as the parser is not implemented on the  server.
+    const acceptInsecureCerts =
+      (parsedCommandData as any)?.params?.capabilities?.alwaysMatch
+        ?.acceptInsecureCerts ?? false;
+    return {acceptInsecureCerts};
   }
 
   static #sendClientMessageString(
