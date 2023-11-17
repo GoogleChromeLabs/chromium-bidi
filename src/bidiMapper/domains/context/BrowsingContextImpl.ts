@@ -448,25 +448,26 @@ export class BrowsingContextImpl {
       'Runtime.executionContextCreated',
       (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
         const {auxData, name, uniqueId, id} = params.context;
-
-        let origin = params.context.origin;
-        let sandbox: string | undefined;
-        if (auxData) {
-          // Only these execution contexts are supported for now.
-          switch (auxData.type) {
-            case 'isolated':
-              sandbox = name;
-              // Sandbox should have the same origin as the context itself, but in CDP
-              // it has an empty one.
-              origin = this.#defaultRealm.origin;
-              break;
-            case 'default':
-              break;
-            default:
-              return;
-          }
+        if (!auxData || auxData.frameId !== this.id) {
+          return;
         }
-        origin = serializeOrigin(origin);
+
+        let origin: string;
+        let sandbox: string | undefined;
+        // Only these execution contexts are supported for now.
+        switch (auxData.type) {
+          case 'isolated':
+            sandbox = name;
+            // Sandbox should have the same origin as the context itself, but in CDP
+            // it has an empty one.
+            origin = this.#defaultRealm.origin;
+            break;
+          case 'default':
+            origin = serializeOrigin(params.context.origin);
+            break;
+          default:
+            return;
+        }
         const realm = new Realm(
           this.#realmStorage,
           this.#browsingContextStorage,
@@ -483,7 +484,7 @@ export class BrowsingContextImpl {
           this.#logger
         );
 
-        if (auxData?.isDefault) {
+        if (auxData.isDefault) {
           this.#maybeDefaultRealm = realm;
 
           // Initialize ChannelProxy listeners for all the channels of all the
