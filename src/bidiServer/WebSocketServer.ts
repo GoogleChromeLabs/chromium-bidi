@@ -387,8 +387,8 @@ export class WebSocketServer {
     }
 
     const browserInstance = await session.browserInstancePromise;
-    await browserInstance.close();
     session.browserInstancePromise = undefined;
+    void browserInstance.close();
   }
 
   static #getMapperOptions(capabilities: any): MapperOptions {
