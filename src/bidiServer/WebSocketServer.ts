@@ -33,7 +33,7 @@ const debugRecv = debug('bidi:server:RECV ◂');
 
 type Session = {
   sessionId: string;
-  // Promised is used to decrease WebSocket handshake latency. If session is set via
+  // Promise is used to decrease WebSocket handshake latency. If session is set via
   // WebDriver Classic, we need to launch Browser instance for each new WebSocket
   // connection before processing BiDi commands.
   // TODO: replace with BrowserInstance, make readonly, remove promise and undefined.
