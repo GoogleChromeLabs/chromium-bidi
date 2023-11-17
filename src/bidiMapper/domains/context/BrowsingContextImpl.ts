@@ -447,32 +447,43 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextCreated',
       (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
-        if (params.context.auxData.frameId !== this.id) {
-          return;
+        const {auxData, name, uniqueId, id} = params.context;
+
+        let origin = params.context.origin;
+        let sandbox: string | undefined;
+        if (auxData) {
+          // Only these execution contexts are supported for now.
+          switch (auxData.type) {
+            case 'isolated':
+              sandbox = name;
+              // Sandbox should have the same origin as the context itself, but in CDP
+              // it has an empty one.
+              origin = this.#defaultRealm.origin;
+              break;
+            case 'default':
+              break;
+            default:
+              return;
+          }
         }
-        // Only this execution contexts are supported for now.
-        if (!['default', 'isolated'].includes(params.context.auxData.type)) {
-          return;
-        }
+        origin = serializeOrigin(origin);
         const realm = new Realm(
           this.#realmStorage,
           this.#browsingContextStorage,
-          params.context.uniqueId,
+          uniqueId,
           this.id,
-          params.context.id,
-          this.#getOrigin(params),
+          id,
+          origin,
           // XXX: differentiate types.
           'window',
           // Sandbox name for isolated world.
-          params.context.auxData.type === 'isolated'
-            ? params.context.name
-            : undefined,
+          sandbox,
           this.#cdpTarget.cdpClient,
           this.#eventManager,
           this.#logger
         );
 
-        if (params.context.auxData.isDefault) {
+        if (auxData?.isDefault) {
           this.#maybeDefaultRealm = realm;
 
           // Initialize ChannelProxy listeners for all the channels of all the
@@ -539,18 +550,6 @@ export class BrowsingContextImpl {
         this.id
       );
     });
-  }
-
-  #getOrigin(params: Protocol.Runtime.ExecutionContextCreatedEvent) {
-    if (params.context.auxData.type === 'isolated') {
-      // Sandbox should have the same origin as the context itself, but in CDP
-      // it has an empty one.
-      return this.#defaultRealm.origin;
-    }
-    // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
-    return ['://', ''].includes(params.context.origin)
-      ? 'null'
-      : params.context.origin;
   }
 
   #documentChanged(loaderId?: Protocol.Network.LoaderId) {
@@ -999,6 +998,14 @@ export class BrowsingContextImpl {
       entryId: entry.id,
     });
   }
+}
+
+export function serializeOrigin(origin: string) {
+  // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
+  if (['://', ''].includes(origin)) {
+    origin = 'null';
+  }
+  return origin;
 }
 
 function getImageFormatParameters(
