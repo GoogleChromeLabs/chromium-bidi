@@ -221,7 +221,7 @@ export class WebSocketServer {
       }
 
       connection.on('message', async (message) => {
-        // If |type| is not text, return error.
+        // If type is not text, return error.
         if (message.type !== 'utf8') {
           this.#respondWithError(
             connection,
