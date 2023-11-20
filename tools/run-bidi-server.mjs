@@ -19,7 +19,7 @@
 
 import {spawn, spawnSync} from 'child_process';
 import {createWriteStream, mkdirSync} from 'fs';
-import {basename, join, resolve} from 'path';
+import {basename, join, resolve, dirname} from 'path';
 
 import {packageDirectorySync} from 'pkg-dir';
 import yargs from 'yargs';
@@ -43,7 +43,24 @@ const argv = yargs(hideBin(process.argv))
     type: 'boolean',
     default: process.env.HEADLESS === 'true',
   })
+  .option('log-dir', {
+    describe:
+      'If set, the server will write logs to the specified directory. The flag takes precedence over `LOG_DIR` environment variable.',
+    type: 'string',
+    default: process.env.LOG_DIR || 'logs',
+  })
+  .option('log-path', {
+    describe:
+      'If set, the server will write logs to the specified file in addition to stdout. The flag takes precedence over `log-dir` option and `LOG_FILE` environment variable.',
+    type: 'string',
+    optional: true,
+  })
   .parse();
+
+const LOG_DIR = argv.logDir;
+const LOG_FILE =
+  argv.logPath ||
+  join(LOG_DIR, `${new Date().toISOString().replace(/[:]/g, '-')}.mapper.log`);
 
 let BROWSER_BIN = process.env.BROWSER_BIN;
 let CHANNEL = process.env.CHANNEL || 'local';
@@ -63,17 +80,13 @@ if (CHANNEL === 'local') {
 const DEBUG = process.env.DEBUG ?? 'bidi:*';
 const DEBUG_COLORS = process.env.DEBUG_COLORS || 'yes';
 const DEBUG_DEPTH = process.env.DEBUG_DEPTH || '10';
-const LOG_DIR = process.env.LOG_DIR || 'logs';
-const LOG_FILE =
-  process.env.LOG_FILE ||
-  join(LOG_DIR, `${new Date().toISOString().replace(/[:]/g, '-')}.log`);
 const NODE_OPTIONS =
   process.env.NODE_OPTIONS || '--unhandled-rejections=strict';
 const PORT = process.env.PORT || '8080';
 
 log(`Starting BiDi Server with DEBUG='${DEBUG}'...`);
 
-mkdirSync(LOG_DIR, {recursive: true});
+mkdirSync(dirname(LOG_FILE), {recursive: true});
 
 const subprocess = spawn(
   'node',
