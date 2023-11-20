@@ -59,16 +59,6 @@ const CHROMEDRIVER = process.env.CHROMEDRIVER || 'false';
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
 
-const LOG_DIR = process.env.LOG_DIR || 'logs';
-const LOG_FILE =
-  process.env.LOG_FILE ||
-  join(
-    LOG_DIR,
-    `${new Date().toISOString().replace(/[:]/g, '-')}.${
-      CHROMEDRIVER === 'true' ? 'chromedriver' : 'mapper'
-    }.log`
-  );
-
 // The path to the WPT manifest file.
 const MANIFEST = process.env.MANIFEST || 'MANIFEST.json';
 
@@ -88,14 +78,19 @@ const VERBOSE = process.env.VERBOSE || 'false';
 const WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
 
 // Only set WPT_METADATA if it's not already set.
-const WPT_METADATA =
-  typeof process.env.WPT_METADATA === 'undefined'
-    ? join(
-        'wpt-metadata',
-        CHROMEDRIVER === 'true' ? 'chromedriver' : 'mapper',
-        HEADLESS === 'true' ? 'headless' : 'headful'
-      )
-    : process.env.WPT_METADATA;
+let WPT_METADATA;
+if (typeof process.env.WPT_METADATA === 'undefined') {
+  if (CHROMEDRIVER === 'true') {
+    WPT_METADATA = join('wpt-metadata', 'chromedriver', 'headless');
+  } else {
+    WPT_METADATA =
+      HEADLESS === 'true'
+        ? join('wpt-metadata', 'mapper', 'headless')
+        : join('wpt-metadata', 'mapper', 'headful');
+  }
+} else {
+  WPT_METADATA = process.env.WPT_METADATA;
+}
 
 if (HEADLESS === 'true') {
   log('Running WPT in headless mode...');
@@ -106,6 +101,7 @@ if (HEADLESS === 'true') {
 const wptRunArgs = [
   '--binary',
   BROWSER_BIN,
+  `--webdriver-arg=--headless=${HEADLESS}`,
   '--log-wptreport',
   WPT_REPORT,
   '--manifest',
@@ -119,7 +115,6 @@ const wptRunArgs = [
   TIMEOUT_MULTIPLIER,
   '--run-by-dir',
   '1',
-  `--webdriver-arg=--log-path=${LOG_FILE}`,
 ];
 
 if (VERBOSE === 'true') {
@@ -135,21 +130,16 @@ if (VERBOSE === 'true') {
 
 if (CHROMEDRIVER === 'true') {
   log('Using chromedriver with mapper...');
-  if (HEADLESS === 'true') {
-    wptRunArgs.push(`--binary-arg=--headless=new`);
-  }
   wptRunArgs.push(
+    '--binary-arg=--headless=new',
     '--install-webdriver',
     `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
+    `--webdriver-arg=--log-path=${join('out', 'chromedriver.log')}`,
     `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`,
     '--yes'
   );
 } else {
-  wptRunArgs.push(
-    `--webdriver-arg=--headless=${HEADLESS}`,
-    '--webdriver-binary',
-    join('tools', 'run-bidi-server.mjs')
-  );
+  wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
   log('Using pure mapper...');
 }
 
