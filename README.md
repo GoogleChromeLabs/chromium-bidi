@@ -459,9 +459,9 @@ third_party/bidimapper/build.sh
 
 3. Submit a CL with bug `chromedriver:4226`.
 
-4. Run CL dry-run and wait it to be finished. If dry-run passed, skip the next step.
+4. Run CL dry-run and wait it to be finished (in Gerrit, press the button "CQ DRY RUN"). Wait for the run to be finished. If dry-run passed, skip the next step.
 
-5. [Regenerate WPT expectations or baselines](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md#test-expectations-and-baselines):
+5. If dry-run from the previous step failed because of WPT, [regenerate WPT expectations or baselines](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md#test-expectations-and-baselines):
 
    5.1. Trigger a build and test run:
 
