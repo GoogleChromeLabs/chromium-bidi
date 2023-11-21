@@ -51,15 +51,6 @@ jobs:
       - name: Install chromedriver for the pinned browser
         id: driver
         run: node tools/install-browser.mjs --chrome-driver --github
-      - name: Set up Python
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
-        with:
-          python-version: '3.11'
-          cache: pipenv
-      - name: Install pipenv
-        run: pip install pipenv
-      - name: Install python dependencies
-        run: pipenv install
       - name: Run Selenium test
         timeout-minutes: 20
         run: >
