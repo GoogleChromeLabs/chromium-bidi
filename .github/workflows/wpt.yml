@@ -106,8 +106,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kind: [chromedriver, mapper]
-        head: [headful, headless]
+        include:
+          # TODO: remove after verifying not needed. http://go/webdriver:speed-up-wpt.
+          # - kind: mapper
+          #   head: headful
+          # - kind: mapper
+          #   head: headless
+          - kind: chromedriver
+            head: headless
+          - kind: chromedriver
+            head: headful
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
