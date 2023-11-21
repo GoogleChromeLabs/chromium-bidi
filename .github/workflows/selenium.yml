@@ -27,9 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO(#876): Add Windows CI.
-        os: [ubuntu-latest] # macos-latest,
-        # head: [headful, headless]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -49,10 +47,10 @@ jobs:
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
       - name: Install pinned browser
         id: browser
-        run: node tools/install-browser.mjs
-      - name: Install pinned driver
+        run: node tools/install-browser.mjs --github
+      - name: Install chromedriver for the pinned browser
         id: driver
-        run: node tools/install-driver.mjs
+        run: node tools/install-browser.mjs --chrome-driver --github
       - name: Set up Python
         uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
         with:
@@ -67,3 +65,6 @@ jobs:
         run: >
           xvfb-run --auto-servernum
           node tests_external/selenium.mjs
+        env:
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          CHROME_DRIVER_BIN: ${{ steps.driver.outputs.executablePath }}
