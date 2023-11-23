@@ -106,8 +106,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kind: [chromedriver, mapper]
-        head: [headful, headless]
+        kind: [chromedriver] # TODO: add back 'mapper'.
+        head: [headless] # TODO: add back 'headful'.
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3

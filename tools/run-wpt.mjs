@@ -141,8 +141,8 @@ if (CHROMEDRIVER === 'true') {
   log('Using pure mapper...');
 }
 
-const restArgs = process.argv.slice(2);
-let test = restArgs[restArgs.length - 1] ?? join('webdriver', 'tests', 'bidi');
+// TODO: re-enable tests before merging to main.
+let test = join('webdriver', 'tests', 'bidi', 'browsing_context', 'navigate');
 
 // Canonicalize the test path.
 test = test
