@@ -101,7 +101,7 @@ jobs:
           commit_options: -n --signoff
           file_pattern: 'wpt-metadata/**/*.ini'
   wpt:
-    name: ${{ matrix.kind }}-${{ matrix.head }}
+    name: wpt ${{ matrix.kind }}-${{ matrix.head }} ({{ matrix.this-chunk }}/{{ matrix.total-chunks }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
