@@ -157,7 +157,7 @@ if (CHROMEDRIVER === 'true') {
 // TODO: remove `browsing_context`.
 let test =
   // restArgs[restArgs.length - 1] ??
-  join('webdriver', 'tests', 'bidi', 'browsing_context', 'SOME_NONSENSE');
+  join('webdriver', 'tests', 'bidi', 'browsing_context', 'navigate');
 
 // Canonicalize the test path.
 test = test
