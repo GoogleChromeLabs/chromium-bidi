@@ -63,6 +63,10 @@ const MANIFEST = process.env.MANIFEST || 'MANIFEST.json';
 // The browser product to test.
 const PRODUCT = process.env.PRODUCT || 'chrome';
 
+// Weather to run the tests. `false` value is useful for updating expectations
+// based on the WPT report.
+const RUN_TESTS = process.env.RUN_TESTS || 'true';
+
 // Multiplier relative to standard test timeout to use.
 const TIMEOUT_MULTIPLIER = process.env.TIMEOUT_MULTIPLIER || '4';
 
@@ -90,82 +94,90 @@ if (HEADLESS === 'true') {
   log('Running WPT in headful mode...');
 }
 
-const wptRunArgs = [
-  '--binary',
-  BROWSER_BIN,
-  `--webdriver-arg=--headless=${HEADLESS}`,
-  '--log-wptreport',
-  WPT_REPORT,
-  '--manifest',
-  MANIFEST,
-  '--metadata',
-  WPT_METADATA,
-  '--no-manifest-download',
-  '--skip-implementation-status',
-  'backlog',
-  '--timeout-multiplier',
-  TIMEOUT_MULTIPLIER,
-  '--run-by-dir',
-  '1',
-];
-
-if (VERBOSE === 'true') {
-  // WPT logs.
-  wptRunArgs.push(
-    '--debug-test',
-    '--log-mach',
-    '-',
-    '--log-mach-level',
-    'info'
-  );
-}
-
-if (CHROMEDRIVER === 'true') {
-  log('Using chromedriver with mapper...');
-  if (HEADLESS === 'true') {
-    wptRunArgs.push('--binary-arg=--headless=new');
-  }
-  wptRunArgs.push(
-    '--install-webdriver',
-    `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
-    `--webdriver-arg=--log-path=${join('out', 'chromedriver.log')}`,
-    `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`,
-    '--yes'
-  );
-} else {
-  wptRunArgs.push(
-    `--webdriver-arg=--headless=${HEADLESS}`,
-    '--webdriver-binary',
-    join('tools', 'run-bidi-server.mjs')
-  );
-  log('Using pure mapper...');
-}
-
-// TODO: re-enable tests before merging to main.
-let test = join('webdriver', 'tests', 'bidi', 'browsing_context', 'navigate');
-
-// Canonicalize the test path.
-test = test
-  .replace('wpt-metadata/', '')
-  .replace('mapper/headless/', '')
-  .replace('mapper/headful/', '')
-  .replace('chromedriver/headless/', '')
-  .replace('.ini', '');
-
-log(`Running "${test}" with "${BROWSER_BIN}"...`);
-
-wptRunArgs.push(
-  // All arguments except the first one (the command) and the last one (the test) are the flags.
-  ...process.argv.slice(2, process.argv.length - 1),
-  PRODUCT,
-  // The last argument is the test.
-  test
-);
-
+let status = 0;
 const wptBinary = resolve(join('wpt', 'wpt'));
-const {status} = spawnSync(wptBinary, ['run', ...wptRunArgs], {
-  stdio: 'inherit',
-});
+
+if (RUN_TESTS === 'true') {
+  const wptRunArgs = [
+    '--binary',
+    BROWSER_BIN,
+    `--webdriver-arg=--headless=${HEADLESS}`,
+    '--log-wptreport',
+    WPT_REPORT,
+    '--manifest',
+    MANIFEST,
+    '--metadata',
+    WPT_METADATA,
+    '--no-manifest-download',
+    '--skip-implementation-status',
+    'backlog',
+    '--timeout-multiplier',
+    TIMEOUT_MULTIPLIER,
+    '--run-by-dir',
+    '1',
+  ];
+
+  if (VERBOSE === 'true') {
+    // WPT logs.
+    wptRunArgs.push(
+      '--debug-test',
+      '--log-mach',
+      '-',
+      '--log-mach-level',
+      'info'
+    );
+  }
+
+  if (CHROMEDRIVER === 'true') {
+    log('Using chromedriver with mapper...');
+    if (HEADLESS === 'true') {
+      wptRunArgs.push('--binary-arg=--headless=new');
+    }
+    wptRunArgs.push(
+      '--install-webdriver',
+      `--webdriver-arg=--bidi-mapper-path=${join(
+        'lib',
+        'iife',
+        'mapperTab.js'
+      )}`,
+      `--webdriver-arg=--log-path=${join('out', 'chromedriver.log')}`,
+      `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`,
+      '--yes'
+    );
+  } else {
+    wptRunArgs.push(
+      `--webdriver-arg=--headless=${HEADLESS}`,
+      '--webdriver-binary',
+      join('tools', 'run-bidi-server.mjs')
+    );
+    log('Using pure mapper...');
+  }
+
+  // TODO: re-enable tests before merging to main.
+  let test = join('webdriver', 'tests', 'bidi', 'browsing_context', 'navigate');
+
+  // Canonicalize the test path.
+  test = test
+    .replace('wpt-metadata/', '')
+    .replace('mapper/headless/', '')
+    .replace('mapper/headful/', '')
+    .replace('chromedriver/headless/', '')
+    .replace('.ini', '');
+
+  log(`Running "${test}" with "${BROWSER_BIN}"...`);
+
+  wptRunArgs.push(
+    // All arguments except the first one (the command) and the last one (the test) are the flags.
+    ...process.argv.slice(2, process.argv.length - 1),
+    PRODUCT,
+    // The last argument is the test.
+    test
+  );
+
+  status = spawnSync(wptBinary, ['run', ...wptRunArgs], {
+    stdio: 'inherit',
+  }).status;
+}
 
 if (UPDATE_EXPECTATIONS === 'true') {
   log('Updating WPT expectations...');
