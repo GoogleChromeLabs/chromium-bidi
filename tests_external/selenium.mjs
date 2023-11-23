@@ -59,7 +59,7 @@ const chromePath = installAndGetChromePath();
 const chromeDriverPath = installAndGetChromeDriverPath();
 
 const chromeService = new chrome.ServiceBuilder(chromeDriverPath).addArguments(
-  '--bidi-mapper-path=lib/iife/mapperTab.js'
+  `--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`
 );
 
 const driver = new Builder()
