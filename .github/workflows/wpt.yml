@@ -39,6 +39,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  wpt-required:
+    name: '[Required] WPT sink'
+    needs: [wpt]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - if: ${{ needs.wpt.result != 'success' }}
+        run: 'exit 1'
+      - run: 'exit 0'
   wpt-report:
     name: WPT report
     needs: wpt
