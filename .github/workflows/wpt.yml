@@ -78,6 +78,45 @@ jobs:
   #      - name: Deploy to GitHub Pages
   #        id: deployment
   #        uses: actions/deploy-pages@9dbe3824824f8a1377b8e298bafde1a50ede43e5 # v2.0.4
+  wpt-expectations:
+    name: WPT combine expectations
+    needs: wpt
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [chromedriver]
+        head: [headless]
+    steps:
+      - name: Setup dirs
+        run: mkdir -p out
+      - name: Upload ${{ matrix.kind }}-${{ matrix.head }}-1-wpt-metadata
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-1-wpt-metadata
+          path: out
+      - name: Upload ${{ matrix.kind }}-${{ matrix.head }}-2-wpt-metadata
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-2-wpt-metadata
+          path: out
+      - name: Upload ${{ matrix.kind }}-${{ matrix.head }}-3-wpt-metadata
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-3-wpt-metadata
+          path: out
+      - name: Upload ${{ matrix.kind }}-${{ matrix.head }}-4-wpt-metadata
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-4-wpt-metadata
+          path: out
+      - name: Upload expectations
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
+          path: out
+
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
@@ -206,12 +245,12 @@ jobs:
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
           HEADLESS: false
-      - name: Generate HTML test report
-        if: success() || failure()
-        run: >
-          node tools/wpt-report-builder/builder.mjs
-          out/wptreport.json
-          out/wptreport.html
+      #      - name: Generate HTML test report
+      #        if: success() || failure()
+      #        run: >
+      #          node tools/wpt-report-builder/builder.mjs
+      #          out/wptreport.json
+      #          out/wptreport.html
       - name: Upload expectations
         if: success() || failure()
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
