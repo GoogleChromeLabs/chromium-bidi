@@ -153,8 +153,11 @@ if (CHROMEDRIVER === 'true') {
   log('Using pure mapper...');
 }
 
-const restArgs = process.argv.slice(2);
-let test = restArgs[restArgs.length - 1] ?? join('webdriver', 'tests', 'bidi');
+// const restArgs = process.argv.slice(2);
+// TODO: remove `browsing_context`.
+let test =
+  // restArgs[restArgs.length - 1] ??
+  join('webdriver', 'tests', 'bidi', 'browsing_context', 'navigate');
 
 // Canonicalize the test path.
 test = test
