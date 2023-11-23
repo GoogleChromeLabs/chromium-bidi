@@ -23,7 +23,7 @@
  * ChromeDriver using `@puppeteer/browsers` to the directory provided as the
  * first argument (default: $HOME/.cache/chromium-bidi).
  *
- * If `--chrome-driver` is set, the ChromeDriver is installed instead of a
+ * If `--chromedriver` is set, the ChromeDriver is installed instead of a
  * browser.
  *
  * If `--github` is set, the executable path is written to the
@@ -33,7 +33,7 @@
  * Examples:
  *  - `node tools/install-browser.mjs`
  *  - `node tools/install-browser.mjs /tmp/cache`
- *  - `node tools/install-browser.mjs --chrome-driver`
+ *  - `node tools/install-browser.mjs --chromedriver`
  */
 
 import {readFile} from 'fs/promises';
@@ -44,7 +44,7 @@ import {setOutput, setFailed} from '@actions/core';
 import {install, computeExecutablePath} from '@puppeteer/browsers';
 
 const GITHUB_SHELL_ARG = '--github';
-const CHROME_DRIVER_ARG = '--chrome-driver';
+const CHROME_DRIVER_ARG = '--chromedriver';
 
 try {
   const browserSpec = (await readFile('.browser', 'utf-8')).trim();

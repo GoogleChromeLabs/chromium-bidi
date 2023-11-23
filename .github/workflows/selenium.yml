@@ -43,7 +43,7 @@ jobs:
         run: node tools/install-browser.mjs --github
       - name: Install chromedriver for the pinned browser
         id: driver
-        run: node tools/install-browser.mjs --chrome-driver --github
+        run: node tools/install-browser.mjs --chromedriver --github
       - name: Run Selenium test
         timeout-minutes: 20
         run: >

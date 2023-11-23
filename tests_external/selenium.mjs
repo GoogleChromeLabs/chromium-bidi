@@ -45,9 +45,7 @@ function installAndGetChromeDriverPath() {
   let CHROMEDRIVER_BIN = process.env.CHROMEDRIVER_BIN;
   if (!CHROMEDRIVER_BIN) {
     CHROMEDRIVER_BIN = execSync(
-      ['node', join('tools', 'install-browser.mjs'), '--chrome-driver'].join(
-        ' '
-      )
+      ['node', join('tools', 'install-browser.mjs'), '--chromedriver'].join(' ')
     )
       .toString()
       .trim();
