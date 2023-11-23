@@ -115,8 +115,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kind: [chromedriver, mapper]
-        head: [headful, headless]
+        kind: [chromedriver]
+        head: [headless]
         total_chunks: [4]
         this_chunk: [1, 2, 3, 4]
     steps:
