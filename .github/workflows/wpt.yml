@@ -108,17 +108,8 @@ jobs:
       matrix:
         kind: [chromedriver, mapper]
         head: [headful, headless]
-        include:
-          - total-chunks: 5
-            this-chunk: 1
-          - total-chunks: 5
-            this-chunk: 2
-          - total-chunks: 5
-            this-chunk: 3
-          - total-chunks: 5
-            this-chunk: 4
-          - total-chunks: 5
-            this-chunk: 5
+        total-chunks: [5]
+        this-chunk: [1, 2, 3, 4, 5]
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
