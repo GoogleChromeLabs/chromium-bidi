@@ -58,4 +58,4 @@ jobs:
           node tests_external/selenium.mjs
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          CHROME_DRIVER_BIN: ${{ steps.driver.outputs.executablePath }}
+          CHROMEDRIVER_BIN: ${{ steps.driver.outputs.executablePath }}

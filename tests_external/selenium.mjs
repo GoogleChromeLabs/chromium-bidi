@@ -42,9 +42,9 @@ function installAndGetChromePath() {
 }
 
 function installAndGetChromeDriverPath() {
-  let CHROME_DRIVER_BIN = process.env.CHROME_DRIVER_BIN;
-  if (!CHROME_DRIVER_BIN) {
-    CHROME_DRIVER_BIN = execSync(
+  let CHROMEDRIVER_BIN = process.env.CHROMEDRIVER_BIN;
+  if (!CHROMEDRIVER_BIN) {
+    CHROMEDRIVER_BIN = execSync(
       ['node', join('tools', 'install-browser.mjs'), '--chrome-driver'].join(
         ' '
       )
@@ -52,7 +52,7 @@ function installAndGetChromeDriverPath() {
       .toString()
       .trim();
   }
-  return CHROME_DRIVER_BIN;
+  return CHROMEDRIVER_BIN;
 }
 
 const chromePath = installAndGetChromePath();
