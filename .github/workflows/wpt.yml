@@ -81,7 +81,7 @@ jobs:
   wpt-expectations:
     name: WPT combine expectations
     needs: wpt
-    if: ${{ always() }}
+    if: (success() || failure())
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -89,33 +89,74 @@ jobs:
         kind: [chromedriver]
         head: [headless]
     steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+        with:
+          submodules: true
+      - name: Set up Node.js
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          node-version: lts/*
+          cache: npm
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Install and build npm dependencies
+        run: npm ci
       - name: Setup dirs
         run: mkdir -p out
-      - name: Upload ${{ matrix.kind }}-${{ matrix.head }}-1-wpt-metadata
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      - name: Set up Python
+        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
         with:
-          name: ${{ matrix.kind }}-${{ matrix.head }}-1-wpt-metadata
-          path: out
-      - name: Upload ${{ matrix.kind }}-${{ matrix.head }}-2-wpt-metadata
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Set up virtualenv
+        run: pip install virtualenv
+      - name: Setup dirs
+        run: mkdir -p out
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
-          name: ${{ matrix.kind }}-${{ matrix.head }}-2-wpt-metadata
-          path: out
-      - name: Upload ${{ matrix.kind }}-${{ matrix.head }}-3-wpt-metadata
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+          name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts-1
+          path: run_1
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
-          name: ${{ matrix.kind }}-${{ matrix.head }}-3-wpt-metadata
-          path: out
-      - name: Upload ${{ matrix.kind }}-${{ matrix.head }}-4-wpt-metadata
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+          name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts-2
+          path: run_2
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
-          name: ${{ matrix.kind }}-${{ matrix.head }}-4-wpt-metadata
-          path: out
+          name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts-3
+          path: run_3
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts-4
+          path: run_4
+      - name: Update expectations
+        run: >
+          ./wpt/wpt update-expectations
+          --metadata wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
+          --product chrome
+          run_1/out/wptreport.json
+      - name: Update expectations
+        run: >
+          ./wpt/wpt update-expectations
+          --metadata wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
+          --product chrome
+          run_2/out/wptreport.json
+      - name: Update expectations
+        run: >
+          ./wpt/wpt update-expectations
+          --metadata wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
+          --product chrome
+          run_3/out/wptreport.json
+      - name: Update expectations
+        run: >
+          ./wpt/wpt update-expectations
+          --metadata wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
+          --product chrome
+          run_4/out/wptreport.json
       - name: Upload expectations
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
-          path: out
+          path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
 
   wpt-auto-commit:
     name: WPT auto-commit expectations
@@ -255,13 +296,13 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         with:
-          name: ${{ matrix.kind }}-${{ matrix.head }}-${{matrix.this_chunk}}-wpt-metadata
+          name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata-${{matrix.this_chunk}}
           path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
         if: success() || failure()
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         with:
-          name: ${{ matrix.kind }}-${{ matrix.head }}-${{matrix.this_chunk}}-artifacts
+          name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts-${{matrix.this_chunk}}
           path: |
             logs
             out
