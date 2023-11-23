@@ -66,6 +66,12 @@ const PRODUCT = process.env.PRODUCT || 'chrome';
 // Multiplier relative to standard test timeout to use.
 const TIMEOUT_MULTIPLIER = process.env.TIMEOUT_MULTIPLIER || '4';
 
+// The current chunk number. Required for shard testing.
+const THIS_CHUNK = process.env.THIS_CHUNK || '1';
+
+// The total number of chunks. Required for shard testing.
+const TOTAL_CHUNKS = process.env.TOTAL_CHUNKS || '1';
+
 // Whether to update the WPT expectations after running the tests.
 const UPDATE_EXPECTATIONS = process.env.UPDATE_EXPECTATIONS || 'false';
 
@@ -107,6 +113,12 @@ const wptRunArgs = [
   TIMEOUT_MULTIPLIER,
   '--run-by-dir',
   '1',
+  '--total-chunks',
+  TOTAL_CHUNKS,
+  '--this-chunk',
+  THIS_CHUNK,
+  '--chunk-type',
+  'hash',
 ];
 
 if (VERBOSE === 'true') {
@@ -152,15 +164,21 @@ test = test
   .replace('chromedriver/headless/', '')
   .replace('.ini', '');
 
-log(`Running "${test}" with "${BROWSER_BIN}"...`);
+wptRunArgs.push(`--include`, test);
 
 wptRunArgs.push(
   // All arguments except the first one (the command) and the last one (the test) are the flags.
   ...process.argv.slice(2, process.argv.length - 1),
-  PRODUCT,
+  PRODUCT
   // The last argument is the test.
-  test
+  // test
 );
+
+log(`Running "${test}" with "${BROWSER_BIN}"...`);
+
+if (VERBOSE === 'true') {
+  log(`Running with arguments: ${wptRunArgs.join(' ')}`);
+}
 
 const wptBinary = resolve(join('wpt', 'wpt'));
 const {status} = spawnSync(wptBinary, ['run', ...wptRunArgs], {

@@ -108,6 +108,17 @@ jobs:
       matrix:
         kind: [chromedriver, mapper]
         head: [headful, headless]
+        include:
+          - total-chunks: 5
+            this-chunk: 1
+          - total-chunks: 5
+            this-chunk: 2
+          - total-chunks: 5
+            this-chunk: 3
+          - total-chunks: 5
+            this-chunk: 4
+          - total-chunks: 5
+            this-chunk: 5
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
@@ -150,6 +161,8 @@ jobs:
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: false
+          THIS_CHUNK: ${{ matrix.this-chunk }}
+          TOTAL_CHUNKS: ${{ matrix.total-chunks }}
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
@@ -160,6 +173,8 @@ jobs:
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: true
+          THIS_CHUNK: ${{ matrix.this-chunk }}
+          TOTAL_CHUNKS: ${{ matrix.total-chunks }}
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
@@ -170,6 +185,8 @@ jobs:
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true
+          THIS_CHUNK: ${{ matrix.this-chunk }}
+          TOTAL_CHUNKS: ${{ matrix.total-chunks }}
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
@@ -183,6 +200,8 @@ jobs:
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true
+          THIS_CHUNK: ${{ matrix.this-chunk }}
+          TOTAL_CHUNKS: ${{ matrix.total-chunks }}
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
@@ -203,7 +222,7 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         with:
-          name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
+          name: ${{ matrix.kind }}-${{ matrix.head }}-{{matrix.this-chunk}}-{{matrix.total-chunks}}-artifacts
           path: |
             logs
             out
