@@ -10,6 +10,12 @@ on:
     # Run daily at 10AM.
     - cron: '0 10 * * *'
   workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Ref in spec repo to update from
+        default: main
+        required: false
+        type: string
 
 jobs:
   build:
@@ -20,6 +26,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
         with:
           repository: w3c/webdriver-bidi
+          ref: ${{ github.event.inputs.source_ref }}
       - name: Generate WebDriverBidi CDDL
         run: ./scripts/test.sh
       - name: Upload WebDriverBidi CDDL
