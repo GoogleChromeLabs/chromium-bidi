@@ -35,110 +35,111 @@ export class Exception {
   }
 }
 
+// keep-sorted start block=yes
+
 export class InvalidArgumentException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.InvalidArgument, message, stacktrace);
   }
 }
-
 export class InvalidSessionIdException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.InvalidSessionId, message, stacktrace);
   }
 }
-
 export class MoveTargetOutOfBoundsException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.MoveTargetOutOfBounds, message, stacktrace);
   }
 }
-
 export class NoSuchAlertException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchAlert, message, stacktrace);
   }
 }
-
 export class NoSuchElementException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchElement, message, stacktrace);
   }
 }
-
 export class NoSuchFrameException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchFrame, message, stacktrace);
   }
 }
-
 export class NoSuchHandleException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchHandle, message, stacktrace);
   }
 }
-
 export class NoSuchHistoryEntryException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchHistoryEntry, message, stacktrace);
   }
 }
-
 export class NoSuchInterceptException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchIntercept, message, stacktrace);
   }
 }
-
 export class NoSuchNodeException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchNode, message, stacktrace);
   }
 }
-
 export class NoSuchRequestException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchRequest, message, stacktrace);
   }
 }
-
 export class NoSuchScriptException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchScript, message, stacktrace);
   }
 }
-
+export class NoSuchStoragePartitionException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchStoragePartition, message, stacktrace);
+  }
+}
 export class SessionNotCreatedException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.SessionNotCreated, message, stacktrace);
   }
 }
-
-export class UnknownCommandException extends Exception {
-  constructor(message: string, stacktrace?: string) {
-    super(ErrorCode.UnknownCommand, message, stacktrace);
-  }
-}
-
-export class UnknownErrorException extends Exception {
-  constructor(message: string, stacktrace = new Error().stack) {
-    super(ErrorCode.UnknownError, message, stacktrace);
-  }
-}
-
 export class UnableToCaptureScreenException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.UnableToCaptureScreen, message, stacktrace);
   }
 }
-
 export class UnableToCloseBrowserException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.UnableToCloseBrowser, message, stacktrace);
   }
 }
-
+export class UnableToSetCookieException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnableToSetCookie, message, stacktrace);
+  }
+}
+export class UnknownCommandException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnknownCommand, message, stacktrace);
+  }
+}
+export class UnknownErrorException extends Exception {
+  constructor(message: string, stacktrace = new Error().stack) {
+    super(ErrorCode.UnknownError, message, stacktrace);
+  }
+}
+export class UnknownSourceOriginException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnknownSourceOrigin, message, stacktrace);
+  }
+}
 export class UnsupportedOperationException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.UnsupportedOperation, message, stacktrace);
   }
 }
+// keep-sorted end

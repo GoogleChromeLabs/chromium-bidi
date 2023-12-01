@@ -127,6 +127,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     switch (command.method) {
       case 'session.end':
       case 'session.new':
+      case 'storage.getCookies':
+      case 'storage.setCookie':
+      case 'storage.deleteCookies':
         // TODO: Implement.
         break;
 

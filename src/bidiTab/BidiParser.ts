@@ -106,7 +106,14 @@ export class BidiParser implements IBidiParser {
   parseContinueResponseParams(
     params: unknown
   ): Network.ContinueResponseParameters {
-    return Parser.Network.parseContinueResponseParameters(params);
+    // Work around of the limitation of `cddlconv`. The generated schema `SameSiteSchema`
+    // in `src/protocol-parser/webdriver-bidi.ts` is of type `"none" | "strict" | "lax"`
+    // which is not assignable to generated type `SameSite` in
+    // `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after generated schema type is equal to one in protocol.
+    return Parser.Network.parseContinueResponseParameters(
+      params
+    ) as Network.ContinueResponseParameters;
   }
   parseContinueWithAuthParams(
     params: unknown
@@ -119,7 +126,14 @@ export class BidiParser implements IBidiParser {
   parseProvideResponseParams(
     params: unknown
   ): Network.ProvideResponseParameters {
-    return Parser.Network.parseProvideResponseParameters(params);
+    // Work around of the limitation of `cddlconv`. The generated schema `SameSiteSchema`
+    // in `src/protocol-parser/webdriver-bidi.ts` is of type `"none" | "strict" | "lax"`
+    // which is not assignable to generated type `SameSite` in
+    // `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after generated schema type is equal to one in protocol.
+    return Parser.Network.parseProvideResponseParameters(
+      params
+    ) as Network.ProvideResponseParameters;
   }
   parseRemoveInterceptParams(
     params: unknown
