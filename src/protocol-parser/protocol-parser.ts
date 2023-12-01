@@ -261,6 +261,25 @@ export namespace Input {
   }
 }
 
+export namespace Storage {
+  export function parseGetCookiesParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Storage.GetCookiesParametersSchema
+    );
+  }
+  export function parseSetCookieParams(params: unknown) {
+    return parseObject(params, WebDriverBidi.Storage.SetCookieParametersSchema);
+  }
+
+  export function parseDeleteCookiesParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Storage.DeleteCookiesParametersSchema
+    );
+  }
+}
+
 export namespace Cdp {
   const SendCommandRequestSchema = z.object({
     // Allowing any cdpMethod, and casting to proper type later on.

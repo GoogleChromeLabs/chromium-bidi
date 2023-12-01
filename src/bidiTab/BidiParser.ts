@@ -22,6 +22,7 @@ import type {
   Network,
   Script,
   Session,
+  Storage,
 } from '../protocol/protocol.js';
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
@@ -172,6 +173,39 @@ export class BidiParser implements IBidiParser {
   // keep-sorted start block=yes
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
     return Parser.Session.parseSubscribeParams(params);
+  }
+  // keep-sorted end
+
+  // Storage domain
+  // keep-sorted start block=yes
+
+  parseDeleteCookiesParams(params: unknown): Storage.DeleteCookiesParameters {
+    // Work around of the limitation of `cddlconv`. The generated schema `SameSiteSchema`
+    // in `src/protocol-parser/webdriver-bidi.ts` is of type `"none" | "strict" | "lax"`
+    // which is not assignable to generated type `SameSite` in
+    // `src/protocol/webdriver-bidi.ts`.
+    return Parser.Storage.parseDeleteCookiesParams(
+      params
+    ) as Storage.DeleteCookiesParameters;
+  }
+  parseGetCookiesParams(params: unknown): Storage.GetCookiesParameters {
+    // Work around of the limitation of `cddlconv`. The generated schema `SameSiteSchema`
+    // in `src/protocol-parser/webdriver-bidi.ts` is of type `"none" | "strict" | "lax"`
+    // which is not assignable to generated type `SameSite` in
+    // `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after generated schema type is equal to one in protocol.
+    return Parser.Storage.parseGetCookiesParams(
+      params
+    ) as Storage.GetCookiesParameters;
+  }
+  parseSetCookieParams(params: unknown): Storage.SetCookieParameters {
+    // Work around of the limitation of `cddlconv`. The generated schema `SameSiteSchema`
+    // in `src/protocol-parser/webdriver-bidi.ts` is of type `"none" | "strict" | "lax"`
+    // which is not assignable to generated type `SameSite` in
+    // `src/protocol/webdriver-bidi.ts`.
+    return Parser.Storage.parseSetCookieParams(
+      params
+    ) as Storage.SetCookieParameters;
   }
   // keep-sorted end
 }

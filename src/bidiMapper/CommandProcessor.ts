@@ -127,9 +127,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     switch (command.method) {
       case 'session.end':
       case 'session.new':
-      case 'storage.getCookies':
-      case 'storage.setCookie':
-      case 'storage.deleteCookies':
         // TODO: Implement.
         break;
 
@@ -288,6 +285,25 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return this.#sessionProcessor.unsubscribe(
           this.#parser.parseSubscribeParams(command.params),
           command.channel
+        );
+      // keep-sorted end
+
+      // Storage domain
+      // keep-sorted start block=yes
+      case 'storage.deleteCookies':
+        this.#parser.parseDeleteCookiesParams(command.params);
+        throw new UnsupportedOperationException(
+          `Command ${command.method} not yet implemented.`
+        );
+      case 'storage.getCookies':
+        this.#parser.parseGetCookiesParams(command.params);
+        throw new UnsupportedOperationException(
+          `Command ${command.method} not yet implemented.`
+        );
+      case 'storage.setCookie':
+        this.#parser.parseSetCookieParams(command.params);
+        throw new UnsupportedOperationException(
+          `Command ${command.method} not yet implemented.`
         );
       // keep-sorted end
     }
