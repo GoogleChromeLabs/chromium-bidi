@@ -42,6 +42,7 @@ import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
 import type {RealmStorage} from './domains/script/RealmStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
 import {SessionProcessor} from './domains/session/SessionProcessor.js';
+import {StorageProcessor} from './domains/storage/StorageProcessor.js';
 import {OutgoingMessage} from './OutgoingMessage.js';
 
 export const enum CommandProcessorEvents {
@@ -64,6 +65,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #networkProcessor: NetworkProcessor;
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
+  #storageProcessor: StorageProcessor;
   // keep-sorted end
 
   #parser: IBidiParser;
@@ -118,6 +120,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       logger
     );
     this.#sessionProcessor = new SessionProcessor(eventManager);
+    this.#storageProcessor = new StorageProcessor(browserCdpClient, logger);
     // keep-sorted end
   }
 
@@ -296,9 +299,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           `Command ${command.method} not yet implemented.`
         );
       case 'storage.getCookies':
-        this.#parser.parseGetCookiesParams(command.params);
-        throw new UnsupportedOperationException(
-          `Command ${command.method} not yet implemented.`
+        return await this.#storageProcessor.getCookies(
+          this.#parser.parseGetCookiesParams(command.params)
         );
       case 'storage.setCookie':
         this.#parser.parseSetCookieParams(command.params);
