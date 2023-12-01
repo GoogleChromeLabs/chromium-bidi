@@ -18,17 +18,29 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {Storage} from '../../../protocol/protocol.js';
-import {Network} from '../../../protocol/protocol.js';
+import {
+  Network,
+  UnderspecifiedStoragePartitionException,
+} from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
+import {LogType} from '../../../utils/log.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
+import {NetworkProcessor} from '../network/NetworkProcessor';
 
 /**
  * Responsible for handling the `storage` domain.
  */
 export class StorageProcessor {
   readonly #browserCdpClient: CdpClient;
+  readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #logger: LoggerFn | undefined;
 
-  constructor(browserCdpClient: CdpClient, logger: LoggerFn | undefined) {
+  constructor(
+    browserCdpClient: CdpClient,
+    browsingContextStorage: BrowsingContextStorage,
+    logger: LoggerFn | undefined
+  ) {
+    this.#browsingContextStorage = browsingContextStorage;
     this.#browserCdpClient = browserCdpClient;
     this.#logger = logger;
   }
@@ -37,20 +49,81 @@ export class StorageProcessor {
     params: Storage.GetCookiesParameters
   ): Promise<Storage.GetCookiesResult> {
     const filterCookie = params.filter;
+    const partitionKey = this.#extendStoragePartitionSpec(params);
 
     const cdpResponse = await this.#browserCdpClient.sendCommand(
       'Storage.getCookies',
       {}
     );
+    const unsupportedPartitionKeys = Array.from(partitionKey.keys()).filter(
+      (k) => k !== 'sourceOrigin'
+    );
+    if (unsupportedPartitionKeys.length > 0) {
+      this.#logger?.(
+        LogType.debugInfo,
+        `Unsupported partition keys: ${unsupportedPartitionKeys}`
+      );
+    }
+
+    if (!partitionKey.has('sourceOrigin')) {
+      throw new UnderspecifiedStoragePartitionException(
+        'sourceOrigin or cookie.domain should be set'
+      );
+    }
+
+    const sourceOrigin = partitionKey.get('sourceOrigin');
+
     const filteredBiDiCookies = cdpResponse.cookies
+      .filter(
+        // CDP's partition key is the source origin.
+        // TODO: check if this logic is correct.
+        (c) => c.partitionKey === undefined || c.partitionKey === sourceOrigin
+      )
       .map((c) => this.#cdpToBiDiCookie(c))
       .filter((c) => this.#match(c, filterCookie));
 
     return {
       cookies: filteredBiDiCookies,
-      // TODO: add partition key.
-      partitionKey: {},
+      partitionKey: Object.fromEntries(partitionKey),
     };
+  }
+
+  #extendStoragePartitionSpec(
+    params: Storage.GetCookiesParameters
+  ): Map<string, string> {
+    const partitionSpec = params.partition ?? {};
+    const partitionKey = new Map<string, string>();
+
+    if (typeof partitionSpec === 'string') {
+      // Partition spec is a browsing context id.
+      const browsingContextId: string = partitionSpec;
+      const browsingContext =
+        this.#browsingContextStorage.getContext(browsingContextId);
+      const url = NetworkProcessor.parseUrlString(browsingContext?.url ?? '');
+      // Cookie origin should not contain the port.
+      // TODO: check if this logic is correct.
+      partitionKey.set('sourceOrigin', `${url.protocol}//${url.hostname}`);
+    } else {
+      // Partition spec is a storage partition.
+      const storagePartition: Storage.PartitionKey = partitionSpec;
+      // Let partition key be partition spec.
+      for (const [key, value] of Object.entries(storagePartition)) {
+        partitionKey.set(key, value);
+      }
+      // TODO: For each name → default value in the default values for storage partition
+      //  key attributes. If partition key[name] does not exist set partition key[name] to
+      //  default value.
+
+      if (!partitionKey.has('sourceOrigin')) {
+        const cookieDomain = params.filter?.domain ?? null;
+        if (cookieDomain !== null) {
+          partitionKey.set('sourceOrigin', cookieDomain);
+        }
+      }
+    }
+    console.log('!!@@##');
+    console.log(Object.fromEntries(partitionKey));
+    return partitionKey;
   }
 
   #cdpToBiDiCookie(cookie: Protocol.Network.Cookie): Network.Cookie {
@@ -82,13 +155,13 @@ export class StorageProcessor {
     if (filter === undefined) {
       return true;
     }
+    // TODO: add filter by domain.
     return (
       (filter.name === undefined || filter.name === cookie.name) &&
       // `value` contains fields `type` and `value`.
       (filter.value === undefined ||
         (filter.value.type === cookie.value.type &&
           filter.value.value === cookie.value.value)) &&
-      (filter.domain === undefined || filter.domain === cookie.domain) &&
       (filter.path === undefined || filter.path === cookie.path) &&
       (filter.size === undefined || filter.size === cookie.size) &&
       (filter.httpOnly === undefined || filter.httpOnly === cookie.httpOnly) &&

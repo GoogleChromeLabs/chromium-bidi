@@ -122,7 +122,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       logger
     );
     this.#sessionProcessor = new SessionProcessor(eventManager);
-    this.#storageProcessor = new StorageProcessor(browserCdpClient, logger);
+    this.#storageProcessor = new StorageProcessor(
+      browserCdpClient,
+      browsingContextStorage,
+      logger
+    );
     // keep-sorted end
   }
 
