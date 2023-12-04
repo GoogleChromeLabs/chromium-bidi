@@ -121,8 +121,6 @@ export class StorageProcessor {
         }
       }
     }
-    console.log('!!@@##');
-    console.log(Object.fromEntries(partitionKey));
     return partitionKey;
   }
 
@@ -147,8 +145,8 @@ export class StorageProcessor {
     return sameSite === 'Strict'
       ? Network.SameSite.Strict
       : sameSite === 'Lax'
-      ? Network.SameSite.Lax
-      : Network.SameSite.None;
+        ? Network.SameSite.Lax
+        : Network.SameSite.None;
   }
 
   #match(cookie: Network.Cookie, filter?: Storage.CookieFilter): boolean {

@@ -12,27 +12,25 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-import re
+
 from urllib.parse import urlparse
 
 import pytest
-from anys import ANY_STR
-from test_helpers import (AnyExtending, eval_expression, execute_command,
-                          goto_url)
+from anys import ANY_DICT, ANY_STR
+from test_helpers import eval_expression, execute_command, goto_url
 
-
-async def set_cookie(websocket,
-                     context_id,
-                     cookie='foo=bar;Secure;Partitioned;'):
-    await eval_expression(websocket, context_id,
-                          f'document.cookie = "{cookie}"')
+SOME_COOKIE_NAME = 'some_cookie_name'
+SOME_COOKIE_VALUE = 'some_cookie_value'
+ANOTHER_COOKIE_NAME = 'another_cookie_name'
+ANOTHER_COOKIE_VALUE = 'another_cookie_value'
 
 
 @pytest.mark.asyncio
 async def test_get_cookies_with_empty_params(websocket, context_id,
                                              example_url):
     await goto_url(websocket, context_id, example_url)
-    await set_cookie(websocket, context_id)
+    await set_cookie(websocket, context_id, SOME_COOKIE_NAME,
+                     SOME_COOKIE_VALUE)
 
     with pytest.raises(
             Exception,
@@ -47,38 +45,75 @@ async def test_get_cookies_with_empty_params(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_get_cookies_unsupported_partition_key(websocket, context_id,
-                                                     example_url):
+async def test_get_cookies_with_partition_source_origin(
+        websocket, context_id, example_url):
     await goto_url(websocket, context_id, example_url)
-    await set_cookie(websocket, context_id)
-    unknown_partition_key = 'UNKNOWN_PARTITION_KEY'
-    with pytest.raises(Exception,
-                       match=re.compile(
-                           str({
-                               'error': 'unsupported operation',
-                               'message': f'.*{unknown_partition_key}.*'
-                           }))):
-        await execute_command(
-            websocket, {
-                'method': 'storage.getCookies',
-                'params': {
-                    'partition': {
-                        f'{unknown_partition_key}': 'UNKNOWN',
-                        'sourceOrigin': 'SOME_ORIGIN'
-                    }
-                }
-            })
+    await set_cookie(websocket, context_id, SOME_COOKIE_NAME,
+                     SOME_COOKIE_VALUE)
+
+    hostname, expected_origin = get_hostname_and_origin(example_url)
+
+    res = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'sourceOrigin': expected_origin,
+                },
+            }
+        })
+
+    assert res == {
+        'cookies': [
+            get_expected_cookie(hostname, SOME_COOKIE_NAME, SOME_COOKIE_VALUE)
+        ],
+        'partitionKey': {
+            'sourceOrigin': expected_origin,
+        },
+    }
 
 
 @pytest.mark.asyncio
-async def test_get_cookies_for_browsing_context(websocket, context_id,
-                                                example_url):
+async def test_get_cookies_with_unsupported_partition_key(
+        websocket, context_id, example_url):
     await goto_url(websocket, context_id, example_url)
-    await set_cookie(websocket, context_id)
+    await set_cookie(websocket, context_id, SOME_COOKIE_NAME,
+                     SOME_COOKIE_VALUE)
 
-    parts = urlparse(example_url)
-    # Expected should not contain port number.
-    expected_origin = parts.scheme + '://' + parts.hostname
+    hostname, expected_origin = get_hostname_and_origin(example_url)
+    unknown_partition_key = 'UNKNOWN_PARTITION_KEY'
+    unknown_partition_value = 'UNKNOWN_PARTITION_VALUE'
+
+    res = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    f'{unknown_partition_key}': unknown_partition_value,
+                    'sourceOrigin': expected_origin,
+                },
+            }
+        })
+
+    assert res == {
+        'cookies': [
+            get_expected_cookie(hostname, SOME_COOKIE_NAME, SOME_COOKIE_VALUE)
+        ],
+        'partitionKey': {
+            f'{unknown_partition_key}': unknown_partition_value,
+            'sourceOrigin': expected_origin,
+        },
+    }
+
+
+@pytest.mark.asyncio
+async def test_get_cookies_with_partition_browsing_context(
+        websocket, context_id, example_url):
+    await goto_url(websocket, context_id, example_url)
+    await set_cookie(websocket, context_id, SOME_COOKIE_NAME,
+                     SOME_COOKIE_VALUE)
+
+    hostname, expected_origin = get_hostname_and_origin(example_url)
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -88,20 +123,9 @@ async def test_get_cookies_for_browsing_context(websocket, context_id,
     })
 
     assert resp == {
-        'cookies': [{
-            'domain': parts.hostname,
-            'expiry': -1,
-            'httpOnly': False,
-            'name': 'foo',
-            'path': '/',
-            'sameSite': 'none',
-            'secure': True,
-            'size': 6,
-            'value': {
-                'type': 'string',
-                'value': 'bar',
-            },
-        }, ],
+        'cookies': [
+            get_expected_cookie(hostname, SOME_COOKIE_NAME, SOME_COOKIE_VALUE)
+        ],
         'partitionKey': {
             'sourceOrigin': expected_origin,
         },
@@ -109,14 +133,13 @@ async def test_get_cookies_for_browsing_context(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_get_cookies_for_cookie_domain(websocket, context_id,
-                                             example_url):
+async def test_get_cookies_with_filter_cookie_domain(websocket, context_id,
+                                                     example_url):
     await goto_url(websocket, context_id, example_url)
-    await set_cookie(websocket, context_id)
+    await set_cookie(websocket, context_id, SOME_COOKIE_NAME,
+                     SOME_COOKIE_VALUE)
 
-    parts = urlparse(example_url)
-    # Expected should not contain port number.
-    expected_origin = parts.scheme + '://' + parts.hostname
+    hostname, expected_origin = get_hostname_and_origin(example_url)
 
     resp = await execute_command(
         websocket, {
@@ -129,24 +152,37 @@ async def test_get_cookies_for_cookie_domain(websocket, context_id,
         })
 
     assert resp == {
-        'cookies': [{
-            'domain': parts.hostname,
-            'expiry': -1,
-            'httpOnly': False,
-            'name': 'foo',
-            'path': '/',
-            'sameSite': 'none',
-            'secure': True,
-            'size': 6,
-            'value': {
-                'type': 'string',
-                'value': 'bar',
-            },
-        }, ],
+        'cookies': [
+            get_expected_cookie(hostname, SOME_COOKIE_NAME, SOME_COOKIE_VALUE)
+        ],
         'partitionKey': {
             'sourceOrigin': expected_origin,
         },
     }
+
+
+@pytest.mark.asyncio
+async def test_get_cookies_with_filter(websocket, context_id, example_url):
+    await goto_url(websocket, context_id, example_url)
+
+    await set_cookie(websocket, context_id, SOME_COOKIE_NAME,
+                     SOME_COOKIE_VALUE)
+    await set_cookie(websocket, context_id, ANOTHER_COOKIE_NAME,
+                     ANOTHER_COOKIE_VALUE)
+
+    # # Filter by name.
+    await assert_cookie_filter(websocket, context_id,
+                               {'name': SOME_COOKIE_NAME}, SOME_COOKIE_NAME,
+                               SOME_COOKIE_VALUE)
+
+    # Filter by value.
+    await assert_cookie_filter(
+        websocket, context_id,
+        {'value': {
+            'type': 'string',
+            'value': ANOTHER_COOKIE_VALUE
+        }}, ANOTHER_COOKIE_NAME, ANOTHER_COOKIE_VALUE)
+    # TODO: test other filters.
 
 
 async def assert_cookie_filter(websocket, context_id, cookie_filter,
@@ -161,35 +197,38 @@ async def assert_cookie_filter(websocket, context_id, cookie_filter,
         })
     assert resp == {
         'cookies': [
-            AnyExtending({
-                'name': expected_cookie_name,
-                'value': {
-                    'type': 'string',
-                    'value': expected_cookie_value,
-                },
-            }),
+            get_expected_cookie(ANY_STR, expected_cookie_name,
+                                expected_cookie_value)
         ],
-        'partitionKey': {
-            'sourceOrigin': ANY_STR
+        'partitionKey': ANY_DICT
+    }
+
+
+# Expected should not contain port number.
+def get_hostname_and_origin(url):
+    parts = urlparse(url)
+    return parts.hostname, parts.scheme + '://' + parts.hostname
+
+
+def get_expected_cookie(hostname, cookie_name, cookie_value):
+    return {
+        'domain': hostname,
+        'expiry': -1,
+        'httpOnly': False,
+        'name': cookie_name,
+        'path': '/',
+        'sameSite': 'none',
+        'secure': True,
+        'size': len(cookie_name) + len(cookie_value),
+        'value': {
+            'type': 'string',
+            'value': cookie_value,
         },
     }
 
 
-@pytest.mark.asyncio
-async def test_get_cookies_filter(websocket, context_id, example_url):
-    await goto_url(websocket, context_id, example_url)
-
-    await set_cookie(websocket, context_id, 'foo=bar;Secure;Partitioned;')
-    await set_cookie(websocket, context_id, 'baz=qux;Secure;Partitioned;')
-
-    # # Filter by name.
-    await assert_cookie_filter(websocket, context_id, {'name': 'foo'}, 'foo',
-                               'bar')
-
-    # Filter by value.
-    await assert_cookie_filter(websocket, context_id,
-                               {'value': {
-                                   'type': 'string',
-                                   'value': 'qux'
-                               }}, 'baz', 'qux')
-    # TODO: test other filters.
+async def set_cookie(websocket, context_id, cookie_name, cookie_value):
+    await eval_expression(
+        websocket, context_id,
+        f'document.cookie = "{cookie_name}={cookie_value};Secure;Partitioned;"'
+    )
