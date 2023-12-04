@@ -307,9 +307,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseGetCookiesParams(command.params)
         );
       case 'storage.setCookie':
-        this.#parser.parseSetCookieParams(command.params);
-        throw new UnsupportedOperationException(
-          `Command ${command.method} not yet implemented.`
+        return await this.#storageProcessor.setCookie(
+          this.#parser.parseSetCookieParams(command.params)
         );
       // keep-sorted end
     }
