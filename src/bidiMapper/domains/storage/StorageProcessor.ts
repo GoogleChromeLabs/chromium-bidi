@@ -19,8 +19,11 @@ import type {Protocol} from 'devtools-protocol';
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {Storage} from '../../../protocol/protocol.js';
 import {
+  InvalidArgumentException,
   Network,
   UnderspecifiedStoragePartitionException,
+  UnableToSetCookieException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
@@ -88,6 +91,55 @@ export class StorageProcessor {
     };
   }
 
+  async setCookie(
+    params: Storage.SetCookieParameters
+  ): Promise<Storage.SetCookieResult> {
+    const partitionKey = this.#extendStoragePartitionSpec(params);
+
+    if (params.cookie.value.type !== 'string') {
+      // TODO: add support for other types.
+      throw new UnsupportedOperationException(
+        'Only string cookie values are supported'
+      );
+    }
+    const deserializedValue = params.cookie.value.value;
+
+    try {
+      await this.#browserCdpClient.sendCommand('Storage.setCookies', {
+        cookies: [
+          {
+            name: params.cookie.name,
+            value: deserializedValue,
+            domain: params.cookie.domain,
+            path: params.cookie.path ?? '/',
+            secure: params.cookie.secure ?? false,
+            httpOnly: params.cookie.httpOnly ?? false,
+            // CDP's partition key is the source origin.
+            // partitionKey: partitionKey.get('sourceOrigin'),
+            ...(params.cookie.expiry !== undefined && {
+              expires: params.cookie.expiry,
+            }),
+            ...(params.cookie.sameSite !== undefined && {
+              sameSite: StorageProcessor.#sameSiteBiDiToCdp(
+                params.cookie.sameSite
+              ),
+            }),
+            // Note: the following fields supported by CDP are not set:
+            // url
+            // priority
+            // sameParty
+            // sourceScheme
+            // sourcePort
+          },
+        ],
+      });
+    } catch (e: any) {
+      this.#logger?.(LogType.debugError, e);
+      throw new UnableToSetCookieException(e.toString());
+    }
+    return {partitionKey: Object.fromEntries(partitionKey)};
+  }
+
   #extendStoragePartitionSpec(
     params: Storage.GetCookiesParameters
   ): Map<string, string> {
@@ -121,6 +173,22 @@ export class StorageProcessor {
         }
       }
     }
+
+    if (!partitionKey.has('sourceOrigin')) {
+      throw new UnderspecifiedStoragePartitionException(
+        'sourceOrigin or cookie.domain should be set'
+      );
+    }
+    const unsupportedPartitionKeys = Array.from(partitionKey.keys()).filter(
+      (k) => k !== 'sourceOrigin'
+    );
+    if (unsupportedPartitionKeys.length > 0) {
+      this.#logger?.(
+        LogType.debugInfo,
+        `Unsupported partition keys: ${unsupportedPartitionKeys}`
+      );
+    }
+
     return partitionKey;
   }
 
@@ -133,20 +201,44 @@ export class StorageProcessor {
       size: cookie.size,
       httpOnly: cookie.httpOnly,
       secure: cookie.secure,
-      sameSite: StorageProcessor.#convertSameSite(cookie.sameSite),
-      expiry: cookie.expires,
+      sameSite:
+        cookie.sameSite === undefined
+          ? Network.SameSite.None
+          : StorageProcessor.#sameSiteCdpToBiDi(cookie.sameSite),
+      ...(cookie.expires >= 0 ? {expiry: cookie.expires} : undefined),
     };
   }
 
   // TODO: check what to return is the `sameSite` is not set.
-  static #convertSameSite(
-    sameSite: Protocol.Network.CookieSameSite | undefined
+  static #sameSiteCdpToBiDi(
+    sameSite: Protocol.Network.CookieSameSite
   ): Network.SameSite {
-    return sameSite === 'Strict'
-      ? Network.SameSite.Strict
-      : sameSite === 'Lax'
-        ? Network.SameSite.Lax
-        : Network.SameSite.None;
+    switch (sameSite) {
+      case 'Strict':
+        return Network.SameSite.Strict;
+      case 'Lax':
+        return Network.SameSite.Lax;
+      case 'None':
+      default:
+        return Network.SameSite.None;
+    }
+  }
+
+  static #sameSiteBiDiToCdp(
+    sameSite: Network.SameSite
+  ): Protocol.Network.CookieSameSite {
+    switch (sameSite) {
+      case Network.SameSite.Strict:
+        return 'Strict';
+      case Network.SameSite.Lax:
+        return 'Lax';
+      case Network.SameSite.None:
+        return 'None';
+      default:
+        throw new InvalidArgumentException(
+          `Unknown 'sameSite' value ${sameSite}`
+        );
+    }
   }
 
   #match(cookie: Network.Cookie, filter?: Storage.CookieFilter): boolean {

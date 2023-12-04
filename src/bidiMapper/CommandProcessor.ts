@@ -308,8 +308,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseGetCookiesParams(command.params)
         );
       case 'storage.setCookie':
-        throw new UnsupportedOperationException(
-          `${command.method} is not supported yet`
+        return await this.#storageProcessor.setCookie(
+          this.#parser.parseSetCookieParams(command.params)
         );
       // keep-sorted end
     }
