@@ -121,8 +121,6 @@ export class StorageProcessor {
         }
       }
     }
-    console.log('!!@@##');
-    console.log(Object.fromEntries(partitionKey));
     return partitionKey;
   }
 
