@@ -202,7 +202,6 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
 
     await execute_command(
         websocket, {
-            "id": 15,
             "method": "browsingContext.navigate",
             "params": {
                 "url": oopif_url,
