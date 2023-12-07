@@ -197,6 +197,22 @@ async def test_browsingContext_navigateWaitComplete_navigated(
 
 
 @pytest.mark.asyncio
+async def test_browsingContext_navigateWaitComplete_oopif_navigated(
+        websocket, context_id, oopif_url):
+
+    await execute_command(
+        websocket, {
+            "id": 15,
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": oopif_url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated(
         websocket, context_id, html):
     url = html("<h2>test</h2>")

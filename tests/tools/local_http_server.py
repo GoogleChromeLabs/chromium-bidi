@@ -34,6 +34,7 @@ class LocalHttpServer:
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
     __path_cacheable = "/cacheable"
+    __path_oopif = "/oopif"
 
     default_200_page_content: str = 'default 200 page'
 
@@ -48,6 +49,13 @@ class LocalHttpServer:
             .expect_request(self.__path_200) \
             .respond_with_data(
                 f"<html><body>{self.default_200_page_content}</body></html>",
+                headers={"Content-Type": "text/html"})
+
+        # Set up OOPiF page.
+        self.__http_server \
+            .expect_request(self.__path_oopif) \
+            .respond_with_data(
+                f"<html><body><iframe src='{self.url_200(self.another_host())}' /></body></html>",
                 headers={"Content-Type": "text/html"})
 
         # Set up permanent redirect.
@@ -135,10 +143,22 @@ class LocalHttpServer:
         return "{}://{}:{}{}".format(protocol, host, self.__http_server.port,
                                      suffix)
 
+    def default_host(self) -> str:
+        """Returns the host of the server."""
+        return 'localhost'
+
+    def another_host(self) -> str:
+        return '127.0.0.1'
+
     def url_200(self, host='localhost') -> str:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
         return self._url_for(self.__path_200, host)
+
+    def url_oopif(self) -> str:
+        """Returns the url with out-of-process iframe.
+        """
+        return self._url_for(self.__path_oopif, self.default_host())
 
     def url_permanent_redirect(self) -> str:
         """Returns the url for the permanent redirect page, redirecting to the

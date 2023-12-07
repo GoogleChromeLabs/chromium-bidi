@@ -159,14 +159,20 @@ def url_all_origins(request):
 @pytest.fixture
 def example_url(local_server: LocalHttpServer):
     """Return a generic example URL with status code 200."""
-    return local_server.url_200()
+    return local_server.url_200(local_server.default_host())
 
 
 @pytest.fixture
 def another_example_url(local_server: LocalHttpServer):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server.url_200('127.0.0.1')
+    return local_server.url_200(local_server.another_host())
+
+
+@pytest.fixture
+def oopif_url(local_server: LocalHttpServer):
+    """Return a generic example URL with status code 200."""
+    return local_server.url_oopif()
 
 
 @pytest.fixture
