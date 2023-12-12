@@ -29,7 +29,8 @@ import {remote} from 'webdriverio';
 import {
   installAndGetChromePath,
   installAndGetChromeDriverPath,
-} from './helpers/index.mjs';
+  getBidiMapperPath,
+} from '../tools/path-getter/path-getter.mjs';
 
 const chromePath = installAndGetChromePath();
 const chromeDriverPath = installAndGetChromeDriverPath();
@@ -42,7 +43,7 @@ try {
       browserName: 'chrome',
       'wdio:chromedriverOptions': {
         binary: chromeDriverPath,
-        args: [`--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`],
+        args: [`--bidi-mapper-path=${getBidiMapperPath()}`],
       },
       'goog:chromeOptions': {
         args: ['--enable-bidi', '--headless', '--disable-gpu'],
