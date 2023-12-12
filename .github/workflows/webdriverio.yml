@@ -48,7 +48,7 @@ jobs:
         timeout-minutes: 20
         run: >
           xvfb-run --auto-servernum
-          node tests_external/selenium.mjs
+          node tests_external/webdriverio.mjs
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER_BIN: ${{ steps.driver.outputs.executablePath }}
