@@ -22,36 +22,16 @@
  * Inspired by https://github.com/SeleniumHQ/selenium/blob/0c86525184355bddc44b6193ae7236f11a7fb129/javascript/node/selenium-webdriver/test/bidi/bidi_test.js#L300
  */
 
-import {execSync} from 'child_process';
 import * as assert from 'node:assert';
 import {join} from 'path';
 
 import {Builder, ScriptManager, BrowsingContext} from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
 
-function installAndGetChromePath() {
-  let BROWSER_BIN = process.env.BROWSER_BIN;
-  if (!BROWSER_BIN) {
-    BROWSER_BIN = execSync(
-      ['node', join('tools', 'install-browser.mjs')].join(' ')
-    )
-      .toString()
-      .trim();
-  }
-  return BROWSER_BIN;
-}
-
-function installAndGetChromeDriverPath() {
-  let CHROMEDRIVER_BIN = process.env.CHROMEDRIVER_BIN;
-  if (!CHROMEDRIVER_BIN) {
-    CHROMEDRIVER_BIN = execSync(
-      ['node', join('tools', 'install-browser.mjs'), '--chromedriver'].join(' ')
-    )
-      .toString()
-      .trim();
-  }
-  return CHROMEDRIVER_BIN;
-}
+import {
+  installAndGetChromePath,
+  installAndGetChromeDriverPath,
+} from './helpers/index.mjs';
 
 const chromePath = installAndGetChromePath();
 const chromeDriverPath = installAndGetChromeDriverPath();
