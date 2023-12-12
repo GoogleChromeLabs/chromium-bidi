@@ -23,7 +23,6 @@
  */
 
 import * as assert from 'node:assert';
-import {join} from 'path';
 
 import {Builder, ScriptManager, BrowsingContext} from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
@@ -31,13 +30,14 @@ import chrome from 'selenium-webdriver/chrome.js';
 import {
   installAndGetChromePath,
   installAndGetChromeDriverPath,
-} from './helpers/index.mjs';
+  getBidiMapperPath,
+} from '../tools/path-getter/path-getter.mjs';
 
 const chromePath = installAndGetChromePath();
 const chromeDriverPath = installAndGetChromeDriverPath();
 
 const chromeService = new chrome.ServiceBuilder(chromeDriverPath).addArguments(
-  `--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`
+  `--bidi-mapper-path=${getBidiMapperPath()}`
 );
 
 const driver = new Builder()
