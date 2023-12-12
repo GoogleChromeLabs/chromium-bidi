@@ -22,7 +22,6 @@
  */
 
 import * as assert from 'node:assert';
-import {join} from 'path';
 
 import {remote} from 'webdriverio';
 
