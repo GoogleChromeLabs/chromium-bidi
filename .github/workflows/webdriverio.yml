@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  selenium:
+  webdriverio:
     strategy:
       fail-fast: false
       matrix:
