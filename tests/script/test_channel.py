@@ -15,8 +15,8 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_SHARED_ID, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_LEGACY_SHARED_ID, execute_command,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -238,7 +238,7 @@ async def test_channel_and_another_channel(websocket, context_id):
                     "namespaceURI": "http://www.w3.org/1999/xhtml",
                     "attributes": {}
                 },
-                "sharedId": ANY_SHARED_ID
+                "sharedId": ANY_LEGACY_SHARED_ID
             }
         ]],
         "handle": ANY_STR
@@ -258,7 +258,7 @@ async def test_channel_and_another_channel(websocket, context_id):
                     "namespaceURI": "http://www.w3.org/1999/xhtml",
                     "attributes": {}
                 },
-                "sharedId": ANY_SHARED_ID
+                "sharedId": ANY_LEGACY_SHARED_ID
             }
         ]],
         "handle": ANY_STR
@@ -284,7 +284,7 @@ async def test_channel_and_another_channel(websocket, context_id):
                     "namespaceURI": "http://www.w3.org/1999/xhtml",
                     "attributes": {}
                 },
-                "sharedId": ANY_SHARED_ID
+                "sharedId": ANY_LEGACY_SHARED_ID
             }
         ]],
         "handle": ANY_STR
@@ -304,7 +304,7 @@ async def test_channel_and_another_channel(websocket, context_id):
                     "namespaceURI": "http://www.w3.org/1999/xhtml",
                     "attributes": {}
                 },
-                "sharedId": ANY_SHARED_ID
+                "sharedId": ANY_LEGACY_SHARED_ID
             }
         ]],
         "handle": ANY_STR
@@ -324,7 +324,7 @@ async def test_channel_and_another_channel(websocket, context_id):
                     "namespaceURI": "http://www.w3.org/1999/xhtml",
                     "attributes": {}
                 },
-                "sharedId": ANY_SHARED_ID
+                "sharedId": ANY_LEGACY_SHARED_ID
             }
         ]],
         "handle": ANY_STR
