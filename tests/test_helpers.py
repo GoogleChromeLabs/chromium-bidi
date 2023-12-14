@@ -166,8 +166,9 @@ async def wait_for_events(websocket, event_methods: list[str]) -> dict:
             return event_response
 
 
-ANY_SHARED_ID = ANY_STR & AnyMatch("f\\..*\\.d\\..*\\.e\\..*")
+ANY_NEW_SHARED_ID = ANY_STR & AnyMatch("f\\..*\\.d\\..*\\.e\\..*")
 ANY_LEGACY_SHARED_ID = ANY_STR & AnyContains("_element_")
+ANY_SHARED_ID = ANY_NEW_SHARED_ID | ANY_LEGACY_SHARED_ID
 
 # Check if the timestamp has the proper order of magnitude between
 #  - "2020-01-01 00:00:00" (1577833200000) and

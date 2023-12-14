@@ -17,9 +17,8 @@ import copy
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_LEGACY_SHARED_ID, ANY_UUID, execute_command,
-                          goto_url, read_JSON_message, send_JSON_command,
-                          subscribe)
+from test_helpers import (ANY_SHARED_ID, ANY_UUID, execute_command, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 def _strip_handle(obj):
@@ -612,7 +611,7 @@ async def test_serialization_deserialization_date(websocket, context_id):
         "maxDomDepth": 0
     }, {
         "type": "node",
-        "sharedId": ANY_LEGACY_SHARED_ID,
+        "sharedId": ANY_SHARED_ID,
         "value": {
             "nodeType": 1,
             "childNodeCount": 2,
@@ -628,7 +627,7 @@ async def test_serialization_deserialization_date(websocket, context_id):
         "maxDomDepth": 1
     }, {
         "type": "node",
-        "sharedId": ANY_LEGACY_SHARED_ID,
+        "sharedId": ANY_SHARED_ID,
         "value": {
             "nodeType": 1,
             "childNodeCount": 2,
@@ -640,7 +639,7 @@ async def test_serialization_deserialization_date(websocket, context_id):
             },
             "children": [{
                 "type": "node",
-                "sharedId": ANY_LEGACY_SHARED_ID,
+                "sharedId": ANY_SHARED_ID,
                 "value": {
                     "childNodeCount": 0,
                     "nodeType": 3,
@@ -648,7 +647,7 @@ async def test_serialization_deserialization_date(websocket, context_id):
                 }
             }, {
                 "type": "node",
-                "sharedId": ANY_LEGACY_SHARED_ID,
+                "sharedId": ANY_SHARED_ID,
                 "value": {
                     "attributes": {},
                     "childNodeCount": 1,
@@ -664,7 +663,7 @@ async def test_serialization_deserialization_date(websocket, context_id):
         "maxDomDepth": 99
     }, {
         "type": "node",
-        "sharedId": ANY_LEGACY_SHARED_ID,
+        "sharedId": ANY_SHARED_ID,
         "value": {
             "nodeType": 1,
             "childNodeCount": 2,
@@ -676,7 +675,7 @@ async def test_serialization_deserialization_date(websocket, context_id):
             },
             "children": [{
                 "type": "node",
-                "sharedId": ANY_LEGACY_SHARED_ID,
+                "sharedId": ANY_SHARED_ID,
                 "value": {
                     "childNodeCount": 0,
                     "nodeType": 3,
@@ -685,7 +684,7 @@ async def test_serialization_deserialization_date(websocket, context_id):
                 }
             }, {
                 "type": "node",
-                "sharedId": ANY_LEGACY_SHARED_ID,
+                "sharedId": ANY_SHARED_ID,
                 "value": {
                     "attributes": {},
                     "childNodeCount": 1,
@@ -695,7 +694,7 @@ async def test_serialization_deserialization_date(websocket, context_id):
                     "shadowRoot": None,
                     'children': [{
                         'type': 'node',
-                        "sharedId": ANY_LEGACY_SHARED_ID,
+                        "sharedId": ANY_SHARED_ID,
                         'value': {
                             'childNodeCount': 0,
                             'children': [],
@@ -770,7 +769,7 @@ async def test_serialization_shadow_dom(websocket, context_id):
         "type": "array",
         "value": [{
             "type": "node",
-            "sharedId": ANY_LEGACY_SHARED_ID,
+            "sharedId": ANY_SHARED_ID,
             "value": {
                 "nodeType": 1,
                 "childNodeCount": 0,
@@ -780,14 +779,14 @@ async def test_serialization_shadow_dom(websocket, context_id):
                 "children": [],
                 "shadowRoot": {
                     "type": "node",
-                    "sharedId": ANY_LEGACY_SHARED_ID,
+                    "sharedId": ANY_SHARED_ID,
                     "value": {
                         "nodeType": 11,
                         "childNodeCount": 1,
                         "mode": "open",
                         "children": [{
                             "type": "node",
-                            "sharedId": ANY_LEGACY_SHARED_ID,
+                            "sharedId": ANY_SHARED_ID,
                             "value": {
                                 "nodeType": 1,
                                 "childNodeCount": 1,
@@ -797,7 +796,7 @@ async def test_serialization_shadow_dom(websocket, context_id):
                                 "attributes": {},
                                 "children": [{
                                     "type": "node",
-                                    "sharedId": ANY_LEGACY_SHARED_ID,
+                                    "sharedId": ANY_SHARED_ID,
                                     "value": {
                                         "nodeType": 3,
                                         "nodeValue": "element in open shadow DOM",
@@ -812,7 +811,7 @@ async def test_serialization_shadow_dom(websocket, context_id):
             }
         }, {
             "type": "node",
-            "sharedId": ANY_LEGACY_SHARED_ID,
+            "sharedId": ANY_SHARED_ID,
             "value": {
                 "nodeType": 1,
                 "childNodeCount": 0,
@@ -827,7 +826,7 @@ async def test_serialization_shadow_dom(websocket, context_id):
                         "childNodeCount": 1,
                         "mode": "closed"
                     },
-                    "sharedId": ANY_LEGACY_SHARED_ID,
+                    "sharedId": ANY_SHARED_ID,
                 }
             }
         }]
@@ -867,7 +866,7 @@ async def test_serialization_nested_node(websocket, context_id, html,
 
     assert {
         "type": "node",
-        "sharedId": ANY_LEGACY_SHARED_ID,
+        "sharedId": ANY_SHARED_ID,
         "value": {
             "nodeType": 1,
             "localName": "div",

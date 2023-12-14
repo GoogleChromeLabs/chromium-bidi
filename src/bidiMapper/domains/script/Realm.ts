@@ -33,7 +33,7 @@ import type {EventManager} from '../events/EventManager.js';
 
 import {ChannelProxy} from './ChannelProxy.js';
 import type {RealmStorage} from './RealmStorage.js';
-import {SharedIdParser} from './SharedIdParser';
+import {SharedIdParser} from './SharedIdParser.js';
 
 export class Realm {
   readonly #realmStorage: RealmStorage;
@@ -42,6 +42,7 @@ export class Realm {
   readonly #browsingContextId: BrowsingContext.BrowsingContext;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
+  readonly #sharedIdWithFrame: boolean;
   readonly #type: Script.RealmType;
   readonly #cdpClient: ICdpClient;
   readonly #eventManager: EventManager;
@@ -59,8 +60,10 @@ export class Realm {
     sandbox: string | undefined,
     cdpClient: ICdpClient,
     eventManager: EventManager,
+    sharedIdWithFrame: boolean,
     logger?: LoggerFn
   ) {
+    this.#sharedIdWithFrame = sharedIdWithFrame;
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
     this.#executionContextId = executionContextId;
@@ -171,12 +174,11 @@ export class Realm {
         (deepSerializedValue as unknown as Script.SharedReference).sharedId =
           // TODO: replace with the loaderId and corresponding frameId from deep
           //  serialized value after https://crrev.com/c/5116240 is landed.
-          // TODO: replace with the `SharedIdParser.getSharedId` once ChromeDriver
-          //  accepts sharedId in the new format: http://go/chromedriver:weak-map.
-          SharedIdParser.getLegacySharedId(
+          SharedIdParser.getSharedId(
             this.#browsingContextId,
             this.navigableId,
-            bidiValue.backendNodeId
+            bidiValue.backendNodeId,
+            this.#sharedIdWithFrame
           );
         delete bidiValue['backendNodeId'];
       }

@@ -21,9 +21,13 @@ export class SharedIdParser {
   static getSharedId(
     frameId: string,
     documentId: string,
-    backendNodeId: number
+    backendNodeId: number,
+    sharedIdWithFrame: boolean
   ): string {
-    return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
+    if (sharedIdWithFrame) {
+      return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
+    }
+    return this.#getLegacySharedId(frameId, documentId, backendNodeId);
   }
 
   static parseSharedId(sharedId: string): {
@@ -71,7 +75,7 @@ export class SharedIdParser {
 
   // TODO: remove once ChromeDriver accepts sharedId in the new format:
   //  http://go/chromedriver:weak-map
-  static getLegacySharedId(
+  static #getLegacySharedId(
     frameId: string,
     documentId: string,
     backendNodeId: number

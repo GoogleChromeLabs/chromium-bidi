@@ -49,23 +49,25 @@ describe('SharedIdParser', () => {
     });
   });
   describe('getSharedId', () => {
-    it('should generate string', () => {
+    it('should generate new format', () => {
       expect(
         SharedIdParser.getSharedId(
           PARSED_SHARED_ID.frameId,
           PARSED_SHARED_ID.documentId,
-          PARSED_SHARED_ID.backendNodeId
+          PARSED_SHARED_ID.backendNodeId,
+          true
         )
       ).to.equal(SHARED_ID);
     });
   });
   describe('getLegacySharedId(', () => {
-    it('should generate string', () => {
+    it('should generate legacy format', () => {
       expect(
-        SharedIdParser.getLegacySharedId(
+        SharedIdParser.getSharedId(
           PARSED_SHARED_ID.frameId,
           PARSED_SHARED_ID.documentId,
-          PARSED_SHARED_ID.backendNodeId
+          PARSED_SHARED_ID.backendNodeId,
+          false
         )
       ).to.equal(LEGACY_SHARED_ID);
     });
