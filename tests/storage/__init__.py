@@ -57,6 +57,9 @@ async def set_cookie(websocket, context_id, bidi_cookie):
             'method': 'storage.setCookie',
             'params': {
                 'cookie': bidi_cookie,
-                'partition': context_id,
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
             }
         })

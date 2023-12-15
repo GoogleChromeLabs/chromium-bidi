@@ -25,10 +25,11 @@ import {
   UnableToSetCookieException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
+import {assert} from '../../../utils/assert.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
-import {NetworkProcessor} from '../network/NetworkProcessor';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import {NetworkProcessor} from '../network/NetworkProcessor.js';
 
 /**
  * Responsible for handling the `storage` domain.
@@ -51,50 +52,34 @@ export class StorageProcessor {
   async getCookies(
     params: Storage.GetCookiesParameters
   ): Promise<Storage.GetCookiesResult> {
-    const filterCookie = params.filter;
-    const partitionKey = this.#extendStoragePartitionSpec(params);
+    const partitionKey = this.#extendStoragePartitionSpec(params.partition);
 
     const cdpResponse = await this.#browserCdpClient.sendCommand(
       'Storage.getCookies',
       {}
     );
-    const unsupportedPartitionKeys = Array.from(partitionKey.keys()).filter(
-      (k) => k !== 'sourceOrigin'
-    );
-    if (unsupportedPartitionKeys.length > 0) {
-      this.#logger?.(
-        LogType.debugInfo,
-        `Unsupported partition keys: ${unsupportedPartitionKeys}`
-      );
-    }
-
-    if (!partitionKey.has('sourceOrigin')) {
-      throw new UnderspecifiedStoragePartitionException(
-        'sourceOrigin or cookie.domain should be set'
-      );
-    }
-
-    const sourceOrigin = partitionKey.get('sourceOrigin');
 
     const filteredBiDiCookies = cdpResponse.cookies
       .filter(
         // CDP's partition key is the source origin.
         // TODO: check if this logic is correct.
-        (c) => c.partitionKey === undefined || c.partitionKey === sourceOrigin
+        (c) =>
+          c.partitionKey === undefined ||
+          c.partitionKey === partitionKey.sourceOrigin
       )
       .map((c) => this.#cdpToBiDiCookie(c))
-      .filter((c) => this.#match(c, filterCookie));
+      .filter((c) => this.#match(c, params.filter));
 
     return {
       cookies: filteredBiDiCookies,
-      partitionKey: Object.fromEntries(partitionKey),
+      partitionKey,
     };
   }
 
   async setCookie(
     params: Storage.SetCookieParameters
   ): Promise<Storage.SetCookieResult> {
-    const partitionKey = this.#extendStoragePartitionSpec(params);
+    const partitionKey = this.#extendStoragePartitionSpec(params.partition);
 
     if (params.cookie.value.type !== 'string') {
       // TODO: add support for other types.
@@ -114,8 +99,8 @@ export class StorageProcessor {
             path: params.cookie.path ?? '/',
             secure: params.cookie.secure ?? false,
             httpOnly: params.cookie.httpOnly ?? false,
-            // CDP's partition key is the source origin.
-            // partitionKey: partitionKey.get('sourceOrigin'),
+            // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
+            partitionKey: partitionKey.sourceOrigin,
             ...(params.cookie.expiry !== undefined && {
               expires: params.cookie.expiry,
             }),
@@ -137,59 +122,88 @@ export class StorageProcessor {
       this.#logger?.(LogType.debugError, e);
       throw new UnableToSetCookieException(e.toString());
     }
-    return {partitionKey: Object.fromEntries(partitionKey)};
+    return {
+      partitionKey,
+    };
+  }
+
+  #extendStoragePartitionSpecByBrowsingContext(
+    descriptor: Storage.BrowsingContextPartitionDescriptor
+  ): Storage.PartitionKey {
+    const browsingContextId: string = descriptor.context;
+    const browsingContext =
+      this.#browsingContextStorage.getContext(browsingContextId);
+    const url = NetworkProcessor.parseUrlString(browsingContext?.url ?? '');
+    // Cookie origin should not contain the port.
+    // TODO: check if this logic is correct.
+    const sourceOrigin = `${url.protocol}//${url.hostname}`;
+
+    return {
+      sourceOrigin,
+      // TODO: get proper user context.
+      userContext: 'NOT_IMPLEMENTED',
+    };
+  }
+
+  #extendStoragePartitionSpecByStorageKey(
+    descriptor: Storage.StorageKeyPartitionDescriptor
+  ): Storage.PartitionKey {
+    let sourceOrigin: string | undefined = undefined;
+    // TODO: get proper user context.
+    const userContext = 'NOT_IMPLEMENTED';
+
+    if (descriptor.sourceOrigin !== undefined) {
+      sourceOrigin = descriptor.sourceOrigin;
+    }
+
+    if (sourceOrigin === undefined) {
+      throw new UnderspecifiedStoragePartitionException(
+        '"sourceOrigin" should be set'
+      );
+    }
+
+    const unsupportedPartitionKeys = new Map<string, string>();
+
+    // Partition spec is a storage partition.
+    // Let partition key be partition spec.
+    for (const [key, value] of Object.entries(descriptor)) {
+      if (
+        key !== undefined &&
+        value !== undefined &&
+        !['type', 'userContext', 'sourceOrigin'].includes(key)
+      ) {
+        unsupportedPartitionKeys.set(key, value);
+      }
+    }
+
+    if (unsupportedPartitionKeys.size > 0) {
+      this.#logger?.(
+        LogType.debugInfo,
+        `Unsupported partition keys: ${JSON.stringify(
+          Object.fromEntries(unsupportedPartitionKeys)
+        )}`
+      );
+    }
+
+    return {
+      sourceOrigin,
+      userContext,
+    };
   }
 
   #extendStoragePartitionSpec(
-    params: Storage.GetCookiesParameters
-  ): Map<string, string> {
-    const partitionSpec = params.partition ?? {};
-    const partitionKey = new Map<string, string>();
-
-    if (typeof partitionSpec === 'string') {
-      // Partition spec is a browsing context id.
-      const browsingContextId: string = partitionSpec;
-      const browsingContext =
-        this.#browsingContextStorage.getContext(browsingContextId);
-      const url = NetworkProcessor.parseUrlString(browsingContext?.url ?? '');
-      // Cookie origin should not contain the port.
-      // TODO: check if this logic is correct.
-      partitionKey.set('sourceOrigin', `${url.protocol}//${url.hostname}`);
-    } else {
-      // Partition spec is a storage partition.
-      const storagePartition: Storage.PartitionKey = partitionSpec;
-      // Let partition key be partition spec.
-      for (const [key, value] of Object.entries(storagePartition)) {
-        partitionKey.set(key, value);
-      }
-      // TODO: For each name → default value in the default values for storage partition
-      //  key attributes. If partition key[name] does not exist set partition key[name] to
-      //  default value.
-
-      if (!partitionKey.has('sourceOrigin')) {
-        const cookieDomain = params.filter?.domain ?? null;
-        if (cookieDomain !== null) {
-          partitionKey.set('sourceOrigin', cookieDomain);
-        }
-      }
-    }
-
-    if (!partitionKey.has('sourceOrigin')) {
+    partitionSpec: Storage.PartitionDescriptor | undefined
+  ): Storage.PartitionKey {
+    if (partitionSpec === undefined) {
       throw new UnderspecifiedStoragePartitionException(
-        'sourceOrigin or cookie.domain should be set'
+        'partition should be set'
       );
     }
-    const unsupportedPartitionKeys = Array.from(partitionKey.keys()).filter(
-      (k) => k !== 'sourceOrigin'
-    );
-    if (unsupportedPartitionKeys.length > 0) {
-      this.#logger?.(
-        LogType.debugInfo,
-        `Unsupported partition keys: ${unsupportedPartitionKeys}`
-      );
+    if (partitionSpec.type === 'context') {
+      return this.#extendStoragePartitionSpecByBrowsingContext(partitionSpec);
     }
-
-    return partitionKey;
+    assert(partitionSpec.type === 'storageKey', 'Unknown partition type');
+    return this.#extendStoragePartitionSpecByStorageKey(partitionSpec);
   }
 
   #cdpToBiDiCookie(cookie: Protocol.Network.Cookie): Network.Cookie {

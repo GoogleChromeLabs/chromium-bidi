@@ -16,6 +16,7 @@
 from datetime import datetime, timedelta
 
 import pytest
+from anys import ANY_STR
 from storage import get_bidi_cookie, get_hostname_and_origin
 from test_helpers import execute_command, goto_url
 
@@ -35,6 +36,7 @@ async def test_cookie_set_with_required_fields(websocket, context_id,
             'method': 'storage.setCookie',
             'params': {
                 'cookie': {
+                    'secure': True,
                     'name': SOME_COOKIE_NAME,
                     'value': {
                         'type': 'string',
@@ -42,25 +44,33 @@ async def test_cookie_set_with_required_fields(websocket, context_id,
                     },
                     'domain': hostname,
                 },
-                'partition': context_id
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
             }
         })
 
-    resp = await execute_command(websocket, {
-        'method': 'storage.getCookies',
-        'params': {
-            'partition': context_id
-        }
-    })
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
+            }
+        })
     assert resp == {
         'cookies': [
             get_bidi_cookie(SOME_COOKIE_NAME,
                             SOME_COOKIE_VALUE,
                             hostname,
-                            secure=False)
+                            secure=True)
         ],
         'partitionKey': {
             'sourceOrigin': expected_origin,
+            'userContext': ANY_STR,
         }
     }
 
@@ -91,16 +101,23 @@ async def test_cookie_set_with_all_fields(websocket, context_id, example_url):
                     'sameSite': same_site,
                     'expiry': expiry,
                 },
-                'partition': context_id
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
             }
         })
 
-    resp = await execute_command(websocket, {
-        'method': 'storage.getCookies',
-        'params': {
-            'partition': context_id
-        }
-    })
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
+            }
+        })
     assert resp == {
         'cookies': [
             get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname,
@@ -108,6 +125,7 @@ async def test_cookie_set_with_all_fields(websocket, context_id, example_url):
         ],
         'partitionKey': {
             'sourceOrigin': expected_origin,
+            'userContext': ANY_STR,
         }
     }
 
@@ -125,21 +143,29 @@ async def test_cookie_set_expired(websocket, context_id, example_url):
                                           SOME_COOKIE_VALUE,
                                           hostname,
                                           expiry=expiry),
-                'partition': context_id
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
             }
         })
 
-    resp = await execute_command(websocket, {
-        'method': 'storage.getCookies',
-        'params': {
-            'partition': context_id
-        }
-    })
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
+            }
+        })
     # secure=True,
     #       path="/", http_only=False, same_site='none', expiry=-1
     assert resp == {
         'cookies': [],
         'partitionKey': {
             'sourceOrigin': expected_origin,
+            'userContext': ANY_STR,
         }
     }

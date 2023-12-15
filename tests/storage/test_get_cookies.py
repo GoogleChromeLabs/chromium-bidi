@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 import pytest
-from anys import ANY_DICT
+from anys import ANY_DICT, ANY_STR
 from storage import get_bidi_cookie, get_hostname_and_origin, set_cookie
 from test_helpers import execute_command, goto_url
 
@@ -28,12 +28,11 @@ ANOTHER_COOKIE_VALUE = 'another_cookie_value'
 async def test_cookies_get_with_empty_params(websocket, context_id,
                                              example_url):
     await goto_url(websocket, context_id, example_url)
-    with pytest.raises(
-            Exception,
-            match=str({
-                'error': 'unknown source origin',
-                'message': 'sourceOrigin or cookie.domain should be set'
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           'error': 'underspecified storage partition',
+                           'message': 'partition should be set'
+                       })):
         await execute_command(websocket, {
             'method': 'storage.getCookies',
             'params': {}
@@ -54,7 +53,9 @@ async def test_cookies_get_with_partition_source_origin(
             'method': 'storage.getCookies',
             'params': {
                 'partition': {
+                    'type': 'storageKey',
                     'sourceOrigin': origin,
+                    'userContext': 'IGNORED_VALUE',
                 },
             }
         })
@@ -63,6 +64,7 @@ async def test_cookies_get_with_partition_source_origin(
         'cookies': [cookie],
         'partitionKey': {
             'sourceOrigin': origin,
+            'userContext': ANY_STR,
         },
     }
 
@@ -83,8 +85,10 @@ async def test_cookies_get_with_unsupported_partition_key(
             'method': 'storage.getCookies',
             'params': {
                 'partition': {
+                    'type': 'storageKey',
                     f'{unknown_partition_key}': unknown_partition_value,
                     'sourceOrigin': origin,
+                    'userContext': 'IGNORED_VALUE',
                 },
             }
         })
@@ -94,6 +98,7 @@ async def test_cookies_get_with_unsupported_partition_key(
         'partitionKey': {
             f'{unknown_partition_key}': unknown_partition_value,
             'sourceOrigin': origin,
+            'userContext': ANY_STR,
         },
     }
 
@@ -107,42 +112,22 @@ async def test_cookies_get_with_partition_browsing_context(
     cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname)
     await set_cookie(websocket, context_id, cookie)
 
-    resp = await execute_command(websocket, {
-        'method': 'storage.getCookies',
-        'params': {
-            'partition': context_id
-        }
-    })
-
-    assert resp == {
-        'cookies': [cookie],
-        'partitionKey': {
-            'sourceOrigin': origin,
-        },
-    }
-
-
-@pytest.mark.asyncio
-async def test_cookies_get_with_filter_cookie_domain(websocket, context_id,
-                                                     example_url):
-    await goto_url(websocket, context_id, example_url)
-    hostname, origin = get_hostname_and_origin(example_url)
-    cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname)
-    await set_cookie(websocket, context_id, cookie)
-
-    resp = await execute_command(websocket, {
-        'method': 'storage.getCookies',
-        'params': {
-            'filter': {
-                'domain': origin
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
             }
-        }
-    })
+        })
 
     assert resp == {
         'cookies': [cookie],
         'partitionKey': {
             'sourceOrigin': origin,
+            'userContext': ANY_STR,
         },
     }
 
@@ -180,7 +165,10 @@ async def assert_cookie_filter(websocket, context_id, cookie_filter,
             'method': 'storage.getCookies',
             'params': {
                 'filter': cookie_filter,
-                'partition': context_id
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
             }
         })
     assert resp == {'cookies': [expected_cookie], 'partitionKey': ANY_DICT}
