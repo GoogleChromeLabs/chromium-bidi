@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {ErrorResponse} from './webdriver-bidi.js';
-import {ErrorCode} from './webdriver-bidi.js';
+import type {ErrorResponse} from './cddl/webdriver-bidi.js';
+import {ErrorCode} from './cddl/webdriver-bidi.js';
 
 export class Exception {
   constructor(
