@@ -26,9 +26,9 @@ import {IdWrapper} from '../../../utils/IdWrapper.js';
 import type {Result} from '../../../utils/result.js';
 import {OutgoingMessage} from '../../OutgoingMessage.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import {SubscriptionManager} from './SubscriptionManager.js';
 
 import {assertSupportedEvent} from './events.js';
-import {SubscriptionManager} from './SubscriptionManager.js';
 
 class EventWrapper {
   readonly #idWrapper = new IdWrapper();
