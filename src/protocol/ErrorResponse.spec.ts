@@ -16,8 +16,8 @@
  */
 import {expect} from 'chai';
 
-import {ErrorCode} from './cddl/webdriver-bidi.js';
 import * as exceptionClasses from './ErrorResponse.js';
+import {ErrorCode} from './generated/webdriver-bidi.js';
 
 describe('Exception', () => {
   const errors: {

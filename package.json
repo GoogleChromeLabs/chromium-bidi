@@ -35,8 +35,8 @@
     "bidi-types": {
       "command": "tools/generate-bidi-types.mjs",
       "output": [
-        "src/protocol/cddl/webdriver-bidi.ts",
-        "src/protocol-parser/cddl/webdriver-bidi.ts"
+        "src/protocol/generated/webdriver-bidi.ts",
+        "src/protocol-parser/generated/webdriver-bidi.ts"
       ]
     },
     "build": {

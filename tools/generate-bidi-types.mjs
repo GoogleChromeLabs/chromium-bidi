@@ -34,8 +34,8 @@ if (!process.argv.slice(2)[0]) {
 const ROOT_DIR = packageDirectorySync();
 process.chdir(ROOT_DIR);
 
-const TYPES_FILE = 'src/protocol/cddl/webdriver-bidi.ts';
-const ZOD_FILE = 'src/protocol-parser/cddl/webdriver-bidi.ts';
+const TYPES_FILE = 'src/protocol/generated/webdriver-bidi.ts';
+const ZOD_FILE = 'src/protocol-parser/generated/webdriver-bidi.ts';
 const FILE_HEADER = `
 /**
  * Copyright 2024 Google LLC.

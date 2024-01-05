@@ -10,5 +10,5 @@ logs/
 node_modules/
 wptreport*.json
 ./wpt/
-/src/protocol/cddl/
-/src/protocol-parser/cddl/
+/src/protocol/generated/
+/src/protocol-parser/generated/
