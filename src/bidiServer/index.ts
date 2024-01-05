@@ -14,63 +14,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {parseArgs} from 'node:util';
 
 import {ChromeReleaseChannel} from '@puppeteer/browsers';
-import {ArgumentParser} from 'argparse';
 
 import {debugInfo, WebSocketServer} from './WebSocketServer.js';
 
-function parseArguments(): {
-  channel: ChromeReleaseChannel;
-  headless: string;
-  port: number;
-  verbose: boolean;
-} {
-  const parser = new ArgumentParser({
-    add_help: true,
-    exit_on_error: true,
+function parseArguments() {
+  const {values} = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      channel: {
+        type: 'string',
+        short: 'c',
+        default: ChromeReleaseChannel.DEV,
+      },
+      headful: {
+        type: 'boolean',
+        default: false,
+      },
+      port: {
+        type: 'string',
+        short: 'p',
+        default: process.env['PORT'] ?? '8080',
+      },
+      verbose: {
+        type: 'boolean',
+        short: 'v',
+        default: process.env['VERBOSE'] === 'true',
+      },
+      help: {
+        type: 'boolean',
+        short: 'h',
+        default: false,
+      },
+    },
   });
 
-  parser.add_argument('-c', '--channel', {
-    help:
-      'If set, the given installed Chrome Release Channel will be used ' +
-      'instead of one pointed by Puppeteer version',
-    choices: Object.values(ChromeReleaseChannel),
-    default: ChromeReleaseChannel.DEV,
-  });
-
-  parser.add_argument('--headless', {
-    help: 'Sets if browser should run in headless or headful mode. Default is true.',
-    default: true,
-  });
-
-  parser.add_argument('-p', '--port', {
-    help: 'Port that BiDi server should listen to. Default is 8080.',
-    type: 'int',
-    default: process.env['PORT'] ?? 8080,
-  });
-
-  parser.add_argument('-v', '--verbose', {
-    help: 'If present, the Mapper debug log, including CDP commands and events will be logged into the server output.',
-    action: 'store_true',
-    default: process.env['VERBOSE'] === 'true' || false,
-  });
-
-  return parser.parse_known_args()[0];
+  return values;
 }
 
-(() => {
-  try {
-    const args = parseArguments();
-    const {channel, port} = args;
-    const headless = args.headless !== 'false';
-    const verbose = args.verbose === true;
-
-    debugInfo('Launching BiDi server...');
-
-    WebSocketServer.run(port, channel, headless, verbose);
-    debugInfo('BiDi server launched');
-  } catch (e) {
-    debugInfo('Error launching BiDi server', e);
+function isChromeReleaseChannel(
+  channel: string | undefined
+): asserts channel is ChromeReleaseChannel {
+  if (
+    channel === undefined ||
+    !Object.values(ChromeReleaseChannel).includes(
+      channel as ChromeReleaseChannel
+    )
+  ) {
+    throw new Error(`Invalid channel: ${channel}`);
   }
-})();
+}
+
+try {
+  const {port, channel, headful, verbose = true} = parseArguments();
+  debugInfo('Launching BiDi server...');
+  isChromeReleaseChannel(channel);
+
+  WebSocketServer.run(Number(port), channel, !headful, verbose);
+  debugInfo('BiDi server launched');
+} catch (e) {
+  debugInfo('Error launching BiDi server', e);
+}

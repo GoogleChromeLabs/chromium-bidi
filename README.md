@@ -184,10 +184,10 @@ Use the `DEBUG_DEPTH` (default: `10`) environment variable to see debug deeply n
 DEBUG_DEPTH=100 DEBUG=* npm run server
 ```
 
-Use the CLI argument `--headless=false` to run browser in headful mode:
+Use the CLI argument `--headful` to run browser in headful mode:
 
 ```sh
-npm run server -- --headless=false
+npm run server -- --headful
 ```
 
 Use the `CHANNEL=...` environment variable or `--channel=...` argument with one of
@@ -221,7 +221,7 @@ You can also run the server by using `npm run server`. It will write
 output to the file `log.txt`:
 
 ```sh
-npm run server -- --port=8081 --headless=false
+npm run server -- --port=8081 --headful
 ```
 
 ### Running with in other project
