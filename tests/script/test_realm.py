@@ -16,7 +16,8 @@
 import pytest
 from anys import ANY_STR
 from test_helpers import (execute_command, read_JSON_message,
-                          send_JSON_command, subscribe, wait_for_event)
+                          send_JSON_command, subscribe, wait_for_event,
+                          wait_for_filtered_event)
 
 
 @pytest.mark.asyncio
@@ -166,37 +167,37 @@ async def test_realm_dedicated_worker(websocket, context_id, html):
             }
         })
 
-    # Get realm created events for window and worker realms regardless of their
-    # order.
-    [worker_realm_created_event,
-     window_realm_created_event] = sorted([
-         await wait_for_event(websocket, "script.realmCreated"), await
-         wait_for_event(websocket, "script.realmCreated")
-     ],
-                                          key=lambda x: x["params"]["type"])
+    # Get worker realm created event.
+    worker_realm_created_event = await wait_for_filtered_event(
+        websocket, lambda e: e['params']['type'] == 'dedicated-worker')
 
-    assert worker_realm_created_event["params"] == {
-        "realm": ANY_STR,
-        "origin": worker_url,
-        "owners": [],
-        "type": "dedicated-worker"
+    # Assert the event.
+    assert worker_realm_created_event == {
+        'type': 'event',
+        'method': 'script.realmCreated',
+        'params': {
+            'realm': ANY_STR,
+            'origin': worker_url,
+            'owners': [],
+            'type': 'dedicated-worker'
+        }
     }
 
-    worker_realm = worker_realm_created_event["params"]["realm"]
+    worker_realm = worker_realm_created_event['params']['realm']
 
     # Then demolish it!
     await send_JSON_command(
         websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "target": {
-                    "context": context_id
+            'method': 'script.evaluate',
+            'params': {
+                'target': {
+                    'context': context_id
                 },
-                "expression": "window.w.terminate()",
-                "awaitPromise": True
+                'expression': 'window.w.terminate()',
+                'awaitPromise': True
             }
         })
 
     # Wait for confirmation that worker was destroyed
-    event = await wait_for_event(websocket, "script.realmDestroyed")
-    assert event["params"]["realm"] == worker_realm
+    event = await wait_for_event(websocket, 'script.realmDestroyed')
+    assert event['params'] == {'realm': worker_realm}
