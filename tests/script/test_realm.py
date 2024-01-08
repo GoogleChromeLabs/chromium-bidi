@@ -167,9 +167,10 @@ async def test_realm_dedicated_worker(websocket, context_id, html):
             }
         })
 
-    # Get worker realm created event.
+    # Wait for worker to be created.
     worker_realm_created_event = await wait_for_filtered_event(
-        websocket, lambda e: e['params']['type'] == 'dedicated-worker')
+        websocket, lambda e: e['method'] == 'script.realmCreated' and e[
+            'params']['type'] == 'dedicated-worker')
 
     # Assert the event.
     assert worker_realm_created_event == {
