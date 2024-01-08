@@ -36,7 +36,7 @@ const {values: argv} = parseArgs({
   options: {
     headful: {
       type: 'boolean',
-      default: process.env.HEADLESS !== 'true',
+      default: false,
     },
     help: {
       type: 'boolean',
@@ -78,19 +78,20 @@ log(`Starting BiDi Server with DEBUG='${env.DEBUG}'...`);
 
 mkdirSync(env.LOG_DIR, {recursive: true});
 
-const subprocess = spawn(
-  'node',
-  [
-    resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
-    `--channel`,
-    CHANNEL,
-    argv.headful ? `--headful` : '',
-  ],
-  {
-    stdio: ['inherit', 'pipe', 'pipe'],
-    env,
-  }
-);
+const spawnArgs = [
+  resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
+  `--channel`,
+  CHANNEL,
+];
+
+if (argv.headful && process.env.HEADLESS !== 'true') {
+  spawnArgs.push('--headful');
+}
+
+const subprocess = spawn('node', spawnArgs, {
+  stdio: ['inherit', 'pipe', 'pipe'],
+  env,
+});
 
 if (subprocess.stderr) {
   subprocess.stderr.pipe(process.stdout);
