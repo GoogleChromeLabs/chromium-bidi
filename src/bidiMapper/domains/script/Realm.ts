@@ -29,7 +29,7 @@ import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
-import type {EventManager} from '../events/EventManager.js';
+import type {EventManager} from '../session/EventManager.js';
 
 import {ChannelProxy} from './ChannelProxy.js';
 import type {RealmStorage} from './RealmStorage.js';
@@ -285,6 +285,9 @@ export class Realm {
         };
       default:
         return {
+          // TODO: add proper owners.
+          //  https://github.com/GoogleChromeLabs/chromium-bidi/issues/1667
+          owners: [] as any as [Script.Realm],
           realm: this.realmId,
           origin: this.origin,
           type: this.type,
