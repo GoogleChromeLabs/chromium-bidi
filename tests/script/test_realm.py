@@ -51,7 +51,6 @@ async def test_realm_realmCreated(websocket, context_id, html):
 
 @pytest.mark.asyncio
 async def test_realm_realmCreated_sandbox(websocket, context_id):
-
     await subscribe(websocket, ["script.realmCreated"])
 
     await send_JSON_command(
@@ -84,7 +83,6 @@ async def test_realm_realmCreated_sandbox(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_realm_realmDestroyed(websocket, context_id):
-
     await subscribe(websocket, ["script.realmDestroyed"])
 
     await send_JSON_command(websocket, {
@@ -107,7 +105,6 @@ async def test_realm_realmDestroyed(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_realm_realmDestroyed_sandbox(websocket, context_id):
-
     await subscribe(websocket, ["script.realmDestroyed"])
 
     await execute_command(
@@ -169,16 +166,23 @@ async def test_realm_dedicated_worker(websocket, context_id, html):
             }
         })
 
-    # Wait for worker to be created
-    while True:
-        message = await wait_for_event(websocket, "script.realmCreated")
-        if message["params"] == {
-                "realm": ANY_STR,
-                "origin": worker_url,
-                "type": "dedicated-worker"
-        }:
-            realm = message["params"]["realm"]
-            break
+    # Get realm created events for window and worker realms regardless of their
+    # order.
+    [worker_realm_created_event,
+     window_realm_created_event] = sorted([
+         await wait_for_event(websocket, "script.realmCreated"), await
+         wait_for_event(websocket, "script.realmCreated")
+     ],
+                                          key=lambda x: x["params"]["type"])
+
+    assert worker_realm_created_event["params"] == {
+        "realm": ANY_STR,
+        "origin": worker_url,
+        "owners": [],
+        "type": "dedicated-worker"
+    }
+
+    worker_realm = worker_realm_created_event["params"]["realm"]
 
     # Then demolish it!
     await send_JSON_command(
@@ -194,7 +198,5 @@ async def test_realm_dedicated_worker(websocket, context_id, html):
         })
 
     # Wait for confirmation that worker was destroyed
-    while True:
-        message = await wait_for_event(websocket, "script.realmDestroyed")
-        if message["params"] == {"realm": realm}:
-            break
+    event = await wait_for_event(websocket, "script.realmDestroyed")
+    assert event["params"]["realm"] == worker_realm
