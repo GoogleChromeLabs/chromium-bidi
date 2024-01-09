@@ -105,8 +105,8 @@ if (HEADLESS === 'true') {
 
 const wptBinary = resolve(join('wpt', 'wpt'));
 
-let run_status = undefined,
-  update_status = undefined;
+let run_status = undefined;
+let update_status = undefined;
 
 if (RUN_TESTS === 'true') {
   const wptRunArgs = [
