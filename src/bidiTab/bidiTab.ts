@@ -17,9 +17,9 @@
  * @license
  */
 
-import {BidiServer, OutgoingMessage} from '../bidiMapper/BidiMapper.js';
+import {BidiServer} from '../bidiMapper/BidiMapper.js';
 import type {MapperOptions} from '../bidiMapper/BidiServer';
-import {CdpConnection} from '../cdp/CdpConnection.js';
+import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
 
 import {BidiParser} from './BidiParser.js';
@@ -48,13 +48,6 @@ declare global {
 
     // Set from the server side if verbose logging is required.
     sendDebugMessage?: ((message: string) => void) | null;
-
-    /**
-     * @deprecated Use `runMapperInstance` instead. Used for backward compatibility
-     * with ChromeDriver.
-     */
-    // TODO: Remove this after https://crrev.com/c/4952609 reaches stable.
-    setSelfTargetId: (targetId: string) => void;
   }
 }
 
@@ -65,7 +58,7 @@ const cdpTransport = new WindowCdpTransport();
  * A CdpTransport implementation that uses the window.cdp bindings
  * injected by Target.exposeDevToolsProtocol.
  */
-const cdpConnection = new CdpConnection(cdpTransport, log);
+const cdpConnection = new MapperCdpConnection(cdpTransport, log);
 
 /**
  * Launches the BiDi mapper instance.
@@ -103,19 +96,4 @@ async function runMapperInstance(
  * @param options Mapper options. E.g. `acceptInsecureCerts`. */
 window.runMapperInstance = async (selfTargetId, options?: MapperOptions) => {
   await runMapperInstance(selfTargetId, options);
-};
-
-/**
- * @deprecated Use `runMapperInstance` instead. Used for backward compatibility
- * with ChromeDriver.
- */
-// TODO: Remove this after https://crrev.com/c/4952609 reaches stable.
-window.setSelfTargetId = async (selfTargetId) => {
-  const bidiServer = await runMapperInstance(selfTargetId);
-  bidiServer.emitOutgoingMessage(
-    OutgoingMessage.createResolved({
-      launched: true,
-    }),
-    'launched'
-  );
 };
