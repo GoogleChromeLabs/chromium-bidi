@@ -215,8 +215,11 @@ if (UPDATE_EXPECTATIONS === 'true') {
 // If WPT tests themselves or the expectations update failed, return failure.
 let result_status = 0;
 if ((run_status ?? 0) !== 0) {
+  log('WPT test run failed');
   result_status = run_status;
-} else if ((update_status ?? 0) !== 0) {
+}
+if ((update_status ?? 0) !== 0) {
+  log('Update expectations failed');
   result_status = update_status;
 }
 
