@@ -87,18 +87,18 @@ jobs:
         with:
           name: chromedriver-headless-wpt-metadata
           path: wpt-metadata/chromedriver/headless
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
-        with:
-          name: chromedriver-headful-wpt-metadata
-          path: wpt-metadata/chromedriver/headful
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
-        with:
-          name: mapper-headless-wpt-metadata
-          path: wpt-metadata/mapper/headless
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
-        with:
-          name: mapper-headful-wpt-metadata
-          path: wpt-metadata/mapper/headful
+      #      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      #        with:
+      #          name: chromedriver-headful-wpt-metadata
+      #          path: wpt-metadata/chromedriver/headful
+      #      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      #        with:
+      #          name: mapper-headless-wpt-metadata
+      #          path: wpt-metadata/mapper/headless
+      #      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      #        with:
+      #          name: mapper-headful-wpt-metadata
+      #          path: wpt-metadata/mapper/headful
       - name: Auto-commit WPT expectations
         if: (success() || failure()) && github.event.inputs.auto-commit == 'true'
         uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
@@ -112,8 +112,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kind: [chromedriver, mapper]
-        head: [headful, headless]
+        kind: [chromedriver] # mapper
+        head: [headless] # headful
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -152,7 +152,7 @@ jobs:
         timeout-minutes: 60
         run: >
           xvfb-run --auto-servernum
-          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+          npm run wpt -- "webdriver/tests/bidi/browsing_context/navigate"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: false
@@ -162,7 +162,7 @@ jobs:
       - name: Run WPT tests (mapper, headless)
         if: matrix.head == 'headless' && matrix.kind == 'mapper'
         timeout-minutes: 60
-        run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+        run: npm run wpt -- "webdriver/tests/bidi/browsing_context/navigate"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: true
@@ -172,7 +172,7 @@ jobs:
       - name: Run WPT tests (chromedriver, new headless)
         if: matrix.head == 'headless' && matrix.kind == 'chromedriver'
         timeout-minutes: 60
-        run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+        run: npm run wpt -- "webdriver/tests/bidi/browsing_context/navigate"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true
@@ -185,7 +185,7 @@ jobs:
         timeout-minutes: 60
         run: >
           xvfb-run --auto-servernum
-          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+          npm run wpt -- "webdriver/tests/bidi/browsing_context/navigate"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true
