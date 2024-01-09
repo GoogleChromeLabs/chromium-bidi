@@ -41,7 +41,7 @@ concurrency:
 jobs:
   wpt-report:
     name: WPT report
-    needs: wpt
+    needs: wpt-metadata
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     environment:
@@ -71,7 +71,7 @@ jobs:
         uses: actions/deploy-pages@7a9bd943aa5e5175aeb8502edcc6c1c02d398e10 # v4.0.2
   wpt-auto-commit:
     name: WPT auto-commit expectations
-    needs: wpt
+    needs: wpt-metadata
     if: ${{ always() && github.event.inputs.auto-commit == 'true' }}
     runs-on: ubuntu-latest
     # Give GITHUB_TOKEN write permission to commit and push.
@@ -160,29 +160,29 @@ jobs:
           UPDATE_EXPECTATIONS: false
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
-      - name: Update WPT expectations
-        if: success() || failure()
-        run: >
-          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
-        env:
-          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
-          HEADLESS: ${{ matrix.head!='headful' }}
-          RUN_TESTS: false
-          UPDATE_EXPECTATIONS: true
-          VERBOSE: ${{ github.event.inputs.verbose }}
-          WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
-      - name: Generate HTML test report
-        if: success() || failure()
-        run: >
-          node tools/wpt-report-builder/builder.mjs
-          out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
-          out/wptreport.html
-      - name: Upload expectations
-        if: success() || failure()
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
-        with:
-          name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
-          path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
+#      - name: Update WPT expectations
+#        if: success() || failure()
+#        run: >
+#          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+#        env:
+#          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+#          HEADLESS: ${{ matrix.head!='headful' }}
+#          RUN_TESTS: false
+#          UPDATE_EXPECTATIONS: true
+#          VERBOSE: ${{ github.event.inputs.verbose }}
+#          WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
+#      - name: Generate HTML test report
+#        if: success() || failure()
+#        run: >
+#          node tools/wpt-report-builder/builder.mjs
+#          out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
+#          out/wptreport.html
+#      - name: Upload expectations
+#        if: success() || failure()
+#        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+#        with:
+#          name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
+#          path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
         if: success() || failure()
         uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
@@ -191,3 +191,52 @@ jobs:
           path: |
             logs
             out
+  wpt-metadata:
+    name: Generate report and expectations ${{ matrix.kind }}-${{ matrix.head }}
+    needs: wpt
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    # Give GITHUB_TOKEN write permission to commit and push.
+    # Needed by stefanzweifel/git-auto-commit-action.
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+    - name: Clean up WPT metadata
+      run: rm -rf wpt-metadata/*
+    - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      with:
+        name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
+        path: out
+    - name: Update WPT expectations
+      if: success() || failure()
+      run: >
+        npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+      env:
+        CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+        HEADLESS: ${{ matrix.head!='headful' }}
+        RUN_TESTS: false
+        UPDATE_EXPECTATIONS: true
+        VERBOSE: ${{ github.event.inputs.verbose }}
+        WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
+    - name: Generate HTML test report
+      if: success() || failure()
+      run: >
+        node tools/wpt-report-builder/builder.mjs
+        out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
+        out/wptreport.html
+    - name: Upload expectations
+      if: success() || failure()
+      uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      with:
+        name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
+        path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
+    - name: Upload artifacts
+      if: success() || failure()
+      uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      with:
+        name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
+        path: |
+          logs
+          out
