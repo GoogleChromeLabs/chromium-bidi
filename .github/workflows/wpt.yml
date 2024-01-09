@@ -160,83 +160,82 @@ jobs:
           UPDATE_EXPECTATIONS: false
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
-#      - name: Update WPT expectations
-#        if: success() || failure()
-#        run: >
-#          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
-#        env:
-#          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
-#          HEADLESS: ${{ matrix.head!='headful' }}
-#          RUN_TESTS: false
-#          UPDATE_EXPECTATIONS: true
-#          VERBOSE: ${{ github.event.inputs.verbose }}
-#          WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
-#      - name: Generate HTML test report
-#        if: success() || failure()
-#        run: >
-#          node tools/wpt-report-builder/builder.mjs
-#          out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
-#          out/wptreport.html
-#      - name: Upload expectations
-#        if: success() || failure()
-#        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
-#        with:
-#          name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
-#          path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
+      - name: Upload logs
+        if: success() || failure()
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-logs
+          path: logs
+      - name: Upload report
+        if: success() || failure()
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-report
+          path: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
+  wpt-metadata:
+    name: Generate report and expectations ${{ matrix.kind }}-${{ matrix.head }}
+    needs: wpt
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [chromedriver] # mapper
+        head: [headless] # headful
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          submodules: true
+      - name: Set up Node.js
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        with:
+          node-version: lts/*
+          cache: npm
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Setup dirs
+        run: mkdir -p out
+      - name: Set up Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Set up virtualenv
+        run: pip install virtualenv
+      - name: Clean up WPT metadata
+        run: rm -rf wpt-metadata/*
+      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-report
+          path: out
+      - name: Update WPT expectations
+        if: success() || failure()
+        run: >
+          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+        env:
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          HEADLESS: ${{ matrix.head!='headful' }}
+          RUN_TESTS: false
+          UPDATE_EXPECTATIONS: true
+          VERBOSE: ${{ github.event.inputs.verbose }}
+          WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
+      - name: Generate HTML test report
+        if: success() || failure()
+        run: >
+          node tools/wpt-report-builder/builder.mjs
+          out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
+          out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.html
+      - name: Upload expectations
+        if: success() || failure()
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        with:
+          name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
+          path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
         if: success() || failure()
         uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
-          path: |
-            logs
-            out
-  wpt-metadata:
-    name: Generate report and expectations ${{ matrix.kind }}-${{ matrix.head }}
-    needs: wpt
-    if: success() || failure()
-    runs-on: ubuntu-latest
-    # Give GITHUB_TOKEN write permission to commit and push.
-    # Needed by stefanzweifel/git-auto-commit-action.
-    permissions:
-      contents: write
-    steps:
-    - name: Checkout
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-    - name: Clean up WPT metadata
-      run: rm -rf wpt-metadata/*
-    - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
-      with:
-        name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
-        path: out
-    - name: Update WPT expectations
-      if: success() || failure()
-      run: >
-        npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
-      env:
-        CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
-        HEADLESS: ${{ matrix.head!='headful' }}
-        RUN_TESTS: false
-        UPDATE_EXPECTATIONS: true
-        VERBOSE: ${{ github.event.inputs.verbose }}
-        WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
-    - name: Generate HTML test report
-      if: success() || failure()
-      run: >
-        node tools/wpt-report-builder/builder.mjs
-        out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
-        out/wptreport.html
-    - name: Upload expectations
-      if: success() || failure()
-      uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
-      with:
-        name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
-        path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
-    - name: Upload artifacts
-      if: success() || failure()
-      uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
-      with:
-        name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
-        path: |
-          logs
-          out
+          path: out
