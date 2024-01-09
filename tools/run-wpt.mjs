@@ -33,6 +33,7 @@ function log(message) {
 function usage() {
   log(
     `Usage:
+      [BROWSER_BIN=<default: download chrome>]
       [CHROMEDRIVER=<true | default: false>]
       [HEADLESS=<true | default: false>]
       [MANIFEST=<default: 'MANIFEST.json'>]

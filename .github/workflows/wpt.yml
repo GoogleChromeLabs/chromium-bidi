@@ -147,57 +147,35 @@ jobs:
       - name: Install pinned browser
         id: browser
         run: node tools/install-browser.mjs --github
-      - name: Run WPT tests (mapper, headful)
-        if: matrix.head == 'headful' && matrix.kind == 'mapper'
+      - name: Run WPT tests
+        if: success()
         timeout-minutes: 60
         run: >
           xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          HEADLESS: false
-          UPDATE_EXPECTATIONS: true
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          HEADLESS: ${{ matrix.head!='headful' }}
+          UPDATE_EXPECTATIONS: false
           VERBOSE: ${{ github.event.inputs.verbose }}
-          WPT_REPORT: out/wptreport.json
-      - name: Run WPT tests (mapper, headless)
-        if: matrix.head == 'headless' && matrix.kind == 'mapper'
-        timeout-minutes: 60
-        run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
-        env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          HEADLESS: true
-          UPDATE_EXPECTATIONS: true
-          VERBOSE: ${{ github.event.inputs.verbose }}
-          WPT_REPORT: out/wptreport.json
-      - name: Run WPT tests (chromedriver, new headless)
-        if: matrix.head == 'headless' && matrix.kind == 'chromedriver'
-        timeout-minutes: 60
-        run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
-        env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          CHROMEDRIVER: true
-          UPDATE_EXPECTATIONS: true
-          VERBOSE: ${{ github.event.inputs.verbose }}
-          WPT_REPORT: out/wptreport.json
-          HEADLESS: true
-      - name: Run WPT tests (chromedriver, headful)
-        if: matrix.head == 'headful' && matrix.kind == 'chromedriver'
-        timeout-minutes: 60
+          WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
+      - name: Update WPT expectations
+        if: success() || failure()
         run: >
-          xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          CHROMEDRIVER: true
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          HEADLESS: ${{ matrix.head!='headful' }}
+          RUN_TESTS: false
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
-          WPT_REPORT: out/wptreport.json
-          HEADLESS: false
+          WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
       - name: Generate HTML test report
         if: success() || failure()
         run: >
           node tools/wpt-report-builder/builder.mjs
-          out/wptreport.json
+          out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
           out/wptreport.html
       - name: Upload expectations
         if: success() || failure()
