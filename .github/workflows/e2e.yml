@@ -29,6 +29,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  e2e-required:
+    name: '[Required] e2e sink'
+    needs: [e2e]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - if: ${{ needs.e2e.result != 'success' }}
+        run: 'exit 1'
+      - run: 'exit 0'
   e2e:
     strategy:
       fail-fast: false
@@ -84,7 +93,7 @@ jobs:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Upload artifacts
-        if: success() || failure()
+        if: always()
         uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         with:
           name: ${{ matrix.os }}-${{ matrix.head }}-artifacts

@@ -38,7 +38,7 @@ jobs:
     name: '[Required] WPT sink'
     needs: [wpt]
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: always()
     steps:
       - if: ${{ needs.wpt.result != 'success' }}
         run: 'exit 1'
