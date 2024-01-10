@@ -18,6 +18,6 @@ wptreport*.json
 # Prettier Specific
 CHANGELOG.md
 coverage/
-
+examples/*.html
 !.vscode/extensions.json
 !.vscode/*.template.json
