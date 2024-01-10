@@ -9,6 +9,6 @@ lib
 logs/
 node_modules/
 wptreport*.json
-./wpt/
+/wpt/
 /src/protocol/generated/
 /src/protocol-parser/generated/
