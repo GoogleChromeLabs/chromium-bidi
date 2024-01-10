@@ -179,13 +179,16 @@ function runWptTest(
 
   if (HEADLESS === 'true') {
     log('Running WPT in headless mode...');
-    wptRunArgs.push('--binary-arg=--headless=new');
   } else {
     log('Running WPT in headful mode...');
   }
 
   if (CHROMEDRIVER === 'true') {
     log('Using chromedriver with mapper...');
+
+    if (HEADLESS === 'true') {
+      wptRunArgs.push('--binary-arg=--headless=new');
+    }
 
     wptRunArgs.push(
       '--install-webdriver',
