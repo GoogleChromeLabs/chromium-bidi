@@ -55,17 +55,17 @@ function runWpt(options) {
   });
 }
 
-runWpt({
-  CHROMEDRIVER: true,
-  HEADLESS: false,
-});
-runWpt({
-  CHROMEDRIVER: true,
-  HEADLESS: true,
-});
-runWpt({
-  HEADLESS: false,
-});
+// runWpt({
+//   CHROMEDRIVER: true,
+//   HEADLESS: false,
+// });
+// runWpt({
+//   CHROMEDRIVER: true,
+//   HEADLESS: true,
+// });
+// runWpt({
+//   HEADLESS: false,
+// });
 runWpt({
   HEADLESS: true,
 });

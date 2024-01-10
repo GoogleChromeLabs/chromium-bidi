@@ -51,7 +51,8 @@ function usage() {
 }
 
 function parseCommandLine() {
-  const {values} = parseArgs({
+  const args = parseArgs({
+    allowPositionals: true,
     options: {
       help: {
         type: 'boolean',
@@ -61,12 +62,12 @@ function parseCommandLine() {
     },
   });
 
-  if (values.help) {
+  if (args.values.help) {
     usage();
     process.exit(0);
   }
 
-  return values;
+  return args;
 }
 
 function parseEnvVariables() {
@@ -115,20 +116,23 @@ function parseEnvVariables() {
   };
 }
 
-function runWptTest({
-  BROWSER_BIN,
-  CHROMEDRIVER,
-  HEADLESS,
-  MANIFEST,
-  PRODUCT,
-  RUN_TESTS,
-  THIS_CHUNK,
-  TIMEOUT_MULTIPLIER,
-  TOTAL_CHUNKS,
-  VERBOSE,
-  WPT_METADATA,
-  WPT_REPORT,
-}) {
+function runWptTest(
+  {
+    BROWSER_BIN,
+    CHROMEDRIVER,
+    HEADLESS,
+    MANIFEST,
+    PRODUCT,
+    RUN_TESTS,
+    THIS_CHUNK,
+    TIMEOUT_MULTIPLIER,
+    TOTAL_CHUNKS,
+    VERBOSE,
+    WPT_METADATA,
+    WPT_REPORT,
+  },
+  args
+) {
   if (RUN_TESTS !== 'true') {
     return 0;
   }
@@ -195,9 +199,7 @@ function runWptTest({
     wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
   }
 
-  const restArgs = process.argv.slice(2);
-  let test =
-    restArgs[restArgs.length - 1] ?? join('webdriver', 'tests', 'bidi');
+  let test = args[0] ?? join('webdriver', 'tests', 'bidi');
 
   // Canonicalize the test path.
   test = test
@@ -211,7 +213,7 @@ function runWptTest({
 
   wptRunArgs.push(
     // All arguments except the first one (the command) and the last one (the test) are the flags.
-    ...process.argv.slice(2, process.argv.length - 1),
+    ...args,
     PRODUCT,
     // The last argument is the test.
     test
@@ -258,9 +260,9 @@ function runUpdateExpectations({
   return updateProcess.status ?? 0;
 }
 
-parseCommandLine();
+const args = parseCommandLine();
 const env = parseEnvVariables();
-const wptStatus = runWptTest(env);
+const wptStatus = runWptTest(env, args.positionals);
 const expectationsStatus = runUpdateExpectations(env);
 
 // If WPT tests themselves or the expectations update failed, return failure.
