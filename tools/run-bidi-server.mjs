@@ -49,7 +49,6 @@ const {values: argv} = parseArgs({
 let BROWSER_BIN = process.env.BROWSER_BIN;
 let CHANNEL = process.env.CHANNEL || 'local';
 if (CHANNEL === 'local') {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   BROWSER_BIN = spawnSync('node', [join('tools', 'install-browser.mjs')])
     .stdout.toString()
     .trim();
@@ -63,7 +62,6 @@ const env = {
   DEBUG_COLORS: 'false',
   DEBUG_DEPTH: '10',
   LOG_DIR: 'logs',
-
   NODE_OPTIONS: '--unhandled-rejections=strict',
   PORT: '8080',
   BROWSER_BIN,
@@ -73,8 +71,6 @@ env.LOG_FILE = join(
   env.LOG_DIR,
   `${new Date().toISOString().replace(/[:]/g, '-')}.log`
 );
-
-log(`Starting BiDi Server with DEBUG='${env.DEBUG}'...`);
 
 mkdirSync(env.LOG_DIR, {recursive: true});
 
@@ -88,6 +84,7 @@ if (argv.headful && process.env.HEADLESS !== 'true') {
   spawnArgs.push('--headful');
 }
 
+log(`Starting BiDi Server with DEBUG='${env.DEBUG}'...`);
 const subprocess = spawn('node', spawnArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
   env,
@@ -104,5 +101,5 @@ if (subprocess.stdout) {
 }
 
 subprocess.on('exit', (status) => {
-  process.exit(status || 0);
+  process.exit(status ?? 0);
 });
