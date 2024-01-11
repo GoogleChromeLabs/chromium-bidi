@@ -157,8 +157,6 @@ async def test_cookie_set_expired(websocket, context_id, example_url):
                 }
             }
         })
-    # secure=True,
-    #       path="/", http_only=False, same_site='none', expiry=-1
     assert resp == {
         'cookies': [],
         'partitionKey': {
