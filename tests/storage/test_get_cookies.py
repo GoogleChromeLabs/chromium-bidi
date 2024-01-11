@@ -96,7 +96,6 @@ async def test_cookies_get_with_unsupported_partition_key(
     assert res == {
         'cookies': [cookie],
         'partitionKey': {
-            f'{unknown_partition_key}': unknown_partition_value,
             'sourceOrigin': origin,
             'userContext': ANY_STR,
         },
