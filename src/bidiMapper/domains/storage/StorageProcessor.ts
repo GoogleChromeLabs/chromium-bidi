@@ -130,7 +130,7 @@ export class StorageProcessor {
     };
   }
 
-  #extendStoragePartitionSpecByBrowsingContext(
+  #expandStoragePartitionSpecByBrowsingContext(
     descriptor: Storage.BrowsingContextPartitionDescriptor
   ): Storage.PartitionKey {
     const browsingContextId: string = descriptor.context;
@@ -143,17 +143,13 @@ export class StorageProcessor {
 
     return {
       sourceOrigin,
-      // TODO: get proper user context.
-      userContext: 'NOT_IMPLEMENTED',
     };
   }
 
-  #extendStoragePartitionSpecByStorageKey(
+  #expandStoragePartitionSpecByStorageKey(
     descriptor: Storage.StorageKeyPartitionDescriptor
   ): Storage.PartitionKey {
     let sourceOrigin: string | undefined = undefined;
-    // TODO: get proper user context.
-    const userContext = 'NOT_IMPLEMENTED';
 
     if (descriptor.sourceOrigin !== undefined) {
       sourceOrigin = descriptor.sourceOrigin;
@@ -173,7 +169,7 @@ export class StorageProcessor {
       if (
         key !== undefined &&
         value !== undefined &&
-        !['type', 'userContext', 'sourceOrigin'].includes(key)
+        !['type', 'sourceOrigin'].includes(key)
       ) {
         unsupportedPartitionKeys.set(key, value);
       }
@@ -190,7 +186,6 @@ export class StorageProcessor {
 
     return {
       sourceOrigin,
-      userContext,
     };
   }
 
@@ -203,10 +198,10 @@ export class StorageProcessor {
       );
     }
     if (partitionSpec.type === 'context') {
-      return this.#extendStoragePartitionSpecByBrowsingContext(partitionSpec);
+      return this.#expandStoragePartitionSpecByBrowsingContext(partitionSpec);
     }
     assert(partitionSpec.type === 'storageKey', 'Unknown partition type');
-    return this.#extendStoragePartitionSpecByStorageKey(partitionSpec);
+    return this.#expandStoragePartitionSpecByStorageKey(partitionSpec);
   }
 
   #cdpToBiDiCookie(cookie: Protocol.Network.Cookie): Network.Cookie {

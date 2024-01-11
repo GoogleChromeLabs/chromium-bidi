@@ -16,7 +16,6 @@
 from datetime import datetime, timedelta
 
 import pytest
-from anys import ANY_STR
 from storage import get_bidi_cookie, get_hostname_and_origin
 from test_helpers import execute_command, goto_url
 
@@ -70,7 +69,6 @@ async def test_cookie_set_with_required_fields(websocket, context_id,
         ],
         'partitionKey': {
             'sourceOrigin': expected_origin,
-            'userContext': ANY_STR,
         }
     }
 
@@ -125,7 +123,6 @@ async def test_cookie_set_with_all_fields(websocket, context_id, example_url):
         ],
         'partitionKey': {
             'sourceOrigin': expected_origin,
-            'userContext': ANY_STR,
         }
     }
 
@@ -166,6 +163,5 @@ async def test_cookie_set_expired(websocket, context_id, example_url):
         'cookies': [],
         'partitionKey': {
             'sourceOrigin': expected_origin,
-            'userContext': ANY_STR,
         }
     }

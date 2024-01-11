@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 import pytest
-from anys import ANY_DICT, ANY_STR
+from anys import ANY_DICT
 from storage import get_bidi_cookie, get_hostname_and_origin, set_cookie
 from test_helpers import execute_command, goto_url
 
@@ -55,7 +55,6 @@ async def test_cookies_get_with_partition_source_origin(
                 'partition': {
                     'type': 'storageKey',
                     'sourceOrigin': origin,
-                    'userContext': 'IGNORED_VALUE',
                 },
             }
         })
@@ -64,7 +63,6 @@ async def test_cookies_get_with_partition_source_origin(
         'cookies': [cookie],
         'partitionKey': {
             'sourceOrigin': origin,
-            'userContext': ANY_STR,
         },
     }
 
@@ -88,7 +86,6 @@ async def test_cookies_get_with_unsupported_partition_key(
                     'type': 'storageKey',
                     f'{unknown_partition_key}': unknown_partition_value,
                     'sourceOrigin': origin,
-                    'userContext': 'IGNORED_VALUE',
                 },
             }
         })
@@ -97,7 +94,6 @@ async def test_cookies_get_with_unsupported_partition_key(
         'cookies': [cookie],
         'partitionKey': {
             'sourceOrigin': origin,
-            'userContext': ANY_STR,
         },
     }
 
@@ -126,7 +122,6 @@ async def test_cookies_get_with_partition_browsing_context(
         'cookies': [cookie],
         'partitionKey': {
             'sourceOrigin': origin,
-            'userContext': ANY_STR,
         },
     }
 
