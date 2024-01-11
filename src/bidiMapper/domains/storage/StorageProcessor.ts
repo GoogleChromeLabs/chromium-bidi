@@ -62,7 +62,6 @@ export class StorageProcessor {
     const filteredBiDiCookies = cdpResponse.cookies
       .filter(
         // CDP's partition key is the source origin.
-        // TODO: check if this logic is correct.
         (c) =>
           c.partitionKey === undefined ||
           c.partitionKey === partitionKey.sourceOrigin
