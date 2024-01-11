@@ -68,7 +68,7 @@ export class StorageProcessor {
           c.partitionKey === partitionKey.sourceOrigin
       )
       .map((c) => this.#cdpToBiDiCookie(c))
-      .filter((c) => this.#match(c, params.filter));
+      .filter((c) => this.#matchCookie(c, params.filter));
 
     return {
       cookies: filteredBiDiCookies,
@@ -255,19 +255,20 @@ export class StorageProcessor {
         return 'Lax';
       case Network.SameSite.None:
         return 'None';
-      default:
-        throw new InvalidArgumentException(
-          `Unknown 'sameSite' value ${sameSite}`
-        );
     }
+    // Intentionally kept outside the switch statement to ensure that
+    // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if the
+    // Network.SameSite is extended.
+    throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
   }
 
-  #match(cookie: Network.Cookie, filter?: Storage.CookieFilter): boolean {
+  #matchCookie(cookie: Network.Cookie, filter?: Storage.CookieFilter): boolean {
     if (filter === undefined) {
       return true;
     }
     // TODO: add filter by domain.
     return (
+      (filter.domain === undefined || filter.domain === cookie.domain) &&
       (filter.name === undefined || filter.name === cookie.name) &&
       // `value` contains fields `type` and `value`.
       (filter.value === undefined ||
