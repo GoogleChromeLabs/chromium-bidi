@@ -127,6 +127,30 @@ async def test_cookies_get_with_partition_browsing_context(
 
 
 @pytest.mark.asyncio
+async def test_cookies_get_with_partition_browsing_context_about_blank(
+        websocket, context_id):
+    await goto_url(websocket, context_id, 'about:blank')
+
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
+            }
+        })
+
+    assert resp == {
+        'cookies': [],
+        'partitionKey': {
+            'sourceOrigin': 'null',
+        },
+    }
+
+
+@pytest.mark.asyncio
 async def test_cookies_get_with_filter(websocket, context_id, example_url,
                                        another_example_url):
     await goto_url(websocket, context_id, example_url)
