@@ -265,7 +265,6 @@ export class StorageProcessor {
     if (filter === undefined) {
       return true;
     }
-    // TODO: add filter by domain.
     return (
       (filter.domain === undefined || filter.domain === cookie.domain) &&
       (filter.name === undefined || filter.name === cookie.name) &&
