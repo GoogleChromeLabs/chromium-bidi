@@ -238,9 +238,10 @@ export class StorageProcessor {
       case 'None':
         return Network.SameSite.None;
       case 'Lax':
-      // Defaults to `Lax`:
-      // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
+        return Network.SameSite.Lax;
       default:
+        // Defaults to `Lax`:
+        // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
         return Network.SameSite.Lax;
     }
   }
