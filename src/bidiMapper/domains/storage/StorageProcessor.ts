@@ -136,12 +136,8 @@ export class StorageProcessor {
     const browsingContext =
       this.#browsingContextStorage.getContext(browsingContextId);
     const url = NetworkProcessor.parseUrlString(browsingContext?.url ?? '');
-    // Cookie origin should not contain the port.
-    // TODO: check if this logic is correct.
-    const sourceOrigin = `${url.protocol}//${url.hostname}`;
-
     return {
-      sourceOrigin,
+      sourceOrigin: url.origin,
     };
   }
 
