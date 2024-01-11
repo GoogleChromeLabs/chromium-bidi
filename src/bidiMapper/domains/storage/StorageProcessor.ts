@@ -52,7 +52,7 @@ export class StorageProcessor {
   async getCookies(
     params: Storage.GetCookiesParameters
   ): Promise<Storage.GetCookiesResult> {
-    const partitionKey = this.#extendStoragePartitionSpec(params.partition);
+    const partitionKey = this.#expandStoragePartitionSpec(params.partition);
 
     const cdpResponse = await this.#browserCdpClient.sendCommand(
       'Storage.getCookies',
@@ -79,7 +79,7 @@ export class StorageProcessor {
   async setCookie(
     params: Storage.SetCookieParameters
   ): Promise<Storage.SetCookieResult> {
-    const partitionKey = this.#extendStoragePartitionSpec(params.partition);
+    const partitionKey = this.#expandStoragePartitionSpec(params.partition);
 
     if (params.cookie.value.type !== 'string') {
       // TODO: add support for other types.
@@ -194,7 +194,7 @@ export class StorageProcessor {
     };
   }
 
-  #extendStoragePartitionSpec(
+  #expandStoragePartitionSpec(
     partitionSpec: Storage.PartitionDescriptor | undefined
   ): Storage.PartitionKey {
     if (partitionSpec === undefined) {
