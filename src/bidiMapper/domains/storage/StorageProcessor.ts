@@ -109,12 +109,15 @@ export class StorageProcessor {
                 params.cookie.sameSite
               ),
             }),
-            // Note: the following fields supported by CDP are not set:
-            // url
-            // priority
-            // sameParty
-            // sourceScheme
-            // sourcePort
+            // TODO: extend with CDP-specific properties with `goog:` prefix.
+            //  https://github.com/w3c/webdriver-bidi/pull/637
+            //  * session: boolean;
+            //  * priority: CookiePriority;
+            //  * sameParty: boolean;
+            //  * sourceScheme: CookieSourceScheme;
+            //  * sourcePort: integer;
+            //  * partitionKey?: string;
+            //  * partitionKeyOpaque?: boolean;
           },
         ],
       });
@@ -220,6 +223,15 @@ export class StorageProcessor {
           ? Network.SameSite.None
           : StorageProcessor.#sameSiteCdpToBiDi(cookie.sameSite),
       ...(cookie.expires >= 0 ? {expiry: cookie.expires} : undefined),
+      // TODO: extend with CDP-specific properties with `goog:` prefix.
+      //  https://github.com/w3c/webdriver-bidi/pull/637
+      //  * session: boolean;
+      //  * priority: CookiePriority;
+      //  * sameParty: boolean;
+      //  * sourceScheme: CookieSourceScheme;
+      //  * sourcePort: integer;
+      //  * partitionKey?: string;
+      //  * partitionKeyOpaque?: boolean;
     };
   }
 
