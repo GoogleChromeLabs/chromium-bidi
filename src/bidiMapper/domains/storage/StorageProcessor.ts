@@ -230,18 +230,19 @@ export class StorageProcessor {
     };
   }
 
-  // TODO: check what to return is the `sameSite` is not set.
   static #sameSiteCdpToBiDi(
     sameSite: Protocol.Network.CookieSameSite
   ): Network.SameSite {
     switch (sameSite) {
       case 'Strict':
         return Network.SameSite.Strict;
-      case 'Lax':
-        return Network.SameSite.Lax;
       case 'None':
-      default:
         return Network.SameSite.None;
+      case 'Lax':
+      // Defaults to `Lax`:
+      // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
+      default:
+        return Network.SameSite.Lax;
     }
   }
 
@@ -256,9 +257,6 @@ export class StorageProcessor {
       case Network.SameSite.None:
         return 'None';
     }
-    // Intentionally kept outside the switch statement to ensure that
-    // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if the
-    // Network.SameSite is extended.
     throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
   }
 
