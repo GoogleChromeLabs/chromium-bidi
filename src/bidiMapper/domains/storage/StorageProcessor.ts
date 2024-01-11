@@ -81,7 +81,7 @@ export class StorageProcessor {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
 
     if (params.cookie.value.type !== 'string') {
-      // TODO: add support for other types.
+      // CDP supports only string values in cookies.
       throw new UnsupportedOperationException(
         'Only string cookie values are supported'
       );
@@ -108,7 +108,7 @@ export class StorageProcessor {
                 params.cookie.sameSite
               ),
             }),
-            // TODO: extend with CDP-specific properties with `goog:` prefix.
+            // TODO: extend with CDP-specific properties with `goog:` prefix after
             //  https://github.com/w3c/webdriver-bidi/pull/637
             //  * session: boolean;
             //  * priority: CookiePriority;
@@ -217,7 +217,7 @@ export class StorageProcessor {
           ? Network.SameSite.None
           : StorageProcessor.#sameSiteCdpToBiDi(cookie.sameSite),
       ...(cookie.expires >= 0 ? {expiry: cookie.expires} : undefined),
-      // TODO: extend with CDP-specific properties with `goog:` prefix.
+      // TODO: extend with CDP-specific properties with `goog:` prefix after
       //  https://github.com/w3c/webdriver-bidi/pull/637
       //  * session: boolean;
       //  * priority: CookiePriority;

@@ -127,17 +127,23 @@ async def test_cookies_get_with_partition_browsing_context(
 
 
 @pytest.mark.asyncio
-async def test_cookies_get_with_filter(websocket, context_id, example_url):
+async def test_cookies_get_with_filter(websocket, context_id, example_url,
+                                       another_example_url):
     await goto_url(websocket, context_id, example_url)
 
-    hostname, origin = get_hostname_and_origin(example_url)
-    some_cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE,
-                                  hostname)
+    domain, origin = get_hostname_and_origin(example_url)
+    some_cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, domain)
     await set_cookie(websocket, context_id, some_cookie)
+
+    another_domain, another_origin = get_hostname_and_origin(
+        another_example_url)
     another_cookie = get_bidi_cookie(ANOTHER_COOKIE_NAME, ANOTHER_COOKIE_VALUE,
-                                     hostname)
+                                     another_domain)
     await set_cookie(websocket, context_id, another_cookie)
 
+    # # Filter by domain.
+    await assert_cookie_filter(websocket, context_id, {'domain': domain},
+                               some_cookie)
     # # Filter by name.
     await assert_cookie_filter(websocket, context_id,
                                {'name': SOME_COOKIE_NAME}, some_cookie)
