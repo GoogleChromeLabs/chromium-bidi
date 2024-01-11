@@ -127,30 +127,23 @@ async def goto_url(
         })
 
 
-async def eval_expression(websocket,
-                          context_id: str,
-                          expression: str,
-                          await_promise=True,
-                          result_ownership="root") -> dict:
-    """Evaluates provided script in the given context."""
-    return await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": expression,
-                "target": {
-                    "context": context_id,
-                },
-                "awaitPromise": await_promise,
-                "resultOwnership": result_ownership
-            }
-        })
-
-
 async def set_html_content(websocket, context_id: str, html_content: str):
     """Sets the current page content without navigation."""
-    await eval_expression(websocket, context_id,
-                          f"document.body.innerHTML = '{html_content}'")
+    return await execute_command(
+        websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": "(html_content) => { document.body.innerHTML = html_content }",
+                "arguments": [{
+                    'type': 'string',
+                    'value': html_content
+                }],
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
 
 
 async def wait_for_event(websocket, event_method: str) -> dict:
