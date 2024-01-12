@@ -21,8 +21,8 @@ import type {Storage} from '../../../protocol/protocol.js';
 import {
   InvalidArgumentException,
   Network,
-  UnderspecifiedStoragePartitionException,
   UnableToSetCookieException,
+  UnderspecifiedStoragePartitionException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
@@ -79,46 +79,11 @@ export class StorageProcessor {
     params: Storage.SetCookieParameters
   ): Promise<Storage.SetCookieResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
-
-    if (params.cookie.value.type !== 'string') {
-      // CDP supports only string values in cookies.
-      throw new UnsupportedOperationException(
-        'Only string cookie values are supported'
-      );
-    }
-    const deserializedValue = params.cookie.value.value;
+    const cdpCookie = this.#bidiToCdpCookie(params, partitionKey);
 
     try {
       await this.#browserCdpClient.sendCommand('Storage.setCookies', {
-        cookies: [
-          {
-            name: params.cookie.name,
-            value: deserializedValue,
-            domain: params.cookie.domain,
-            path: params.cookie.path ?? '/',
-            secure: params.cookie.secure ?? false,
-            httpOnly: params.cookie.httpOnly ?? false,
-            // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
-            partitionKey: partitionKey.sourceOrigin,
-            ...(params.cookie.expiry !== undefined && {
-              expires: params.cookie.expiry,
-            }),
-            ...(params.cookie.sameSite !== undefined && {
-              sameSite: StorageProcessor.#sameSiteBiDiToCdp(
-                params.cookie.sameSite
-              ),
-            }),
-            // TODO: extend with CDP-specific properties with `goog:` prefix after
-            //  https://github.com/w3c/webdriver-bidi/pull/637
-            //  * session: boolean;
-            //  * priority: CookiePriority;
-            //  * sameParty: boolean;
-            //  * sourceScheme: CookieSourceScheme;
-            //  * sourcePort: integer;
-            //  * partitionKey?: string;
-            //  * partitionKeyOpaque?: boolean;
-          },
-        ],
+        cookies: [cdpCookie],
       });
     } catch (e: any) {
       this.#logger?.(LogType.debugError, e);
@@ -202,6 +167,44 @@ export class StorageProcessor {
     }
     assert(partitionSpec.type === 'storageKey', 'Unknown partition type');
     return this.#expandStoragePartitionSpecByStorageKey(partitionSpec);
+  }
+
+  #bidiToCdpCookie(
+    params: Storage.SetCookieParameters,
+    partitionKey: Storage.PartitionKey
+  ): Protocol.Network.CookieParam {
+    if (params.cookie.value.type !== 'string') {
+      // CDP supports only string values in cookies.
+      throw new UnsupportedOperationException(
+        'Only string cookie values are supported'
+      );
+    }
+    const deserializedValue = params.cookie.value.value;
+    return {
+      name: params.cookie.name,
+      value: deserializedValue,
+      domain: params.cookie.domain,
+      path: params.cookie.path ?? '/',
+      secure: params.cookie.secure ?? false,
+      httpOnly: params.cookie.httpOnly ?? false,
+      // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
+      partitionKey: partitionKey.sourceOrigin,
+      ...(params.cookie.expiry !== undefined && {
+        expires: params.cookie.expiry,
+      }),
+      ...(params.cookie.sameSite !== undefined && {
+        sameSite: StorageProcessor.#sameSiteBiDiToCdp(params.cookie.sameSite),
+      }),
+      // TODO: extend with CDP-specific properties with `goog:` prefix after
+      //  https://github.com/w3c/webdriver-bidi/pull/637
+      //  * session: boolean;
+      //  * priority: CookiePriority;
+      //  * sameParty: boolean;
+      //  * sourceScheme: CookieSourceScheme;
+      //  * sourcePort: integer;
+      //  * partitionKey?: string;
+      //  * partitionKeyOpaque?: boolean;
+    };
   }
 
   #cdpToBiDiCookie(cookie: Protocol.Network.Cookie): Network.Cookie {
