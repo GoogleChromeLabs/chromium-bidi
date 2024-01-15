@@ -121,6 +121,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'unable to capture screen',
     'unable to close browser',
     'unable to set cookie',
+    'unable to set file input',
     'underspecified storage partition',
     'unknown command',
     'unknown error',
@@ -2426,7 +2427,11 @@ export namespace Log {
   );
 }
 export const InputCommandSchema = z.lazy(() =>
-  z.union([Input.PerformActionsSchema, Input.ReleaseActionsSchema])
+  z.union([
+    Input.PerformActionsSchema,
+    Input.ReleaseActionsSchema,
+    Input.SetFilesSchema,
+  ])
 );
 export namespace Input {
   export const ElementOriginSchema = z.lazy(() =>
@@ -2659,6 +2664,23 @@ export namespace Input {
   export const ReleaseActionsParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
+    })
+  );
+}
+export namespace Input {
+  export const SetFilesSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('input.setFiles'),
+      params: Input.SetFilesParametersSchema,
+    })
+  );
+}
+export namespace Input {
+  export const SetFilesParametersSchema = z.lazy(() =>
+    z.object({
+      context: BrowsingContext.BrowsingContextSchema,
+      element: Script.SharedReferenceSchema,
+      files: z.array(z.string()),
     })
   );
 }
