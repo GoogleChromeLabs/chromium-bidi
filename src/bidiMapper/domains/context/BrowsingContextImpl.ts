@@ -77,6 +77,7 @@ export class BrowsingContextImpl {
   #maybeDefaultRealm?: Realm;
   readonly #sharedIdWithFrame: boolean;
   readonly #logger?: LoggerFn;
+  #realDevicePixelRatio: number | null = null;
 
   private constructor(
     cdpTarget: CdpTarget,
@@ -702,6 +703,24 @@ export class BrowsingContextImpl {
     };
   }
 
+  async #getDevicePixelRatio() {
+    const realm = await this.getOrCreateSandbox(undefined);
+    const result = await realm.callFunction(
+      String(() => {
+        return window.devicePixelRatio;
+      }),
+      {type: 'undefined'},
+      [],
+      false,
+      Script.ResultOwnership.None,
+      {},
+      false
+    );
+    assert(result.type === 'success');
+    assert(result.result.type === 'number');
+    return result.result.value as number;
+  }
+
   async setViewport(
     viewport?: BrowsingContext.Viewport | null,
     devicePixelRatio?: number | null
@@ -710,8 +729,12 @@ export class BrowsingContextImpl {
       await this.#cdpTarget.cdpClient.sendCommand(
         'Emulation.clearDeviceMetricsOverride'
       );
+      this.#realDevicePixelRatio = await this.#getDevicePixelRatio();
     } else {
       try {
+        if (this.#realDevicePixelRatio === null) {
+          this.#realDevicePixelRatio = await this.#getDevicePixelRatio();
+        }
         await this.#cdpTarget.cdpClient.sendCommand(
           'Emulation.setDeviceMetricsOverride',
           {
@@ -720,6 +743,9 @@ export class BrowsingContextImpl {
             deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
             mobile: false,
             dontSetVisibleSize: true,
+            scale: devicePixelRatio
+              ? devicePixelRatio / this.#realDevicePixelRatio
+              : undefined,
           }
         );
       } catch (err) {
