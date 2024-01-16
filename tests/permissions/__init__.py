@@ -32,7 +32,7 @@ async def query_permission(websocket, context_id, name):
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": f"""() => {
-                    return navigator.permissions.query({ name: '{name}' })
+                    return navigator.permissions.query({{ name: '{name}' }})
                       .then(val => val.state, err => err.message)
                   }""",
                 "target": {
