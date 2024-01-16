@@ -32,7 +32,7 @@ import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
-import {Realm} from '../script/Realm.js';
+import {type Realm, WindowRealm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -473,21 +473,18 @@ export class BrowsingContextImpl {
           default:
             return;
         }
-        const realm = new Realm(
-          this.#realmStorage,
-          this.#browsingContextStorage,
-          uniqueId,
+        const realm = new WindowRealm(
           this.id,
-          id,
-          origin,
-          // XXX: differentiate types.
-          'window',
-          // Sandbox name for isolated world.
-          sandbox,
+          this.#browsingContextStorage,
           this.#cdpTarget.cdpClient,
           this.#eventManager,
-          this.#sharedIdWithFrame,
-          this.#logger
+          id,
+          this.#logger,
+          origin,
+          uniqueId,
+          this.#realmStorage,
+          sandbox,
+          this.#sharedIdWithFrame
         );
 
         if (auxData.isDefault) {

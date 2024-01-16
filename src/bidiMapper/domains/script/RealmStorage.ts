@@ -22,7 +22,7 @@ import {
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
 
-import type {Realm} from './Realm.js';
+import {WindowRealm, type Realm} from './Realm.js';
 
 type RealmFilter = {
   realmId?: Script.Realm;
@@ -62,13 +62,21 @@ export class RealmStorage {
       }
       if (
         filter.browsingContextId !== undefined &&
-        filter.browsingContextId !== realm.browsingContextId
+        (!(realm instanceof WindowRealm) ||
+          filter.browsingContextId !== realm.browsingContext.id)
       ) {
         return false;
       }
       if (
         filter.navigableId !== undefined &&
-        filter.navigableId !== realm.navigableId
+        (!(realm instanceof WindowRealm) ||
+          filter.navigableId !== realm.browsingContext.navigableId)
+      ) {
+        return false;
+      }
+      if (
+        filter.sandbox !== undefined &&
+        (!(realm instanceof WindowRealm) || filter.sandbox !== realm.sandbox)
       ) {
         return false;
       }
@@ -81,10 +89,7 @@ export class RealmStorage {
       if (filter.origin !== undefined && filter.origin !== realm.origin) {
         return false;
       }
-      if (filter.type !== undefined && filter.type !== realm.type) {
-        return false;
-      }
-      if (filter.sandbox !== undefined && filter.sandbox !== realm.sandbox) {
+      if (filter.type !== undefined && filter.type !== realm.realmType) {
         return false;
       }
       if (

@@ -27,7 +27,11 @@ import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
-import {Realm} from '../script/Realm.js';
+import {
+  DedicatedWorkerRealm,
+  type WindowRealm,
+  type Realm,
+} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -348,6 +352,23 @@ export class BrowsingContextProcessor {
       params
     );
 
+    const createCdpTarget = () => {
+      this.#setEventListeners(targetCdpClient);
+
+      return CdpTarget.create(
+        targetInfo.targetId,
+        targetCdpClient,
+        this.#browserCdpClient,
+        sessionId,
+        this.#realmStorage,
+        this.#eventManager,
+        this.#preloadScriptStorage,
+        this.#networkStorage,
+        this.#acceptInsecureCerts,
+        this.#logger
+      );
+    };
+
     switch (targetInfo.type) {
       case 'page':
       case 'iframe': {
@@ -355,20 +376,7 @@ export class BrowsingContextProcessor {
           break;
         }
 
-        this.#setEventListeners(targetCdpClient);
-
-        const cdpTarget = CdpTarget.create(
-          targetInfo.targetId,
-          targetCdpClient,
-          this.#browserCdpClient,
-          sessionId,
-          this.#realmStorage,
-          this.#eventManager,
-          this.#preloadScriptStorage,
-          this.#networkStorage,
-          this.#acceptInsecureCerts
-        );
-
+        const cdpTarget = createCdpTarget();
         const maybeContext = this.#browsingContextStorage.findContext(
           targetInfo.targetId
         );
@@ -391,20 +399,6 @@ export class BrowsingContextProcessor {
         return;
       }
       case 'worker': {
-        this.#setEventListeners(targetCdpClient);
-
-        const cdpTarget = CdpTarget.create(
-          targetInfo.targetId,
-          targetCdpClient,
-          this.#browserCdpClient,
-          sessionId,
-          this.#realmStorage,
-          this.#eventManager,
-          this.#preloadScriptStorage,
-          this.#networkStorage,
-          this.#acceptInsecureCerts
-        );
-
         const browsingContext =
           parentSessionCdpClient.sessionId &&
           this.#browsingContextStorage.findContextBySession(
@@ -415,6 +409,7 @@ export class BrowsingContextProcessor {
           break;
         }
 
+        const cdpTarget = createCdpTarget();
         this.#handleWorkerTarget(cdpTarget, browsingContext.id);
         return;
       }
@@ -434,19 +429,19 @@ export class BrowsingContextProcessor {
   #handleWorkerTarget(cdpTarget: CdpTarget, browsingContextId: string) {
     cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
       const {uniqueId, id, origin} = params.context;
-      const realm = new Realm(
-        this.#realmStorage,
+      const realm = new DedicatedWorkerRealm(
         this.#browsingContextStorage,
-        uniqueId,
-        browsingContextId,
-        id,
-        serializeOrigin(origin),
-        'dedicated-worker',
-        undefined,
         cdpTarget.cdpClient,
         this.#eventManager,
-        this.#sharedIdWithFrame,
-        this.#logger
+        id,
+        this.#logger,
+        serializeOrigin(origin),
+        this.#realmStorage.getRealm({
+          browsingContextId,
+        }) as WindowRealm,
+        uniqueId,
+        this.#realmStorage,
+        this.#sharedIdWithFrame
       );
       this.#workers.set(cdpTarget.cdpSessionId, realm);
     });

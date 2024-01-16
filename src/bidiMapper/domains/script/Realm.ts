@@ -19,15 +19,16 @@ import {Protocol} from 'devtools-protocol';
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
   ChromiumBidi,
-  type BrowsingContext,
   NoSuchHandleException,
   NoSuchNodeException,
-  UnknownErrorException,
   Script,
+  UnknownErrorException,
+  type BrowsingContext,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -35,57 +36,39 @@ import {ChannelProxy} from './ChannelProxy.js';
 import type {RealmStorage} from './RealmStorage.js';
 import {SharedIdParser} from './SharedIdParser.js';
 
-export class Realm {
-  readonly #realmStorage: RealmStorage;
+export abstract class Realm {
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #realmId: Script.Realm;
-  readonly #browsingContextId: BrowsingContext.BrowsingContext;
-  readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
-  readonly #origin: string;
-  readonly #sharedIdWithFrame: boolean;
-  readonly #type: Script.RealmType;
   readonly #cdpClient: CdpClient;
   readonly #eventManager: EventManager;
-  readonly sandbox?: string;
+  readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #logger?: LoggerFn;
+  readonly #origin: string;
+  readonly #realmId: Script.Realm;
+  readonly #realmStorage: RealmStorage;
+  readonly #sharedIdWithFrame: boolean;
 
   constructor(
-    realmStorage: RealmStorage,
     browsingContextStorage: BrowsingContextStorage,
-    realmId: Script.Realm,
-    browsingContextId: BrowsingContext.BrowsingContext,
-    executionContextId: Protocol.Runtime.ExecutionContextId,
-    origin: string,
-    type: Script.RealmType,
-    sandbox: string | undefined,
     cdpClient: CdpClient,
     eventManager: EventManager,
-    sharedIdWithFrame: boolean,
-    logger?: LoggerFn
+    executionContextId: Protocol.Runtime.ExecutionContextId,
+    logger: LoggerFn | undefined,
+    origin: string,
+    realmId: Script.Realm,
+    realmStorage: RealmStorage,
+    sharedIdWithFrame: boolean
   ) {
-    this.#sharedIdWithFrame = sharedIdWithFrame;
-    this.#realmId = realmId;
-    this.#browsingContextId = browsingContextId;
-    this.#executionContextId = executionContextId;
-    this.sandbox = sandbox;
-    this.#origin = origin;
-    this.#type = type;
-    this.#cdpClient = cdpClient;
-    this.#realmStorage = realmStorage;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
+    this.#executionContextId = executionContextId;
     this.#logger = logger;
+    this.#origin = origin;
+    this.#realmId = realmId;
+    this.#realmStorage = realmStorage;
+    this.#sharedIdWithFrame = sharedIdWithFrame;
 
     this.#realmStorage.addRealm(this);
-
-    this.#eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.Script.EventNames.RealmCreated,
-        params: this.realmInfo,
-      },
-      this.browsingContextId
-    );
   }
 
   cdpToBidiValue(
@@ -171,7 +154,10 @@ export class Realm {
 
     if (deepSerializedValue.type === 'node') {
       if (Object.hasOwn(bidiValue, 'backendNodeId')) {
-        let navigableId = this.navigableId;
+        let navigableId = 'UNKNOWN';
+        if (this instanceof WindowRealm) {
+          navigableId = this.browsingContext.navigableId ?? navigableId;
+        }
         if (Object.hasOwn(bidiValue, 'loaderId')) {
           // `loaderId` should be always there after ~2024-03-05, when
           // https://crrev.com/c/5116240 reaches stable.
@@ -244,19 +230,6 @@ export class Realm {
     return this.#realmId;
   }
 
-  get navigableId(): string {
-    return (
-      (this.browsingContextId &&
-        this.#browsingContextStorage.findContext(this.browsingContextId)
-          ?.navigableId) ??
-      'UNKNOWN'
-    );
-  }
-
-  get browsingContextId(): BrowsingContext.BrowsingContext {
-    return this.#browsingContextId;
-  }
-
   get executionContextId(): Protocol.Runtime.ExecutionContextId {
     return this.#executionContextId;
   }
@@ -265,35 +238,31 @@ export class Realm {
     return this.#origin;
   }
 
-  get type(): Script.RealmType {
-    return this.#type;
+  get source(): Script.Source {
+    return {
+      realm: this.realmId,
+      ...(this instanceof WindowRealm
+        ? {context: this.browsingContext.id}
+        : {}),
+    };
   }
 
   get cdpClient(): CdpClient {
     return this.#cdpClient;
   }
 
-  get realmInfo(): Script.RealmInfo {
-    switch (this.type) {
-      case 'window':
-        return {
-          realm: this.realmId,
-          origin: this.origin,
-          type: this.type,
-          context: this.browsingContextId,
-          ...(this.sandbox === undefined ? {} : {sandbox: this.sandbox}),
-        };
-      default:
-        return {
-          // TODO: add proper owners.
-          //  https://github.com/GoogleChromeLabs/chromium-bidi/issues/1667
-          owners: [] as any as [Script.Realm],
-          realm: this.realmId,
-          origin: this.origin,
-          type: this.type,
-        };
-    }
+  abstract get associatedBrowsingContexts(): BrowsingContextImpl[];
+
+  abstract get realmType(): Script.RealmType;
+
+  protected get baseInfo(): Script.BaseRealmInfo {
+    return {
+      realm: this.realmId,
+      origin: this.origin,
+    };
   }
+
+  abstract get realmInfo(): Script.RealmInfo;
 
   async evaluate(
     expression: string,
@@ -302,10 +271,6 @@ export class Realm {
     serializationOptions: Script.SerializationOptions,
     userActivation = false
   ): Promise<Script.EvaluateResult> {
-    await this.#browsingContextStorage
-      .getContext(this.browsingContextId)
-      .targetUnblockedOrThrow();
-
     const cdpEvaluateResult = await this.cdpClient.sendCommand(
       'Runtime.evaluate',
       {
@@ -333,6 +298,19 @@ export class Realm {
       result: this.cdpToBidiValue(cdpEvaluateResult, resultOwnership),
       type: 'success',
     };
+  }
+
+  protected initialize() {
+    for (const browsingContext of this.associatedBrowsingContexts) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.Script.EventNames.RealmCreated,
+          params: this.realmInfo,
+        },
+        browsingContext.id
+      );
+    }
   }
 
   /**
@@ -464,10 +442,6 @@ export class Realm {
     serializationOptions: Script.SerializationOptions,
     userActivation = false
   ): Promise<Script.EvaluateResult> {
-    await this.#browsingContextStorage
-      .getContext(this.browsingContextId)
-      .targetUnblockedOrThrow();
-
     const callFunctionAndSerializeScript = `(...args) => {
       function callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -548,9 +522,14 @@ export class Realm {
       }
       const {documentId, backendNodeId} = parsedSharedId;
       // TODO: add proper validation if the element is accessible from the current realm.
-      if (this.navigableId !== documentId) {
+      if (!(this instanceof WindowRealm)) {
         throw new NoSuchNodeException(
-          `SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.navigableId}.`
+          `SharedId "${localValue.sharedId}" belongs to a ${this.realmType}. Current realm is ${this.realmType}.`
+        );
+      }
+      if (this.browsingContext.navigableId !== documentId) {
+        throw new NoSuchNodeException(
+          `SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.browsingContext.navigableId}.`
         );
       }
 
@@ -833,16 +812,176 @@ export class Realm {
     this.#realmStorage.knownHandlesToRealmMap.delete(handle);
   }
 
-  dispose() {
-    this.#eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.Script.EventNames.RealmDestroyed,
-        params: {
-          realm: this.realmId,
+  dispose(): void {
+    for (const browsingContext of this.associatedBrowsingContexts) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.Script.EventNames.RealmDestroyed,
+          params: {
+            realm: this.realmId,
+          },
         },
-      },
-      this.browsingContextId
+        browsingContext.id
+      );
+    }
+  }
+}
+
+export class WindowRealm extends Realm {
+  readonly #browsingContextId: BrowsingContext.BrowsingContext;
+  readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly sandbox: string | undefined;
+
+  constructor(
+    browsingContextId: BrowsingContext.BrowsingContext,
+    browsingContextStorage: BrowsingContextStorage,
+    cdpClient: CdpClient,
+    eventManager: EventManager,
+    executionContextId: Protocol.Runtime.ExecutionContextId,
+    logger: LoggerFn | undefined,
+    origin: string,
+    realmId: Script.Realm,
+    realmStorage: RealmStorage,
+    sandbox: string | undefined,
+    sharedIdWithFrame: boolean
+  ) {
+    super(
+      browsingContextStorage,
+      cdpClient,
+      eventManager,
+      executionContextId,
+      logger,
+      origin,
+      realmId,
+      realmStorage,
+      sharedIdWithFrame
     );
+
+    this.#browsingContextStorage = browsingContextStorage;
+    this.#browsingContextId = browsingContextId;
+    this.sandbox = sandbox;
+
+    this.initialize();
+  }
+
+  get browsingContext(): BrowsingContextImpl {
+    return this.#browsingContextStorage.getContext(this.#browsingContextId);
+  }
+
+  override get associatedBrowsingContexts(): [BrowsingContextImpl] {
+    return [this.browsingContext];
+  }
+
+  override get realmType(): 'window' {
+    return 'window';
+  }
+
+  override get realmInfo(): Script.WindowRealmInfo {
+    return {
+      ...this.baseInfo,
+      type: this.realmType,
+      context: this.#browsingContextId,
+      sandbox: this.sandbox,
+    };
+  }
+
+  override async evaluate(
+    expression: string,
+    awaitPromise: boolean,
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions,
+    userActivation?: boolean
+  ): Promise<Script.EvaluateResult> {
+    await this.#browsingContextStorage
+      .getContext(this.#browsingContextId)
+      .targetUnblockedOrThrow();
+
+    return await super.evaluate(
+      expression,
+      awaitPromise,
+      resultOwnership,
+      serializationOptions,
+      userActivation
+    );
+  }
+
+  override async callFunction(
+    functionDeclaration: string,
+    thisLocalValue: Script.LocalValue,
+    argumentsLocalValues: Script.LocalValue[],
+    awaitPromise: boolean,
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions,
+    userActivation?: boolean
+  ): Promise<Script.EvaluateResult> {
+    await this.#browsingContextStorage
+      .getContext(this.#browsingContextId)
+      .targetUnblockedOrThrow();
+
+    return await super.callFunction(
+      functionDeclaration,
+      thisLocalValue,
+      argumentsLocalValues,
+      awaitPromise,
+      resultOwnership,
+      serializationOptions,
+      userActivation
+    );
+  }
+}
+
+export class DedicatedWorkerRealm extends Realm {
+  readonly #ownerRealm: WindowRealm | DedicatedWorkerRealm;
+
+  constructor(
+    browsingContextStorage: BrowsingContextStorage,
+    cdpClient: CdpClient,
+    eventManager: EventManager,
+    executionContextId: Protocol.Runtime.ExecutionContextId,
+    logger: LoggerFn | undefined,
+    origin: string,
+    ownerRealm: WindowRealm | DedicatedWorkerRealm,
+    realmId: Script.Realm,
+    realmStorage: RealmStorage,
+    sharedIdWithFrame: boolean
+  ) {
+    super(
+      browsingContextStorage,
+      cdpClient,
+      eventManager,
+      executionContextId,
+      logger,
+      origin,
+      realmId,
+      realmStorage,
+      sharedIdWithFrame
+    );
+
+    this.#ownerRealm = ownerRealm;
+
+    this.initialize();
+  }
+
+  get associatedBrowsingContexts(): [BrowsingContextImpl] {
+    let realm = this.#ownerRealm;
+    // The root of any realm chain is a window realm.
+    while (!(realm instanceof WindowRealm)) {
+      realm = realm.#ownerRealm;
+    }
+
+    return [realm.browsingContext];
+  }
+
+  override get realmType(): 'dedicated-worker' {
+    return 'dedicated-worker';
+  }
+
+  override get realmInfo(): Script.DedicatedWorkerRealmInfo {
+    return {
+      ...this.baseInfo,
+      type: this.realmType,
+      owners: [this.#ownerRealm.realmId],
+    };
   }
 }
