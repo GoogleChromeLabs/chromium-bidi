@@ -156,8 +156,11 @@ if (RUN_TESTS === 'true') {
   }
 
   if (CHROMEDRIVER === 'true') {
+    let chromeDriverLogs = join('logs', 'chromedriver.log');
+
     log('Using chromedriver with mapper...');
     if (HEADLESS === 'true') {
+      chromeDriverLogs = join('logs', 'chromedriver-headless.log');
       wptRunArgs.push('--binary-arg=--headless=new');
     }
     wptRunArgs.push(
@@ -167,7 +170,7 @@ if (RUN_TESTS === 'true') {
         'iife',
         'mapperTab.js'
       )}`,
-      `--webdriver-arg=--log-path=${join('out', 'chromedriver.log')}`,
+      `--webdriver-arg=--log-path=${chromeDriverLogs}`,
       `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`,
       '--yes'
     );
