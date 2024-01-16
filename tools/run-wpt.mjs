@@ -18,6 +18,7 @@
  */
 
 import {execSync, spawnSync} from 'child_process';
+import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
 
 import {packageDirectorySync} from 'pkg-dir';
@@ -156,6 +157,10 @@ if (RUN_TESTS === 'true') {
   }
 
   if (CHROMEDRIVER === 'true') {
+    if (!existsSync(join('logs'))) {
+      mkdirSync(join('logs'));
+    }
+
     let chromeDriverLogs = join('logs', 'chromedriver.log');
 
     log('Using chromedriver with mapper...');
