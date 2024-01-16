@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 import pytest
-from permissions import get_origin, set_permission, query_permission
+from permissions import get_origin, query_permission, set_permission
 from test_helpers import goto_url
 
 
@@ -22,10 +22,15 @@ from test_helpers import goto_url
 async def test_permissions_set_permission(websocket, context_id, example_url):
     origin = get_origin(example_url)
     await goto_url(websocket, context_id, example_url)
-    assert await query_permission(websocket, context_id, 'geolocation') == 'prompt'
-    resp = await set_permission(websocket, origin, {'name': 'geolocation'}, 'granted')
+    assert await query_permission(websocket, context_id,
+                                  'geolocation') == 'prompt'
+    resp = await set_permission(websocket, origin, {'name': 'geolocation'},
+                                'granted')
     assert resp == {}
-    assert await query_permission(websocket, context_id, 'geolocation') == 'granted'
-    resp = await set_permission(websocket, origin, {'name': 'geolocation'}, 'prompt')
+    assert await query_permission(websocket, context_id,
+                                  'geolocation') == 'granted'
+    resp = await set_permission(websocket, origin, {'name': 'geolocation'},
+                                'prompt')
     assert resp == {}
-    assert await query_permission(websocket, context_id, 'geolocation') == 'prompt'
+    assert await query_permission(websocket, context_id,
+                                  'geolocation') == 'prompt'

@@ -31,10 +31,10 @@ async def query_permission(websocket, context_id, name):
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration": f"""() => {
-                    return navigator.permissions.query({{ name: '{name}' }})
+                "functionDeclaration": """() => {
+                    return navigator.permissions.query({ name: '%s' })
                       .then(val => val.state, err => err.message)
-                  }""",
+                  }""" % name,
                 "target": {
                     "context": context_id
                 },
