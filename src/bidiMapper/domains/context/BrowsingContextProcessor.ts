@@ -430,7 +430,6 @@ export class BrowsingContextProcessor {
     cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
       const {uniqueId, id, origin} = params.context;
       const realm = new DedicatedWorkerRealm(
-        this.#browsingContextStorage,
         cdpTarget.cdpClient,
         this.#eventManager,
         id,
@@ -440,8 +439,7 @@ export class BrowsingContextProcessor {
           browsingContextId,
         }) as WindowRealm,
         uniqueId,
-        this.#realmStorage,
-        this.#sharedIdWithFrame
+        this.#realmStorage
       );
       this.#workers.set(cdpTarget.cdpSessionId, realm);
     });
