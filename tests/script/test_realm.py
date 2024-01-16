@@ -202,3 +202,59 @@ async def test_realm_dedicated_worker(websocket, context_id, html):
     # Wait for confirmation that worker was destroyed
     event = await wait_for_event(websocket, 'script.realmDestroyed')
     assert event['params'] == {'realm': worker_realm}
+
+
+
+@pytest.mark.asyncio
+async def test_shared_worker(websocket, context_id, html):
+    worker_url = 'data:application/javascript,while(true){}'
+    url = html(f"<script>window.w = new Worker('{worker_url}');</script>")
+
+    await subscribe(websocket,
+                    ["script.realmDestroyed", "script.realmCreated"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    # Wait for worker to be created.
+    worker_realm_created_event = await wait_for_filtered_event(
+        websocket, lambda e: e['method'] == 'script.realmCreated' and e[
+            'params']['type'] == 'dedicated-worker')
+
+    # Assert the event.
+    assert worker_realm_created_event == {
+        'type': 'event',
+        'method': 'script.realmCreated',
+        'params': {
+            'realm': ANY_STR,
+            'origin': worker_url,
+            'owners': [ANY_STR],
+            'type': 'dedicated-worker'
+        }
+    }
+
+    worker_realm = worker_realm_created_event['params']['realm']
+
+    # Then demolish it!
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'target': {
+                    'context': context_id
+                },
+                'expression': 'window.w.terminate()',
+                'awaitPromise': True
+            }
+        })
+
+    # Wait for confirmation that worker was destroyed
+    event = await wait_for_event(websocket, 'script.realmDestroyed')
+    assert event['params'] == {'realm': worker_realm}

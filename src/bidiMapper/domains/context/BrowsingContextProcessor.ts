@@ -27,17 +27,19 @@ import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
-import {
-  DedicatedWorkerRealm,
-  type WindowRealm,
-  type Realm,
-} from '../script/Realm.js';
+import {WorkerRealm, type Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import {BrowsingContextImpl, serializeOrigin} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import {CdpTarget} from './CdpTarget.js';
+
+const CDP_WORKER_TYPE_TO_BIDI_WORKER_TYPE = {
+  worker: 'dedicated-worker',
+  shared_worker: 'shared-worker',
+  service_worker: 'service-worker',
+} as const;
 
 export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
@@ -398,6 +400,8 @@ export class BrowsingContextProcessor {
         }
         return;
       }
+      case 'service_worker':
+      case 'shared_worker':
       case 'worker': {
         const browsingContext =
           parentSessionCdpClient.sessionId &&
@@ -410,7 +414,10 @@ export class BrowsingContextProcessor {
         }
 
         const cdpTarget = createCdpTarget();
-        this.#handleWorkerTarget(cdpTarget, browsingContext.id);
+        const realm = this.#realmStorage.getRealm({
+          browsingContextId: browsingContext.id,
+        });
+        this.#handleWorkerTarget(targetInfo.type, cdpTarget, [realm]);
         return;
       }
     }
@@ -426,20 +433,23 @@ export class BrowsingContextProcessor {
   }
 
   #workers = new Map<string, Realm>();
-  #handleWorkerTarget(cdpTarget: CdpTarget, browsingContextId: string) {
+  #handleWorkerTarget(
+    type: 'worker' | 'shared_worker' | 'service_worker',
+    cdpTarget: CdpTarget,
+    realms: Realm[]
+  ) {
     cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
       const {uniqueId, id, origin} = params.context;
-      const realm = new DedicatedWorkerRealm(
+      const realm = new WorkerRealm(
         cdpTarget.cdpClient,
         this.#eventManager,
         id,
         this.#logger,
         serializeOrigin(origin),
-        this.#realmStorage.getRealm({
-          browsingContextId,
-        }) as WindowRealm,
+        realms,
         uniqueId,
-        this.#realmStorage
+        this.#realmStorage,
+        CDP_WORKER_TYPE_TO_BIDI_WORKER_TYPE[type]
       );
       this.#workers.set(cdpTarget.cdpSessionId, realm);
     });

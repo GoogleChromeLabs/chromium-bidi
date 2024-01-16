@@ -938,8 +938,14 @@ export class WindowRealm extends Realm {
   }
 }
 
-export class DedicatedWorkerRealm extends Realm {
-  readonly #ownerRealm: WindowRealm | DedicatedWorkerRealm;
+export type WorkerRealmType =
+  | 'dedicated-worker'
+  | 'service-worker'
+  | 'shared-worker';
+
+export class WorkerRealm extends Realm {
+  readonly #ownerRealms: Realm[];
+  readonly #type: WorkerRealmType;
 
   constructor(
     cdpClient: CdpClient,
@@ -947,9 +953,10 @@ export class DedicatedWorkerRealm extends Realm {
     executionContextId: Protocol.Runtime.ExecutionContextId,
     logger: LoggerFn | undefined,
     origin: string,
-    ownerRealm: WindowRealm | DedicatedWorkerRealm,
+    ownerRealms: Realm[],
     realmId: Script.Realm,
-    realmStorage: RealmStorage
+    realmStorage: RealmStorage,
+    type: WorkerRealmType
   ) {
     super(
       cdpClient,
@@ -961,30 +968,28 @@ export class DedicatedWorkerRealm extends Realm {
       realmStorage
     );
 
-    this.#ownerRealm = ownerRealm;
+    this.#ownerRealms = ownerRealms;
+    this.#type = type;
 
     this.initialize();
   }
 
-  override get associatedBrowsingContexts(): [BrowsingContextImpl] {
-    let realm = this.#ownerRealm;
-    // The root of any realm chain is a window realm.
-    while (!(realm instanceof WindowRealm)) {
-      realm = realm.#ownerRealm;
-    }
-
-    return [realm.browsingContext];
+  override get associatedBrowsingContexts(): BrowsingContextImpl[] {
+    return this.#ownerRealms.flatMap(
+      (realm) => realm.associatedBrowsingContexts
+    );
   }
 
-  override get realmType(): 'dedicated-worker' {
-    return 'dedicated-worker';
+  override get realmType(): WorkerRealmType {
+    return this.#type;
   }
 
-  override get realmInfo(): Script.DedicatedWorkerRealmInfo {
+  override get realmInfo(): Extract<Script.RealmInfo, {type: WorkerRealmType}> {
+    // SAFETY: We know the owners will be correct.
     return {
       ...this.baseInfo,
       type: this.realmType,
-      owners: [this.#ownerRealm.realmId],
-    };
+      owners: this.#ownerRealms.map((realm) => realm.realmId),
+    } as Extract<Script.RealmInfo, {type: WorkerRealmType}>;
   }
 }
