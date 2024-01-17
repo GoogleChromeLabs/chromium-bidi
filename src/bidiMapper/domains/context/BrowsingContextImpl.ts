@@ -771,12 +771,12 @@ export class BrowsingContextImpl {
     switch (params.origin) {
       case 'document': {
         script = String(() => {
-          const element = document.documentElement;
+          const rect = document.documentElement.getBoundingClientRect();
           return {
-            x: 0,
-            y: 0,
-            width: element.scrollWidth,
-            height: element.scrollHeight,
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height,
           };
         });
         captureBeyondViewport = true;
