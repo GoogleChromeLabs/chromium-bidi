@@ -23,6 +23,7 @@ import type {
   Script,
   Session,
   Storage,
+  Permissions,
 } from '../protocol/protocol.js';
 
 import type {BidiCommandParameterParser} from './BidiParser.js';
@@ -117,6 +118,9 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return params as Input.ReleaseActionsParameters;
   }
+  parseSetFilesParams(params: unknown): Input.SetFilesParameters {
+    return params as Input.SetFilesParameters;
+  }
   // keep-sorted end
 
   // Network domain
@@ -151,6 +155,15 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     params: unknown
   ): Network.RemoveInterceptParameters {
     return params as Network.RemoveInterceptParameters;
+  }
+  // keep-sorted end
+
+  // Permissions domain
+  // keep-sorted start block=yes
+  parseSetPermissionsParams(
+    params: unknown
+  ): Permissions.SetPermissionParameters {
+    return params as Permissions.SetPermissionParameters;
   }
   // keep-sorted end
 

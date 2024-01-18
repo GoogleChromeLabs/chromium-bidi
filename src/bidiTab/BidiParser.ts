@@ -20,6 +20,7 @@ import type {
   Cdp,
   Input,
   Network,
+  Permissions,
   Script,
   Session,
   Storage,
@@ -90,6 +91,9 @@ export class BidiParser implements BidiCommandParameterParser {
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return Parser.Input.parseReleaseActionsParams(params);
   }
+  parseSetFilesParams(params: unknown): Input.SetFilesParameters {
+    return Parser.Input.parseSetFilesParams(params);
+  }
   // keep-sorted end
 
   // Network domain
@@ -126,6 +130,15 @@ export class BidiParser implements BidiCommandParameterParser {
     params: unknown
   ): Network.RemoveInterceptParameters {
     return Parser.Network.parseRemoveInterceptParameters(params);
+  }
+  // keep-sorted end
+
+  // Permissions domain
+  // keep-sorted start block=yes
+  parseSetPermissionsParams(
+    params: unknown
+  ): Permissions.SetPermissionParameters {
+    return Parser.Permissions.parseSetPermissionsParams(params);
   }
   // keep-sorted end
 
