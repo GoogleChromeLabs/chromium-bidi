@@ -39,7 +39,8 @@ async def test_browsingContext_close(websocket, context_id):
             "context": context_id,
             "parent": None,
             "url": "about:blank",
-            "children": None
+            "children": None,
+            "userContext": "default"
         }
     }
 
@@ -126,3 +127,47 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
 
     # Assert context is closed.
     assert result == {'contexts': []}
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_close_viaUserContext(websocket):
+    user_context = await execute_command(websocket, {
+        "method": "browser.createUserContext",
+        "params": {}
+    })
+
+    await subscribe(websocket, ["browsingContext.contextDestroyed"])
+
+    browsing_context = await execute_command(
+        websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": "window",
+                "userContext": user_context["userContext"]
+            }
+        })
+
+    tree = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}
+    })
+
+    assert len(tree['contexts']) == 2
+
+    await send_JSON_command(websocket, {
+        "method": "browser.removeUserContext",
+        "params": user_context
+    })
+
+    destroyed = await wait_for_event(websocket,
+                                     "browsingContext.contextDestroyed")
+
+    assert destroyed['params']['context'] == browsing_context["context"]
+
+    tree = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}
+    })
+
+    assert len(tree['contexts']) == 1
+    assert tree["contexts"][0]["userContext"] == "default"
