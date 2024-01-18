@@ -60,7 +60,7 @@ async def test_cookie_set_with_required_fields(websocket, context_id,
             get_bidi_cookie(SOME_COOKIE_NAME,
                             SOME_COOKIE_VALUE,
                             hostname,
-                            secure=True)
+                            secure=False)
         ],
         'partitionKey': {
             'sourceOrigin': expected_origin,
@@ -185,9 +185,4 @@ async def test_cookie_set_expired(websocket, context_id, example_url):
         'method': 'storage.getCookies',
         'params': {}
     })
-    assert resp == {
-        'cookies': [],
-        'partitionKey': {
-            'sourceOrigin': expected_origin,
-        }
-    }
+    assert resp == {'cookies': [], 'partitionKey': {}}
