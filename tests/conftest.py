@@ -55,7 +55,11 @@ async def _websocket_connection():
 @pytest_asyncio.fixture(params=[{"capabilities": {}}])
 async def websocket(request, _websocket_connection):
     """Return a websocket with an active BiDi session."""
-    capabilities = request.param['capabilities']
+    capabilities = {
+        "webSocketUrl": True,
+    }
+    capabilities.update(request.param['capabilities'])
+
     await execute_command(
         _websocket_connection, {
             "method": "session.new",
