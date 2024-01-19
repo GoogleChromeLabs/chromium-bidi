@@ -55,9 +55,15 @@ async def _websocket_connection():
 @pytest_asyncio.fixture(params=[{"capabilities": {}}])
 async def websocket(request, _websocket_connection):
     """Return a websocket with an active BiDi session."""
-    capabilities = {
-        "webSocketUrl": True,
-    }
+    capabilities = {"webSocketUrl": True, "goog:chromeOptions": {}}
+
+    maybe_browser_bin = os.getenv("BROWSER_BIN")
+    if maybe_browser_bin:
+        capabilities["goog:chromeOptions"]["binary"] = maybe_browser_bin
+    maybe_headless = os.getenv("HEADLESS")
+    if maybe_headless == "true":
+        capabilities["goog:chromeOptions"]["args"] = ["--headless=new"]
+
     capabilities.update(request.param['capabilities'])
 
     await execute_command(
