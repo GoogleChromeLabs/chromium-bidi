@@ -17,12 +17,12 @@
  * limitations under the License.
  */
 
-import {spawn} from 'child_process';
-import {writeFile} from 'fs/promises';
+import { spawn } from 'child_process';
+import { writeFile } from 'fs/promises';
 
-import {packageDirectorySync} from 'pkg-dir';
+import { packageDirectorySync } from 'pkg-dir';
 import yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
+import { hideBin } from 'yargs/helpers';
 
 const argv = yargs(hideBin(process.argv))
   .option('ts-file', {
@@ -88,6 +88,10 @@ async function runCommand(command, args) {
     });
 
     commandProcess.stdout.on('data', (data) => {
+      output += data;
+    });
+
+    commandProcess.stderr.on('data', (data) => {
       output += data;
     });
 
