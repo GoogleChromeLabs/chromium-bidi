@@ -62,7 +62,9 @@ async def websocket(request, _websocket_connection):
         capabilities["goog:chromeOptions"]["binary"] = maybe_browser_bin
     maybe_headless = os.getenv("HEADLESS")
     if maybe_headless == "true":
-        capabilities["goog:chromeOptions"]["args"] = ["--headless=new"]
+        capabilities["goog:chromeOptions"]["args"] = [
+            "--headless=new", '--hide-scrollbars', '--mute-audio'
+        ]
 
     capabilities.update(request.param['capabilities'])
 

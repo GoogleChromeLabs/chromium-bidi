@@ -123,7 +123,6 @@ if (RUN_TESTS === 'true') {
   const wptRunArgs = [
     '--binary',
     BROWSER_BIN,
-    `--webdriver-arg=--headless=${HEADLESS}`,
     '--log-wptreport',
     WPT_REPORT,
     '--manifest',
@@ -180,11 +179,10 @@ if (RUN_TESTS === 'true') {
       '--yes'
     );
   } else {
-    wptRunArgs.push(
-      `--webdriver-arg=--headless=${HEADLESS}`,
-      '--webdriver-binary',
-      join('tools', 'run-bidi-server.mjs')
-    );
+    if (HEADLESS === 'true') {
+      wptRunArgs.push('--binary-arg=--headless=new');
+    }
+    wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
     log('Using pure mapper...');
   }
 
@@ -209,6 +207,8 @@ if (RUN_TESTS === 'true') {
     // The last argument is the test.
     test
   );
+
+  console.log('... running wpt: ', wptBinary, wptRunArgs.join(' '));
 
   run_status = spawnSync(wptBinary, ['run', ...wptRunArgs], {
     stdio: 'inherit',

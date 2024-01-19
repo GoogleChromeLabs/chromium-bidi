@@ -16,9 +16,7 @@
     "pre-commit": "pre-commit run --hook-stage manual --all-files",
     "prepare": "wireit",
     "rollup": "wireit",
-    "server": "npm run server-headless --",
-    "server-headful": "wireit",
-    "server-headless": "wireit",
+    "server": "wireit",
     "test": "wireit",
     "tsc": "wireit",
     "unit": "wireit",
@@ -41,8 +39,11 @@
     "e2e-headful": {
       "command": "pipenv run python -m pytest --ignore=tests/input",
       "dependencies": [
-        "server-headful"
+        "server"
       ],
+      "env": {
+        "HEADLESS": false
+      },
       "files": [
         "pytest.ini",
         "tests/**/*.py"
@@ -51,11 +52,26 @@
     "e2e-headless": {
       "command": "pipenv run python -m pytest",
       "dependencies": [
-        "server-headless"
+        "server"
       ],
+      "env": {
+        "HEADLESS": false
+      },
       "files": [
         "pytest.ini",
         "tests/**/*.py"
+      ]
+    },
+    "install-browser": {
+      "command": "node install-browser.mjs",
+      "files": [
+        ".browser"
+      ]
+    },
+    "install-driver": {
+      "command": "node install-browser.mjs --chromedriver",
+      "files": [
+        ".browser"
       ]
     },
     "prepare": {
@@ -76,19 +92,8 @@
         "lib/iife/mapperTab.js"
       ]
     },
-    "server-headful": {
-      "command": "npm run server-headless -- --headless=false",
-      "service": {
-        "readyWhen": {
-          "lineMatches": "BiDi server is listening on port \\d+"
-        }
-      },
-      "dependencies": [
-        "rollup"
-      ]
-    },
-    "server-headless": {
-      "command": "tools/run-bidi-server.mjs --headless=true",
+    "server": {
+      "command": "tools/run-bidi-server.mjs",
       "files": [
         "tools/run-bidi-server.mjs"
       ],

@@ -45,7 +45,6 @@ type ChromeOptions = {
   readonly chromeArgs: string[];
   readonly chromeBinary?: string;
   readonly channel: ChromeReleaseChannel;
-  readonly headless: boolean;
 };
 
 type SessionOptions = {
@@ -60,13 +59,11 @@ export class WebSocketServer {
   /**
    * @param bidiPort Port to start ws server on.
    * @param channel
-   * @param headless
    * @param verbose
    */
   static run(
     bidiPort: number,
     channel: ChromeReleaseChannel,
-    headless: boolean,
     verbose: boolean
   ) {
     const server = http.createServer(
@@ -102,8 +99,7 @@ export class WebSocketServer {
                 sessionOptions: {
                   chromeOptions: this.#getChromeOptions(
                     jsonBody.capabilities,
-                    channel,
-                    headless
+                    channel
                   ),
                   mapperOptions: this.#getMapperOptions(jsonBody.capabilities),
                   verbose,
@@ -279,8 +275,7 @@ export class WebSocketServer {
             const sessionOptions = {
               chromeOptions: this.#getChromeOptions(
                 parsedCommandData.params?.capabilities,
-                channel,
-                headless
+                channel
               ),
               mapperOptions: this.#getMapperOptions(
                 parsedCommandData.params?.capabilities
@@ -446,15 +441,13 @@ export class WebSocketServer {
 
   static #getChromeOptions(
     capabilities: any,
-    channel: ChromeReleaseChannel,
-    headless: boolean
+    channel: ChromeReleaseChannel
   ): ChromeOptions {
     const chromeCapabilities =
       capabilities?.alwaysMatch?.['goog:chromeOptions'];
     return {
       chromeArgs: chromeCapabilities?.args ?? [],
       channel,
-      headless,
       chromeBinary: chromeCapabilities?.binary ?? undefined,
     };
   }

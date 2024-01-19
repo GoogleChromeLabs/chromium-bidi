@@ -40,13 +40,11 @@ function usage() {
         [CHROMEDRIVER_BIN=<path, default: download pinned chrome>]
         [DEBUG=*]
         [DEBUG_COLORS=<yes | no>]
-        [HEADLESS=<default: true | false>]
         [LOG_DIR=logs]
         [NODE_OPTIONS=--unhandled-rejections=strict]
         [PORT=8080]
         ${process.argv[1]}
         [--channel,-c=<channel, default: CHANNEL environment variable>]
-        [--headless=<true | false, default: HEADLESS environment variable>]
         [--verbose,-v<true | default: false>]
       `
   );
@@ -68,7 +66,6 @@ let CHROMEDRIVER_BIN = process.env.CHROMEDRIVER_BIN;
 const DEBUG = process.env.DEBUG ?? 'bidi:*';
 const DEBUG_COLORS = process.env.DEBUG_COLORS || 'false';
 const DEBUG_DEPTH = process.env.DEBUG_DEPTH || '10';
-let HEADLESS = process.env.HEADLESS | 'true';
 const LOG_DIR = process.env.LOG_DIR || 'logs';
 const LOG_FILE =
   process.env.LOG_FILE ||
@@ -88,14 +85,6 @@ const restArgs = process.argv.slice(2);
 for (const arg of restArgs) {
   const argParts = arg.split('=');
   switch (argParts[0]) {
-    case '--headless':
-      if (CHROMEDRIVER === 'true') {
-        log(
-          `WARNING! Chromedriver '--headless' is not supported via CLI. It can only be set via capabilities.`
-        );
-      }
-      HEADLESS = argParts[1] || 'true';
-      break;
     case '-c':
     case '--channel':
       if (argParts[1] === undefined) {
@@ -163,8 +152,6 @@ if (CHROMEDRIVER === 'true') {
       resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
       `--channel`,
       CHANNEL,
-      `--headless`,
-      HEADLESS,
       `--verbose`,
       VERBOSE,
       ...process.argv.slice(2),

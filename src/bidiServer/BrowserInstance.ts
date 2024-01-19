@@ -45,7 +45,6 @@ type ChromeOptions = {
   chromeArgs: string[];
   chromeBinary?: string;
   channel: ChromeReleaseChannel;
-  headless: boolean;
 };
 
 /**
@@ -70,10 +69,8 @@ export class BrowserInstance {
       path.join(os.tmpdir(), 'web-driver-bidi-server-')
     );
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
+
     const chromeArguments = [
-      ...(chromeOptions.headless
-        ? ['--headless', '--hide-scrollbars', '--mute-audio']
-        : []),
       // keep-sorted start
       '--allow-browser-signin=false',
       '--disable-component-update',
@@ -91,9 +88,7 @@ export class BrowserInstance {
       '--use-mock-keychain',
       `--user-data-dir=${profileDir}`,
       // keep-sorted end
-      ...chromeOptions.chromeArgs.filter(
-        (arg) => !arg.startsWith('--headless')
-      ),
+      ...chromeOptions.chromeArgs,
       'about:blank',
     ];
 

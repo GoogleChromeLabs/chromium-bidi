@@ -39,11 +39,6 @@ function parseArguments(): {
     default: ChromeReleaseChannel.DEV,
   });
 
-  parser.add_argument('--headless', {
-    help: 'Sets if browser should run in headless or headful mode. Default is true.',
-    default: true,
-  });
-
   parser.add_argument('-p', '--port', {
     help: 'Port that BiDi server should listen to. Default is 8080.',
     type: 'int',
@@ -63,12 +58,11 @@ function parseArguments(): {
   try {
     const args = parseArguments();
     const {channel, port} = args;
-    const headless = args.headless !== 'false';
     const verbose = args.verbose === true;
 
     debugInfo('Launching BiDi server...');
 
-    WebSocketServer.run(port, channel, headless, verbose);
+    WebSocketServer.run(port, channel, verbose);
     debugInfo('BiDi server launched');
   } catch (e) {
     debugInfo('Error launching BiDi server', e);
