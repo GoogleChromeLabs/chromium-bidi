@@ -180,7 +180,7 @@ if (RUN_TESTS === 'true') {
     );
   } else {
     if (HEADLESS === 'true') {
-      wptRunArgs.push('--binary-arg=--headless=new');
+      wptRunArgs.push('--binary-arg=--headless');
     }
     wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
     log('Using pure mapper...');
@@ -196,6 +196,7 @@ if (RUN_TESTS === 'true') {
     .replace('mapper/headless/', '')
     .replace('mapper/headful/', '')
     .replace('chromedriver/headless/', '')
+    .replace('chromedriver/headful/', '')
     .replace('.ini', '');
 
   log(`Running "${test}" with "${BROWSER_BIN}"...`);
@@ -208,7 +209,7 @@ if (RUN_TESTS === 'true') {
     test
   );
 
-  console.log('... running wpt: ', wptBinary, wptRunArgs.join(' '));
+  console.log('... running wpt: ', wptBinary, ['run', ...wptRunArgs].join(' '));
 
   run_status = spawnSync(wptBinary, ['run', ...wptRunArgs], {
     stdio: 'inherit',
