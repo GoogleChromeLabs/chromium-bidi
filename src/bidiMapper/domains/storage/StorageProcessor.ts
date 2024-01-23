@@ -30,6 +30,7 @@ import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {NetworkProcessor} from '../network/NetworkProcessor.js';
+
 const HTTPS_SCHEME = 'https:';
 
 /**
@@ -81,8 +82,11 @@ export class StorageProcessor {
         // CDP does not store the source origin, so it should be restored from source
         // scheme and domain.
         (c) =>
-          c.sourceScheme === requiredSourceScheme &&
-          c.domain === requiredHostname
+          this.#cdpCookieMatchesPartitionKey(
+            c,
+            requiredHostname,
+            requiredSourceScheme
+          )
       )
       .map((c) => this.#cdpToBiDiCookie(c))
       .filter((c) => this.#matchCookie(c, params.filter));
@@ -96,6 +100,26 @@ export class StorageProcessor {
       cookies: filteredBiDiCookies,
       partitionKey: {sourceOrigin: actualPartitionKey},
     };
+  }
+
+  #cdpCookieMatchesPartitionKey(
+    cdpCookie: Protocol.Network.Cookie,
+    requiredHostname: string,
+    requiredSourceScheme: string
+  ): boolean {
+    if (cdpCookie.sourceScheme !== requiredSourceScheme) {
+      return false;
+    }
+    // Check if cookie domain is shared with subdomains.
+    if (cdpCookie.domain.startsWith('.')) {
+      return (
+        // All subdomains are allowed.
+        requiredHostname.endsWith(cdpCookie.domain) ||
+        // The base domain is allowed.
+        requiredHostname === cdpCookie.domain.slice(1)
+      );
+    }
+    return cdpCookie.domain === requiredHostname;
   }
 
   async setCookie(
@@ -201,10 +225,17 @@ export class StorageProcessor {
         'Partition source origin is not specified '
       );
     }
-    const protocol = NetworkProcessor.parseUrlString(
+    const parseSourceOrigin = NetworkProcessor.parseUrlString(
       partitionKey.sourceOrigin
-    ).protocol.toLowerCase();
+    );
+    const protocol = parseSourceOrigin.protocol.toLowerCase();
     const sourceScheme = protocol === 'https:' ? 'Secure' : 'NonSecure';
+
+    // if (parseSourceOrigin.hostname !== params.cookie.domain) {
+    //   throw new UnableToSetCookieException(
+    //     'Domain cannot be different from the source origin'
+    //   );
+    // }
 
     if (params.cookie.value.type !== 'string') {
       // CDP supports only string values in cookies.

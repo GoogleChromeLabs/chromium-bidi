@@ -16,17 +16,14 @@
 from datetime import datetime, timedelta
 
 import pytest
-from storage import get_bidi_cookie, get_hostname_and_origin
+from storage import (NON_SECURE_ADDRESS, SECURE_ADDRESS, SOME_COOKIE_NAME,
+                     SOME_COOKIE_VALUE, expected_bidi_cookie,
+                     get_hostname_and_origin)
 from test_helpers import execute_command, goto_url
-
-SOME_COOKIE_NAME = 'some_cookie_name'
-SOME_COOKIE_VALUE = 'some_cookie_value'
-ANOTHER_COOKIE_NAME = 'another_cookie_name'
-ANOTHER_COOKIE_VALUE = 'another_cookie_value'
 
 
 async def assert_cookie_set(websocket, cookie, partition, expected_cookie,
-      expected_origin):
+                            expected_origin):
     await execute_command(
         websocket, {
             'method': 'storage.setCookie',
@@ -68,15 +65,15 @@ async def test_cookie_set_partition_storage_key(websocket, context_id, url):
             'type': 'storageKey',
             'sourceOrigin': expected_origin,
         },
-        get_bidi_cookie(SOME_COOKIE_NAME,
-                        SOME_COOKIE_VALUE,
-                        hostname,
-                        secure=False), expected_origin)
+        expected_bidi_cookie(SOME_COOKIE_NAME,
+                             SOME_COOKIE_VALUE,
+                             hostname,
+                             secure=False), expected_origin)
 
 
 @pytest.mark.asyncio
 async def test_cookie_set_partition_context_non_secure(websocket, context_id,
-      example_url):
+                                                       example_url):
     hostname, expected_origin = get_hostname_and_origin(example_url)
     await goto_url(websocket, context_id, example_url)
 
@@ -94,7 +91,7 @@ async def test_cookie_set_partition_context_non_secure(websocket, context_id,
             'type': 'context',
             'context': context_id
         },
-        get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname),
+        expected_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname),
         expected_origin,
     )
 
@@ -108,7 +105,7 @@ async def test_cookie_set_partition_context_non_secure(websocket, context_id,
                          indirect=['websocket'])
 @pytest.mark.asyncio
 async def test_cookie_set_partition_context_secure(websocket, context_id,
-      bad_ssl_url):
+                                                   bad_ssl_url):
     hostname, expected_origin = get_hostname_and_origin(bad_ssl_url)
     await goto_url(websocket, context_id, bad_ssl_url)
 
@@ -123,17 +120,17 @@ async def test_cookie_set_partition_context_secure(websocket, context_id,
         }, {
             'type': 'context',
             'context': context_id
-        }, get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname),
+        }, expected_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname),
         expected_origin)
 
 
 @pytest.mark.parametrize(
     'url, secure',
     [
-        # Secure cookies are not allowed on non-secure pages.
-        ('http://some_non_secure_address.com', False),
-        ('https://some_secure_address.com', True),
-        ('https://some_secure_address.com', False)
+        (SECURE_ADDRESS, True),
+        (SECURE_ADDRESS, False),
+        # Non-secure pages allow to set only non-secure cookies.
+        (NON_SECURE_ADDRESS, False)
     ])
 @pytest.mark.parametrize('http_only', [True, False])
 @pytest.mark.asyncio
@@ -161,8 +158,8 @@ async def test_cookie_set_with_all_fields(websocket, url, secure, http_only):
             'type': 'storageKey',
             'sourceOrigin': expected_origin,
         },
-        get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname,
-                        some_path, http_only, secure, same_site, expiry),
+        expected_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname,
+                             some_path, http_only, secure, same_site, expiry),
         expected_origin)
 
 
@@ -174,10 +171,10 @@ async def test_cookie_set_expired(websocket, context_id, example_url):
         websocket, {
             'method': 'storage.setCookie',
             'params': {
-                'cookie': get_bidi_cookie(SOME_COOKIE_NAME,
-                                          SOME_COOKIE_VALUE,
-                                          hostname,
-                                          expiry=expiry),
+                'cookie': expected_bidi_cookie(SOME_COOKIE_NAME,
+                                               SOME_COOKIE_VALUE,
+                                               hostname,
+                                               expiry=expiry),
                 'partition': {
                     'type': 'storageKey',
                     'sourceOrigin': expected_origin,
@@ -185,13 +182,14 @@ async def test_cookie_set_expired(websocket, context_id, example_url):
             }
         })
 
-    resp = await execute_command(websocket, {
-        'method': 'storage.getCookies',
-        'params': {
-            'partition': {
-                'type': 'storageKey',
-                'sourceOrigin': expected_origin,
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'type': 'storageKey',
+                    'sourceOrigin': expected_origin,
+                }
             }
-        }
-    })
+        })
     assert resp['cookies'] == []
