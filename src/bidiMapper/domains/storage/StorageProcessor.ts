@@ -30,6 +30,7 @@ import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {NetworkProcessor} from '../network/NetworkProcessor.js';
+const HTTPS_SCHEME = 'https:';
 
 /**
  * Responsible for handling the `storage` domain.
@@ -54,24 +55,46 @@ export class StorageProcessor {
   ): Promise<Storage.GetCookiesResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
 
+    if (partitionKey.sourceOrigin === undefined) {
+      throw new UnderspecifiedStoragePartitionException(
+        'Unknown "sourceOrigin"'
+      );
+    }
+
+    // CDP does not store the source origin. Instead, it stores the source scheme and
+    // domain.
+    // TODO: consider using `port` as well.
+    const parsedUrl = NetworkProcessor.parseUrlString(
+      partitionKey.sourceOrigin
+    );
+    const requiredProtocol = parsedUrl.protocol.toLowerCase();
+    const requiredSourceScheme =
+      requiredProtocol === HTTPS_SCHEME ? 'Secure' : 'NonSecure';
+    const requiredHostname = parsedUrl.hostname;
+
     const cdpResponse = await this.#browserCdpClient.sendCommand(
       'Storage.getCookies',
       {}
     );
-
     const filteredBiDiCookies = cdpResponse.cookies
       .filter(
-        // CDP's partition key is the source origin.
+        // CDP does not store the source origin, so it should be restored from source
+        // scheme and domain.
         (c) =>
-          c.partitionKey === undefined ||
-          c.partitionKey === partitionKey.sourceOrigin
+          c.sourceScheme === requiredSourceScheme &&
+          c.domain === requiredHostname
       )
       .map((c) => this.#cdpToBiDiCookie(c))
       .filter((c) => this.#matchCookie(c, params.filter));
 
+    // Actual partition key can be different from the requested one, e.g. if the requested
+    // partition has a custom port. Need to calculate actual partition key used for
+    // consistency.
+    const actualPartitionKey = `${requiredProtocol}//${requiredHostname}`;
+
     return {
       cookies: filteredBiDiCookies,
-      partitionKey,
+      partitionKey: {sourceOrigin: actualPartitionKey},
     };
   }
 
@@ -158,7 +181,9 @@ export class StorageProcessor {
     partitionSpec: Storage.PartitionDescriptor | undefined
   ): Storage.PartitionKey {
     if (partitionSpec === undefined) {
-      return {};
+      throw new UnderspecifiedStoragePartitionException(
+        'Partition spec is empty'
+      );
     }
     if (partitionSpec.type === 'context') {
       return this.#expandStoragePartitionSpecByBrowsingContext(partitionSpec);
@@ -171,6 +196,16 @@ export class StorageProcessor {
     params: Storage.SetCookieParameters,
     partitionKey: Storage.PartitionKey
   ): Protocol.Network.CookieParam {
+    if (partitionKey.sourceOrigin === undefined) {
+      throw new UnderspecifiedStoragePartitionException(
+        'Partition source origin is not specified '
+      );
+    }
+    const protocol = NetworkProcessor.parseUrlString(
+      partitionKey.sourceOrigin
+    ).protocol.toLowerCase();
+    const sourceScheme = protocol === 'https:' ? 'Secure' : 'NonSecure';
+
     if (params.cookie.value.type !== 'string') {
       // CDP supports only string values in cookies.
       throw new UnsupportedOperationException(
@@ -185,22 +220,23 @@ export class StorageProcessor {
       path: params.cookie.path ?? '/',
       secure: params.cookie.secure ?? false,
       httpOnly: params.cookie.httpOnly ?? false,
-      // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
-      ...(partitionKey.sourceOrigin !== undefined && {
-        partitionKey: partitionKey.sourceOrigin,
-      }),
+      sourceScheme,
+      // // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
+      // ...(partitionKey.sourceOrigin !== undefined && {
+      //   partitionKey: partitionKey.sourceOrigin,
+      // }),
       ...(params.cookie.expiry !== undefined && {
         expires: params.cookie.expiry,
       }),
       ...(params.cookie.sameSite !== undefined && {
         sameSite: StorageProcessor.#sameSiteBiDiToCdp(params.cookie.sameSite),
       }),
+      // session: true,
       // TODO: extend with CDP-specific properties with `goog:` prefix after
       //  https://github.com/w3c/webdriver-bidi/pull/637
       //  * session: boolean;
       //  * priority: CookiePriority;
       //  * sameParty: boolean;
-      //  * sourceScheme: CookieSourceScheme;
       //  * sourcePort: integer;
       //  * partitionKey?: string;
       //  * partitionKeyOpaque?: boolean;

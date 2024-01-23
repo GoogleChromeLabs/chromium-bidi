@@ -29,7 +29,7 @@ def get_bidi_cookie(cookie_name,
                     domain,
                     path="/",
                     http_only=False,
-                    secure=True,
+                    secure=False,
                     same_site='none',
                     expiry=None):
     """ Return a cookie object with the given parameters."""
@@ -50,14 +50,13 @@ def get_bidi_cookie(cookie_name,
     } if expiry is not None else {})
 
 
-async def set_cookie(websocket, context_id, bidi_cookie, partition=None):
+async def set_cookie(websocket, context_id, bidi_cookie, partition):
     """ Set cookie via BiDi command."""
     await execute_command(
         websocket, {
             'method': 'storage.setCookie',
             'params': {
                 'cookie': bidi_cookie,
-            } | ({
                 'partition': partition
-            } if partition is not None else {})
+            }
         })
