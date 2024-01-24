@@ -41,8 +41,14 @@ async def test_browser_create_user_context(websocket):
         "method": "browser.getUserContexts",
         "params": {}
     })
-    assert result['userContexts'] == [{
-        'userContext': 'default'
-    }, {
-        'userContext': user_context_id
-    }]
+
+    def user_context(x):
+        return x["userContext"]
+
+    assert sorted(result['userContexts'],
+                  key=user_context) == sorted([{
+                      'userContext': 'default'
+                  }, {
+                      'userContext': user_context_id
+                  }],
+                                              key=user_context)

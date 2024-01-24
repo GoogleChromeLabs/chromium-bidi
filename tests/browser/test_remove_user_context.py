@@ -14,7 +14,8 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import execute_command
+from test_helpers import (execute_command, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -48,3 +49,47 @@ async def test_browser_remove_user_context(websocket):
         "params": {}
     })
     assert result['userContexts'] == [{'userContext': 'default'}]
+
+
+@pytest.mark.asyncio
+async def test_browser_remove_user_context_closes_browsing_context(websocket):
+    user_context = await execute_command(websocket, {
+        "method": "browser.createUserContext",
+        "params": {}
+    })
+
+    await subscribe(websocket, ["browsingContext.contextDestroyed"])
+
+    browsing_context = await execute_command(
+        websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": "window",
+                "userContext": user_context["userContext"]
+            }
+        })
+
+    tree = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}
+    })
+
+    assert len(tree['contexts']) == 2
+
+    await send_JSON_command(websocket, {
+        "method": "browser.removeUserContext",
+        "params": user_context
+    })
+
+    destroyed = await wait_for_event(websocket,
+                                     "browsingContext.contextDestroyed")
+
+    assert destroyed['params']['context'] == browsing_context["context"]
+
+    tree = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}
+    })
+
+    assert len(tree['contexts']) == 1
+    assert tree["contexts"][0]["userContext"] == "default"
