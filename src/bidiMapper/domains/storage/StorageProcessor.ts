@@ -22,13 +22,13 @@ import {
   InvalidArgumentException,
   Network,
   UnableToSetCookieException,
-  UnderspecifiedStoragePartitionException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import {NetworkProcessor} from '../network/NetworkProcessor.js';
 
 /**
  * Responsible for handling the `storage` domain.
@@ -112,13 +112,19 @@ export class StorageProcessor {
   #expandStoragePartitionSpecByStorageKey(
     descriptor: Storage.StorageKeyPartitionDescriptor
   ): Storage.PartitionKey {
-    let sourceOrigin: string | undefined = undefined;
-
-    if (descriptor.sourceOrigin !== undefined) {
-      sourceOrigin = descriptor.sourceOrigin;
-    }
-
     const unsupportedPartitionKeys = new Map<string, string>();
+    let sourceOrigin = descriptor.sourceOrigin;
+    if (sourceOrigin !== undefined) {
+      const url = NetworkProcessor.parseUrlString(sourceOrigin);
+      if (url.origin === 'null') {
+        // Origin `null` is a special case for local pages.
+        sourceOrigin = url.origin;
+      } else {
+        // Port is not supported in CDP Cookie's `partitionKey`, so it should be stripped
+        // from the requested source origin.
+        sourceOrigin = `${url.protocol}//${url.hostname}`;
+      }
+    }
 
     // Partition spec is a storage partition.
     // Let partition key be partition spec.
@@ -142,7 +148,7 @@ export class StorageProcessor {
     }
 
     return {
-      ...(descriptor.sourceOrigin === undefined ? {} : {sourceOrigin}),
+      ...(sourceOrigin === undefined ? {} : {sourceOrigin}),
     };
   }
 
