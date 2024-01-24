@@ -29,7 +29,6 @@ import {assert} from '../../../utils/assert.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
-import {NetworkProcessor} from '../network/NetworkProcessor.js';
 
 /**
  * Responsible for handling the `storage` domain.
@@ -61,9 +60,11 @@ export class StorageProcessor {
 
     const filteredBiDiCookies = cdpResponse.cookies
       .filter(
-        // CDP's partition key is the source origin.
+        // CDP's partition key is the source origin. If the request specifies the
+        // `sourceOrigin` partition key, only cookies with the requested source origin
+        // are returned.
         (c) =>
-          c.partitionKey === undefined ||
+          partitionKey.sourceOrigin === undefined ||
           c.partitionKey === partitionKey.sourceOrigin
       )
       .map((c) => this.#cdpToBiDiCookie(c))
@@ -98,17 +99,14 @@ export class StorageProcessor {
     descriptor: Storage.BrowsingContextPartitionDescriptor
   ): Storage.PartitionKey {
     const browsingContextId: string = descriptor.context;
-    const browsingContext =
-      this.#browsingContextStorage.getContext(browsingContextId);
-    const url = NetworkProcessor.parseUrlString(browsingContext?.url ?? '');
-    // Cookie origin should not contain the port.
-    // Origin `null` is a special case for local pages.
-    const sourceOrigin =
-      url.origin === 'null' ? url.origin : `${url.protocol}//${url.hostname}`;
-
-    return {
-      sourceOrigin,
-    };
+    // Assert the browsing context exists.
+    this.#browsingContextStorage.getContext(browsingContextId);
+    // https://w3c.github.io/webdriver-bidi/#associated-storage-partition.
+    // Each browsing context also has an associated storage partition, which is the
+    // storage partition it uses to persist data. In Chromium it's a `BrowserContext`
+    // which maps to BiDi `UserContext`.
+    // TODO: extend with UserContext.
+    return {};
   }
 
   #expandStoragePartitionSpecByStorageKey(
@@ -118,12 +116,6 @@ export class StorageProcessor {
 
     if (descriptor.sourceOrigin !== undefined) {
       sourceOrigin = descriptor.sourceOrigin;
-    }
-
-    if (sourceOrigin === undefined) {
-      throw new UnderspecifiedStoragePartitionException(
-        '"sourceOrigin" should be set'
-      );
     }
 
     const unsupportedPartitionKeys = new Map<string, string>();
@@ -150,7 +142,7 @@ export class StorageProcessor {
     }
 
     return {
-      sourceOrigin,
+      ...(descriptor.sourceOrigin === undefined ? {} : {sourceOrigin}),
     };
   }
 
