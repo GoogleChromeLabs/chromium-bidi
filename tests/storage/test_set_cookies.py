@@ -16,7 +16,7 @@
 from datetime import datetime, timedelta
 
 import pytest
-from storage import get_bidi_cookie, get_hostname_and_origin
+from storage import get_bidi_cookie
 from test_helpers import execute_command
 
 SOME_COOKIE_NAME = 'some_cookie_name'
@@ -24,12 +24,14 @@ SOME_COOKIE_VALUE = 'some_cookie_value'
 ANOTHER_COOKIE_NAME = 'another_cookie_name'
 ANOTHER_COOKIE_VALUE = 'another_cookie_value'
 
+SOME_DOMAIN = 'some_domain.com'
+SOME_ORIGIN_WITHOUT_PORT = 'https://some_domain.com'
+SOME_ORIGIN = 'https://some_domain.com:1234'
 SOME_URL = 'https://some_domain.com:1234/some/path?some=query#some-fragment'
 
 
 @pytest.mark.asyncio
 async def test_cookie_set_with_required_fields(websocket, context_id):
-    hostname, expected_origin = get_hostname_and_origin(SOME_URL)
     resp = await execute_command(
         websocket, {
             'method': 'storage.setCookie',
@@ -40,7 +42,7 @@ async def test_cookie_set_with_required_fields(websocket, context_id):
                         'type': 'string',
                         'value': SOME_COOKIE_VALUE
                     },
-                    'domain': hostname,
+                    'domain': SOME_DOMAIN,
                 }
             }
         })
@@ -54,7 +56,7 @@ async def test_cookie_set_with_required_fields(websocket, context_id):
         'cookies': [
             get_bidi_cookie(SOME_COOKIE_NAME,
                             SOME_COOKIE_VALUE,
-                            hostname,
+                            SOME_DOMAIN,
                             secure=False)
         ],
         'partitionKey': {}
@@ -63,7 +65,6 @@ async def test_cookie_set_with_required_fields(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_cookie_set_partition_context(websocket, context_id):
-    hostname, expected_origin = get_hostname_and_origin(SOME_URL)
     resp = await execute_command(
         websocket, {
             'method': 'storage.setCookie',
@@ -75,7 +76,7 @@ async def test_cookie_set_partition_context(websocket, context_id):
                         'type': 'string',
                         'value': SOME_COOKIE_VALUE
                     },
-                    'domain': hostname,
+                    'domain': SOME_DOMAIN,
                 },
                 'partition': {
                     'type': 'context',
@@ -93,7 +94,7 @@ async def test_cookie_set_partition_context(websocket, context_id):
         'cookies': [
             get_bidi_cookie(SOME_COOKIE_NAME,
                             SOME_COOKIE_VALUE,
-                            hostname,
+                            SOME_DOMAIN,
                             secure=True)
         ],
         'partitionKey': {}
@@ -102,7 +103,6 @@ async def test_cookie_set_partition_context(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_cookie_set_partition_source_origin(websocket, context_id):
-    hostname, expected_origin = get_hostname_and_origin(SOME_URL)
     resp = await execute_command(
         websocket, {
             'method': 'storage.setCookie',
@@ -114,19 +114,15 @@ async def test_cookie_set_partition_source_origin(websocket, context_id):
                         'type': 'string',
                         'value': SOME_COOKIE_VALUE
                     },
-                    'domain': hostname,
+                    'domain': SOME_DOMAIN,
                 },
                 'partition': {
                     'type': 'storageKey',
-                    'sourceOrigin': expected_origin,
+                    'sourceOrigin': SOME_ORIGIN,
                 }
             }
         })
-    assert resp == {
-        'partitionKey': {
-            'sourceOrigin': 'https://some_domain.com'
-        }
-    }
+    assert resp == {'partitionKey': {'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT}}
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -136,7 +132,7 @@ async def test_cookie_set_partition_source_origin(websocket, context_id):
         'cookies': [
             get_bidi_cookie(SOME_COOKIE_NAME,
                             SOME_COOKIE_VALUE,
-                            hostname,
+                            SOME_DOMAIN,
                             secure=True)
         ],
         'partitionKey': {}
@@ -145,7 +141,6 @@ async def test_cookie_set_partition_source_origin(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_cookie_set_with_all_fields(websocket, context_id):
-    hostname, expected_origin = get_hostname_and_origin(SOME_URL)
     some_path = "/SOME_PATH"
     http_only = True
     secure = True
@@ -162,7 +157,7 @@ async def test_cookie_set_with_all_fields(websocket, context_id):
                         'type': 'string',
                         'value': SOME_COOKIE_VALUE
                     },
-                    'domain': hostname,
+                    'domain': SOME_DOMAIN,
                     'path': some_path,
                     'httpOnly': http_only,
                     'secure': secure,
@@ -179,7 +174,7 @@ async def test_cookie_set_with_all_fields(websocket, context_id):
     })
     assert resp == {
         'cookies': [
-            get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname,
+            get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, SOME_DOMAIN,
                             some_path, http_only, secure, same_site, expiry)
         ],
         'partitionKey': {}
@@ -188,7 +183,6 @@ async def test_cookie_set_with_all_fields(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_cookie_set_expired(websocket, context_id):
-    hostname, expected_origin = get_hostname_and_origin(SOME_URL)
     expiry = int((datetime.now() - timedelta(seconds=1)).timestamp())
     resp = await execute_command(
         websocket, {
@@ -196,7 +190,7 @@ async def test_cookie_set_expired(websocket, context_id):
             'params': {
                 'cookie': get_bidi_cookie(SOME_COOKIE_NAME,
                                           SOME_COOKIE_VALUE,
-                                          hostname,
+                                          SOME_DOMAIN,
                                           expiry=expiry),
             }
         })
