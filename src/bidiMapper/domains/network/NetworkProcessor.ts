@@ -17,16 +17,15 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {
-  Network,
+  type Network,
   type EmptyResult,
   NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
-import {type BlockedRequest, NetworkStorage} from './NetworkStorage.js';
+import {NetworkStorage} from './NetworkStorage.js';
 import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
@@ -34,29 +33,15 @@ import {
 
 /** Dispatches Network domain commands. */
 export class NetworkProcessor {
-  readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
 
-  constructor(
-    browsingContextStorage: BrowsingContextStorage,
-    networkStorage: NetworkStorage
-  ) {
-    this.#browsingContextStorage = browsingContextStorage;
+  constructor(networkStorage: NetworkStorage) {
     this.#networkStorage = networkStorage;
   }
 
   async addIntercept(
     params: Network.AddInterceptParameters
   ): Promise<Network.AddInterceptResult> {
-    // If AuthRequired is specified, BeforeRequestSent must also be specified.
-    // This is a CDP quirk.
-    if (
-      params.phases.includes(Network.InterceptPhase.AuthRequired) &&
-      !params.phases.includes(Network.InterceptPhase.BeforeRequestSent)
-    ) {
-      params.phases.unshift(Network.InterceptPhase.BeforeRequestSent);
-    }
-
     const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
     const parsedUrlPatterns: Network.UrlPattern[] =
       NetworkProcessor.parseUrlPatterns(urlPatterns);
@@ -66,7 +51,7 @@ export class NetworkProcessor {
       phases: params.phases,
     });
 
-    await this.#fetchApply();
+    await this.#networkStorage.toggleInterception();
 
     return {
       intercept,
@@ -77,16 +62,16 @@ export class NetworkProcessor {
     params: Network.ContinueRequestParameters
   ): Promise<EmptyResult> {
     const networkId = params.request;
-    const {request: fetchId, phase} = this.#getBlockedRequest(networkId);
-
-    if (phase !== Network.InterceptPhase.BeforeRequestSent) {
-      throw new InvalidArgumentException(
-        `Blocked request for network id '${networkId}' is not in 'BeforeRequestSent' phase`
-      );
-    }
 
     if (params.url !== undefined) {
       NetworkProcessor.parseUrlString(params.url);
+    }
+
+    const request = this.#getRequestOrFail(networkId);
+    if (!request.blocked) {
+      throw new NoSuchRequestException(
+        `No blocked request found for network id '${networkId}'`
+      );
     }
 
     const {url, method, headers} = params;
@@ -97,10 +82,7 @@ export class NetworkProcessor {
     const requestHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(headers);
 
-    const request = this.#getRequestOrFail(networkId);
-    await request.continueRequest(fetchId, url, method, requestHeaders);
-
-    this.#networkStorage.removeBlockedRequest(networkId);
+    await request.continueRequest(url, method, requestHeaders);
 
     return {};
   }
@@ -109,15 +91,13 @@ export class NetworkProcessor {
     params: Network.ContinueResponseParameters
   ): Promise<EmptyResult> {
     const networkId = params.request;
-    const {request: fetchId, phase} = this.#getBlockedRequest(networkId);
-
-    if (phase === Network.InterceptPhase.BeforeRequestSent) {
-      throw new InvalidArgumentException(
-        `Blocked request for network id '${networkId}' is in 'BeforeRequestSent' phase`
+    const {statusCode, reasonPhrase, headers} = params;
+    const request = this.#getRequestOrFail(networkId);
+    if (!request.blocked) {
+      throw new NoSuchRequestException(
+        `No blocked request found for network id '${networkId}'`
       );
     }
-
-    const {statusCode, reasonPhrase, headers} = params;
 
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(headers);
@@ -125,15 +105,8 @@ export class NetworkProcessor {
     // TODO: Set / expand.
     // ; Step 10. cookies
     // ; Step 11. credentials
-    const request = this.#getRequestOrFail(networkId);
-    await request.continueResponse(
-      fetchId,
-      statusCode,
-      reasonPhrase,
-      responseHeaders
-    );
 
-    this.#networkStorage.removeBlockedRequest(networkId);
+    await request.continueResponse(statusCode, reasonPhrase, responseHeaders);
 
     return {};
   }
@@ -142,15 +115,12 @@ export class NetworkProcessor {
     params: Network.ContinueWithAuthParameters
   ): Promise<EmptyResult> {
     const networkId = params.request;
-    const {request: fetchId, phase} = this.#getBlockedRequest(networkId);
-
-    if (phase !== Network.InterceptPhase.AuthRequired) {
-      throw new InvalidArgumentException(
-        `Blocked request for network id '${networkId}' is not in 'AuthRequired' phase`
+    const request = this.#getRequestOrFail(networkId);
+    if (!request.blocked) {
+      throw new NoSuchRequestException(
+        `No blocked request found for network id '${networkId}'`
       );
     }
-
-    const request = this.#getRequestOrFail(networkId);
 
     let username: string | undefined;
     let password: string | undefined;
@@ -172,7 +142,7 @@ export class NetworkProcessor {
       params.action
     );
 
-    await request.continueWithAuth(fetchId, response, username, password);
+    await request.continueWithAuth(response, username, password);
 
     return {};
   }
@@ -180,18 +150,8 @@ export class NetworkProcessor {
   async failRequest({
     request: networkId,
   }: Network.FailRequestParameters): Promise<EmptyResult> {
-    const {request: fetchId, phase} = this.#getBlockedRequest(networkId);
-
-    if (phase === Network.InterceptPhase.AuthRequired) {
-      throw new InvalidArgumentException(
-        `Blocked request for network id '${networkId}' is in 'AuthRequired' phase`
-      );
-    }
-
     const request = this.#getRequestOrFail(networkId);
-    await request.failRequest(fetchId, 'Failed');
-
-    this.#networkStorage.removeBlockedRequest(networkId);
+    await request.failRequest('Failed');
 
     return {};
   }
@@ -206,7 +166,6 @@ export class NetworkProcessor {
       body,
       request: networkId,
     } = params;
-    const {request: fetchId} = this.#getBlockedRequest(networkId);
 
     // TODO: Step 6
     // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
@@ -219,14 +178,11 @@ export class NetworkProcessor {
     // ; Step 11. credentials
     const request = this.#getRequestOrFail(networkId);
     await request.provideResponse(
-      fetchId,
       statusCode ?? request.statusCode,
       reasonPhrase,
       responseHeaders,
       body?.value // TODO: Differ base64 / string
     );
-
-    this.#networkStorage.removeBlockedRequest(networkId);
 
     return {};
   }
@@ -236,73 +192,16 @@ export class NetworkProcessor {
   ): Promise<EmptyResult> {
     this.#networkStorage.removeIntercept(params.intercept);
 
-    await this.#fetchApply();
+    await this.#networkStorage.toggleInterception();
 
     return {};
-  }
-
-  /** Applies all existing network intercepts to all CDP targets concurrently. */
-  async #fetchEnable() {
-    await Promise.all(
-      this.#browsingContextStorage.getAllContexts().map(async (context) => {
-        await context.cdpTarget.fetchEnable();
-      })
-    );
-  }
-
-  /** Removes all existing network intercepts from all CDP targets concurrently. */
-  async #fetchDisable() {
-    await Promise.all(
-      this.#browsingContextStorage.getAllContexts().map(async (context) => {
-        await context.cdpTarget.fetchDisable();
-      })
-    );
-  }
-
-  /**
-   * Either enables or disables the Fetch domain.
-   *
-   * If enabling, applies all existing network intercepts to all CDP targets.
-   * If disabling, removes all existing network intercepts from all CDP targets.
-   *
-   * Disabling is only performed when there are no remaining intercepts or
-   * // blocked requests.
-   */
-  async #fetchApply() {
-    if (
-      this.#networkStorage.hasIntercepts() ||
-      this.#networkStorage.hasBlockedRequests() ||
-      this.#networkStorage.hasNetworkRequests()
-    ) {
-      // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
-      await this.#fetchEnable();
-    } else {
-      // The last intercept has been removed, and there are no pending
-      // blocked requests.
-      // Disable the Fetch domain.
-      await this.#fetchDisable();
-    }
-  }
-
-  /**
-   * Returns the blocked request associated with the given network ID.
-   * If none, throws a NoSuchRequestException.
-   */
-  #getBlockedRequest(networkId: Network.Request): BlockedRequest {
-    const blockedRequest = this.#networkStorage.getBlockedRequest(networkId);
-    if (!blockedRequest) {
-      throw new NoSuchRequestException(
-        `No blocked request found for network id '${networkId}'`
-      );
-    }
-    return blockedRequest;
   }
 
   #getRequestOrFail(id: Network.Request): NetworkRequest {
     const request = this.#networkStorage.getRequest(id);
     if (!request) {
       throw new NoSuchRequestException(
-        `Network request with ID ${id} doesn't exist`
+        `Network request with ID '${id}' doesn't exist`
       );
     }
     return request;

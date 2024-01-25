@@ -19,6 +19,7 @@ import type {Protocol} from 'devtools-protocol';
 import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
 import {URLPattern} from '../../../utils/UrlPattern.js';
 import {uuidv4} from '../../../utils/uuid.js';
+import type {CdpClient} from '../../BidiMapper.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 
@@ -27,33 +28,175 @@ interface NetworkInterception {
   phases: Network.AddInterceptParameters['phases'];
 }
 
-export interface BlockedRequest {
-  // intercept request id; form: 'interception-job-1.0'
-  request: Protocol.Fetch.RequestId;
-  phase: Network.InterceptPhase;
-  response: Network.ResponseData;
-}
-
 /** Stores network and intercept maps. */
 export class NetworkStorage {
+  #browserClient: CdpClient;
   /**
    * A map from network request ID to Network Request objects.
    * Needed as long as information about requests comes from different events.
    */
-  readonly #requestMap = new Map<Network.Request, NetworkRequest>();
+  readonly #requests = new Map<Network.Request, NetworkRequest>();
 
   /** A map from intercept ID to track active network intercepts. */
-  readonly #interceptMap = new Map<Network.Intercept, NetworkInterception>();
+  readonly #intercepts = new Map<Network.Intercept, NetworkInterception>();
 
-  /** A map from network request ID to track actively blocked requests. */
-  readonly #blockedRequestMap = new Map<Network.Request, BlockedRequest>();
+  #interceptionStages = {
+    request: false,
+    response: false,
+    auth: false,
+  };
+  #interceptionHandler = this.#handleNetworkInterception.bind(this);
+  #authHandler = this.#handleAuthInterception.bind(this);
+
+  constructor(browserClient: CdpClient) {
+    this.#browserClient = browserClient;
+  }
+
+  /*
+   * Toggles network interception if needed
+   */
+  async toggleInterception() {
+    if (this.#intercepts.size) {
+      const stages = {
+        request: false,
+        response: false,
+        auth: false,
+      };
+      for (const intercept of this.#intercepts.values()) {
+        stages.request ||= intercept.phases.includes(
+          Network.InterceptPhase.BeforeRequestSent
+        );
+        stages.response ||= intercept.phases.includes(
+          Network.InterceptPhase.ResponseStarted
+        );
+        stages.auth ||= intercept.phases.includes(
+          Network.InterceptPhase.AuthRequired
+        );
+      }
+      const patterns: Protocol.Fetch.EnableRequest['patterns'] = [];
+
+      if (
+        this.#interceptionStages.request !== stages.request ||
+        this.#interceptionStages.response !== stages.response ||
+        this.#interceptionStages.auth !== stages.auth
+      ) {
+        this.#interceptionStages = stages;
+        // CDP quirk we need request interception when we intercept auth
+        if (stages.request || stages.auth) {
+          patterns.push({urlPattern: '*', requestStage: 'Request'});
+        }
+        if (stages.response) {
+          patterns.push({urlPattern: '*', requestStage: 'Response'});
+        }
+      }
+
+      // TODO: Don't enable on start as we will have
+      // no network interceptions at this time.
+      // Needed to enable fetch events.
+      await this.#browserClient.sendCommand('Fetch.enable', {
+        patterns,
+        handleAuthRequests: stages.auth,
+      });
+      this.#browserClient.on('Fetch.requestPaused', this.#interceptionHandler);
+      this.#browserClient.on('Fetch.authRequired', this.#authHandler);
+    } else {
+      this.#interceptionStages = {
+        request: false,
+        response: false,
+        auth: false,
+      };
+      await this.#browserClient.sendCommand('Fetch.disable');
+      this.#browserClient.off('Fetch.requestPaused', this.#interceptionHandler);
+      this.#browserClient.off('Fetch.authRequired', this.#authHandler);
+    }
+  }
+
+  requestBlockedBy(
+    request: NetworkRequest,
+    phase?: Network.InterceptPhase
+  ): Set<Network.Intercept> {
+    if (request.url === undefined || phase === undefined) {
+      return new Set();
+    }
+
+    const intercepts = new Set<Network.Intercept>();
+    for (const [interceptId, intercept] of this.#intercepts.entries()) {
+      if (!intercept.phases.includes(phase)) {
+        continue;
+      }
+
+      if (intercept.urlPatterns.length === 0) {
+        intercepts.add(interceptId);
+        continue;
+      }
+
+      for (const pattern of intercept.urlPatterns) {
+        if (pattern.type === 'string') {
+          if (request.url.includes(pattern.pattern)) {
+            intercepts.add(interceptId);
+            break;
+          }
+          continue;
+        }
+
+        const urlPattern = new URLPattern(pattern);
+        if (urlPattern.test(request.url)) {
+          intercepts.add(interceptId);
+          break;
+        }
+      }
+    }
+
+    return intercepts;
+  }
 
   disposeRequestMap() {
-    for (const request of this.#requestMap.values()) {
+    for (const request of this.#requests.values()) {
       request.dispose();
     }
 
-    this.#requestMap.clear();
+    this.#requests.clear();
+  }
+
+  #handleNetworkInterception(event: Protocol.Fetch.RequestPausedEvent) {
+    // CDP quirk if the Network domain is not present this is undefined
+    const request = this.#requests.get(event.networkId ?? '');
+    if (!request) {
+      // CDP quirk even both request/response may be continued
+      // with this command
+      void this.#browserClient
+        .sendCommand('Fetch.continueRequest', {
+          requestId: event.requestId,
+        })
+        .catch(() => {
+          // TODO: add logging
+        });
+      return;
+    }
+
+    request.onRequestPaused(event);
+  }
+
+  #handleAuthInterception(event: Protocol.Fetch.AuthRequiredEvent) {
+    // CDP quirk if the Network domain is not present this is undefined
+    const request = this.#requests.get(event.requestId ?? '');
+    if (!request) {
+      // CDP quirk even both request/response may be continued
+      // with this command
+      void this.#browserClient
+        .sendCommand('Fetch.continueWithAuth', {
+          requestId: event.requestId,
+          authChallengeResponse: {
+            response: 'Default',
+          },
+        })
+        .catch(() => {
+          // TODO: add logging
+        });
+      return;
+    }
+
+    request.onAuthRequired(event);
   }
 
   /**
@@ -64,7 +207,7 @@ export class NetworkStorage {
    */
   addIntercept(value: NetworkInterception): Network.Intercept {
     const interceptId: Network.Intercept = uuidv4();
-    this.#interceptMap.set(interceptId, value);
+    this.#intercepts.set(interceptId, value);
 
     return interceptId;
   }
@@ -74,81 +217,29 @@ export class NetworkStorage {
    * Throws NoSuchInterceptException if the intercept does not exist.
    */
   removeIntercept(intercept: Network.Intercept) {
-    if (!this.#interceptMap.has(intercept)) {
+    if (!this.#intercepts.has(intercept)) {
       throw new NoSuchInterceptException(
         `Intercept '${intercept}' does not exist.`
       );
     }
 
-    this.#interceptMap.delete(intercept);
-  }
-
-  /** Returns true if there's at least one added intercept. */
-  hasIntercepts() {
-    return this.#interceptMap.size > 0;
-  }
-
-  /** Gets parameters for CDP 'Fetch.enable' command from the intercept map. */
-  getFetchEnableParams(): Protocol.Fetch.EnableRequest {
-    const patterns: Protocol.Fetch.RequestPattern[] = [];
-
-    for (const value of this.#interceptMap.values()) {
-      for (const phase of value.phases) {
-        const requestStage = NetworkStorage.requestStageFromPhase(phase);
-
-        if (value.urlPatterns.length === 0) {
-          patterns.push({
-            urlPattern: '*',
-            requestStage,
-          });
-          continue;
-        }
-        for (const urlPatternSpec of value.urlPatterns) {
-          const urlPattern =
-            NetworkStorage.cdpFromSpecUrlPattern(urlPatternSpec);
-
-          patterns.push({
-            urlPattern,
-            requestStage,
-          });
-        }
-      }
-    }
-
-    return {
-      patterns,
-      // If there's at least one intercept that requires auth, enable the
-      // 'Fetch.authRequired' event.
-      handleAuthRequests: [...this.#interceptMap.values()].some((param) => {
-        return param.phases.includes(Network.InterceptPhase.AuthRequired);
-      }),
-    };
+    this.#intercepts.delete(intercept);
   }
 
   getRequest(id: Network.Request): NetworkRequest | undefined {
-    return this.#requestMap.get(id);
+    return this.#requests.get(id);
   }
 
   addRequest(request: NetworkRequest) {
-    this.#requestMap.set(request.requestId, request);
+    this.#requests.set(request.id, request);
   }
 
   deleteRequest(id: Network.Request) {
-    const request = this.#requestMap.get(id);
+    const request = this.#requests.get(id);
     if (request) {
       request.dispose();
-      this.#requestMap.delete(id);
+      this.#requests.delete(id);
     }
-  }
-
-  /** Returns true if there's at least one network request. */
-  hasNetworkRequests() {
-    return this.#requestMap.size > 0;
-  }
-
-  /** Returns true if there's at least one blocked network request. */
-  hasBlockedRequests() {
-    return this.#blockedRequestMap.size > 0;
   }
 
   /** Converts a URL pattern from the spec to a CDP URL pattern. */
@@ -214,22 +305,6 @@ export class NetworkStorage {
   }
 
   /**
-   * Maps spec Network.InterceptPhase to CDP Fetch.RequestStage.
-   * AuthRequired has no CDP equivalent..
-   */
-  static requestStageFromPhase(
-    phase: Network.InterceptPhase
-  ): Protocol.Fetch.RequestStage {
-    switch (phase) {
-      case Network.InterceptPhase.BeforeRequestSent:
-        return 'Request';
-      case Network.InterceptPhase.ResponseStarted:
-      case Network.InterceptPhase.AuthRequired:
-        return 'Response';
-    }
-  }
-
-  /**
    * Returns true if the given protocol is special.
    * Special protocols are those that have a default port.
    *
@@ -241,53 +316,6 @@ export class NetworkStorage {
     return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(
       protocol.replace(/:$/, '')
     );
-  }
-
-  addBlockedRequest(requestId: Network.Request, value: BlockedRequest) {
-    this.#blockedRequestMap.set(requestId, value);
-  }
-
-  removeBlockedRequest(requestId: Network.Request) {
-    this.#blockedRequestMap.delete(requestId);
-  }
-
-  /**
-   * Returns the blocked request associated with the given network ID, if any.
-   */
-  getBlockedRequest(networkId: Network.Request) {
-    return this.#blockedRequestMap.get(networkId);
-  }
-
-  /** #@see https://w3c.github.io/webdriver-bidi/#get-the-network-intercepts */
-  getNetworkIntercepts(
-    requestId: Network.Request,
-    phase?: Network.InterceptPhase
-  ): Network.Intercept[] {
-    const request = this.#requestMap.get(requestId);
-    if (!request) {
-      return [];
-    }
-
-    const interceptIds: Network.Intercept[] = [];
-
-    for (const [
-      interceptId,
-      {phases, urlPatterns},
-    ] of this.#interceptMap.entries()) {
-      if (phase && phases.includes(phase)) {
-        if (urlPatterns.length === 0) {
-          interceptIds.push(interceptId);
-        } else if (
-          urlPatterns.some((urlPattern) =>
-            NetworkStorage.matchUrlPattern(urlPattern, request.url)
-          )
-        ) {
-          interceptIds.push(interceptId);
-        }
-      }
-    }
-
-    return interceptIds;
   }
 
   /** Matches the given URLPattern against the given URL. */

@@ -117,19 +117,6 @@ export class CdpTarget {
     return this.#cdpClient.sessionId!;
   }
 
-  /** Calls `Fetch.enable` with the added network intercepts. */
-  async fetchEnable() {
-    await this.#cdpClient.sendCommand(
-      'Fetch.enable',
-      this.#networkStorage.getFetchEnableParams()
-    );
-  }
-
-  /** Calls `Fetch.disable`. */
-  async fetchDisable() {
-    await this.#cdpClient.sendCommand('Fetch.disable');
-  }
-
   /**
    * Enables all the required CDP domains and unblocks the target.
    */
@@ -156,8 +143,6 @@ export class CdpTarget {
         enabledNetwork
           ? this.#cdpClient.sendCommand('Network.enable')
           : undefined,
-        // XXX: #1080: Do not always enable the fetch domain globally.
-        this.fetchEnable(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,
