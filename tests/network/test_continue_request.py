@@ -26,7 +26,7 @@ async def test_continue_request_non_existent_request(websocket):
             Exception,
             match=str({
                 "error": "no such request",
-                "message": "No blocked request found for network id '_UNKNOWN_'"
+                "message": "Network request with ID '_UNKNOWN_' doesn't exist"
             })):
         await execute_command(
             websocket, {

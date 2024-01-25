@@ -174,18 +174,6 @@ export class NetworkManager {
       }
     );
 
-    // https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
-    cdpTarget.cdpClient.on(
-      'Fetch.requestPaused',
-      (params: Protocol.Fetch.RequestPausedEvent) => {
-        if (params.networkId) {
-          networkManager
-            .#getOrCreateNetworkRequest(params.networkId)
-            .onRequestPaused(params);
-        }
-      }
-    );
-
     return networkManager;
   }
 }
