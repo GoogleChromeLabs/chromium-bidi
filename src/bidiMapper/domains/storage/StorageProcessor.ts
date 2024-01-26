@@ -21,8 +21,8 @@ import {assert} from '../../../utils/assert.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
-import {Cookie} from '../network/Cookie';
 import {NetworkProcessor} from '../network/NetworkProcessor.js';
+import {bidiToCdpCookie, cdpToBiDiCookie} from '../network/NetworkUtils.js';
 
 /**
  * Responsible for handling the `storage` domain.
@@ -61,7 +61,7 @@ export class StorageProcessor {
           partitionKey.sourceOrigin === undefined ||
           c.partitionKey === partitionKey.sourceOrigin
       )
-      .map((c) => Cookie.cdpToBiDiCookie(c))
+      .map((c) => cdpToBiDiCookie(c))
       .filter((c) => this.#matchCookie(c, params.filter));
 
     return {
@@ -74,7 +74,7 @@ export class StorageProcessor {
     params: Storage.SetCookieParameters
   ): Promise<Storage.SetCookieResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
-    const cdpCookie = Cookie.bidiToCdpCookie(params, partitionKey);
+    const cdpCookie = bidiToCdpCookie(params, partitionKey);
 
     try {
       await this.#browserCdpClient.sendCommand('Storage.setCookies', {
