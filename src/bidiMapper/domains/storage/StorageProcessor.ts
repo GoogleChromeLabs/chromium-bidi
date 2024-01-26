@@ -219,15 +219,18 @@ export class StorageProcessor {
           ? Network.SameSite.None
           : StorageProcessor.#sameSiteCdpToBiDi(cookie.sameSite),
       ...(cookie.expires >= 0 ? {expiry: cookie.expires} : undefined),
-      // TODO: extend with CDP-specific properties with `goog:` prefix after
-      //  https://github.com/w3c/webdriver-bidi/pull/637
-      //  * session: boolean;
-      //  * priority: CookiePriority;
-      //  * sameParty: boolean;
-      //  * sourceScheme: CookieSourceScheme;
-      //  * sourcePort: integer;
-      //  * partitionKey?: string;
-      //  * partitionKeyOpaque?: boolean;
+      // Extending with CDP-specific properties with `goog:` prefix.
+      'goog:session': cookie.session,
+      'goog:priority': cookie.priority,
+      'goog:sameParty': cookie.sameParty,
+      'goog:sourceScheme': cookie.sourceScheme,
+      'goog:sourcePort': cookie.sourcePort,
+      ...(cookie.partitionKey !== undefined
+        ? {'goog:partitionKey': cookie.partitionKey}
+        : {}),
+      ...(cookie.partitionKeyOpaque !== undefined
+        ? {'goog:partitionKeyOpaque': cookie.partitionKeyOpaque}
+        : {}),
     };
   }
 
