@@ -34,6 +34,7 @@ import type {Result} from '../../../utils/result.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
+import {Cookie} from './Cookie.js';
 import type {NetworkStorage} from './NetworkStorage.js';
 import {
   computeHeadersSize,
@@ -689,34 +690,6 @@ export class NetworkRequest {
       .filter(({blockedReasons}) => {
         return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
       })
-      .map(({cookie}) => {
-        return {
-          name: cookie.name,
-          value: {
-            type: 'string',
-            value: cookie.value,
-          },
-          domain: cookie.domain,
-          path: cookie.path,
-          expires: cookie.expires,
-          size: cookie.size,
-          httpOnly: cookie.httpOnly,
-          secure: cookie.secure,
-          sameSite: NetworkRequest.#getCookiesSameSite(cookie.sameSite),
-        };
-      });
-  }
-
-  static #getCookiesSameSite(
-    cdpSameSiteValue?: string
-  ): Network.Cookie['sameSite'] {
-    switch (cdpSameSiteValue) {
-      case 'Strict':
-        return Network.SameSite.Strict;
-      case 'Lax':
-        return Network.SameSite.Lax;
-      default:
-        return Network.SameSite.None;
-    }
+      .map(({cookie}) => Cookie.cdpToBiDiCookie(cookie));
   }
 }
