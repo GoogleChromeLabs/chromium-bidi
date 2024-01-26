@@ -27,8 +27,6 @@ import {
 } from '../../../protocol/ErrorResponse';
 import {Network, type Storage} from '../../../protocol/protocol.js';
 
-const CDP_SPECIFIC_PREFIX = 'goog:';
-
 export function computeHeadersSize(headers: Network.Header[]): number {
   const requestHeaders = headers.reduce((acc, header) => {
     return `${acc}${header.name}: ${header.value.value}\r\n`;
@@ -138,17 +136,16 @@ export function cdpToBiDiCookie(
   };
 
   // Extending with CDP-specific properties with `goog:` prefix.
-  result[`${CDP_SPECIFIC_PREFIX}session`] = cookie.session;
-  result[`${CDP_SPECIFIC_PREFIX}priority`] = cookie.priority;
-  result[`${CDP_SPECIFIC_PREFIX}sameParty`] = cookie.sameParty;
-  result[`${CDP_SPECIFIC_PREFIX}sourceScheme`] = cookie.sourceScheme;
-  result[`${CDP_SPECIFIC_PREFIX}sourcePort`] = cookie.sourcePort;
+  result[`goog:session`] = cookie.session;
+  result[`goog:priority`] = cookie.priority;
+  result[`goog:sameParty`] = cookie.sameParty;
+  result[`goog:sourceScheme`] = cookie.sourceScheme;
+  result[`goog:sourcePort`] = cookie.sourcePort;
   if (cookie.partitionKey !== undefined) {
-    result[`${CDP_SPECIFIC_PREFIX}partitionKey`] = cookie.partitionKey;
+    result[`goog:partitionKey`] = cookie.partitionKey;
   }
   if (cookie.partitionKeyOpaque !== undefined) {
-    result[`${CDP_SPECIFIC_PREFIX}partitionKeyOpaque`] =
-      cookie.partitionKeyOpaque;
+    result[`goog:partitionKeyOpaque`] = cookie.partitionKeyOpaque;
   }
   return result;
 }
@@ -189,20 +186,20 @@ export function bidiToCdpCookie(
   };
 
   // Extending with CDP-specific properties with `goog:` prefix.
-  if (params.cookie[`${CDP_SPECIFIC_PREFIX}url`] !== undefined) {
-    result.url = params.cookie[`${CDP_SPECIFIC_PREFIX}url`];
+  if (params.cookie[`goog:url`] !== undefined) {
+    result.url = params.cookie[`goog:url`];
   }
-  if (params.cookie[`${CDP_SPECIFIC_PREFIX}priority`] !== undefined) {
-    result.priority = params.cookie[`${CDP_SPECIFIC_PREFIX}priority`];
+  if (params.cookie[`goog:priority`] !== undefined) {
+    result.priority = params.cookie[`goog:priority`];
   }
-  if (params.cookie[`${CDP_SPECIFIC_PREFIX}sameParty`] !== undefined) {
-    result.sameParty = params.cookie[`${CDP_SPECIFIC_PREFIX}sameParty`];
+  if (params.cookie[`goog:sameParty`] !== undefined) {
+    result.sameParty = params.cookie[`goog:sameParty`];
   }
-  if (params.cookie[`${CDP_SPECIFIC_PREFIX}sourceScheme`] !== undefined) {
-    result.sourceScheme = params.cookie[`${CDP_SPECIFIC_PREFIX}sourceScheme`];
+  if (params.cookie[`goog:sourceScheme`] !== undefined) {
+    result.sourceScheme = params.cookie[`goog:sourceScheme`];
   }
-  if (params.cookie[`${CDP_SPECIFIC_PREFIX}sourcePort`] !== undefined) {
-    result.sourcePort = params.cookie[`${CDP_SPECIFIC_PREFIX}sourcePort`];
+  if (params.cookie[`goog:sourcePort`] !== undefined) {
+    result.sourcePort = params.cookie[`goog:sourcePort`];
   }
 
   return result;
