@@ -139,7 +139,7 @@ describe('NetworkStorage', () => {
       expect(intercept1).to.not.be.equal(intercept2);
 
       expect(networkStorage.getFetchEnableParams().patterns).to.have.lengthOf(
-        1
+        2
       );
     });
   });
