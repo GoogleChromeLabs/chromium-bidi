@@ -25,7 +25,19 @@ import {Network, type Storage} from '../../../protocol/protocol.js';
 
 const CDP_SPECIFIC_PREFIX = 'goog:';
 
+/**
+ * Utility class for presenting BiDi `network.Cookie` and it's conversion with
+ *  CDP's `Network.Cookie` and `Network.CookieParam`.
+ *  * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
+ *  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Cookie
+ *  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-CookieParam
+ */
 export class Cookie {
+  /**
+   * Converts from CDP Network domain cookie to BiDi network cookie.
+   * @param {Protocol.Network.Cookie} cookie
+   * @return {Network.Cookie}
+   */
   static cdpToBiDiCookie(cookie: Protocol.Network.Cookie): Network.Cookie {
     const result: Network.Cookie = {
       name: cookie.name,
@@ -58,6 +70,12 @@ export class Cookie {
     return result;
   }
 
+  /**
+   * Converts from BiDi set network cookie params to CDP Network domain cookie.
+   * @param {Storage.SetCookieParameters} params
+   * @param {Storage.PartitionKey} partitionKey
+   * @return {Protocol.Network.CookieParam}
+   */
   static bidiToCdpCookie(
     params: Storage.SetCookieParameters,
     partitionKey: Storage.PartitionKey
