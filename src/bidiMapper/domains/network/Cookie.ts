@@ -111,16 +111,16 @@ export class Cookie {
       result.url = params.cookie[`${CDP_SPECIFIC_PREFIX}url`];
     }
     if (params.cookie[`${CDP_SPECIFIC_PREFIX}priority`] !== undefined) {
-      result.url = params.cookie[`${CDP_SPECIFIC_PREFIX}priority`];
+      result.priority = params.cookie[`${CDP_SPECIFIC_PREFIX}priority`];
     }
     if (params.cookie[`${CDP_SPECIFIC_PREFIX}sameParty`] !== undefined) {
-      result.url = params.cookie[`${CDP_SPECIFIC_PREFIX}sameParty`];
+      result.sameParty = params.cookie[`${CDP_SPECIFIC_PREFIX}sameParty`];
     }
     if (params.cookie[`${CDP_SPECIFIC_PREFIX}sourceScheme`] !== undefined) {
-      result.url = params.cookie[`${CDP_SPECIFIC_PREFIX}sourceScheme`];
+      result.sourceScheme = params.cookie[`${CDP_SPECIFIC_PREFIX}sourceScheme`];
     }
     if (params.cookie[`${CDP_SPECIFIC_PREFIX}sourcePort`] !== undefined) {
-      result.url = params.cookie[`${CDP_SPECIFIC_PREFIX}sourcePort`];
+      result.sourcePort = params.cookie[`${CDP_SPECIFIC_PREFIX}sourcePort`];
     }
 
     return result;
