@@ -144,8 +144,8 @@ async def test_cookie_set_partition_user_context(websocket, context_id):
 
 
 async def test_cookie_set_partition_browsing_context_from_user_context(
-        websocket, create_context, user_context):
-    context_id = await create_context(user_context)
+        websocket, create_context, user_context_id):
+    context_id = await create_context(user_context_id)
     resp = await execute_command(
         websocket, {
             'method': 'storage.setCookie',
@@ -165,7 +165,7 @@ async def test_cookie_set_partition_browsing_context_from_user_context(
                 }
             }
         })
-    assert resp == {'partitionKey': {'userContext': user_context, }}
+    assert resp == {'partitionKey': {'userContext': user_context_id, }}
 
     resp = await execute_command(
         websocket, {
@@ -173,7 +173,7 @@ async def test_cookie_set_partition_browsing_context_from_user_context(
             'params': {
                 'partition': {
                     'type': 'storageKey',
-                    'userContext': user_context,
+                    'userContext': user_context_id,
                 }
             }
         })
@@ -186,7 +186,7 @@ async def test_cookie_set_partition_browsing_context_from_user_context(
                                 secure=True))
         ],
         'partitionKey': {
-            'userContext': user_context,
+            'userContext': user_context_id,
         }
     }
 

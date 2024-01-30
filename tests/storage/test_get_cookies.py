@@ -110,10 +110,10 @@ async def test_cookies_get_partition_source_origin(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_cookies_get_partition_user_context(websocket, context_id,
-                                                  user_context):
+                                                  user_context_id):
     user_context_partition = {
         'type': 'storageKey',
-        'userContext': user_context,
+        'userContext': user_context_id,
     }
 
     cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, SOME_DOMAIN)
@@ -137,7 +137,7 @@ async def test_cookies_get_partition_user_context(websocket, context_id,
     assert res == {
         'cookies': [AnyExtending(cookie)],
         'partitionKey': {
-            'userContext': user_context
+            'userContext': user_context_id
         },
     }
 
@@ -191,14 +191,14 @@ async def test_cookies_get_partition_browsing_context(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_cookies_get_partition_browsing_context_from_user_context(
-        websocket, create_context, user_context):
-    context_id = await create_context(user_context)
+        websocket, create_context, user_context_id):
+    context_id = await create_context(user_context_id)
 
     cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, SOME_DOMAIN)
     # Set `cookie` to the new user context.
     await set_cookie(websocket, context_id, cookie, {
         'type': 'storageKey',
-        'userContext': user_context,
+        'userContext': user_context_id,
     })
 
     another_cookie = get_bidi_cookie(ANOTHER_COOKIE_NAME, ANOTHER_COOKIE_VALUE,
@@ -221,7 +221,7 @@ async def test_cookies_get_partition_browsing_context_from_user_context(
     assert res == {
         'cookies': [AnyExtending(cookie)],
         'partitionKey': {
-            'userContext': user_context
+            'userContext': user_context_id
         },
     }
 

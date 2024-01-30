@@ -80,15 +80,15 @@ async def another_context_id(create_context):
 @pytest_asyncio.fixture
 def create_context(websocket):
     """Return a browsing context factory."""
-    async def create_context(user_context=None):
+    async def create_context(user_context_id=None):
         result = await execute_command(
             websocket, {
                 "method": "browsingContext.create",
                 "params": {
                     "type": "tab"
                 } | ({
-                    "userContext": user_context
-                } if user_context is not None else {})
+                    "userContext": user_context_id
+                } if user_context_id is not None else {})
             })
         return result['context']
 
@@ -383,7 +383,7 @@ async def iframe_id(websocket, context_id: str, html_iframe_same_origin, html):
 
 
 @pytest_asyncio.fixture
-async def user_context(websocket):
+async def user_context_id(websocket):
     """Create a new user context and return its id."""
     result = await execute_command(websocket, {
         "method": "browser.createUserContext",
