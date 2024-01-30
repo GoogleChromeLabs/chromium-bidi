@@ -206,21 +206,24 @@ describe('CdpClient', () => {
       };
 
       // Send CDP command and store returned promise.
-      const commandPromise = cdpClient.sendCommand('Target.attachToTarget', {
-        targetId: TEST_TARGET_ID,
-      });
+      const resultOrError = cdpClient
+        .sendCommand('Target.attachToTarget', {
+          targetId: TEST_TARGET_ID,
+        })
+        .catch((error) => error);
 
       // Verify CDP command was sent.
       sinon.assert.calledOnce(mockCdpServer.sendMessage);
 
       // Notify 'cdpClient' the CDP command is finished.
+      //
       await mockCdpServer.emulateIncomingMessage({
         id: 0,
         error: expectedError,
       });
 
       // Assert sendCommand rejects with error.
-      await expect(commandPromise).to.be.eventually.rejectedWith(expectedError);
+      await expect(resultOrError).to.eventually.deep.equal(expectedError);
     });
   });
 });
