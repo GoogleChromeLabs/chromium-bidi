@@ -50,9 +50,7 @@ export class StorageProcessor {
     const cdpResponse = await this.#browserCdpClient.sendCommand(
       'Storage.getCookies',
       {
-        ...(partitionKey.userContext === undefined
-          ? {}
-          : {browserContextId: partitionKey.userContext}),
+   browserContextId: partitionKey.userContext,
       }
     );
 
