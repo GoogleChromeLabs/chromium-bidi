@@ -216,7 +216,6 @@ describe('CdpClient', () => {
       sinon.assert.calledOnce(mockCdpServer.sendMessage);
 
       // Notify 'cdpClient' the CDP command is finished.
-      //
       await mockCdpServer.emulateIncomingMessage({
         id: 0,
         error: expectedError,
