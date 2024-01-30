@@ -20,7 +20,6 @@ import type {Protocol} from 'devtools-protocol';
 import {
   BrowsingContext,
   ChromiumBidi,
-  Exception,
   InvalidArgumentException,
   NoSuchElementException,
   NoSuchHistoryEntryException,
