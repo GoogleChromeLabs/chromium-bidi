@@ -486,4 +486,57 @@ describe('SubscriptionManager', () => {
       ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAdded]);
     });
   });
+
+  describe('isSubscribedToModule', () => {
+    it('should return true global subscription', () => {
+      subscriptionManager.subscribe(
+        ChromiumBidi.Network.EventNames.ResponseCompleted,
+        null,
+        SOME_CHANNEL
+      );
+
+      expect(
+        subscriptionManager.isSubscribedToModule(
+          ChromiumBidi.BiDiModule.Network,
+          SOME_CONTEXT
+        )
+      ).to.equal(true);
+    });
+    it('should return true specific context subscription', () => {
+      subscriptionManager.subscribe(
+        ChromiumBidi.Network.EventNames.ResponseCompleted,
+        SOME_CONTEXT,
+        SOME_CHANNEL
+      );
+
+      expect(
+        subscriptionManager.isSubscribedToModule(
+          ChromiumBidi.BiDiModule.Network,
+          SOME_CONTEXT
+        )
+      ).to.equal(true);
+    });
+    it('should return true for module subscription', () => {
+      subscriptionManager.subscribe(
+        ChromiumBidi.BiDiModule.Network,
+        null,
+        SOME_CHANNEL
+      );
+
+      expect(
+        subscriptionManager.isSubscribedToModule(
+          ChromiumBidi.BiDiModule.Network,
+          SOME_CONTEXT
+        )
+      ).to.equal(true);
+    });
+    it('should return false with no subscriptions', () => {
+      expect(
+        subscriptionManager.isSubscribedToModule(
+          ChromiumBidi.BiDiModule.Network,
+          SOME_CONTEXT
+        )
+      ).to.equal(false);
+    });
+  });
 });

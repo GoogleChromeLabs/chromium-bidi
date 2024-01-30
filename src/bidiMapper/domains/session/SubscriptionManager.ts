@@ -164,6 +164,36 @@ export class SubscriptionManager {
     return Math.min(...priorities);
   }
 
+  /**
+   * @param module BiDi+ module
+   * @param contextId `null` == globally subscribed
+   *
+   * @returns
+   */
+  isSubscribedToModule(
+    module: ChromiumBidi.BiDiModule,
+    contextId: BrowsingContext.BrowsingContext | null = null
+  ): boolean {
+    for (const browserContextToEventMap of this.#channelToContextToEventMap.values()) {
+      for (const [id, eventMap] of browserContextToEventMap.entries()) {
+        // Not subscribed to this context or globally
+        if (contextId !== id && id !== null) {
+          continue;
+        }
+
+        for (const event of eventMap.keys()) {
+          // This also covers the `cdp` case where
+          // we don't unroll the event names
+          if (event.split('.').at(0) === module) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
   subscribe(
     event: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,

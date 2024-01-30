@@ -104,6 +104,10 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     this.#subscriptionManager = new SubscriptionManager(browsingContextStorage);
   }
 
+  get subscriptionManager(): SubscriptionManager {
+    return this.#subscriptionManager;
+  }
+
   /**
    * Returns consistent key to be used to access value maps.
    */
@@ -151,11 +155,11 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     }
   }
 
-  subscribe(
+  async subscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: BidiPlusChannel
-  ): void {
+  ): Promise<void> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
     }
@@ -188,17 +192,31 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
         }
       }
     }
+
+    await this.toggleModulesIfNeeded();
   }
 
-  unsubscribe(
+  async unsubscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: BidiPlusChannel
-  ) {
+  ): Promise<void> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
     }
     this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
+    await this.toggleModulesIfNeeded();
+  }
+
+  async toggleModulesIfNeeded(): Promise<void> {
+    // TODO: Only update changed subscribers
+    await Promise.all(
+      this.#browsingContextStorage
+        .getTopLevelContexts()
+        .map(async (context) => {
+          return await context.toggleDomainsIfNeeded();
+        })
+    );
   }
 
   /**
