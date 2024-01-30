@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import {error} from 'console';
-
 import type {Protocol} from 'devtools-protocol';
 
 import {
