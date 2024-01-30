@@ -42,8 +42,8 @@ export class PermissionsProcessor {
       });
     } catch (err) {
       if (
-        err instanceof Error &&
-        err.message === `Permission can't be granted to opaque origins.`
+        (err as Error).message ===
+        `Permission can't be granted to opaque origins.`
       ) {
         // Return success if the origin is not valid (does not match any
         // existing origins).

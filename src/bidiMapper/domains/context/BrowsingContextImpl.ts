@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 import {
   BrowsingContext,
   ChromiumBidi,
+  Exception,
   InvalidArgumentException,
   NoSuchElementException,
   NoSuchHistoryEntryException,
@@ -728,8 +729,7 @@ export class BrowsingContextImpl {
         );
       } catch (err) {
         if (
-          err instanceof Error &&
-          err.message.startsWith(
+          (err as Error).message.startsWith(
             // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
             'Width and height values must be positive'
           )
@@ -917,10 +917,10 @@ export class BrowsingContextImpl {
     } catch (error) {
       // Effectively zero dimensions.
       if (
-        error instanceof Error &&
-        error.message === 'invalid print parameters: content area is empty'
+        (error as Error).message ===
+        'invalid print parameters: content area is empty'
       ) {
-        throw new UnsupportedOperationException(error.message);
+        throw new UnsupportedOperationException((error as Error).message);
       }
       throw error;
     }

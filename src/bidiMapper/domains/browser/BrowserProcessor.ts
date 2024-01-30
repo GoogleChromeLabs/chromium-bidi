@@ -61,11 +61,8 @@ export class BrowserProcessor {
       });
     } catch (err) {
       // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/target_handler.cc;l=1424;drc=c686e8f4fd379312469fe018f5c390e9c8f20d0d
-      if (
-        err instanceof Error &&
-        err.message.startsWith('Failed to find context with id')
-      ) {
-        throw new NoSuchUserContextException(err.message);
+      if ((err as Error).message.startsWith('Failed to find context with id')) {
+        throw new NoSuchUserContextException((err as Error).message);
       }
       throw err;
     }
