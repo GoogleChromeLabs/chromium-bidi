@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import {error} from 'console';
+
 import type {Protocol} from 'devtools-protocol';
 
 import {
@@ -728,7 +730,8 @@ export class BrowsingContextImpl {
         );
       } catch (err) {
         if (
-          (err as Error).message.startsWith(
+          err instanceof Error &&
+          err.message.startsWith(
             // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
             'Width and height values must be positive'
           )
@@ -913,11 +916,11 @@ export class BrowsingContextImpl {
       return {
         data: result.data,
       };
-    } catch (error: any) {
+    } catch (error) {
       // Effectively zero dimensions.
       if (
-        (error as Error).message ===
-        'invalid print parameters: content area is empty'
+        error instanceof Error &&
+        error.message === 'invalid print parameters: content area is empty'
       ) {
         throw new UnsupportedOperationException(error.message);
       }

@@ -23,6 +23,7 @@ import {
   InvalidArgumentException,
   type EmptyResult,
   NoSuchUserContextException,
+  type Browser,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -50,7 +51,7 @@ export class BrowsingContextProcessor {
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
-  readonly #defaultUserContextId: string;
+  readonly #defaultUserContextId: Browser.UserContext;
   readonly #logger?: LoggerFn;
 
   constructor(
@@ -64,7 +65,7 @@ export class BrowsingContextProcessor {
     preloadScriptStorage: PreloadScriptStorage,
     acceptInsecureCerts: boolean,
     sharedIdWithFrame: boolean,
-    defaultUserContextId: string,
+    defaultUserContextId: Browser.UserContext,
     logger?: LoggerFn
   ) {
     this.#acceptInsecureCerts = acceptInsecureCerts;
@@ -147,12 +148,11 @@ export class BrowsingContextProcessor {
       });
     } catch (err) {
       if (
+        err instanceof Error &&
         // See https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/protocol/target_handler.cc;l=90;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
-        (err as Error).message.startsWith(
-          'Failed to find browser context with id'
-        ) ||
-        // See https://source.chromium.org/chromium/chromium/src/+/main:headless/lib/browser/protocol/target_handler.cc;l=49;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
-        (err as Error).message === 'browserContextId'
+        (err.message.startsWith('Failed to find browser context with id') ||
+          // See https://source.chromium.org/chromium/chromium/src/+/main:headless/lib/browser/protocol/target_handler.cc;l=49;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
+          err.message === 'browserContextId')
       ) {
         throw new NoSuchUserContextException(
           `The context ${userContext} was not found`

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {Channel} from '../../../protocol/chromium-bidi.js';
+import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
   ChromiumBidi,
   type BrowsingContext,
@@ -110,7 +110,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   static #getMapKey(
     eventName: ChromiumBidi.EventNames,
     browsingContext: BrowsingContext.BrowsingContext | null,
-    channel?: Channel
+    channel?: BidiPlusChannel
   ) {
     return JSON.stringify({eventName, browsingContext, channel});
   }
@@ -154,7 +154,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   subscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: Channel
+    channel: BidiPlusChannel
   ): void {
     for (const name of eventNames) {
       assertSupportedEvent(name);
@@ -193,7 +193,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   unsubscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: Channel
+    channel: BidiPlusChannel
   ) {
     for (const name of eventNames) {
       assertSupportedEvent(name);
@@ -229,7 +229,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    */
   #markEventSent(
     eventWrapper: EventWrapper,
-    channel: Channel,
+    channel: BidiPlusChannel,
     eventName: ChromiumBidi.EventNames
   ) {
     if (!eventBufferLength.has(eventName)) {
@@ -254,7 +254,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   #getBufferedEvents(
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: Channel
+    channel: BidiPlusChannel
   ): EventWrapper[] {
     const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
     const lastSentMapKey = EventManager.#getMapKey(
