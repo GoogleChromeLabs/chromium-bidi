@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import asyncio
+import base64
 import os
 import ssl
 from pathlib import Path
@@ -23,8 +24,9 @@ import pytest
 import pytest_asyncio
 import websockets
 from pytest_httpserver import HTTPServer
-from test_helpers import (execute_command, get_tree, goto_url,
-                          read_JSON_message, wait_for_event, wait_for_events)
+from test_helpers import (assert_images_similar, execute_command, get_tree,
+                          goto_url, read_JSON_message, wait_for_event,
+                          wait_for_events)
 
 from tools.local_http_server import LocalHttpServer
 
@@ -377,3 +379,25 @@ async def iframe_id(websocket, context_id: str, html_iframe_same_origin, html):
     await goto_url(websocket, iframe_id, html("<h1>FRAME</h1>"))
 
     return iframe_id
+
+
+@pytest_asyncio.fixture
+async def assert_screenshot(pytestconfig):
+    """Compares a screenshot against an image defined by path. If
+    `--screenshot-update` is passed, the image defined by the path will
+    update."""
+    def assert_screenshot(path: str, data: str):
+        if pytestconfig.getoption('--screenshot-update'):
+            with open(path, 'wb') as image_file:
+                image_file.write(base64.b64decode(data))
+
+        with open(path, 'rb') as image_file:
+            assert_images_similar(
+                data,
+                base64.b64encode(image_file.read()).decode('utf-8'))
+
+    return assert_screenshot
+
+
+def pytest_addoption(parser):
+    parser.addoption("--screenshot-update", action="store_true", default=False)
