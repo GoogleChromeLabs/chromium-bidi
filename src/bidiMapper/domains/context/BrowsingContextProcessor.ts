@@ -148,6 +148,7 @@ export class BrowsingContextProcessor {
       });
     } catch (err) {
       if (
+        // See https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/protocol/target_handler.cc;l=90;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
         (err as Error).message.startsWith(
           'Failed to find browser context with id'
         ) ||
