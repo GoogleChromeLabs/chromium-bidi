@@ -47,7 +47,7 @@ describe('PreloadScriptStorage', () => {
     ).to.be.empty;
     expect(
       preloadScriptStorage.find({
-        id: '',
+        targetId: '',
       })
     ).to.be.empty;
   });
