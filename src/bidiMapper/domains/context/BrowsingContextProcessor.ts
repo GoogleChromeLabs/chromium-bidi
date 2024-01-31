@@ -28,9 +28,8 @@ import {
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
-import {DedicatedWorkerRealm} from '../script/DedicatedWorkerRealm.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
-import type {Realm} from '../script/Realm.js';
+import {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -387,11 +386,20 @@ export class BrowsingContextProcessor {
           break;
         }
 
-        const cdpTarget = this.#createCdpTarget(
+        this.#setEventListeners(targetCdpClient);
+
+        const cdpTarget = CdpTarget.create(
+          targetInfo.targetId,
           targetCdpClient,
-          targetInfo,
-          sessionId
+          this.#browserCdpClient,
+          sessionId,
+          this.#realmStorage,
+          this.#eventManager,
+          this.#preloadScriptStorage,
+          this.#networkStorage,
+          this.#acceptInsecureCerts
         );
+
         const maybeContext = this.#browsingContextStorage.findContext(
           targetInfo.targetId
         );
@@ -418,6 +426,20 @@ export class BrowsingContextProcessor {
         return;
       }
       case 'worker': {
+        this.#setEventListeners(targetCdpClient);
+
+        const cdpTarget = CdpTarget.create(
+          targetInfo.targetId,
+          targetCdpClient,
+          this.#browserCdpClient,
+          sessionId,
+          this.#realmStorage,
+          this.#eventManager,
+          this.#preloadScriptStorage,
+          this.#networkStorage,
+          this.#acceptInsecureCerts
+        );
+
         const browsingContext =
           parentSessionCdpClient.sessionId &&
           this.#browsingContextStorage.findContextBySession(
@@ -428,19 +450,7 @@ export class BrowsingContextProcessor {
           break;
         }
 
-        const cdpTarget = this.#createCdpTarget(
-          targetCdpClient,
-          targetInfo,
-          sessionId
-        );
-        this.#handleWorkerTarget(
-          cdpTarget,
-          this.#realmStorage.getRealm({
-            browsingContextId: browsingContext.id,
-            type: 'window',
-            sandbox: undefined,
-          })
-        );
+        this.#handleWorkerTarget(cdpTarget, browsingContext.id);
         return;
       }
     }
@@ -455,42 +465,25 @@ export class BrowsingContextProcessor {
       .catch((error) => this.#logger?.(LogType.debugError, error));
   }
 
-  #createCdpTarget(
-    targetCdpClient: CdpClient,
-    targetInfo: Protocol.Target.TargetInfo,
-    sessionId: string
-  ) {
-    this.#setEventListeners(targetCdpClient);
-
-    return CdpTarget.create(
-      targetInfo.targetId,
-      targetCdpClient,
-      this.#browserCdpClient,
-      sessionId,
-      this.#realmStorage,
-      this.#eventManager,
-      this.#preloadScriptStorage,
-      this.#networkStorage,
-      this.#acceptInsecureCerts,
-      this.#logger
-    );
-  }
-
   #workers = new Map<string, Realm>();
-  #handleWorkerTarget(cdpTarget: CdpTarget, ownerRealm: Realm) {
+  #handleWorkerTarget(cdpTarget: CdpTarget, browsingContextId: string) {
     cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
       const {uniqueId, id, origin} = params.context;
-      const workerRealm = new DedicatedWorkerRealm(
+      const realm = new Realm(
+        this.#realmStorage,
+        this.#browsingContextStorage,
+        uniqueId,
+        browsingContextId,
+        id,
+        serializeOrigin(origin),
+        'dedicated-worker',
+        undefined,
         cdpTarget.cdpClient,
         this.#eventManager,
-        id,
-        this.#logger,
-        serializeOrigin(origin),
-        ownerRealm,
-        uniqueId,
-        this.#realmStorage
+        this.#sharedIdWithFrame,
+        this.#logger
       );
-      this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
+      this.#workers.set(cdpTarget.cdpSessionId, realm);
     });
   }
 

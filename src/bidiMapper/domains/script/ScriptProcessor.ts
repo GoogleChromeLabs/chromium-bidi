@@ -164,7 +164,7 @@ export class ScriptProcessor {
         browsingContextId: params.context,
         type: params.type,
       })
-      .map((realm) => realm.realmInfo);
+      .map((realm: Realm) => realm.realmInfo);
     return {realms};
   }
 

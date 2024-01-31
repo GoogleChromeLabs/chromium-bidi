@@ -19,45 +19,73 @@ import {Protocol} from 'devtools-protocol';
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
   ChromiumBidi,
+  type BrowsingContext,
   NoSuchHandleException,
+  NoSuchNodeException,
+  UnknownErrorException,
   Script,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import {ChannelProxy} from './ChannelProxy.js';
 import type {RealmStorage} from './RealmStorage.js';
+import {getSharedId, parseSharedId} from './SharedId.js';
 
-export abstract class Realm {
+export class Realm {
+  readonly #realmStorage: RealmStorage;
+  readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #realmId: Script.Realm;
+  readonly #browsingContextId: BrowsingContext.BrowsingContext;
+  readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
+  readonly #origin: string;
+  readonly #sharedIdWithFrame: boolean;
+  readonly #type: Script.RealmType;
   readonly #cdpClient: CdpClient;
   readonly #eventManager: EventManager;
-  readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
+  readonly sandbox?: string;
   readonly #logger?: LoggerFn;
-  readonly #origin: string;
-  readonly #realmId: Script.Realm;
-  readonly #realmStorage: RealmStorage;
 
   constructor(
+    realmStorage: RealmStorage,
+    browsingContextStorage: BrowsingContextStorage,
+    realmId: Script.Realm,
+    browsingContextId: BrowsingContext.BrowsingContext,
+    executionContextId: Protocol.Runtime.ExecutionContextId,
+    origin: string,
+    type: Script.RealmType,
+    sandbox: string | undefined,
     cdpClient: CdpClient,
     eventManager: EventManager,
-    executionContextId: Protocol.Runtime.ExecutionContextId,
-    logger: LoggerFn | undefined,
-    origin: string,
-    realmId: Script.Realm,
-    realmStorage: RealmStorage
+    sharedIdWithFrame: boolean,
+    logger?: LoggerFn
   ) {
-    this.#cdpClient = cdpClient;
-    this.#eventManager = eventManager;
-    this.#executionContextId = executionContextId;
-    this.#logger = logger;
-    this.#origin = origin;
+    this.#sharedIdWithFrame = sharedIdWithFrame;
     this.#realmId = realmId;
+    this.#browsingContextId = browsingContextId;
+    this.#executionContextId = executionContextId;
+    this.sandbox = sandbox;
+    this.#origin = origin;
+    this.#type = type;
+    this.#cdpClient = cdpClient;
     this.#realmStorage = realmStorage;
+    this.#browsingContextStorage = browsingContextStorage;
+    this.#eventManager = eventManager;
+    this.#logger = logger;
 
     this.#realmStorage.addRealm(this);
+
+    this.#eventManager.registerEvent(
+      {
+        type: 'event',
+        method: ChromiumBidi.Script.EventNames.RealmCreated,
+        params: this.realmInfo,
+      },
+      this.browsingContextId
+    );
   }
 
   cdpToBidiValue(
@@ -66,7 +94,7 @@ export abstract class Realm {
       | Protocol.Runtime.EvaluateResponse,
     resultOwnership: Script.ResultOwnership
   ): Script.RemoteValue {
-    const bidiValue = this.serializeForBiDi(
+    const bidiValue = this.#deepSerializedToBiDi(
       cdpValue.result.deepSerializedValue!,
       new Map()
     );
@@ -113,7 +141,7 @@ export abstract class Realm {
    * @param internalIdMap - Map from CDP integer `weakLocalObjectReference` to BiDi UUID
    * `internalId`.
    */
-  protected serializeForBiDi(
+  #deepSerializedToBiDi(
     deepSerializedValue: Protocol.Runtime.DeepSerializedValue,
     internalIdMap: Map<number, string>
   ): Script.RemoteValue {
@@ -141,6 +169,48 @@ export abstract class Realm {
       return deepSerializedValue as Script.RemoteValue;
     }
 
+    if (deepSerializedValue.type === 'node') {
+      if (Object.hasOwn(bidiValue, 'backendNodeId')) {
+        let navigableId = this.navigableId;
+        if (Object.hasOwn(bidiValue, 'loaderId')) {
+          // `loaderId` should be always there after ~2024-03-05, when
+          // https://crrev.com/c/5116240 reaches stable.
+          // TODO: remove the check after the date.
+          navigableId = bidiValue.loaderId;
+          delete bidiValue['loaderId'];
+        }
+        (deepSerializedValue as unknown as Script.SharedReference).sharedId =
+          getSharedId(
+            this.#getBrowsingContextId(navigableId),
+            navigableId,
+            bidiValue.backendNodeId,
+            this.#sharedIdWithFrame
+          );
+        delete bidiValue['backendNodeId'];
+      }
+      if (Object.hasOwn(bidiValue, 'children')) {
+        for (const i in bidiValue.children) {
+          bidiValue.children[i] = this.#deepSerializedToBiDi(
+            bidiValue.children[i],
+            internalIdMap
+          );
+        }
+      }
+      if (
+        Object.hasOwn(bidiValue, 'shadowRoot') &&
+        bidiValue.shadowRoot !== null
+      ) {
+        bidiValue.shadowRoot = this.#deepSerializedToBiDi(
+          bidiValue.shadowRoot,
+          internalIdMap
+        );
+      }
+      // `namespaceURI` can be is either `null` or non-empty string.
+      if (bidiValue.namespaceURI === '') {
+        bidiValue.namespaceURI = null;
+      }
+    }
+
     // Recursively update the nested values.
     if (
       ['array', 'set', 'htmlcollection', 'nodelist'].includes(
@@ -148,14 +218,14 @@ export abstract class Realm {
       )
     ) {
       for (const i in bidiValue) {
-        bidiValue[i] = this.serializeForBiDi(bidiValue[i], internalIdMap);
+        bidiValue[i] = this.#deepSerializedToBiDi(bidiValue[i], internalIdMap);
       }
     }
     if (['object', 'map'].includes(deepSerializedValue.type)) {
       for (const i in bidiValue) {
         bidiValue[i] = [
-          this.serializeForBiDi(bidiValue[i][0], internalIdMap),
-          this.serializeForBiDi(bidiValue[i][1], internalIdMap),
+          this.#deepSerializedToBiDi(bidiValue[i][0], internalIdMap),
+          this.#deepSerializedToBiDi(bidiValue[i][1], internalIdMap),
         ];
       }
     }
@@ -163,8 +233,28 @@ export abstract class Realm {
     return deepSerializedValue as Script.RemoteValue;
   }
 
+  #getBrowsingContextId(navigableId: string): string {
+    const maybeBrowsingContext = this.#browsingContextStorage
+      .getAllContexts()
+      .find((context) => context.navigableId === navigableId);
+    return maybeBrowsingContext?.id ?? 'UNKNOWN';
+  }
+
   get realmId(): Script.Realm {
     return this.#realmId;
+  }
+
+  get navigableId(): string {
+    return (
+      (this.browsingContextId &&
+        this.#browsingContextStorage.findContext(this.browsingContextId)
+          ?.navigableId) ??
+      'UNKNOWN'
+    );
+  }
+
+  get browsingContextId(): BrowsingContext.BrowsingContext {
+    return this.#browsingContextId;
   }
 
   get executionContextId(): Protocol.Runtime.ExecutionContextId {
@@ -175,28 +265,35 @@ export abstract class Realm {
     return this.#origin;
   }
 
-  get source(): Script.Source {
-    return {
-      realm: this.realmId,
-    };
+  get type(): Script.RealmType {
+    return this.#type;
   }
 
   get cdpClient(): CdpClient {
     return this.#cdpClient;
   }
 
-  abstract get associatedBrowsingContexts(): BrowsingContextImpl[];
-
-  abstract get realmType(): Script.RealmType;
-
-  protected get baseInfo(): Script.BaseRealmInfo {
-    return {
-      realm: this.realmId,
-      origin: this.origin,
-    };
+  get realmInfo(): Script.RealmInfo {
+    switch (this.type) {
+      case 'window':
+        return {
+          realm: this.realmId,
+          origin: this.origin,
+          type: this.type,
+          context: this.browsingContextId,
+          ...(this.sandbox === undefined ? {} : {sandbox: this.sandbox}),
+        };
+      default:
+        return {
+          // TODO: add proper owners.
+          //  https://github.com/GoogleChromeLabs/chromium-bidi/issues/1667
+          owners: [] as any as [Script.Realm],
+          realm: this.realmId,
+          origin: this.origin,
+          type: this.type,
+        };
+    }
   }
-
-  abstract get realmInfo(): Script.RealmInfo;
 
   async evaluate(
     expression: string,
@@ -205,6 +302,10 @@ export abstract class Realm {
     serializationOptions: Script.SerializationOptions,
     userActivation = false
   ): Promise<Script.EvaluateResult> {
+    await this.#browsingContextStorage
+      .getContext(this.browsingContextId)
+      .targetUnblockedOrThrow();
+
     const cdpEvaluateResult = await this.cdpClient.sendCommand(
       'Runtime.evaluate',
       {
@@ -232,19 +333,6 @@ export abstract class Realm {
       result: this.cdpToBidiValue(cdpEvaluateResult, resultOwnership),
       type: 'success',
     };
-  }
-
-  protected initialize() {
-    for (const browsingContext of this.associatedBrowsingContexts) {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.Script.EventNames.RealmCreated,
-          params: this.realmInfo,
-        },
-        browsingContext.id
-      );
-    }
   }
 
   /**
@@ -320,10 +408,10 @@ export abstract class Realm {
         keyArg = {value: key};
       } else {
         // Key is a serialized value.
-        keyArg = await this.deserializeForCdp(key);
+        keyArg = await this.deserializeToCdpArg(key);
       }
 
-      const valueArg = await this.deserializeForCdp(value);
+      const valueArg = await this.deserializeToCdpArg(value);
 
       keyValueArray.push(keyArg);
       keyValueArray.push(valueArg);
@@ -336,7 +424,7 @@ export abstract class Realm {
     listLocalValue: Script.ListLocalValue
   ): Promise<Protocol.Runtime.CallArgument[]> {
     return await Promise.all(
-      listLocalValue.map((localValue) => this.deserializeForCdp(localValue))
+      listLocalValue.map((localValue) => this.deserializeToCdpArg(localValue))
     );
   }
 
@@ -376,6 +464,10 @@ export abstract class Realm {
     serializationOptions: Script.SerializationOptions,
     userActivation = false
   ): Promise<Script.EvaluateResult> {
+    await this.#browsingContextStorage
+      .getContext(this.browsingContextId)
+      .targetUnblockedOrThrow();
+
     const callFunctionAndSerializeScript = `(...args) => {
       function callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -388,11 +480,11 @@ export abstract class Realm {
     }`;
 
     const thisAndArgumentsList = [
-      await this.deserializeForCdp(thisLocalValue),
+      await this.deserializeToCdpArg(thisLocalValue),
       ...(await Promise.all(
         argumentsLocalValues.map(
           async (argumentLocalValue: Script.LocalValue) =>
-            await this.deserializeForCdp(argumentLocalValue)
+            await this.deserializeToCdpArg(argumentLocalValue)
         )
       )),
     ];
@@ -444,10 +536,45 @@ export abstract class Realm {
     };
   }
 
-  async deserializeForCdp(
+  async deserializeToCdpArg(
     localValue: Script.LocalValue
   ): Promise<Protocol.Runtime.CallArgument> {
-    if ('handle' in localValue && localValue.handle) {
+    if ('sharedId' in localValue && localValue.sharedId) {
+      const parsedSharedId = parseSharedId(localValue.sharedId);
+      if (parsedSharedId === null) {
+        throw new NoSuchNodeException(
+          `SharedId "${localValue.sharedId}" was not found.`
+        );
+      }
+      const {documentId, backendNodeId} = parsedSharedId;
+      // TODO: add proper validation if the element is accessible from the current realm.
+      if (this.navigableId !== documentId) {
+        throw new NoSuchNodeException(
+          `SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.navigableId}.`
+        );
+      }
+
+      try {
+        const {object} = await this.cdpClient.sendCommand('DOM.resolveNode', {
+          backendNodeId,
+          executionContextId: this.executionContextId,
+        });
+        // TODO(#375): Release `obj.object.objectId` after using.
+        return {objectId: object.objectId};
+      } catch (error: any) {
+        // Heuristic to detect "no such node" exception. Based on the  specific
+        // CDP implementation.
+        if (
+          error.code === CdpErrorConstants.GENERIC_ERROR &&
+          error.message === 'No node with given id found'
+        ) {
+          throw new NoSuchNodeException(
+            `SharedId "${localValue.sharedId}" was not found.`
+          );
+        }
+        throw new UnknownErrorException(error.message, error.stack);
+      }
+    } else if ('handle' in localValue && localValue.handle) {
       return {objectId: localValue.handle};
       // We tried to find a handle value but failed
       // This allows us to have exhaustive switch on `localValue.type`
@@ -706,18 +833,16 @@ export abstract class Realm {
     this.#realmStorage.knownHandlesToRealmMap.delete(handle);
   }
 
-  dispose(): void {
-    for (const browsingContext of this.associatedBrowsingContexts) {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.Script.EventNames.RealmDestroyed,
-          params: {
-            realm: this.realmId,
-          },
+  dispose() {
+    this.#eventManager.registerEvent(
+      {
+        type: 'event',
+        method: ChromiumBidi.Script.EventNames.RealmDestroyed,
+        params: {
+          realm: this.realmId,
         },
-        browsingContext.id
-      );
-    }
+      },
+      this.browsingContextId
+    );
   }
 }

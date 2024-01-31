@@ -17,7 +17,6 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {ChromiumBidi, Log, Script} from '../../../protocol/protocol.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -58,32 +57,23 @@ export class LogManager {
   readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
   readonly #cdpTarget: CdpTarget;
-  readonly #logger?: LoggerFn;
 
   private constructor(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    eventManager: EventManager,
-    logger?: LoggerFn
+    eventManager: EventManager
   ) {
     this.#cdpTarget = cdpTarget;
     this.#realmStorage = realmStorage;
     this.#eventManager = eventManager;
-    this.#logger = logger;
   }
 
   static create(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    eventManager: EventManager,
-    logger?: LoggerFn
+    eventManager: EventManager
   ) {
-    const logManager = new LogManager(
-      cdpTarget,
-      realmStorage,
-      eventManager,
-      logger
-    );
+    const logManager = new LogManager(cdpTarget, realmStorage, eventManager);
 
     logManager.#initializeEntryAddedEventListener();
 
@@ -100,12 +90,6 @@ export class LogManager {
           cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.executionContextId,
         });
-        if (realm === undefined) {
-          // Ignore exceptions not attached to any realm.
-          this.#logger?.(LogType.cdp, params);
-          return;
-        }
-
         const argsPromise: Promise<Script.RemoteValue[]> =
           realm === undefined
             ? Promise.resolve(params.args as Script.RemoteValue[])
@@ -118,30 +102,32 @@ export class LogManager {
                   );
                 })
               );
-        for (const browsingContext of realm.associatedBrowsingContexts) {
-          this.#eventManager.registerPromiseEvent(
-            argsPromise.then((args) => ({
-              kind: 'success',
-              value: {
-                type: 'event',
-                method: ChromiumBidi.Log.EventNames.LogEntryAdded,
-                params: {
-                  level: getLogLevel(params.type),
-                  source: realm.source,
-                  text: getRemoteValuesText(args, true),
-                  timestamp: Math.round(params.timestamp),
-                  stackTrace: getBidiStackTrace(params.stackTrace),
-                  type: 'console',
-                  // Console method is `warn`, not `warning`.
-                  method: params.type === 'warning' ? 'warn' : params.type,
-                  args,
+
+        this.#eventManager.registerPromiseEvent(
+          argsPromise.then((args) => ({
+            kind: 'success',
+            value: {
+              type: 'event',
+              method: ChromiumBidi.Log.EventNames.LogEntryAdded,
+              params: {
+                level: getLogLevel(params.type),
+                source: {
+                  realm: realm?.realmId ?? 'UNKNOWN',
+                  context: realm?.browsingContextId ?? 'UNKNOWN',
                 },
+                text: getRemoteValuesText(args, true),
+                timestamp: Math.round(params.timestamp),
+                stackTrace: getBidiStackTrace(params.stackTrace),
+                type: 'console',
+                // Console method is `warn`, not `warning`.
+                method: params.type === 'warning' ? 'warn' : params.type,
+                args,
               },
-            })),
-            browsingContext.id,
-            ChromiumBidi.Log.EventNames.LogEntryAdded
-          );
-        }
+            },
+          })),
+          realm?.browsingContextId ?? 'UNKNOWN',
+          ChromiumBidi.Log.EventNames.LogEntryAdded
+        );
       }
     );
 
@@ -154,35 +140,31 @@ export class LogManager {
           cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.exceptionDetails.executionContextId,
         });
-        if (realm === undefined) {
-          // Ignore exceptions not attached to any realm.
-          this.#logger?.(LogType.cdp, params);
-          return;
-        }
 
-        for (const browsingContext of realm.associatedBrowsingContexts) {
-          this.#eventManager.registerPromiseEvent(
-            LogManager.#getExceptionText(params, realm).then((text) => ({
-              kind: 'success',
-              value: {
-                type: 'event',
-                method: ChromiumBidi.Log.EventNames.LogEntryAdded,
-                params: {
-                  level: Log.Level.Error,
-                  source: realm.source,
-                  text,
-                  timestamp: Math.round(params.timestamp),
-                  stackTrace: getBidiStackTrace(
-                    params.exceptionDetails.stackTrace
-                  ),
-                  type: 'javascript',
+        this.#eventManager.registerPromiseEvent(
+          LogManager.#getExceptionText(params, realm).then((text) => ({
+            kind: 'success',
+            value: {
+              type: 'event',
+              method: ChromiumBidi.Log.EventNames.LogEntryAdded,
+              params: {
+                level: Log.Level.Error,
+                source: {
+                  realm: realm?.realmId ?? 'UNKNOWN',
+                  context: realm?.browsingContextId ?? 'UNKNOWN',
                 },
+                text,
+                timestamp: Math.round(params.timestamp),
+                stackTrace: getBidiStackTrace(
+                  params.exceptionDetails.stackTrace
+                ),
+                type: 'javascript',
               },
-            })),
-            browsingContext.id,
-            ChromiumBidi.Log.EventNames.LogEntryAdded
-          );
-        }
+            },
+          })),
+          realm?.browsingContextId ?? 'UNKNOWN',
+          ChromiumBidi.Log.EventNames.LogEntryAdded
+        );
       }
     );
   }
