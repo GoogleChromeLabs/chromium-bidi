@@ -53,7 +53,7 @@ export class BrowserProcessor {
     }
     const context = await this.#browserCdpClient.sendCommand(
       'Target.createBrowserContext',
-      params
+      request
     );
     return {
       userContext: context.browserContextId,
