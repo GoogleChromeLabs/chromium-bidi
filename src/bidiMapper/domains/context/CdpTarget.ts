@@ -137,7 +137,8 @@ export class CdpTarget {
     // Check if the network domain is enabled globally.
     const enabledNetwork =
       this.#eventManager.subscriptionManager.isSubscribedToModule(
-        BiDiModule.Network
+        BiDiModule.Network,
+        this.#id
       );
 
     try {

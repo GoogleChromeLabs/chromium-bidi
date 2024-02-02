@@ -214,7 +214,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       this.#browsingContextStorage
         .getTopLevelContexts()
         .map(async (context) => {
-          return await context.toggleDomainsIfNeeded();
+          return await context.toggleModulesIfNeeded();
         })
     );
   }
