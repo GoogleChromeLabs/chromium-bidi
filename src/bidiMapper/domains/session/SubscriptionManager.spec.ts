@@ -530,6 +530,35 @@ describe('SubscriptionManager', () => {
         )
       ).to.equal(true);
     });
+
+    it('should return true for nested context when subscribed to top level ancestor context', () => {
+      subscriptionManager.subscribe(
+        ChromiumBidi.BiDiModule.Network,
+        SOME_CONTEXT,
+        SOME_CHANNEL
+      );
+
+      expect(
+        subscriptionManager.isSubscribedToModule(
+          ChromiumBidi.BiDiModule.Network,
+          SOME_NESTED_CONTEXT
+        )
+      ).to.equal(true);
+    });
+    it('should return false for nested context when subscribed to another context', () => {
+      subscriptionManager.subscribe(
+        ChromiumBidi.BiDiModule.Network,
+        SOME_CONTEXT,
+        SOME_CHANNEL
+      );
+
+      expect(
+        subscriptionManager.isSubscribedToModule(
+          ChromiumBidi.BiDiModule.Network,
+          ANOTHER_NESTED_CONTEXT
+        )
+      ).to.equal(false);
+    });
     it('should return false with no subscriptions', () => {
       expect(
         subscriptionManager.isSubscribedToModule(
