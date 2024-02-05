@@ -183,18 +183,18 @@ export class CdpTarget {
     });
   }
 
-  async toggleNetworkIfNeeded(enable: boolean): Promise<void> {
+  async toggleNetworkIfNeeded(enabled: boolean): Promise<void> {
+    if (enabled === this.#networkDomainEnabled) {
+      return;
+    }
+
+    this.#networkDomainEnabled = enabled;
     try {
-      if (enable && !this.#networkDomainEnabled) {
-        this.#networkDomainEnabled = true;
-        await this.#cdpClient.sendCommand('Network.enable');
-      } else if (!enable && this.#networkDomainEnabled) {
-        this.#networkDomainEnabled = false;
-        await this.#cdpClient.sendCommand('Network.disable');
-      }
-    } catch (error) {
-      this.#networkDomainEnabled = !this.#networkDomainEnabled;
-      throw error;
+      await this.#cdpClient.sendCommand(
+        this.#networkDomainEnabled ? 'Network.enable' : 'Network.disable'
+      );
+    } catch (err) {
+      this.#networkDomainEnabled = !enabled;
     }
   }
 
