@@ -90,7 +90,6 @@ async def another_context_id(create_context):
 @pytest_asyncio.fixture
 def create_context(websocket):
     """Return a browsing context factory."""
-
     async def create_context(user_context_id=None):
         result = await execute_command(
             websocket, {
@@ -253,7 +252,6 @@ def cacheable_url(local_server: LocalHttpServer):
 def read_sorted_messages(websocket):
     """Read the given number of messages from the websocket, and returns them
     in consistent order."""
-
     async def read_sorted_messages(message_count):
         messages = []
         for _ in range(message_count):
@@ -268,7 +266,6 @@ def read_sorted_messages(websocket):
 @pytest.fixture
 def assert_no_more_messages(websocket):
     """Assert that there are no more messages on the websocket."""
-
     async def assert_no_more_messages(timeout: float | None):
         with pytest.raises(asyncio.TimeoutError):
             await asyncio.wait_for(read_JSON_message(websocket),
@@ -281,7 +278,6 @@ def assert_no_more_messages(websocket):
 @pytest.fixture
 def assert_no_event_in_queue(websocket):
     """Assert that there are no more events of the given type on the websocket within the given timeout."""
-
     async def assert_no_event_in_queue(event_method: str,
                                        timeout: float | None):
         with pytest.raises(asyncio.TimeoutError):
@@ -294,7 +290,6 @@ def assert_no_event_in_queue(websocket):
 @pytest.fixture
 def assert_no_events_in_queue(websocket):
     """Assert that there are no more events of the given types on the websocket within the given timeout."""
-
     async def assert_no_events_in_queue(event_methods: list[str],
                                         timeout: float | None):
         with pytest.raises(asyncio.TimeoutError):
@@ -307,7 +302,6 @@ def assert_no_events_in_queue(websocket):
 @pytest.fixture
 def get_cdp_session_id(websocket):
     """Return the CDP session ID from the given context."""
-
     async def get_cdp_session_id(context_id: str) -> str:
         result = await execute_command(websocket, {
             "method": "cdp.getSession",
@@ -323,7 +317,6 @@ def get_cdp_session_id(websocket):
 @pytest.fixture
 def query_selector(websocket, context_id):
     """Return an element matching the given selector"""
-
     async def query_selector(selector: str) -> str:
         result = await execute_command(
             websocket, {
@@ -345,7 +338,6 @@ def query_selector(websocket, context_id):
 @pytest.fixture
 def activate_main_tab(websocket, context_id, get_cdp_session_id):
     """Actives the main tab"""
-
     async def activate_main_tab():
         session_id = await get_cdp_session_id(context_id)
         await execute_command(
@@ -363,7 +355,6 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 @pytest.fixture
 def html():
     """Return a factory for HTML data URL with the given content."""
-
     def html(content=""):
         return f'data:text/html,{content}'
 
@@ -373,7 +364,6 @@ def html():
 @pytest.fixture
 def iframe():
     """Return a factory for <iframe> with the given src."""
-
     def iframe(src=""):
         return f'<iframe src="{src}" />'
 
