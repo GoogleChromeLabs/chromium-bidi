@@ -174,10 +174,13 @@ export class SubscriptionManager {
     module: ChromiumBidi.BiDiModule,
     contextId: BrowsingContext.BrowsingContext | null = null
   ): boolean {
+    const topLevelContext =
+      this.#browsingContextStorage.findTopLevelContextId(contextId);
+
     for (const browserContextToEventMap of this.#channelToContextToEventMap.values()) {
       for (const [id, eventMap] of browserContextToEventMap.entries()) {
         // Not subscribed to this context or globally
-        if (contextId !== id && id !== null) {
+        if (topLevelContext !== id && id !== null) {
           continue;
         }
 

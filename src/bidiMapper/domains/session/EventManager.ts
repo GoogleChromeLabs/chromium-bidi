@@ -209,13 +209,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   }
 
   async toggleModulesIfNeeded(): Promise<void> {
-    // TODO: Only update changed subscribers
+    // TODO(1): Only update changed subscribers
+    // TODO(2): Enable for Worker Targets
     await Promise.all(
-      this.#browsingContextStorage
-        .getTopLevelContexts()
-        .map(async (context) => {
-          return await context.toggleModulesIfNeeded();
-        })
+      this.#browsingContextStorage.getAllContexts().map(async (context) => {
+        return await context.toggleModulesIfNeeded();
+      })
     );
   }
 
