@@ -58,7 +58,7 @@ export class NetworkManager {
     id: Network.Request,
     redirectCount?: number
   ): NetworkRequest {
-    let request = this.#networkStorage.getRequest(id);
+    let request = this.#networkStorage.getRequestById(id);
     if (request) {
       return request;
     }
@@ -107,7 +107,7 @@ export class NetworkManager {
     cdpTarget.cdpClient.on(
       'Network.requestWillBeSent',
       (params: Protocol.Network.RequestWillBeSentEvent) => {
-        const request = networkManager.#networkStorage.getRequest(
+        const request = networkManager.#networkStorage.getRequestById(
           params.requestId
         );
         if (request && request.isRedirecting()) {

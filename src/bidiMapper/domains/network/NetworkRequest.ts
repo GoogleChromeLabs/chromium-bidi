@@ -26,7 +26,6 @@ import {
   Network,
   type BrowsingContext,
   ChromiumBidi,
-  type JsUint,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
@@ -68,12 +67,6 @@ export class NetworkRequest {
 
   #redirectCount: number;
 
-  #pause: {
-    request?: Protocol.Fetch.RequestPausedEvent;
-    response?: Protocol.Fetch.RequestPausedEvent;
-    auth?: Protocol.Fetch.AuthRequiredEvent;
-  } = {};
-
   #request: {
     info?: Protocol.Network.RequestWillBeSentEvent;
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
@@ -111,21 +104,16 @@ export class NetworkRequest {
     return this.#id;
   }
 
+  get fetchId(): string | undefined {
+    return this.#fetchId;
+  }
+
   get url(): string | undefined {
     return this.#response.info?.url ?? this.#request.info?.request.url;
   }
 
   get redirectCount() {
     return this.#redirectCount;
-  }
-
-  get frameId(): Protocol.Page.FrameId | undefined {
-    return (
-      this.#pause.response?.frameId ||
-      this.#pause.auth?.frameId ||
-      this.#pause.request?.frameId ||
-      this.#request.info?.frameId
-    );
   }
 
   isRedirecting(): boolean {
@@ -261,24 +249,26 @@ export class NetworkRequest {
     this.#fetchId = event.requestId;
     // TODO:
     if (event.responseStatusCode && event.responseStatusText) {
-      this.#pause.response = event;
-
       this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       this.#emitEventsIfReady();
-      // void this.continueResponse();
+      if (!this.blocked) {
+        void this.continueResponse();
+      }
     } else {
-      this.#pause.request = event;
       this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
-      // void this.continueRequest();
+      if (!this.blocked) {
+        void this.continueRequest();
+      }
       this.#emitEventsIfReady();
     }
   }
 
-  onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
+  onAuthRequired(_event: Protocol.Fetch.AuthRequiredEvent) {
     // TODO: Verify that the FetchId is correct
-    this.#pause.auth = event;
     this.#interceptPhase = Network.InterceptPhase.AuthRequired;
-    void this.continueWithAuth('Default');
+    if (!this.blocked) {
+      void this.continueWithAuth();
+    }
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
@@ -312,11 +302,11 @@ export class NetworkRequest {
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
-  async continueResponse(
-    responseCode?: JsUint,
-    responsePhrase?: string,
-    responseHeaders?: Protocol.Fetch.HeaderEntry[]
-  ) {
+  async continueResponse({
+    responseCode,
+    responsePhrase,
+    responseHeaders,
+  }: Omit<Protocol.Fetch.ContinueResponseRequest, 'requestId'> = {}) {
     if (this.#interceptPhase !== Network.InterceptPhase.ResponseStarted) {
       throw new InvalidArgumentException(
         `Blocked request for network id '${this.#id}' is not in 'ResponseStarted' phase`
@@ -339,9 +329,9 @@ export class NetworkRequest {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
   async continueWithAuth(
-    response: 'Default' | 'CancelAuth' | 'ProvideCredentials' = 'Default',
-    username?: string,
-    password?: string
+    authChallengeResponse: Protocol.Fetch.ContinueWithAuthRequest['authChallengeResponse'] = {
+      response: 'Default',
+    }
   ) {
     if (this.#interceptPhase !== Network.InterceptPhase.AuthRequired) {
       throw new InvalidArgumentException(
@@ -354,11 +344,7 @@ export class NetworkRequest {
       'Fetch.continueWithAuth',
       {
         requestId: this.#fetchId,
-        authChallengeResponse: {
-          response,
-          username,
-          password,
-        },
+        authChallengeResponse,
       }
     );
 
@@ -366,12 +352,12 @@ export class NetworkRequest {
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
-  async provideResponse(
-    responseCode: JsUint,
-    responsePhrase?: string,
-    responseHeaders?: Protocol.Fetch.HeaderEntry[],
-    body?: string
-  ) {
+  async provideResponse({
+    responseCode,
+    responsePhrase,
+    responseHeaders,
+    body,
+  }: Omit<Protocol.Fetch.FulfillRequestRequest, 'requestId'>) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
     await this.#cdpTarget.browserCdpClient.sendCommand('Fetch.fulfillRequest', {

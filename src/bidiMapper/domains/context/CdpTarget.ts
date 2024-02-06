@@ -37,7 +37,6 @@ export class CdpTarget {
   readonly #eventManager: EventManager;
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
-  readonly #networkStorage: NetworkStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #acceptInsecureCerts: boolean;
@@ -60,7 +59,6 @@ export class CdpTarget {
       browserCdpClient,
       eventManager,
       preloadScriptStorage,
-      networkStorage,
       acceptInsecureCerts
     );
 
@@ -82,14 +80,12 @@ export class CdpTarget {
     browserCdpClient: CdpClient,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
-    networkStorage: NetworkStorage,
     acceptInsecureCerts: boolean
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
-    this.#networkStorage = networkStorage;
     this.#browserCdpClient = browserCdpClient;
     this.#acceptInsecureCerts = acceptInsecureCerts;
   }

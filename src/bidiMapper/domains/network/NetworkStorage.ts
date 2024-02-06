@@ -179,7 +179,7 @@ export class NetworkStorage {
 
   #handleAuthInterception(event: Protocol.Fetch.AuthRequiredEvent) {
     // CDP quirk if the Network domain is not present this is undefined
-    const request = this.#requests.get(event.requestId ?? '');
+    const request = this.getRequestByFetchId(event.requestId ?? '');
     if (!request) {
       // CDP quirk even both request/response may be continued
       // with this command
@@ -226,8 +226,18 @@ export class NetworkStorage {
     this.#intercepts.delete(intercept);
   }
 
-  getRequest(id: Network.Request): NetworkRequest | undefined {
+  getRequestById(id: Network.Request): NetworkRequest | undefined {
     return this.#requests.get(id);
+  }
+
+  getRequestByFetchId(fetchId: Network.Request): NetworkRequest | undefined {
+    for (const request of this.#requests.values()) {
+      if (request.fetchId === fetchId) {
+        return request;
+      }
+    }
+
+    return;
   }
 
   addRequest(request: NetworkRequest) {
