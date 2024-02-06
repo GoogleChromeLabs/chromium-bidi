@@ -106,7 +106,11 @@ export class NetworkProcessor {
     // ; Step 10. cookies
     // ; Step 11. credentials
 
-    await request.continueResponse(statusCode, reasonPhrase, responseHeaders);
+    await request.continueResponse({
+      responseCode: statusCode,
+      responsePhrase: reasonPhrase,
+      responseHeaders,
+    });
 
     return {};
   }
@@ -142,7 +146,11 @@ export class NetworkProcessor {
       params.action
     );
 
-    await request.continueWithAuth(response, username, password);
+    await request.continueWithAuth({
+      response,
+      username,
+      password,
+    });
 
     return {};
   }
@@ -177,12 +185,12 @@ export class NetworkProcessor {
     // ; Step 10. cookies
     // ; Step 11. credentials
     const request = this.#getRequestOrFail(networkId);
-    await request.provideResponse(
-      statusCode ?? request.statusCode,
-      reasonPhrase,
+    await request.provideResponse({
+      responseCode: statusCode ?? request.statusCode,
+      responsePhrase: reasonPhrase,
       responseHeaders,
-      body?.value // TODO: Differ base64 / string
-    );
+      body: body?.value, // TODO: Differ base64 / string
+    });
 
     return {};
   }
@@ -198,7 +206,7 @@ export class NetworkProcessor {
   }
 
   #getRequestOrFail(id: Network.Request): NetworkRequest {
-    const request = this.#networkStorage.getRequest(id);
+    const request = this.#networkStorage.getRequestById(id);
     if (!request) {
       throw new NoSuchRequestException(
         `Network request with ID '${id}' doesn't exist`
