@@ -25,10 +25,11 @@ import {
 import {assert} from '../../../utils/assert.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
-import {NetworkStorage} from './NetworkStorage.js';
+import type {NetworkStorage} from './NetworkStorage.js';
 import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
+  buildUrlPatternString,
 } from './NetworkUtils.js';
 
 /** Dispatches Network domain commands. */
@@ -305,7 +306,7 @@ export class NetworkProcessor {
           }
 
           try {
-            new URL(NetworkStorage.buildUrlPatternString(urlPattern));
+            new URL(buildUrlPatternString(urlPattern));
           } catch (error) {
             throw new InvalidArgumentException(`${error}`);
           }

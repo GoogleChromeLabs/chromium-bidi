@@ -23,7 +23,6 @@ import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
 import {LogManager} from '../log/LogManager.js';
-import {NetworkManager} from '../network/NetworkManager.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {ChannelProxy} from '../script/ChannelProxy.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
@@ -63,7 +62,6 @@ export class CdpTarget {
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
-    NetworkManager.create(cdpTarget, eventManager, networkStorage);
 
     cdpTarget.#setEventListeners();
 

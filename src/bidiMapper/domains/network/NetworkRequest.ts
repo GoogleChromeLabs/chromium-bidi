@@ -119,6 +119,16 @@ export class NetworkRequest {
     return this.#redirectCount;
   }
 
+  get blocked() {
+    return (
+      this.#networkStorage.requestBlockedBy(this, this.#interceptPhase).size > 0
+    );
+  }
+
+  get cdpClient() {
+    return this.#cdpTarget.cdpClient;
+  }
+
   isRedirecting(): boolean {
     return Boolean(this.#request.info);
   }
@@ -230,17 +240,11 @@ export class NetworkRequest {
     );
   }
 
-  get blocked() {
-    return (
-      this.#networkStorage.requestBlockedBy(this, this.#interceptPhase).size > 0
-    );
-  }
-
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
   async failRequest(errorReason: Protocol.Network.ErrorReason) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    await this.#cdpTarget.browserCdpClient.sendCommand('Fetch.failRequest', {
+    await this.cdpClient.sendCommand('Fetch.failRequest', {
       requestId: this.#fetchId,
       errorReason,
     });
@@ -282,18 +286,15 @@ export class NetworkRequest {
     assert(this.#fetchId, 'Network Interception not set-up.');
     // TODO: Expand.
 
-    await this.#cdpTarget.browserCdpClient.sendCommand(
-      'Fetch.continueRequest',
-      {
-        requestId: this.#fetchId,
-        url,
-        method,
-        headers,
-        // TODO: Set?
-        // postData:,
-        // interceptResponse:,
-      }
-    );
+    await this.cdpClient.sendCommand('Fetch.continueRequest', {
+      requestId: this.#fetchId,
+      url,
+      method,
+      headers,
+      // TODO: Set?
+      // postData:,
+      // interceptResponse:,
+    });
 
     this.#interceptPhase = undefined;
   }
@@ -306,15 +307,12 @@ export class NetworkRequest {
   }: Omit<Protocol.Fetch.ContinueResponseRequest, 'requestId'> = {}) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    await this.#cdpTarget.browserCdpClient.sendCommand(
-      'Fetch.continueResponse',
-      {
-        requestId: this.#fetchId,
-        responseCode,
-        responsePhrase,
-        responseHeaders,
-      }
-    );
+    await this.cdpClient.sendCommand('Fetch.continueResponse', {
+      requestId: this.#fetchId,
+      responseCode,
+      responsePhrase,
+      responseHeaders,
+    });
 
     this.#interceptPhase = undefined;
   }
@@ -327,13 +325,10 @@ export class NetworkRequest {
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    await this.#cdpTarget.browserCdpClient.sendCommand(
-      'Fetch.continueWithAuth',
-      {
-        requestId: this.#fetchId,
-        authChallengeResponse,
-      }
-    );
+    await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
+      requestId: this.#fetchId,
+      authChallengeResponse,
+    });
 
     this.#interceptPhase = undefined;
   }
@@ -347,7 +342,7 @@ export class NetworkRequest {
   }: Omit<Protocol.Fetch.FulfillRequestRequest, 'requestId'>) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    await this.#cdpTarget.browserCdpClient.sendCommand('Fetch.fulfillRequest', {
+    await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
       requestId: this.#fetchId,
       responseCode,
       responsePhrase,

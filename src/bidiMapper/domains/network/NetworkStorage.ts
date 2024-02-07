@@ -20,8 +20,10 @@ import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
 import {URLPattern} from '../../../utils/UrlPattern.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
+import type {CdpTarget} from '../context/CdpTarget.js';
+import type {EventManager} from '../session/EventManager.js';
 
-import type {NetworkRequest} from './NetworkRequest.js';
+import {NetworkRequest} from './NetworkRequest.js';
 
 interface NetworkInterception {
   urlPatterns: Network.UrlPattern[];
@@ -30,7 +32,9 @@ interface NetworkInterception {
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
-  #browserClient: CdpClient;
+  #eventManager: EventManager;
+
+  readonly #targets = new Set<CdpTarget>();
   /**
    * A map from network request ID to Network Request objects.
    * Needed as long as information about requests comes from different events.
@@ -45,16 +49,131 @@ export class NetworkStorage {
     response: false,
     auth: false,
   };
-  #interceptionHandler = this.#handleNetworkInterception.bind(this);
-  #authHandler = this.#handleAuthInterception.bind(this);
 
-  constructor(browserClient: CdpClient) {
-    this.#browserClient = browserClient;
+  constructor(eventManager: EventManager, browserClient: CdpClient) {
+    this.#eventManager = eventManager;
+
+    browserClient.on(
+      'Target.detachedFromTarget',
+      ({sessionId}: Protocol.Target.DetachedFromTargetEvent) => {
+        this.disposeRequestMap(sessionId);
+      }
+    );
   }
 
-  /*
-   * Toggles network interception if needed
+  /**
+   * Gets the network request with the given ID, if any.
+   * Otherwise, creates a new network request with the given ID and cdp target.
    */
+  #getOrCreateNetworkRequest(
+    id: Network.Request,
+    cdpTarget: CdpTarget,
+    redirectCount?: number
+  ): NetworkRequest {
+    let request = this.getRequestById(id);
+    if (request) {
+      return request;
+    }
+
+    request = new NetworkRequest(
+      id,
+      this.#eventManager,
+      this,
+      cdpTarget,
+      redirectCount
+    );
+
+    this.addRequest(request);
+
+    return request;
+  }
+
+  onNewCdpTarget(cdpTarget: CdpTarget) {
+    this.#targets.add(cdpTarget);
+
+    const cdpClient = cdpTarget.cdpClient;
+
+    cdpClient.on(
+      'Network.requestWillBeSent',
+      (params: Protocol.Network.RequestWillBeSentEvent) => {
+        const request = this.getRequestById(params.requestId);
+        if (request && request.isRedirecting()) {
+          request.handleRedirect(params);
+          this.deleteRequest(params.requestId);
+          this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget,
+            request.redirectCount + 1
+          ).onRequestWillBeSentEvent(params);
+        } else if (request) {
+          request.onRequestWillBeSentEvent(params);
+        } else {
+          this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget
+          ).onRequestWillBeSentEvent(params);
+        }
+      }
+    );
+
+    cdpClient.on(
+      'Network.requestWillBeSentExtraInfo',
+      (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
+        this.#getOrCreateNetworkRequest(
+          params.requestId,
+          cdpTarget
+        ).onRequestWillBeSentExtraInfoEvent(params);
+      }
+    );
+
+    cdpClient.on(
+      'Network.responseReceived',
+      (params: Protocol.Network.ResponseReceivedEvent) => {
+        this.#getOrCreateNetworkRequest(
+          params.requestId,
+          cdpTarget
+        ).onResponseReceivedEvent(params);
+      }
+    );
+
+    cdpClient.on(
+      'Network.responseReceivedExtraInfo',
+      (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
+        this.#getOrCreateNetworkRequest(
+          params.requestId,
+          cdpTarget
+        ).onResponseReceivedExtraInfoEvent(params);
+      }
+    );
+
+    cdpClient.on(
+      'Network.requestServedFromCache',
+      (params: Protocol.Network.RequestServedFromCacheEvent) => {
+        this.#getOrCreateNetworkRequest(
+          params.requestId,
+          cdpTarget
+        ).onServedFromCache();
+      }
+    );
+
+    cdpClient.on(
+      'Network.loadingFailed',
+      (params: Protocol.Network.LoadingFailedEvent) => {
+        this.#getOrCreateNetworkRequest(
+          params.requestId,
+          cdpTarget
+        ).onLoadingFailedEvent(params);
+      }
+    );
+
+    cdpClient.on('Fetch.requestPaused', (event) => {
+      this.#handleNetworkInterception(event, cdpTarget);
+    });
+    cdpClient.on('Fetch.authRequired', (event) => {
+      this.#handleAuthInterception(event, cdpTarget);
+    });
+  }
+
   async toggleInterception() {
     if (this.#intercepts.size) {
       const stages = {
@@ -99,21 +218,27 @@ export class NetworkStorage {
       // TODO: Don't enable on start as we will have
       // no network interceptions at this time.
       // Needed to enable fetch events.
-      await this.#browserClient.sendCommand('Fetch.enable', {
-        patterns,
-        handleAuthRequests: stages.auth,
-      });
-      this.#browserClient.on('Fetch.requestPaused', this.#interceptionHandler);
-      this.#browserClient.on('Fetch.authRequired', this.#authHandler);
+
+      await Promise.all(
+        [...this.#targets.values()].map(async (cdpTarget) => {
+          await cdpTarget.cdpClient.sendCommand('Fetch.enable', {
+            patterns,
+            handleAuthRequests: stages.auth,
+          });
+        })
+      );
     } else {
       this.#interceptionStages = {
         request: false,
         response: false,
         auth: false,
       };
-      await this.#browserClient.sendCommand('Fetch.disable');
-      this.#browserClient.off('Fetch.requestPaused', this.#interceptionHandler);
-      this.#browserClient.off('Fetch.authRequired', this.#authHandler);
+
+      await Promise.all(
+        [...this.#targets.values()].map(async ({cdpClient}) => {
+          await cdpClient.sendCommand('Fetch.disable');
+        })
+      );
     }
   }
 
@@ -157,21 +282,27 @@ export class NetworkStorage {
     return intercepts;
   }
 
-  disposeRequestMap() {
-    for (const request of this.#requests.values()) {
-      request.dispose();
-    }
+  disposeRequestMap(sessionId: string) {
+    const requests = [...this.#requests.values()].filter((request) => {
+      return request.cdpClient.sessionId === sessionId;
+    });
 
-    this.#requests.clear();
+    for (const request of requests) {
+      request.dispose();
+      this.#requests.delete(request.id);
+    }
   }
 
-  #handleNetworkInterception(event: Protocol.Fetch.RequestPausedEvent) {
+  #handleNetworkInterception(
+    event: Protocol.Fetch.RequestPausedEvent,
+    cdpTarget: CdpTarget
+  ) {
     // CDP quirk if the Network domain is not present this is undefined
     const request = this.#requests.get(event.networkId ?? '');
     if (!request) {
       // CDP quirk even both request/response may be continued
       // with this command
-      void this.#browserClient
+      void cdpTarget.cdpClient
         .sendCommand('Fetch.continueRequest', {
           requestId: event.requestId,
         })
@@ -184,13 +315,16 @@ export class NetworkStorage {
     request.onRequestPaused(event);
   }
 
-  #handleAuthInterception(event: Protocol.Fetch.AuthRequiredEvent) {
+  #handleAuthInterception(
+    event: Protocol.Fetch.AuthRequiredEvent,
+    cdpTarget: CdpTarget
+  ) {
     // CDP quirk if the Network domain is not present this is undefined
     const request = this.getRequestByFetchId(event.requestId ?? '');
     if (!request) {
       // CDP quirk even both request/response may be continued
       // with this command
-      void this.#browserClient
+      void cdpTarget.cdpClient
         .sendCommand('Fetch.continueWithAuth', {
           requestId: event.requestId,
           authChallengeResponse: {
@@ -256,104 +390,6 @@ export class NetworkStorage {
     if (request) {
       request.dispose();
       this.#requests.delete(id);
-    }
-  }
-
-  /** Converts a URL pattern from the spec to a CDP URL pattern. */
-  static cdpFromSpecUrlPattern(urlPattern: Network.UrlPattern): string {
-    switch (urlPattern.type) {
-      case 'string':
-        return urlPattern.pattern;
-      case 'pattern':
-        return NetworkStorage.buildUrlPatternString(urlPattern);
-    }
-  }
-
-  static buildUrlPatternString({
-    protocol,
-    hostname,
-    port,
-    pathname,
-    search,
-  }: Network.UrlPatternPattern): string {
-    if (!protocol && !hostname && !port && !pathname && !search) {
-      return '*';
-    }
-
-    let url: string = '';
-
-    if (protocol) {
-      url += protocol;
-
-      if (!protocol.endsWith(':')) {
-        url += ':';
-      }
-
-      if (NetworkStorage.isSpecialScheme(protocol)) {
-        url += '//';
-      }
-    }
-
-    if (hostname) {
-      url += hostname;
-    }
-
-    if (port) {
-      url += `:${port}`;
-    }
-
-    if (pathname) {
-      if (!pathname.startsWith('/')) {
-        url += '/';
-      }
-
-      url += pathname;
-    }
-
-    if (search) {
-      if (!search.startsWith('?')) {
-        url += '?';
-      }
-
-      url += search;
-    }
-
-    return url;
-  }
-
-  /**
-   * Returns true if the given protocol is special.
-   * Special protocols are those that have a default port.
-   *
-   * Example inputs: 'http', 'http:'
-   *
-   * @see https://url.spec.whatwg.org/#special-scheme
-   */
-  static isSpecialScheme(protocol: string): boolean {
-    return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(
-      protocol.replace(/:$/, '')
-    );
-  }
-
-  /** Matches the given URLPattern against the given URL. */
-  static matchUrlPattern(
-    urlPattern: Network.UrlPattern,
-    url: string | undefined
-  ): boolean {
-    switch (urlPattern.type) {
-      case 'string':
-        return urlPattern.pattern === url;
-      case 'pattern': {
-        return (
-          new URLPattern({
-            protocol: urlPattern.protocol,
-            hostname: urlPattern.hostname,
-            port: urlPattern.port,
-            pathname: urlPattern.pathname,
-            search: urlPattern.search,
-          }).exec(url) !== null
-        );
-      }
     }
   }
 }
