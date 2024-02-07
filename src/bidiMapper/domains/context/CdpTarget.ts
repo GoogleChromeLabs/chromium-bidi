@@ -40,6 +40,7 @@ export class CdpTarget {
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #acceptInsecureCerts: boolean;
   #networkDomainEnabled = false;
+  #fetchDomainEnabled = false;
 
   static create(
     targetId: Protocol.Target.TargetID,
@@ -160,6 +161,32 @@ export class CdpTarget {
       kind: 'success',
       value: undefined,
     });
+  }
+
+  async enableFetchIfNeeded(params: Protocol.Fetch.EnableRequest) {
+    if (!this.#networkDomainEnabled || this.#fetchDomainEnabled) {
+      return;
+    }
+
+    this.#fetchDomainEnabled = true;
+    try {
+      await this.#cdpClient.sendCommand('Fetch.enable', params);
+    } catch (err) {
+      this.#fetchDomainEnabled = false;
+    }
+  }
+
+  async disableFetchIfNeeded() {
+    if (!this.#fetchDomainEnabled) {
+      return;
+    }
+
+    this.#fetchDomainEnabled = false;
+    try {
+      await this.#cdpClient.sendCommand('Fetch.disable');
+    } catch (err) {
+      this.#fetchDomainEnabled = true;
+    }
   }
 
   async toggleNetworkIfNeeded(enabled: boolean): Promise<void> {
