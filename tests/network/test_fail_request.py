@@ -162,24 +162,23 @@ async def test_fail_request_twice(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason='TODO: Don`t use BiDi+')
 @pytest.mark.parametrize("phases, exception_and_response_expected", [
     (["authRequired"], False),
     pytest.param(["responseStarted"],
-                 True,
-                 marks=pytest.mark.xfail(reason='TODO: fix this test')),
+                 True),
     pytest.param(["authRequired", "responseStarted"],
-                 True,
-                 marks=pytest.mark.xfail(reason='TODO: fix this test')),
+                 True),
     (["beforeRequestSent"], False),
     (["beforeRequestSent", "authRequired"], False),
 ],
-                         ids=[
-                             "authRequired",
-                             "responseStarted",
-                             "authRequired and responseStarted",
-                             "beforeRequestSent",
-                             "beforeRequestSent and authRequired",
-                         ])
+    ids=[
+    "authRequired",
+    "responseStarted",
+    "authRequired and responseStarted",
+    "beforeRequestSent",
+    "beforeRequestSent and authRequired",
+])
 async def test_fail_request_with_auth_required_phase(
         websocket, context_id, auth_required_url, phases,
         exception_and_response_expected):

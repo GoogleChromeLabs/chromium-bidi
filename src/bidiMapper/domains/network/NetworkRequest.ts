@@ -26,7 +26,6 @@ import {
   Network,
   type BrowsingContext,
   ChromiumBidi,
-  InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
@@ -106,6 +105,10 @@ export class NetworkRequest {
 
   get fetchId(): string | undefined {
     return this.#fetchId;
+  }
+
+  get phase(): Network.InterceptPhase | undefined {
+    return this.#interceptPhase;
   }
 
   get url(): string | undefined {
@@ -264,7 +267,6 @@ export class NetworkRequest {
   }
 
   onAuthRequired(_event: Protocol.Fetch.AuthRequiredEvent) {
-    // TODO: Verify that the FetchId is correct
     this.#interceptPhase = Network.InterceptPhase.AuthRequired;
     if (!this.blocked) {
       void this.continueWithAuth();
@@ -277,11 +279,6 @@ export class NetworkRequest {
     method?: string,
     headers?: Protocol.Fetch.HeaderEntry[]
   ) {
-    if (this.#interceptPhase !== Network.InterceptPhase.BeforeRequestSent) {
-      throw new InvalidArgumentException(
-        `Blocked request for network id '${this.#id}' is not in 'BeforeRequestSent' phase`
-      );
-    }
     assert(this.#fetchId, 'Network Interception not set-up.');
     // TODO: Expand.
 
@@ -307,11 +304,6 @@ export class NetworkRequest {
     responsePhrase,
     responseHeaders,
   }: Omit<Protocol.Fetch.ContinueResponseRequest, 'requestId'> = {}) {
-    if (this.#interceptPhase !== Network.InterceptPhase.ResponseStarted) {
-      throw new InvalidArgumentException(
-        `Blocked request for network id '${this.#id}' is not in 'ResponseStarted' phase`
-      );
-    }
     assert(this.#fetchId, 'Network Interception not set-up.');
 
     await this.#cdpTarget.browserCdpClient.sendCommand(
@@ -333,11 +325,6 @@ export class NetworkRequest {
       response: 'Default',
     }
   ) {
-    if (this.#interceptPhase !== Network.InterceptPhase.AuthRequired) {
-      throw new InvalidArgumentException(
-        `Blocked request for network id '${this.#id}' is not in 'AuthRequired' phase`
-      );
-    }
     assert(this.#fetchId, 'Network Interception not set-up.');
 
     await this.#cdpTarget.browserCdpClient.sendCommand(
@@ -394,12 +381,11 @@ export class NetworkRequest {
 
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {
     let isBlocked = false;
-
     let intercepts = undefined;
     if (phase && phase === this.#interceptPhase) {
       const blockedBy = this.#networkStorage.requestBlockedBy(this, phase);
       isBlocked = blockedBy.size > 0;
-      intercepts = [...this.#networkStorage.requestBlockedBy(this, phase)] as [
+      intercepts = [...blockedBy] as [
         Network.Intercept,
         ...Network.Intercept[],
       ];
