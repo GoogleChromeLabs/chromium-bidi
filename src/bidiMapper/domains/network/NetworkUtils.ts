@@ -24,8 +24,9 @@ import type {Protocol} from 'devtools-protocol';
 import {
   InvalidArgumentException,
   UnsupportedOperationException,
-} from '../../../protocol/ErrorResponse';
+} from '../../../protocol/ErrorResponse.js';
 import {Network, type Storage} from '../../../protocol/protocol.js';
+import {URLPattern} from '../../../utils/UrlPattern.js';
 
 export function computeHeadersSize(headers: Network.Header[]): number {
   const requestHeaders = headers.reduce((acc, header) => {

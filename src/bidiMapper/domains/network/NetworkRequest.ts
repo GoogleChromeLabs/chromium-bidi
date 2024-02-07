@@ -55,7 +55,6 @@ export class NetworkRequest {
 
   #fetchId: Protocol.Fetch.RequestId | undefined = undefined;
 
-  // TODO: Handle auth required?
   /**
    * Indicates the network intercept phase, if the request is currently blocked.
    * Undefined necessarily implies that the request is not blocked.
@@ -263,10 +262,10 @@ export class NetworkRequest {
       }
     } else {
       this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
+      this.#emitEventsIfReady();
       if (!this.blocked) {
         void this.continueRequest();
       }
-      this.#emitEventsIfReady();
     }
   }
 
@@ -275,6 +274,19 @@ export class NetworkRequest {
     if (!this.blocked) {
       void this.continueWithAuth();
     }
+    this.#eventManager.registerEvent(
+      {
+        type: 'event',
+        method: ChromiumBidi.Network.EventNames.AuthRequired,
+        params: {
+          ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
+          // TODO: Why is this on the Spec
+          // How are we suppose to know the response if we are blocked by Auth
+          response: {} as any,
+        },
+      },
+      this.#context
+    );
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
@@ -379,6 +391,7 @@ export class NetworkRequest {
     let intercepts = undefined;
     if (phase && phase === this.#interceptPhase) {
       const blockedBy = this.#networkStorage.requestBlockedBy(this, phase);
+      console.log('BlockedBy', JSON.stringify([...blockedBy.values()]));
       isBlocked = blockedBy.size > 0;
       intercepts = [...blockedBy] as [
         Network.Intercept,
@@ -458,6 +471,7 @@ export class NetworkRequest {
     if (this.#isIgnoredEvent()) {
       return;
     }
+
     this.#eventManager.registerPromiseEvent(
       this.#beforeRequestSentDeferred.then((result) => {
         if (result.kind === 'success') {
@@ -544,7 +558,7 @@ export class NetworkRequest {
     return {
       method: ChromiumBidi.Network.EventNames.ResponseStarted,
       params: {
-        ...this.#getBaseEventParams(),
+        ...this.#getBaseEventParams(Network.InterceptPhase.ResponseStarted),
         response: {
           url: this.#response.info.url ?? NetworkRequest.#unknown,
           protocol: this.#response.info.protocol ?? '',
