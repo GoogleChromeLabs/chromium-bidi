@@ -88,90 +88,97 @@ export class NetworkStorage {
     return request;
   }
 
-  onNewCdpTarget(cdpTarget: CdpTarget) {
+  onCdpTargetCreated(cdpTarget: CdpTarget) {
     this.#targets.add(cdpTarget);
 
     const cdpClient = cdpTarget.cdpClient;
 
-    cdpClient.on(
-      'Network.requestWillBeSent',
-      (params: Protocol.Network.RequestWillBeSentEvent) => {
-        const request = this.getRequestById(params.requestId);
-        if (request && request.isRedirecting()) {
-          request.handleRedirect(params);
-          this.deleteRequest(params.requestId);
-          this.#getOrCreateNetworkRequest(
-            params.requestId,
-            cdpTarget,
-            request.redirectCount + 1
-          ).onRequestWillBeSentEvent(params);
-        } else if (request) {
-          request.onRequestWillBeSentEvent(params);
-        } else {
+    // TODO: Wrap into object
+    const listeners = [
+      [
+        'Network.requestWillBeSent',
+        (params: Protocol.Network.RequestWillBeSentEvent) => {
+          const request = this.getRequestById(params.requestId);
+          if (request && request.isRedirecting()) {
+            request.handleRedirect(params);
+            this.deleteRequest(params.requestId);
+            this.#getOrCreateNetworkRequest(
+              params.requestId,
+              cdpTarget,
+              request.redirectCount + 1
+            ).onRequestWillBeSentEvent(params);
+          } else if (request) {
+            request.onRequestWillBeSentEvent(params);
+          } else {
+            this.#getOrCreateNetworkRequest(
+              params.requestId,
+              cdpTarget
+            ).onRequestWillBeSentEvent(params);
+          }
+        },
+      ],
+      [
+        'Network.requestWillBeSentExtraInfo',
+        (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
           this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget
-          ).onRequestWillBeSentEvent(params);
-        }
-      }
-    );
+          ).onRequestWillBeSentExtraInfoEvent(params);
+        },
+      ],
+      [
+        'Network.responseReceived',
+        (params: Protocol.Network.ResponseReceivedEvent) => {
+          this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget
+          ).onResponseReceivedEvent(params);
+        },
+      ],
+      [
+        'Network.responseReceivedExtraInfo',
+        (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
+          this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget
+          ).onResponseReceivedExtraInfoEvent(params);
+        },
+      ],
+      [
+        'Network.requestServedFromCache',
+        (params: Protocol.Network.RequestServedFromCacheEvent) => {
+          this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget
+          ).onServedFromCache();
+        },
+      ],
+      [
+        'Network.loadingFailed',
+        (params: Protocol.Network.LoadingFailedEvent) => {
+          this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget
+          ).onLoadingFailedEvent(params);
+        },
+      ],
+      [
+        'Fetch.requestPaused',
+        (event: Protocol.Fetch.RequestPausedEvent) => {
+          this.#handleNetworkInterception(event, cdpTarget);
+        },
+      ],
+      [
+        'Fetch.authRequired',
+        (event: Protocol.Fetch.AuthRequiredEvent) => {
+          this.#handleAuthInterception(event, cdpTarget);
+        },
+      ],
+    ] as const;
 
-    cdpClient.on(
-      'Network.requestWillBeSentExtraInfo',
-      (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
-        this.#getOrCreateNetworkRequest(
-          params.requestId,
-          cdpTarget
-        ).onRequestWillBeSentExtraInfoEvent(params);
-      }
-    );
-
-    cdpClient.on(
-      'Network.responseReceived',
-      (params: Protocol.Network.ResponseReceivedEvent) => {
-        this.#getOrCreateNetworkRequest(
-          params.requestId,
-          cdpTarget
-        ).onResponseReceivedEvent(params);
-      }
-    );
-
-    cdpClient.on(
-      'Network.responseReceivedExtraInfo',
-      (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
-        this.#getOrCreateNetworkRequest(
-          params.requestId,
-          cdpTarget
-        ).onResponseReceivedExtraInfoEvent(params);
-      }
-    );
-
-    cdpClient.on(
-      'Network.requestServedFromCache',
-      (params: Protocol.Network.RequestServedFromCacheEvent) => {
-        this.#getOrCreateNetworkRequest(
-          params.requestId,
-          cdpTarget
-        ).onServedFromCache();
-      }
-    );
-
-    cdpClient.on(
-      'Network.loadingFailed',
-      (params: Protocol.Network.LoadingFailedEvent) => {
-        this.#getOrCreateNetworkRequest(
-          params.requestId,
-          cdpTarget
-        ).onLoadingFailedEvent(params);
-      }
-    );
-
-    cdpClient.on('Fetch.requestPaused', (event) => {
-      this.#handleNetworkInterception(event, cdpTarget);
-    });
-    cdpClient.on('Fetch.authRequired', (event) => {
-      this.#handleAuthInterception(event, cdpTarget);
-    });
+    for (const [event, listener] of listeners) {
+      cdpClient.on(event, listener as any);
+    }
   }
 
   async toggleInterception() {
@@ -195,24 +202,26 @@ export class NetworkStorage {
       const patterns: Protocol.Fetch.EnableRequest['patterns'] = [];
 
       if (
-        this.#interceptionStages.request !== stages.request ||
-        this.#interceptionStages.response !== stages.response ||
-        this.#interceptionStages.auth !== stages.auth
+        this.#interceptionStages.request === stages.request ||
+        this.#interceptionStages.response === stages.response ||
+        this.#interceptionStages.auth === stages.auth
       ) {
-        this.#interceptionStages = stages;
-        // CDP quirk we need request interception when we intercept auth
-        if (stages.request || stages.auth) {
-          patterns.push({
-            urlPattern: '*',
-            requestStage: 'Request',
-          });
-        }
-        if (stages.response) {
-          patterns.push({
-            urlPattern: '*',
-            requestStage: 'Response',
-          });
-        }
+        return;
+      }
+
+      this.#interceptionStages = stages;
+      // CDP quirk we need request interception when we intercept auth
+      if (stages.request || stages.auth) {
+        patterns.push({
+          urlPattern: '*',
+          requestStage: 'Request',
+        });
+      }
+      if (stages.response) {
+        patterns.push({
+          urlPattern: '*',
+          requestStage: 'Response',
+        });
       }
 
       // TODO: Don't enable on start as we will have
@@ -221,7 +230,7 @@ export class NetworkStorage {
 
       await Promise.all(
         [...this.#targets.values()].map(async (cdpTarget) => {
-          await cdpTarget.cdpClient.sendCommand('Fetch.enable', {
+          return await cdpTarget.enableFetchIfNeeded({
             patterns,
             handleAuthRequests: stages.auth,
           });
@@ -235,8 +244,8 @@ export class NetworkStorage {
       };
 
       await Promise.all(
-        [...this.#targets.values()].map(async ({cdpClient}) => {
-          await cdpClient.sendCommand('Fetch.disable');
+        [...this.#targets.values()].map((target) => {
+          return target.disableFetchIfNeeded();
         })
       );
     }

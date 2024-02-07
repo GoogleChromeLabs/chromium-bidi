@@ -482,7 +482,7 @@ export class BrowsingContextProcessor {
       this.#logger
     );
 
-    this.#networkStorage.onNewCdpTarget(target);
+    this.#networkStorage.onCdpTargetCreated(target);
 
     return target;
   }
