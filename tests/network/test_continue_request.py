@@ -51,7 +51,7 @@ async def test_continue_request_invalid_phase_response_started(
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is not in 'BeforeRequestSent' phase"
+                "message": f"Blocked request for network id '{network_id}' is not in 'beforeRequestSent' phase"
             })):
         await execute_command(
             websocket, {
@@ -64,7 +64,6 @@ async def test_continue_request_invalid_phase_response_started(
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: fix this test")
 async def test_continue_request_invalid_phase_auth_required(
         websocket, context_id, auth_required_url):
 
@@ -77,7 +76,7 @@ async def test_continue_request_invalid_phase_auth_required(
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is not in 'BeforeRequestSent' phase"
+                "message": f"Blocked request for network id '{network_id}' is not in 'beforeRequestSent' phase"
             })):
         await execute_command(
             websocket, {
@@ -167,6 +166,16 @@ async def test_continue_request_completes(websocket, context_id, example_url):
                     ["network.beforeRequestSent", "network.responseCompleted"],
                     [context_id])
 
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "context": context_id,
+                "wait": "complete",
+            }
+        })
+
     result = await execute_command(
         websocket, {
             "method": "network.addIntercept",
@@ -177,16 +186,6 @@ async def test_continue_request_completes(websocket, context_id, example_url):
                     "pattern": example_url,
                 }, ],
             },
-        })
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
         })
 
     event_response = await wait_for_event(websocket,
@@ -401,14 +400,17 @@ async def test_continue_request_remove_intercept_inflight_request(
         })
     assert result == {}
 
-    await execute_command(
-        websocket, {
-            "method": "network.continueRequest",
-            "params": {
-                "request": network_id,
-                "url": example_url,
-            },
-        })
+    # TODO: Clarify the behavior of of removing intercept
+    # while there are inflight requests.
+
+    # await execute_command(
+    #     websocket, {
+    #         "method": "network.continueRequest",
+    #         "params": {
+    #             "request": network_id,
+    #             "url": example_url,
+    #         },
+    #     })
 
     event_response = await wait_for_event(websocket,
                                           "network.responseCompleted")

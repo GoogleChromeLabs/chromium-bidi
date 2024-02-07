@@ -83,10 +83,16 @@ export class NetworkStorage {
         this.#interceptionStages = stages;
         // CDP quirk we need request interception when we intercept auth
         if (stages.request || stages.auth) {
-          patterns.push({urlPattern: '*', requestStage: 'Request'});
+          patterns.push({
+            urlPattern: '*',
+            requestStage: 'Request',
+          });
         }
         if (stages.response) {
-          patterns.push({urlPattern: '*', requestStage: 'Response'});
+          patterns.push({
+            urlPattern: '*',
+            requestStage: 'Response',
+          });
         }
       }
 
@@ -132,7 +138,8 @@ export class NetworkStorage {
 
       for (const pattern of intercept.urlPatterns) {
         if (pattern.type === 'string') {
-          if (request.url.includes(pattern.pattern)) {
+          // TODO: Verify this behavior or convert to common
+          if (pattern.pattern.includes(request.url)) {
             intercepts.add(interceptId);
             break;
           }

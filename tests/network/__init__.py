@@ -26,7 +26,7 @@ async def create_blocked_request(websocket, context_id: str, *, url: str,
 
     event = f"network.{phase}"
 
-    await subscribe(websocket, [event])
+    await subscribe(websocket, [event], context_ids=[context_id])
 
     await execute_command(
         websocket, {
@@ -51,6 +51,16 @@ async def create_blocked_request(websocket, context_id: str, *, url: str,
                 "awaitPromise": False
             }
         })
+
+    # await send_JSON_command(
+    #     websocket, {
+    #         "method": "browsingContext.navigate",
+    #         "params": {
+    #             "url": url,
+    #             "wait": "complete",
+    #             "context": context_id
+    #         }
+    #     })
 
     event_response = await wait_for_event(websocket, event)
     network_id = event_response["params"]["request"]["request"]

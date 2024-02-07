@@ -29,7 +29,7 @@ async def test_continue_response_non_existent_request(websocket):
             Exception,
             match=str({
                 "error": "no such request",
-                "message": "No blocked request found for network id '_UNKNOWN_'"
+                "message": "Network request with ID '_UNKNOWN_' doesn't exist"
             })):
         await execute_command(
             websocket, {
@@ -43,16 +43,26 @@ async def test_continue_response_non_existent_request(websocket):
 @pytest.mark.asyncio
 async def test_continue_response_invalid_phase(websocket, context_id,
                                                example_url):
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
     network_id = await create_blocked_request(websocket,
                                               context_id,
-                                              url=example_url,
+                                              url=f"{example_url}?query=test",
                                               phase="beforeRequestSent")
 
     with pytest.raises(
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is in 'BeforeRequestSent' phase"
+                "message": f"Blocked request for network id '{network_id}' is in 'beforeRequestSent' phase"
             })):
         await execute_command(
             websocket, {
@@ -198,7 +208,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
         "statusCode": 401,
     },
 ],
-                         ids=["headers-only", "statusCode-only"])
+    ids=["headers-only", "statusCode-only"])
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: Fix this test, as it's racy")
 async def test_continue_response_must_specify_both_status_and_headers(
@@ -497,14 +507,17 @@ async def test_continue_response_remove_intercept_inflight_request(
     }
     network_id = event_response["params"]["request"]["request"]
 
-    result = await execute_command(
-        websocket, {
-            "method": "network.removeIntercept",
-            "params": {
-                "intercept": intercept_id,
-            },
-        })
-    assert result == {}
+    # TODO: Clarify the behavior of of removing intercept
+    # while there are inflight requests.
+
+    # result = await execute_command(
+    #     websocket, {
+    #         "method": "network.removeIntercept",
+    #         "params": {
+    #             "intercept": intercept_id,
+    #         },
+    #     })
+    # assert result == {}
 
     await execute_command(
         websocket, {

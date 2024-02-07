@@ -45,7 +45,7 @@ class LocalHttpServer:
 
         # Set up 200 page.
         self.__http_server \
-            .expect_request(self.__path_200) \
+            .expect_request(f"^{self.__path_200}") \
             .respond_with_data(
                 f"<html><body>{self.default_200_page_content}</body></html>",
                 headers={"Content-Type": "text/html"})
