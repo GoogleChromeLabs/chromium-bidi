@@ -14,8 +14,9 @@
 #  limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, create_request_via_fetch,
+                          execute_command, goto_url, send_JSON_command,
+                          subscribe, wait_for_event)
 
 from . import create_blocked_request
 
@@ -51,7 +52,7 @@ async def test_continue_request_invalid_phase_response_started(
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is not in 'beforeRequestSent' phase"
+                "message": f"Blocked request for network id '{network_id}' is in 'responseStarted' phase"
             })):
         await execute_command(
             websocket, {
@@ -65,7 +66,11 @@ async def test_continue_request_invalid_phase_response_started(
 
 @pytest.mark.asyncio
 async def test_continue_request_invalid_phase_auth_required(
-        websocket, context_id, auth_required_url):
+        websocket, context_id, base_url, auth_required_url):
+
+    await goto_url(
+        websocket, context_id, base_url
+    )
 
     network_id = await create_blocked_request(websocket,
                                               context_id,
@@ -76,7 +81,7 @@ async def test_continue_request_invalid_phase_auth_required(
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is not in 'beforeRequestSent' phase"
+                "message": f"Blocked request for network id '{network_id}' is in 'authRequired' phase"
             })):
         await execute_command(
             websocket, {
@@ -117,21 +122,15 @@ async def test_continue_request_invalid_url(websocket, context_id,
 @pytest.mark.asyncio
 async def test_continue_request_non_blocked_request(websocket, context_id,
                                                     assert_no_events_in_queue,
-                                                    hang_url):
+                                                    hang_url, base_url):
+    await goto_url(websocket, context_id, base_url)
+
     await subscribe(websocket, [
         "network.beforeRequestSent", "network.responseCompleted",
         "network.fetchError"
     ])
 
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": hang_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
+    await create_request_via_fetch(websocket, context_id, hang_url)
 
     before_request_sent_event = await wait_for_event(
         websocket, "network.beforeRequestSent")
@@ -162,19 +161,12 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_continue_request_completes(websocket, context_id, example_url):
+
+    await goto_url(websocket, context_id, example_url)
+
     await subscribe(websocket,
                     ["network.beforeRequestSent", "network.responseCompleted"],
                     [context_id])
-
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
 
     result = await execute_command(
         websocket, {
@@ -188,6 +180,8 @@ async def test_continue_request_completes(websocket, context_id, example_url):
             },
         })
 
+    await create_request_via_fetch(websocket, context_id, example_url)
+
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
     assert event_response == {
@@ -195,11 +189,11 @@ async def test_continue_request_completes(websocket, context_id, example_url):
         "params": {
             "context": context_id,
             "initiator": {
-                "type": "other",
+                "type": "script",
             },
             "intercepts": [result["intercept"]],
             "isBlocked": True,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
@@ -233,7 +227,7 @@ async def test_continue_request_completes(websocket, context_id, example_url):
         "params": {
             "context": context_id,
             "isBlocked": False,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": ANY_DICT,
             "response": ANY_DICT,
@@ -331,6 +325,9 @@ async def test_continue_request_twice(websocket, context_id, example_url):
 @pytest.mark.asyncio
 async def test_continue_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
+
+    await goto_url(websocket, context_id, example_url)
+
     await subscribe(websocket,
                     ["network.beforeRequestSent", "network.responseCompleted"],
                     [context_id])
@@ -352,15 +349,7 @@ async def test_continue_request_remove_intercept_inflight_request(
     }
     intercept_id = result["intercept"]
 
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
+    await create_request_via_fetch(websocket, context_id, example_url)
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
@@ -369,11 +358,11 @@ async def test_continue_request_remove_intercept_inflight_request(
         "params": {
             "context": context_id,
             "initiator": {
-                "type": "other",
+                "type": "script",
             },
             "intercepts": [intercept_id],
             "isBlocked": True,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
@@ -419,7 +408,7 @@ async def test_continue_request_remove_intercept_inflight_request(
         "params": {
             "context": context_id,
             "isBlocked": False,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": ANY_DICT,
             "response": ANY_DICT,

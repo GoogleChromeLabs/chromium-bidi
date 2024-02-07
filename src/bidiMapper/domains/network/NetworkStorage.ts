@@ -17,13 +17,13 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
-import {URLPattern} from '../../../utils/UrlPattern.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
+import {matchUrlPattern} from './NetworkUtils.js';
 
 interface NetworkInterception {
   urlPatterns: Network.UrlPattern[];
@@ -202,8 +202,8 @@ export class NetworkStorage {
       const patterns: Protocol.Fetch.EnableRequest['patterns'] = [];
 
       if (
-        this.#interceptionStages.request === stages.request ||
-        this.#interceptionStages.response === stages.response ||
+        this.#interceptionStages.request === stages.request &&
+        this.#interceptionStages.response === stages.response &&
         this.#interceptionStages.auth === stages.auth
       ) {
         return;
@@ -264,29 +264,29 @@ export class NetworkStorage {
       if (!intercept.phases.includes(phase)) {
         continue;
       }
-
+      console.log('intercept', JSON.stringify(intercept.phases));
       if (intercept.urlPatterns.length === 0) {
+        console.log('interceptADDED', interceptId);
         intercepts.add(interceptId);
         continue;
       }
 
       for (const pattern of intercept.urlPatterns) {
-        if (pattern.type === 'string') {
-          // TODO: Verify this behavior or convert to common
-          if (pattern.pattern.includes(request.url)) {
-            intercepts.add(interceptId);
-            break;
-          }
-          continue;
-        }
-
-        const urlPattern = new URLPattern(pattern);
-        if (urlPattern.test(request.url)) {
+        console.log(
+          'interceptData',
+          request.id,
+          JSON.stringify(pattern),
+          matchUrlPattern(pattern, request.url)
+        );
+        if (matchUrlPattern(pattern, request.url)) {
+          console.log('interceptADDED', interceptId);
           intercepts.add(interceptId);
           break;
         }
       }
     }
+
+    console.log('interceptOutput', JSON.stringify([...intercepts.values()]));
 
     return intercepts;
   }
@@ -355,9 +355,11 @@ export class NetworkStorage {
    *
    * @return The intercept ID.
    */
-  addIntercept(value: NetworkInterception): Network.Intercept {
+  async addIntercept(value: NetworkInterception): Promise<Network.Intercept> {
     const interceptId: Network.Intercept = uuidv4();
     this.#intercepts.set(interceptId, value);
+
+    await this.toggleInterception();
 
     return interceptId;
   }
@@ -366,14 +368,15 @@ export class NetworkStorage {
    * Removes the given intercept from the intercept map.
    * Throws NoSuchInterceptException if the intercept does not exist.
    */
-  removeIntercept(intercept: Network.Intercept) {
+  async removeIntercept(intercept: Network.Intercept) {
     if (!this.#intercepts.has(intercept)) {
       throw new NoSuchInterceptException(
         `Intercept '${intercept}' does not exist.`
       );
     }
-
     this.#intercepts.delete(intercept);
+
+    await this.toggleInterception();
   }
 
   getRequestById(id: Network.Request): NetworkRequest | undefined {

@@ -47,12 +47,11 @@ export class NetworkProcessor {
     const parsedUrlPatterns: Network.UrlPattern[] =
       NetworkProcessor.parseUrlPatterns(urlPatterns);
 
-    const intercept: Network.Intercept = this.#networkStorage.addIntercept({
-      urlPatterns: parsedUrlPatterns,
-      phases: params.phases,
-    });
-
-    await this.#networkStorage.toggleInterception();
+    const intercept: Network.Intercept =
+      await this.#networkStorage.addIntercept({
+        urlPatterns: parsedUrlPatterns,
+        phases: params.phases,
+      });
 
     return {
       intercept,
@@ -204,9 +203,7 @@ export class NetworkProcessor {
   async removeIntercept(
     params: Network.RemoveInterceptParameters
   ): Promise<EmptyResult> {
-    this.#networkStorage.removeIntercept(params.intercept);
-
-    await this.#networkStorage.toggleInterception();
+    await this.#networkStorage.removeIntercept(params.intercept);
 
     return {};
   }
@@ -226,14 +223,14 @@ export class NetworkProcessor {
     phase: Network.InterceptPhase | null
   ): NetworkRequest {
     const request = this.#getRequestOrFail(id);
-    if (request.phase !== phase) {
-      throw new InvalidArgumentException(
-        `Blocked request for network id '${id}' is in '${request.phase}' phase`
-      );
-    }
     if (!request.blocked) {
       throw new NoSuchRequestException(
         `No blocked request found for network id '${id}'`
+      );
+    }
+    if (request.phase !== phase) {
+      throw new InvalidArgumentException(
+        `Blocked request for network id '${id}' is in '${request.phase}' phase`
       );
     }
 
