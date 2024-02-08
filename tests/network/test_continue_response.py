@@ -17,8 +17,8 @@ import re
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+                          create_request_via_fetch, execute_command, goto_url,
+                          send_JSON_command, subscribe, wait_for_event)
 
 from . import create_blocked_request
 
@@ -448,6 +448,9 @@ async def test_continue_response_twice(websocket, context_id, example_url):
 @pytest.mark.asyncio
 async def test_continue_response_remove_intercept_inflight_request(
         websocket, context_id, example_url):
+
+    await goto_url(websocket, context_id, example_url)
+
     await subscribe(websocket,
                     ["network.beforeRequestSent", "network.responseCompleted"],
                     [context_id])
@@ -469,15 +472,7 @@ async def test_continue_response_remove_intercept_inflight_request(
     }
     intercept_id = result["intercept"]
 
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
+    await create_request_via_fetch(websocket, context_id, example_url)
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
@@ -486,10 +481,10 @@ async def test_continue_response_remove_intercept_inflight_request(
         "params": {
             "context": context_id,
             "initiator": {
-                "type": "other",
+                "type": "script",
             },
             "isBlocked": False,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
@@ -534,7 +529,7 @@ async def test_continue_response_remove_intercept_inflight_request(
         "params": {
             "context": context_id,
             "isBlocked": False,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": ANY_DICT,
             "response": ANY_DICT,

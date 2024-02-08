@@ -53,13 +53,13 @@ export class NetworkRequest {
    */
   #id: Network.Request;
 
-  #fetchId: Protocol.Fetch.RequestId | undefined = undefined;
+  #fetchId?: Protocol.Fetch.RequestId;
 
   /**
    * Indicates the network intercept phase, if the request is currently blocked.
    * Undefined necessarily implies that the request is not blocked.
    */
-  #interceptPhase: Network.InterceptPhase | undefined = undefined;
+  #interceptPhase?: Network.InterceptPhase;
 
   #servedFromCache = false;
 
