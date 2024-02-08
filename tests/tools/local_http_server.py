@@ -47,7 +47,7 @@ class LocalHttpServer:
         self.__http_server \
             .expect_request(self.__path_base) \
             .respond_with_data(
-                f"<html><body>I prevent CORS</body></html>",
+                "<html><body>I prevent CORS</body></html>",
                 headers={"Content-Type": "text/html"})
 
         # Set up 200 page.

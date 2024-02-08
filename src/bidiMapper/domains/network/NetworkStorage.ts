@@ -264,29 +264,18 @@ export class NetworkStorage {
       if (!intercept.phases.includes(phase)) {
         continue;
       }
-      console.log('intercept', JSON.stringify(intercept.phases));
       if (intercept.urlPatterns.length === 0) {
-        console.log('interceptADDED', interceptId);
         intercepts.add(interceptId);
         continue;
       }
 
       for (const pattern of intercept.urlPatterns) {
-        console.log(
-          'interceptData',
-          request.id,
-          JSON.stringify(pattern),
-          matchUrlPattern(pattern, request.url)
-        );
         if (matchUrlPattern(pattern, request.url)) {
-          console.log('interceptADDED', interceptId);
           intercepts.add(interceptId);
           break;
         }
       }
     }
-
-    console.log('interceptOutput', JSON.stringify([...intercepts.values()]));
 
     return intercepts;
   }

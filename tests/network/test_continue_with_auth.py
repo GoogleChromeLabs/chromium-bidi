@@ -117,13 +117,16 @@ async def test_continue_with_auth_non_blocked_request(
     "username": "user",
     "password": "pass"
 }],
-    ids=["empty", "invalid type value"])
+                         ids=["empty", "invalid type value"])
 async def test_continue_with_auth_invalid_credentials(websocket, context_id,
                                                       auth_required_url,
                                                       credentials, base_url):
     await goto_url(websocket, context_id, base_url)
 
-    network_id = await create_blocked_request(websocket, context_id, auth_required_url, phase='authRequired')
+    network_id = await create_blocked_request(websocket,
+                                              context_id,
+                                              auth_required_url,
+                                              phase='authRequired')
 
     with pytest.raises(Exception,
                        match=str({
@@ -396,7 +399,6 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
         },
         "type": "event",
     }
-    network_id = event_response["params"]["request"]["request"]
 
     result = await execute_command(
         websocket, {

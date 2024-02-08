@@ -391,7 +391,6 @@ export class NetworkRequest {
     let intercepts = undefined;
     if (phase && phase === this.#interceptPhase) {
       const blockedBy = this.#networkStorage.requestBlockedBy(this, phase);
-      console.log('BlockedBy', JSON.stringify([...blockedBy.values()]));
       isBlocked = blockedBy.size > 0;
       intercepts = [...blockedBy] as [
         Network.Intercept,
