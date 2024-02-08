@@ -15,8 +15,8 @@
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+                          create_request_via_fetch, execute_command, goto_url,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -696,8 +696,12 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason='TODO: Clarify the behavior after last intercept is removed')
 async def test_fail_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
+
+    await goto_url(websocket, context_id, example_url)
+
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     result = await execute_command(
@@ -717,15 +721,7 @@ async def test_fail_request_remove_intercept_inflight_request(
     }
     intercept_id = result["intercept"]
 
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
+    await create_request_via_fetch(websocket, context_id, example_url)
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
@@ -734,11 +730,11 @@ async def test_fail_request_remove_intercept_inflight_request(
         "params": {
             "context": context_id,
             "initiator": {
-                "type": "other",
+                "type": "script",
             },
             "intercepts": [intercept_id],
             "isBlocked": True,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,

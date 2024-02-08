@@ -189,7 +189,7 @@ export class NetworkProcessor {
     // TODO: Set / expand.
     // ; Step 10. cookies
     // ; Step 11. credentials
-    const request = this.#getRequestOrFail(networkId);
+    const request = this.#getBlockedRequestOrFail(networkId, null);
     await request.provideResponse({
       responseCode: statusCode ?? request.statusCode,
       responsePhrase: reasonPhrase,
@@ -228,7 +228,7 @@ export class NetworkProcessor {
         `No blocked request found for network id '${id}'`
       );
     }
-    if (request.phase !== phase) {
+    if (phase && request.phase !== phase) {
       throw new InvalidArgumentException(
         `Blocked request for network id '${id}' is in '${request.phase}' phase`
       );
