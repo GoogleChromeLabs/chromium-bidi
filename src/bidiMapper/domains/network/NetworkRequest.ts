@@ -387,27 +387,32 @@ export class NetworkRequest {
   }
 
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {
-    let isBlocked = false;
-    let intercepts = undefined;
+    const interceptProps: Pick<
+      Network.BaseParameters,
+      'isBlocked' | 'intercepts'
+    > = {
+      isBlocked: false,
+    };
     if (phase && phase === this.#interceptPhase) {
       const blockedBy = this.#networkStorage.requestBlockedBy(this, phase);
-      isBlocked = blockedBy.size > 0;
-      intercepts = [...blockedBy] as [
-        Network.Intercept,
-        ...Network.Intercept[],
-      ];
+      interceptProps.isBlocked = blockedBy.size > 0;
+      if (interceptProps.isBlocked) {
+        interceptProps.intercepts = [...blockedBy] as [
+          Network.Intercept,
+          ...Network.Intercept[],
+        ];
+      }
     }
 
     return {
-      isBlocked,
       context: this.#context,
       navigation: this.#getNavigationId(),
       redirectCount: this.#redirectCount,
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
       timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
-      // XXX: we should return correct types from the function.
-      intercepts,
+      // Contains isBlocked and intercepts
+      ...interceptProps,
     };
   }
 
