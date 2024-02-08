@@ -208,7 +208,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
         "statusCode": 401,
     },
 ],
-    ids=["headers-only", "statusCode-only"])
+                         ids=["headers-only", "statusCode-only"])
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: Fix this test, as it's racy")
 async def test_continue_response_must_specify_both_status_and_headers(
@@ -470,7 +470,6 @@ async def test_continue_response_remove_intercept_inflight_request(
     assert result == {
         "intercept": ANY_UUID,
     }
-    intercept_id = result["intercept"]
 
     await create_request_via_fetch(websocket, context_id, example_url)
 

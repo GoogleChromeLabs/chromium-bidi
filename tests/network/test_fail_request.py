@@ -165,20 +165,18 @@ async def test_fail_request_twice(websocket, context_id, example_url):
 @pytest.mark.skip(reason='TODO: Don`t use BiDi+')
 @pytest.mark.parametrize("phases, exception_and_response_expected", [
     (["authRequired"], False),
-    pytest.param(["responseStarted"],
-                 True),
-    pytest.param(["authRequired", "responseStarted"],
-                 True),
+    pytest.param(["responseStarted"], True),
+    pytest.param(["authRequired", "responseStarted"], True),
     (["beforeRequestSent"], False),
     (["beforeRequestSent", "authRequired"], False),
 ],
-    ids=[
-    "authRequired",
-    "responseStarted",
-    "authRequired and responseStarted",
-    "beforeRequestSent",
-    "beforeRequestSent and authRequired",
-])
+                         ids=[
+                             "authRequired",
+                             "responseStarted",
+                             "authRequired and responseStarted",
+                             "beforeRequestSent",
+                             "beforeRequestSent and authRequired",
+                         ])
 async def test_fail_request_with_auth_required_phase(
         websocket, context_id, auth_required_url, phases,
         exception_and_response_expected):
@@ -696,7 +694,8 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='TODO: Clarify the behavior after last intercept is removed')
+@pytest.mark.skip(
+    reason='TODO: Clarify the behavior after last intercept is removed')
 async def test_fail_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
 

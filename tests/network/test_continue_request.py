@@ -68,9 +68,7 @@ async def test_continue_request_invalid_phase_response_started(
 async def test_continue_request_invalid_phase_auth_required(
         websocket, context_id, base_url, auth_required_url):
 
-    await goto_url(
-        websocket, context_id, base_url
-    )
+    await goto_url(websocket, context_id, base_url)
 
     network_id = await create_blocked_request(websocket,
                                               context_id,
@@ -378,7 +376,6 @@ async def test_continue_request_remove_intercept_inflight_request(
         },
         "type": "event",
     }
-    network_id = event_response["params"]["request"]["request"]
 
     result = await execute_command(
         websocket, {
