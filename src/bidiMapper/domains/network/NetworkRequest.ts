@@ -70,6 +70,8 @@ export class NetworkRequest {
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
   } = {};
 
+  #paused?: Protocol.Fetch.RequestPausedEvent;
+
   #response: {
     hasExtraInfo?: boolean;
     info?: Protocol.Network.Response;
@@ -111,7 +113,11 @@ export class NetworkRequest {
   }
 
   get url(): string | undefined {
-    return this.#response.info?.url ?? this.#request.info?.request.url;
+    return (
+      this.#response.info?.url ??
+      this.#request.info?.request.url ??
+      this.#paused?.request.url
+    );
   }
 
   get redirectCount() {
@@ -182,6 +188,15 @@ export class NetworkRequest {
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#request.info = event;
     this.#queueBeforeRequestSentEvent();
+    if (
+      this.#networkStorage.requestBlockedBy(
+        this,
+        Network.InterceptPhase.BeforeRequestSent
+      ).size &&
+      this.#interceptPhase !== Network.InterceptPhase.BeforeRequestSent
+    ) {
+      return;
+    }
     this.#emitEventsIfReady();
   }
 
@@ -189,6 +204,15 @@ export class NetworkRequest {
     event: Protocol.Network.RequestWillBeSentExtraInfoEvent
   ) {
     this.#request.extraInfo = event;
+    if (
+      this.#networkStorage.requestBlockedBy(
+        this,
+        Network.InterceptPhase.BeforeRequestSent
+      ).size &&
+      this.#interceptPhase !== Network.InterceptPhase.BeforeRequestSent
+    ) {
+      return;
+    }
     this.#emitEventsIfReady();
   }
 
@@ -253,6 +277,7 @@ export class NetworkRequest {
 
   onRequestPaused(event: Protocol.Fetch.RequestPausedEvent) {
     this.#fetchId = event.requestId;
+    this.#paused = event;
     // TODO:
     if (event.responseStatusCode && event.responseStatusText) {
       this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
