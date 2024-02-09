@@ -296,21 +296,10 @@ export class NetworkStorage {
     cdpTarget: CdpTarget
   ) {
     // CDP quirk if the Network domain is not present this is undefined
-    const request = this.#requests.get(event.networkId ?? '');
-    if (!request) {
-      // CDP quirk even both request/response may be continued
-      // with this command
-      void cdpTarget.cdpClient
-        .sendCommand('Fetch.continueRequest', {
-          requestId: event.requestId,
-        })
-        .catch(() => {
-          // TODO: add logging
-        });
-      return;
-    }
-
-    request.onRequestPaused(event);
+    this.#getOrCreateNetworkRequest(
+      event.networkId ?? '',
+      cdpTarget
+    ).onRequestPaused(event);
   }
 
   #handleAuthInterception(
