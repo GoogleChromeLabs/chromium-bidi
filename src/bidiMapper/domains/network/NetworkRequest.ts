@@ -70,7 +70,8 @@ export class NetworkRequest {
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
   } = {};
 
-  #paused?: Protocol.Fetch.RequestPausedEvent;
+  #requestPaused?: Protocol.Fetch.RequestPausedEvent;
+  #responsePaused?: Protocol.Fetch.RequestPausedEvent;
 
   #response: {
     hasExtraInfo?: boolean;
@@ -116,7 +117,8 @@ export class NetworkRequest {
     return (
       this.#response.info?.url ??
       this.#request.info?.request.url ??
-      this.#paused?.request.url
+      this.#requestPaused?.request.url ??
+      this.#responsePaused?.request.url
     );
   }
 
@@ -138,6 +140,10 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
+  #isBlockedInPhase(phase: Network.InterceptPhase) {
+    return this.#networkStorage.requestBlockedBy(this, phase).size > 0;
+  }
+
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
     this.#queueResponseStartedEvent();
     this.#queueResponseCompletedEvent();
@@ -155,10 +161,21 @@ export class NetworkRequest {
       this.#servedFromCache ||
       // Sometimes there is no extra info and the response
       // is the only place we can find out
-      Boolean(this.#response.info && !this.#response.hasExtraInfo) ||
-      this.#interceptPhase === Network.InterceptPhase.BeforeRequestSent;
+      Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
-    if (this.#request.info && requestExtraInfoCompleted) {
+    const requestInterceptionExpected = this.#isBlockedInPhase(
+      Network.InterceptPhase.BeforeRequestSent
+    );
+
+    const requestInterceptionCompleted =
+      (requestInterceptionExpected && Boolean(this.#requestPaused)) ||
+      !requestInterceptionExpected;
+
+    if (
+      this.#request.info &&
+      (requestExtraInfoCompleted || requestInterceptionExpected) &&
+      requestInterceptionCompleted
+    ) {
       this.#beforeRequestSentDeferred.resolve({
         kind: 'success',
         value: undefined,
@@ -170,14 +187,23 @@ export class NetworkRequest {
       // Response from cache don't have extra info
       this.#servedFromCache ||
       // Don't expect extra info if the flag is false
-      Boolean(this.#response.info && !this.#response.hasExtraInfo) ||
-      this.#interceptPhase === Network.InterceptPhase.ResponseStarted;
+      Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
-    if (this.#response.info && responseExtraInfoCompleted) {
+    const responseInterceptionCompleted =
+      (this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted) &&
+        Boolean(this.#responsePaused)) ||
+      !this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted);
+
+    if (
+      this.#response.info &&
+      responseExtraInfoCompleted &&
+      responseInterceptionCompleted
+    ) {
       this.#responseStartedDeferred.resolve({
         kind: 'success',
         value: undefined,
       });
+
       this.#responseCompletedDeferred.resolve({
         kind: 'success',
         value: undefined,
@@ -188,15 +214,6 @@ export class NetworkRequest {
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#request.info = event;
     this.#queueBeforeRequestSentEvent();
-    if (
-      this.#networkStorage.requestBlockedBy(
-        this,
-        Network.InterceptPhase.BeforeRequestSent
-      ).size &&
-      this.#interceptPhase !== Network.InterceptPhase.BeforeRequestSent
-    ) {
-      return;
-    }
     this.#emitEventsIfReady();
   }
 
@@ -204,15 +221,6 @@ export class NetworkRequest {
     event: Protocol.Network.RequestWillBeSentExtraInfoEvent
   ) {
     this.#request.extraInfo = event;
-    if (
-      this.#networkStorage.requestBlockedBy(
-        this,
-        Network.InterceptPhase.BeforeRequestSent
-      ).size &&
-      this.#interceptPhase !== Network.InterceptPhase.BeforeRequestSent
-    ) {
-      return;
-    }
     this.#emitEventsIfReady();
   }
 
@@ -277,15 +285,15 @@ export class NetworkRequest {
 
   onRequestPaused(event: Protocol.Fetch.RequestPausedEvent) {
     this.#fetchId = event.requestId;
-    this.#paused = event;
-    // TODO:
     if (event.responseStatusCode && event.responseStatusText) {
       this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
+      this.#responsePaused = event;
       this.#emitEventsIfReady();
       if (!this.blocked) {
         void this.continueResponse();
       }
     } else {
+      this.#requestPaused = event;
       this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
       this.#emitEventsIfReady();
       if (!this.blocked) {
