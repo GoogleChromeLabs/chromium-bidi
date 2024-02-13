@@ -172,9 +172,10 @@ export class NetworkRequest {
       !requestInterceptionExpected;
 
     if (
-      this.#request.info &&
-      (requestExtraInfoCompleted || requestInterceptionExpected) &&
-      requestInterceptionCompleted
+      Boolean(this.#request.info) &&
+      (requestInterceptionExpected
+        ? requestInterceptionCompleted
+        : requestExtraInfoCompleted)
     ) {
       this.#beforeRequestSentDeferred.resolve({
         kind: 'success',
@@ -189,13 +190,23 @@ export class NetworkRequest {
       // Don't expect extra info if the flag is false
       Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
+    const responseInterceptionExpected = this.#isBlockedInPhase(
+      Network.InterceptPhase.ResponseStarted
+    );
+
     const responseInterceptionCompleted =
-      (this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted) &&
-        Boolean(this.#responsePaused)) ||
-      !this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted);
+      (responseInterceptionExpected && Boolean(this.#responsePaused)) ||
+      !responseInterceptionExpected;
+
+    if (responseInterceptionExpected && Boolean(this.#responsePaused)) {
+      this.#responseStartedDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
+    }
 
     if (
-      this.#response.info &&
+      Boolean(this.#response.info) &&
       responseExtraInfoCompleted &&
       responseInterceptionCompleted
     ) {
@@ -288,6 +299,10 @@ export class NetworkRequest {
     if (event.responseStatusCode && event.responseStatusText) {
       this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       this.#responsePaused = event;
+      if (!this.#response.info) {
+        this.#queueResponseStartedEvent();
+        this.#queueResponseCompletedEvent();
+      }
       this.#emitEventsIfReady();
       if (!this.blocked) {
         void this.continueResponse();
@@ -579,17 +594,21 @@ export class NetworkRequest {
 
   #getResponseStartedEvent(): Network.ResponseStarted {
     assert(this.#request.info, 'RequestWillBeSentEvent is not set');
-    assert(this.#response.info, 'ResponseReceivedEvent is not set');
+    assert(
+      this.#response.info || this.#responsePaused,
+      'ResponseReceivedEvent is not set'
+    );
 
     // Chromium sends wrong extraInfo events for responses served from cache.
     // See https://github.com/puppeteer/puppeteer/issues/9965 and
     // https://crbug.com/1340398.
-    if (this.#response.info.fromDiskCache) {
+    if (this.#response.info?.fromDiskCache) {
       this.#response.extraInfo = undefined;
     }
 
+    // TODO: get headers from Fetch.requestPaused
     const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
-      this.#response.info.headers
+      this.#response.info?.headers
     );
 
     return {
@@ -597,17 +616,24 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(Network.InterceptPhase.ResponseStarted),
         response: {
-          url: this.#response.info.url ?? NetworkRequest.#unknown,
-          protocol: this.#response.info.protocol ?? '',
-          status: this.statusCode,
-          statusText: this.#response.info.statusText,
+          url:
+            this.#response.info?.url ??
+            this.#responsePaused?.request.url ??
+            NetworkRequest.#unknown,
+          protocol: this.#response.info?.protocol ?? '',
+          status:
+            this.statusCode || this.#responsePaused?.responseStatusCode || 0,
+          statusText:
+            this.#response.info?.statusText ||
+            this.#responsePaused?.responseStatusText ||
+            '',
           fromCache:
-            this.#response.info.fromDiskCache ||
-            this.#response.info.fromPrefetchCache ||
+            this.#response.info?.fromDiskCache ||
+            this.#response.info?.fromPrefetchCache ||
             this.#servedFromCache,
           headers,
-          mimeType: this.#response.info.mimeType,
-          bytesReceived: this.#response.info.encodedDataLength,
+          mimeType: this.#response.info?.mimeType || '',
+          bytesReceived: this.#response.info?.encodedDataLength || 0,
           headersSize: computeHeadersSize(headers),
           // TODO: consider removing from spec.
           bodySize: 0,

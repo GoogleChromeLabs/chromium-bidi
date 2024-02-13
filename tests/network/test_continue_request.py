@@ -39,7 +39,6 @@ async def test_continue_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
 async def test_continue_request_invalid_phase_response_started(
         websocket, context_id, example_url):
 

@@ -74,7 +74,6 @@ async def test_continue_response_invalid_phase(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: fix this test")
 async def test_continue_response_invalid_status_code(websocket, context_id,
                                                      example_url):
     network_id = await create_blocked_request(websocket,
@@ -100,7 +99,6 @@ async def test_continue_response_invalid_status_code(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: fix this test")
 async def test_continue_response_invalid_reason_phrase(websocket, context_id,
                                                        example_url):
     network_id = await create_blocked_request(websocket,
@@ -125,7 +123,6 @@ async def test_continue_response_invalid_reason_phrase(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: fix this test")
 async def test_continue_response_invalid_headers(websocket, context_id,
                                                  example_url):
     network_id = await create_blocked_request(websocket,
@@ -289,15 +286,15 @@ async def test_continue_response_completes(websocket, context_id, example_url):
             }
         })
 
-    event_response = await wait_for_event(websocket,
-                                          "network.beforeRequestSent")
+    event_response = await wait_for_event(websocket, "network.responseStarted")
     assert event_response == {
-        "method": "network.beforeRequestSent",
+        "method": "network.responseStarted",
         "params": {
             "context": context_id,
             "initiator": {
                 "type": "other",
             },
+            "intercepts": ANY_LIST,
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
