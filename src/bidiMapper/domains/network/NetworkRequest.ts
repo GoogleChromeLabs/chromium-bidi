@@ -296,7 +296,9 @@ export class NetworkRequest {
 
   onRequestPaused(event: Protocol.Fetch.RequestPausedEvent) {
     this.#fetchId = event.requestId;
-    if (event.responseStatusCode && event.responseStatusText) {
+
+    // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
+    if (event.responseStatusCode || event.responseErrorReason) {
       this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       this.#responsePaused = event;
       if (!this.#response.info) {
