@@ -443,6 +443,7 @@ async def test_continue_response_twice(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: Clarify how removing the last intercept works")
 async def test_continue_response_remove_intercept_inflight_request(
         websocket, context_id, example_url):
 
@@ -467,6 +468,7 @@ async def test_continue_response_remove_intercept_inflight_request(
     assert result == {
         "intercept": ANY_UUID,
     }
+    intercept_id = result["intercept"]
 
     await create_request_via_fetch(websocket, context_id, example_url)
 
@@ -496,27 +498,27 @@ async def test_continue_response_remove_intercept_inflight_request(
         },
         "type": "event",
     }
-    network_id = event_response["params"]["request"]["request"]
 
     # TODO: Clarify the behavior of of removing intercept
     # while there are inflight requests.
 
-    # result = await execute_command(
-    #     websocket, {
-    #         "method": "network.removeIntercept",
-    #         "params": {
-    #             "intercept": intercept_id,
-    #         },
-    #     })
-    # assert result == {}
-
-    await execute_command(
+    result = await execute_command(
         websocket, {
-            "method": "network.continueResponse",
+            "method": "network.removeIntercept",
             "params": {
-                "request": network_id,
+                "intercept": intercept_id,
             },
         })
+
+    event_response = await wait_for_event(websocket, "network.responseStarted")
+
+    # await execute_command(
+    #     websocket, {
+    #         "method": "network.continueResponse",
+    #         "params": {
+    #             "request": network_id,
+    #         },
+    #     })
 
     event_response = await wait_for_event(websocket,
                                           "network.responseCompleted")

@@ -126,9 +126,7 @@ export class NetworkRequest {
   }
 
   get blocked() {
-    return (
-      this.#networkStorage.requestBlockedBy(this, this.#interceptPhase).size > 0
-    );
+    return this.#isBlockedInPhase(this.#interceptPhase);
   }
 
   get cdpClient() {
@@ -139,7 +137,7 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
-  #isBlockedInPhase(phase: Network.InterceptPhase) {
+  #isBlockedInPhase(phase?: Network.InterceptPhase) {
     return this.#networkStorage.requestBlockedBy(this, phase).size > 0;
   }
 
