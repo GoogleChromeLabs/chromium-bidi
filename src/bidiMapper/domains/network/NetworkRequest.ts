@@ -202,6 +202,11 @@ export class NetworkRequest {
         kind: 'success',
         value: undefined,
       });
+    } else if (this.#response.info) {
+      this.#responseStartedDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
     }
 
     if (
@@ -209,11 +214,6 @@ export class NetworkRequest {
       responseExtraInfoCompleted &&
       responseInterceptionCompleted
     ) {
-      this.#responseStartedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-
       this.#responseCompletedDeferred.resolve({
         kind: 'success',
         value: undefined,
