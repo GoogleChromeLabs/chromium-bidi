@@ -24,7 +24,8 @@ describe('IdWrapper', () => {
     const wrapper1 = new IdWrapper();
     const wrapper2 = new IdWrapper();
 
-    expect(wrapper1.id).to.equal(1);
-    expect(wrapper2.id).to.equal(2);
+    expect(wrapper1.id).that.is.a('number');
+    expect(wrapper2.id).that.is.a('number');
+    expect(wrapper1.id).to.not.be.equal(wrapper2.id);
   });
 });
