@@ -19,7 +19,7 @@ import {expect} from 'chai';
 import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import {ChromiumBidi} from '../../../protocol/protocol.js';
+import {ChromiumBidi, Network} from '../../../protocol/protocol.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {ProcessingQueue} from '../../../utils/ProcessingQueue.js';
 import type {OutgoingMessage} from '../../OutgoingMessage.js';
@@ -39,6 +39,7 @@ import {NetworkStorage} from './NetworkStorage.js';
 // TODO: Extend with Redirect
 class MockCdpNetworkEvents {
   static defaultFrameId = '099A5216AF03AAFEC988F214B024DF08';
+  static defaultUrl = 'http://www.google.com';
 
   cdpClient: CdpClient;
 
@@ -71,13 +72,13 @@ class MockCdpNetworkEvents {
 
     this.requestId = requestId ?? '7760711DEFCFA23132D98ABA6B4E175C';
     this.loaderId = loaderId ?? '7760711DEFCFA23132D98ABA6B4E175C';
-    this.url = url ?? 'http://localhost:8907/redirect/1.html';
+    this.url = url ?? MockCdpNetworkEvents.defaultUrl;
     this.frameId = frameId ?? MockCdpNetworkEvents.defaultFrameId;
     this.type = type ?? 'Document';
     this.fetchId = fetchId ?? 'interception-job-1.0';
   }
 
-  requestWillBeSendEvent() {
+  requestWillBeSend() {
     this.cdpClient.emit('Network.requestWillBeSent', {
       requestId: this.requestId,
       loaderId: this.loaderId,
@@ -105,7 +106,7 @@ class MockCdpNetworkEvents {
     });
   }
 
-  requestWillBeSendExtraInfoEvent() {
+  requestWillBeSendExtraInfo() {
     this.cdpClient.emit('Network.requestWillBeSentExtraInfo', {
       requestId: this.requestId,
       associatedCookies: [],
@@ -272,24 +273,27 @@ class MockCdpNetworkEvents {
 
 class MockCdpTarget {
   cdpClient = new EventEmitter() as CdpClient;
+  enableFetchIfNeeded() {
+    return Promise.resolve();
+  }
 }
 
-describe('NetworkStorage', () => {
-  let processedEvents: OutgoingMessage[] = [];
+describe.only('NetworkStorage', () => {
+  let processedEvents = new Map<
+    ChromiumBidi.Event['method'],
+    ChromiumBidi.Event['params']
+  >();
   let networkStorage!: NetworkStorage;
   let cdpClient!: CdpClient;
 
   // TODO: Better way of getting Events
-  async function getLastEvent() {
+  async function getEvent(name: ChromiumBidi.Event['method']) {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    const lastEvent = processedEvents.at(-1)
-      ?.message as unknown as ChromiumBidi.Event;
-    expect(lastEvent).to.exist;
-    return lastEvent;
+    return processedEvents.get(name);
   }
   beforeEach(() => {
-    processedEvents = [];
+    processedEvents = new Map();
     const browsingContextStorage = new BrowsingContextStorage();
     const cdpTarget = new MockCdpTarget() as unknown as CdpTarget;
     const browsingContext = {
@@ -301,8 +305,9 @@ describe('NetworkStorage', () => {
     browsingContextStorage.addContext(browsingContext);
     const eventManager = new EventManager(browsingContextStorage);
     const processingQueue = new ProcessingQueue<OutgoingMessage>(
-      async (message) => {
-        processedEvents.push(message);
+      async ({message}) => {
+        const cdpEvent = message as unknown as ChromiumBidi.Event;
+        processedEvents.set(cdpEvent.method, cdpEvent.params);
         return await Promise.resolve();
       }
     );
@@ -328,21 +333,163 @@ describe('NetworkStorage', () => {
     it('should work for normal order', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
 
-      request.requestWillBeSendEvent();
-      request.requestWillBeSendExtraInfoEvent();
+      request.requestWillBeSend();
+      request.requestWillBeSendExtraInfo();
 
-      const lastEvent = await getLastEvent();
-      expect(lastEvent.method).to.equal('network.beforeRequestSent');
+      const event = await getEvent('network.beforeRequestSent');
+      expect(event).to.exist;
     });
 
     it('should work for reverse order', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
 
-      request.requestWillBeSendEvent();
-      request.requestWillBeSendExtraInfoEvent();
+      request.requestWillBeSend();
+      request.requestWillBeSendExtraInfo();
 
-      const lastEvent = await getLastEvent();
-      expect(lastEvent.method).to.equal('network.beforeRequestSent');
+      const event = await getEvent('network.beforeRequestSent');
+      expect(event).to.exist;
+    });
+
+    it('should work interception', async () => {
+      const interception = await networkStorage.addIntercept({
+        urlPatterns: [
+          {type: 'string', pattern: MockCdpNetworkEvents.defaultUrl},
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSend();
+
+      let event = await getEvent('network.beforeRequestSent');
+      expect(event).to.not.exist;
+      request.requestPaused();
+
+      event = await getEvent('network.beforeRequestSent');
+      expect(event).to.deep.include({
+        isBlocked: true,
+        intercepts: [interception],
+      });
+    });
+
+    it('should work interception pause first', async () => {
+      const interception = await networkStorage.addIntercept({
+        urlPatterns: [
+          {type: 'string', pattern: MockCdpNetworkEvents.defaultUrl},
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestPaused();
+      let event = await getEvent('network.beforeRequestSent');
+      expect(event).to.not.exist;
+
+      request.requestWillBeSend();
+      event = await getEvent('network.beforeRequestSent');
+
+      expect(event).to.deep.include({
+        isBlocked: true,
+        intercepts: [interception],
+      });
+    });
+
+    it('should work non blocking interception ', async () => {
+      await networkStorage.addIntercept({
+        urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSend();
+      request.requestPaused();
+
+      let event = await getEvent('network.beforeRequestSent');
+      expect(event).to.not.exist;
+
+      request.requestWillBeSendExtraInfo();
+      event = await getEvent('network.beforeRequestSent');
+
+      expect(event).to.deep.include({
+        isBlocked: false,
+      });
+    });
+  });
+
+  describe('network.responseStarted', () => {
+    it('should work for normal order', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSend();
+      request.requestWillBeSendExtraInfo();
+      request.responseReceived();
+      request.responseReceivedExtraInfo();
+
+      const event = await getEvent('network.responseStarted');
+      expect(event).to.exist;
+    });
+
+    it('should work for reverse order', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSend();
+      request.requestWillBeSendExtraInfo();
+
+      request.responseReceivedExtraInfo();
+      request.responseReceived();
+
+      const event = await getEvent('network.responseStarted');
+      expect(event).to.exist;
+    });
+
+    it('should work interception', async () => {
+      const interception = await networkStorage.addIntercept({
+        urlPatterns: [
+          {type: 'string', pattern: MockCdpNetworkEvents.defaultUrl},
+        ],
+        phases: [Network.InterceptPhase.ResponseStarted],
+      });
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSend();
+      request.requestWillBeSendExtraInfo();
+
+      let event = await getEvent('network.responseStarted');
+      expect(event).to.not.exist;
+      request.responsePaused();
+
+      event = await getEvent('network.responseStarted');
+
+      expect(event).to.deep.include({
+        isBlocked: true,
+        intercepts: [interception],
+      });
+    });
+
+    it('should work non blocking interception ', async () => {
+      await networkStorage.addIntercept({
+        urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
+        phases: [Network.InterceptPhase.ResponseStarted],
+      });
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSend();
+      request.requestWillBeSendExtraInfo();
+
+      let event = await getEvent('network.responseStarted');
+      expect(event).to.not.exist;
+
+      request.responsePaused();
+      event = await getEvent('network.responseStarted');
+      expect(event).to.not.exist;
+
+      request.responseReceived();
+      request.responseReceivedExtraInfo();
+
+      event = await getEvent('network.responseStarted');
+      expect(event).to.deep.include({
+        isBlocked: false,
+      });
     });
   });
 });
