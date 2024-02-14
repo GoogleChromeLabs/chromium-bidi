@@ -155,7 +155,7 @@ jobs:
           CHROMEDRIVER: ${{matrix.kind == 'chromedriver'}}
           HEADLESS: ${{matrix.head=='headless'}}
           UPDATE_EXPECTATIONS: true
-          VERBOSE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.verbose || 'true' }}
+          VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
         if: success() || failure()

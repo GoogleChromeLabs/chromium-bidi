@@ -83,7 +83,7 @@ jobs:
         # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          VERBOSE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.verbose || 'true' }}
+          VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
         timeout-minutes: 20
@@ -91,7 +91,7 @@ jobs:
         # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          VERBOSE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.verbose || 'true' }}
+          VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
