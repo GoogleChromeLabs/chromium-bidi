@@ -102,7 +102,7 @@ jobs:
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false
-          VERBOSE: ${{ github.event.inputs.verbose }}
+          VERBOSE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.verbose || 'true' }}
           WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}.json
       - name: Upload artifacts
         if: always()
