@@ -40,6 +40,8 @@ import {NetworkStorage} from './NetworkStorage.js';
 class MockCdpNetworkEvents {
   static defaultFrameId = '099A5216AF03AAFEC988F214B024DF08';
 
+  cdpClient: CdpClient;
+
   private requestId: string;
   private loaderId: string;
   private url: string;
@@ -47,21 +49,26 @@ class MockCdpNetworkEvents {
   private type: Protocol.Network.ResourceType;
   private fetchId: string;
 
-  constructor({
-    requestId,
-    loaderId,
-    url,
-    frameId,
-    type,
-    fetchId,
-  }: Partial<{
-    requestId: string;
-    loaderId: string;
-    url: string;
-    frameId: string;
-    type: Protocol.Network.ResourceType;
-    fetchId: string;
-  }> = {}) {
+  constructor(
+    cdpClient: CdpClient,
+    {
+      requestId,
+      loaderId,
+      url,
+      frameId,
+      type,
+      fetchId,
+    }: Partial<{
+      requestId: string;
+      loaderId: string;
+      url: string;
+      frameId: string;
+      type: Protocol.Network.ResourceType;
+      fetchId: string;
+    }> = {}
+  ) {
+    this.cdpClient = cdpClient;
+
     this.requestId = requestId ?? '7760711DEFCFA23132D98ABA6B4E175C';
     this.loaderId = loaderId ?? '7760711DEFCFA23132D98ABA6B4E175C';
     this.url = url ?? 'http://localhost:8907/redirect/1.html';
@@ -70,8 +77,8 @@ class MockCdpNetworkEvents {
     this.fetchId = fetchId ?? 'interception-job-1.0';
   }
 
-  get requestWillBeSendEvent(): Protocol.Network.RequestWillBeSentEvent {
-    return {
+  requestWillBeSendEvent() {
+    this.cdpClient.emit('Network.requestWillBeSent', {
       requestId: this.requestId,
       loaderId: this.loaderId,
       documentURL: this.url,
@@ -95,11 +102,11 @@ class MockCdpNetworkEvents {
       type: this.type,
       frameId: this.frameId,
       hasUserGesture: false,
-    };
+    });
   }
 
-  get requestWillBeSendExtraInfoEvent(): Protocol.Network.RequestWillBeSentExtraInfoEvent {
-    return {
+  requestWillBeSendExtraInfoEvent() {
+    this.cdpClient.emit('Network.requestWillBeSentExtraInfo', {
       requestId: this.requestId,
       associatedCookies: [],
       headers: {
@@ -117,17 +124,17 @@ class MockCdpNetworkEvents {
         'Accept-Encoding': 'gzip, deflate, br',
       },
       connectTiming: {requestTime: 2111.557593},
-    };
+    });
   }
 
-  get requestServedFromCache(): Protocol.Network.RequestServedFromCacheEvent {
-    return {
+  requestServedFromCache() {
+    this.cdpClient.emit('Network.requestServedFromCache', {
       requestId: this.requestId,
-    };
+    });
   }
 
-  get responseReceivedExtraInfo(): Protocol.Network.ResponseReceivedExtraInfoEvent {
-    return {
+  responseReceivedExtraInfo() {
+    this.cdpClient.emit('Network.responseReceivedExtraInfo', {
       requestId: this.requestId,
       blockedCookies: [],
       headers: {
@@ -142,11 +149,11 @@ class MockCdpNetworkEvents {
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\r\nCache-Control: no-cache, no-store\r\nContent-Type: text/html; charset=utf-8\r\nDate: Fri, 19 Nov 2021 09:53:58 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\nContent-Length: 0\r\n\r\n',
-    };
+    });
   }
 
-  get responseReceived(): Protocol.Network.ResponseReceivedEvent {
-    return {
+  responseReceived() {
+    this.cdpClient.emit('Network.responseReceived', {
       requestId: this.requestId,
       loaderId: this.loaderId,
       timestamp: 2111.563565,
@@ -201,11 +208,11 @@ class MockCdpNetworkEvents {
       },
       hasExtraInfo: true,
       frameId: this.frameId,
-    };
+    });
   }
 
-  get requestPaused(): Protocol.Fetch.RequestPausedEvent {
-    return {
+  requestPaused() {
+    this.cdpClient.emit('Fetch.requestPaused', {
       requestId: this.fetchId,
       request: {
         url: this.url,
@@ -217,11 +224,11 @@ class MockCdpNetworkEvents {
       frameId: this.frameId,
       resourceType: this.type,
       networkId: this.requestId,
-    };
+    });
   }
 
-  get responsePaused(): Protocol.Fetch.RequestPausedEvent {
-    return {
+  responsePaused() {
+    this.cdpClient.emit('Fetch.requestPaused', {
       requestId: this.fetchId,
       request: {
         url: this.url,
@@ -237,11 +244,11 @@ class MockCdpNetworkEvents {
       frameId: this.frameId,
       resourceType: this.type,
       networkId: this.requestId,
-    };
+    });
   }
 
-  get authRequired(): Protocol.Fetch.AuthRequiredEvent {
-    return {
+  authRequired() {
+    this.cdpClient.emit('Fetch.authRequired', {
       requestId: this.fetchId,
       request: {
         url: this.url,
@@ -259,7 +266,7 @@ class MockCdpNetworkEvents {
         scheme: 'Basic',
         realm: '',
       },
-    };
+    });
   }
 }
 
@@ -267,13 +274,20 @@ class MockCdpTarget {
   cdpClient = new EventEmitter() as CdpClient;
 }
 
-async function wait() {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
-
 describe('NetworkStorage', () => {
   let processedEvents: OutgoingMessage[] = [];
+  let networkStorage!: NetworkStorage;
   let cdpClient!: CdpClient;
+
+  // TODO: Better way of getting Events
+  async function getLastEvent() {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const lastEvent = processedEvents.at(-1)
+      ?.message as unknown as ChromiumBidi.Event;
+    expect(lastEvent).to.exist;
+    return lastEvent;
+  }
   beforeEach(() => {
     processedEvents = [];
     const browsingContextStorage = new BrowsingContextStorage();
@@ -283,6 +297,7 @@ describe('NetworkStorage', () => {
       id: MockCdpNetworkEvents.defaultFrameId,
     } as unknown as BrowsingContextImpl;
     cdpClient = cdpTarget.cdpClient;
+    // We need to add it the storage to emit properly
     browsingContextStorage.addContext(browsingContext);
     const eventManager = new EventManager(browsingContextStorage);
     const processingQueue = new ProcessingQueue<OutgoingMessage>(
@@ -291,6 +306,7 @@ describe('NetworkStorage', () => {
         return await Promise.resolve();
       }
     );
+    // Subscribe to the `network` module globally
     eventManager.subscriptionManager.subscribe(
       ChromiumBidi.BiDiModule.Network,
       null,
@@ -299,7 +315,7 @@ describe('NetworkStorage', () => {
     eventManager.on(EventManagerEvents.Event, ({message, event}) => {
       processingQueue.add(message, event);
     });
-    const networkStorage = new NetworkStorage(eventManager, {
+    networkStorage = new NetworkStorage(eventManager, {
       on(): void {
         // Used for clearing on target disconnect
       },
@@ -308,21 +324,25 @@ describe('NetworkStorage', () => {
     networkStorage.onCdpTargetCreated(cdpTarget);
   });
 
-  it('should work with no interception', async () => {
-    const events = new MockCdpNetworkEvents();
+  describe('network.beforeRequestSent', () => {
+    it('should work for normal order', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
 
-    cdpClient.emit('Network.requestWillBeSent', events.requestWillBeSendEvent);
-    cdpClient.emit(
-      'Network.requestWillBeSentExtraInfo',
-      events.requestWillBeSendExtraInfoEvent
-    );
+      request.requestWillBeSendEvent();
+      request.requestWillBeSendExtraInfoEvent();
 
-    // TODO: Implement a better way of looking at events
-    await wait();
+      const lastEvent = await getLastEvent();
+      expect(lastEvent.method).to.equal('network.beforeRequestSent');
+    });
 
-    const lastEvent = processedEvents.at(-1)
-      ?.message as unknown as ChromiumBidi.Event;
-    expect(lastEvent).to.exist;
-    expect(lastEvent.method).to.equal('network.beforeRequestSent');
+    it('should work for reverse order', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSendEvent();
+      request.requestWillBeSendExtraInfoEvent();
+
+      const lastEvent = await getLastEvent();
+      expect(lastEvent.method).to.equal('network.beforeRequestSent');
+    });
   });
 });
