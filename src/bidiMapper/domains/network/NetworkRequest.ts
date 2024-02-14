@@ -68,15 +68,14 @@ export class NetworkRequest {
   #request: {
     info?: Protocol.Network.RequestWillBeSentEvent;
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
+    paused?: Protocol.Fetch.RequestPausedEvent;
   } = {};
-
-  #requestPaused?: Protocol.Fetch.RequestPausedEvent;
-  #responsePaused?: Protocol.Fetch.RequestPausedEvent;
 
   #response: {
     hasExtraInfo?: boolean;
     info?: Protocol.Network.Response;
     extraInfo?: Protocol.Network.ResponseReceivedExtraInfoEvent;
+    paused?: Protocol.Fetch.RequestPausedEvent;
   } = {};
 
   #beforeRequestSentDeferred = new Deferred<Result<void>>();
@@ -117,8 +116,8 @@ export class NetworkRequest {
     return (
       this.#response.info?.url ??
       this.#request.info?.request.url ??
-      this.#requestPaused?.request.url ??
-      this.#responsePaused?.request.url
+      this.#request.paused?.request.url ??
+      this.#response.paused?.request.url
     );
   }
 
@@ -168,7 +167,7 @@ export class NetworkRequest {
     );
 
     const requestInterceptionCompleted =
-      (requestInterceptionExpected && Boolean(this.#requestPaused)) ||
+      (requestInterceptionExpected && Boolean(this.#request.paused)) ||
       !requestInterceptionExpected;
 
     if (
@@ -195,10 +194,10 @@ export class NetworkRequest {
     );
 
     const responseInterceptionCompleted =
-      (responseInterceptionExpected && Boolean(this.#responsePaused)) ||
+      (responseInterceptionExpected && Boolean(this.#response.paused)) ||
       !responseInterceptionExpected;
 
-    if (responseInterceptionExpected && Boolean(this.#responsePaused)) {
+    if (responseInterceptionExpected && Boolean(this.#response.paused)) {
       this.#responseStartedDeferred.resolve({
         kind: 'success',
         value: undefined,
@@ -300,17 +299,17 @@ export class NetworkRequest {
     // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     if (event.responseStatusCode || event.responseErrorReason) {
       this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
-      this.#responsePaused = event;
-      if (!this.#response.info) {
-        this.#queueResponseStartedEvent();
-        this.#queueResponseCompletedEvent();
-      }
+      this.#response.paused = event;
+
       this.#emitEventsIfReady();
       if (!this.blocked) {
         void this.continueResponse();
+      } else if (!this.#response.info) {
+        this.#queueResponseStartedEvent();
+        this.#queueResponseCompletedEvent();
       }
     } else {
-      this.#requestPaused = event;
+      this.#request.paused = event;
       this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
       this.#emitEventsIfReady();
       if (!this.blocked) {
@@ -597,7 +596,8 @@ export class NetworkRequest {
   #getResponseStartedEvent(): Network.ResponseStarted {
     assert(this.#request.info, 'RequestWillBeSentEvent is not set');
     assert(
-      this.#response.info || this.#responsePaused,
+      // The response paused comes before any data for the response
+      this.#response.paused || this.#response.info,
       'ResponseReceivedEvent is not set'
     );
 
@@ -620,14 +620,14 @@ export class NetworkRequest {
         response: {
           url:
             this.#response.info?.url ??
-            this.#responsePaused?.request.url ??
+            this.#response.paused?.request.url ??
             NetworkRequest.#unknown,
           protocol: this.#response.info?.protocol ?? '',
           status:
-            this.statusCode || this.#responsePaused?.responseStatusCode || 0,
+            this.statusCode || this.#response.paused?.responseStatusCode || 0,
           statusText:
             this.#response.info?.statusText ||
-            this.#responsePaused?.responseStatusText ||
+            this.#response.paused?.responseStatusText ||
             '',
           fromCache:
             this.#response.info?.fromDiskCache ||
