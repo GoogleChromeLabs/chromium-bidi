@@ -30,9 +30,10 @@ import {
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
-import {Deferred} from '../../../utils/Deferred.js';
+import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
+import {uuidv4} from '../../../utils/uuid.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import {WindowRealm} from '../script/WindowRealm.js';
@@ -59,19 +60,23 @@ export class BrowsingContextImpl {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
 
-  #lifecycle = {
-    DOMContentLoaded: new Deferred<Protocol.Page.LifecycleEventEvent>(),
-    load: new Deferred<Protocol.Page.LifecycleEventEvent>(),
-  };
-
-  #navigation = {
-    withinDocument: new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>(),
-  };
-
   #url = 'about:blank';
   readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
+  #lifecycle = new EventEmitter<{
+    load: string;
+    DOMContentLoaded: string;
+    fragment: string;
+    closed: UnknownErrorException;
+  }>();
   #loaderId?: Protocol.Network.LoaderId;
+  #fragmentNavigation?: string;
+  #loaded = new Promise<void>((resolve, reject) => {
+    this.#lifecycle.once('load', () => {
+      resolve();
+    });
+    this.#lifecycle.once('closed', reject);
+  });
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm?: Realm;
   readonly #sharedIdWithFrame: boolean;
@@ -168,8 +173,10 @@ export class BrowsingContextImpl {
       this.parent!.#children.delete(this.id);
     }
 
-    // Fail all ongoing navigations.
-    this.#failLifecycleIfNotFinished();
+    this.#lifecycle.emit(
+      'closed',
+      new UnknownErrorException('navigation canceled')
+    );
 
     this.#eventManager.registerEvent(
       {
@@ -262,7 +269,7 @@ export class BrowsingContextImpl {
   }
 
   async lifecycleLoaded() {
-    await this.#lifecycle.load;
+    await this.#loaded;
   }
 
   async targetUnblockedOrThrow(): Promise<void> {
@@ -325,131 +332,138 @@ export class BrowsingContextImpl {
   }
 
   #initListeners() {
-    this.#cdpTarget.cdpClient.on(
-      'Page.frameNavigated',
-      (params: Protocol.Page.FrameNavigatedEvent) => {
-        if (this.id !== params.frame.id) {
-          return;
-        }
-        this.#url = params.frame.url + (params.frame.urlFragment ?? '');
-
-        // At the point the page is initialized, all the nested iframes from the
-        // previous page are detached and realms are destroyed.
-        // Remove children from context.
-        this.#deleteAllChildren();
+    this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
+      if (this.id !== params.frame.id) {
+        return;
       }
-    );
+      this.#url = params.frame.url + (params.frame.urlFragment ?? '');
 
-    this.#cdpTarget.cdpClient.on(
-      'Page.navigatedWithinDocument',
-      (params: Protocol.Page.NavigatedWithinDocumentEvent) => {
-        if (this.id !== params.frameId) {
-          return;
-        }
-        const timestamp = BrowsingContextImpl.getTimestamp();
-        this.#url = params.url;
-        this.#navigation.withinDocument.resolve(params);
+      // At the point the page is initialized, all the nested iframes from the
+      // previous page are detached and realms are destroyed.
+      // Remove children from context.
+      this.#deleteAllChildren();
+    });
 
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-            params: {
-              context: this.id,
-              navigation: null,
-              timestamp,
-              url: this.#url,
-            },
+    this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
+      if (this.id !== params.frameId) {
+        return;
+      }
+      const timestamp = BrowsingContextImpl.getTimestamp();
+      this.#url = params.url;
+
+      if (this.#fragmentNavigation === undefined) {
+        this.#fragmentNavigation = uuidv4();
+      }
+
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+          params: {
+            context: this.id,
+            navigation: this.#fragmentNavigation,
+            timestamp,
+            url: this.#url,
           },
-          this.id
-        );
-      }
-    );
+        },
+        this.id
+      );
+      this.#lifecycle.emit('fragment', this.#fragmentNavigation);
 
-    this.#cdpTarget.cdpClient.on(
-      'Page.frameStartedLoading',
-      (params: Protocol.Page.FrameStartedLoadingEvent) => {
-        if (this.id !== params.frameId) {
-          return;
-        }
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-            params: {
-              context: this.id,
-              navigation: null,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url: '',
-            },
+      this.#fragmentNavigation = undefined;
+    });
+
+    const navigationStartedEmitted = new Set<string>();
+    this.#cdpTarget.cdpClient.on('Network.requestWillBeSent', (event) => {
+      if (
+        this.id !== event.frameId ||
+        event.requestId !== event.loaderId ||
+        navigationStartedEmitted.has(event.loaderId)
+      ) {
+        return;
+      }
+      navigationStartedEmitted.add(event.loaderId);
+
+      this.#loaderId = event.loaderId;
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          params: {
+            context: this.id,
+            navigation: event.loaderId,
+            timestamp: BrowsingContextImpl.getTimestamp(),
+            url: event.request.url,
           },
-          this.id
-        );
+        },
+        this.id
+      );
+    });
+
+    this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (event) => {
+      if (this.id !== event.frameId || !event.loaderId) {
+        return;
       }
-    );
+      this.#loaderId = event.loaderId;
 
-    this.#cdpTarget.cdpClient.on(
-      'Page.lifecycleEvent',
-      (params: Protocol.Page.LifecycleEventEvent) => {
-        if (this.id !== params.frameId) {
-          return;
-        }
-
-        if (params.name === 'init') {
-          this.#documentChanged(params.loaderId);
-          return;
-        }
-
-        if (params.name === 'commit') {
-          this.#loaderId = params.loaderId;
-          return;
-        }
-
-        // Ignore event from not current navigation.
-        if (params.loaderId !== this.#loaderId) {
-          return;
-        }
-
-        const timestamp = BrowsingContextImpl.getTimestamp();
-
-        switch (params.name) {
-          case 'DOMContentLoaded':
-            this.#eventManager.registerEvent(
-              {
-                type: 'event',
-                method:
-                  ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-                params: {
-                  context: this.id,
-                  navigation: this.#loaderId ?? null,
-                  timestamp,
-                  url: this.#url,
-                },
+      const timestamp = BrowsingContextImpl.getTimestamp();
+      switch (event.name) {
+        case 'init': {
+          if (navigationStartedEmitted.has(this.#loaderId)) {
+            return;
+          }
+          navigationStartedEmitted.add(this.#loaderId);
+          this.#eventManager.registerEvent(
+            {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+              params: {
+                context: this.id,
+                navigation: this.#loaderId,
+                timestamp,
+                url: this.#url,
               },
-              this.id
-            );
-            this.#lifecycle.DOMContentLoaded.resolve(params);
-            break;
-
-          case 'load':
-            this.#eventManager.registerEvent(
-              {
-                type: 'event',
-                method: ChromiumBidi.BrowsingContext.EventNames.Load,
-                params: {
-                  context: this.id,
-                  navigation: this.#loaderId ?? null,
-                  timestamp,
-                  url: this.#url,
-                },
+            },
+            this.id
+          );
+          break;
+        }
+        case 'DOMContentLoaded': {
+          this.#eventManager.registerEvent(
+            {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+              params: {
+                context: this.id,
+                navigation: this.#loaderId,
+                timestamp,
+                url: this.#url,
               },
-              this.id
-            );
-            this.#lifecycle.load.resolve(params);
-            break;
+            },
+            this.id
+          );
+          this.#lifecycle.emit('DOMContentLoaded', event.loaderId);
+          break;
+        }
+        case 'load': {
+          this.#eventManager.registerEvent(
+            {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.Load,
+              params: {
+                context: this.id,
+                navigation: this.#loaderId,
+                timestamp,
+                url: this.#url,
+              },
+            },
+            this.id
+          );
+          this.#lifecycle.emit('load', event.loaderId);
+          break;
         }
       }
-    );
+    });
 
     this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextCreated',
@@ -558,61 +572,6 @@ export class BrowsingContextImpl {
     });
   }
 
-  #documentChanged(loaderId?: Protocol.Network.LoaderId) {
-    // Same document navigation.
-    if (loaderId === undefined || this.#loaderId === loaderId) {
-      if (this.#navigation.withinDocument.isFinished) {
-        this.#navigation.withinDocument =
-          new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
-      } else {
-        this.#logger?.(
-          BrowsingContextImpl.LOGGER_PREFIX,
-          'Document changed (navigatedWithinDocument)'
-        );
-      }
-      return;
-    }
-
-    this.#resetLifecycleIfFinished();
-
-    this.#loaderId = loaderId;
-  }
-
-  #resetLifecycleIfFinished() {
-    if (this.#lifecycle.DOMContentLoaded.isFinished) {
-      this.#lifecycle.DOMContentLoaded =
-        new Deferred<Protocol.Page.LifecycleEventEvent>();
-    } else {
-      this.#logger?.(
-        BrowsingContextImpl.LOGGER_PREFIX,
-        'Document changed (DOMContentLoaded)'
-      );
-    }
-
-    if (this.#lifecycle.load.isFinished) {
-      this.#lifecycle.load = new Deferred<Protocol.Page.LifecycleEventEvent>();
-    } else {
-      this.#logger?.(
-        BrowsingContextImpl.LOGGER_PREFIX,
-        'Document changed (load)'
-      );
-    }
-  }
-
-  #failLifecycleIfNotFinished() {
-    if (!this.#lifecycle.DOMContentLoaded.isFinished) {
-      this.#lifecycle.DOMContentLoaded.reject(
-        new UnknownErrorException('navigation canceled')
-      );
-    }
-
-    if (!this.#lifecycle.load.isFinished) {
-      this.#lifecycle.load.reject(
-        new UnknownErrorException('navigation canceled')
-      );
-    }
-  }
-
   async navigate(
     url: string,
     wait: BrowsingContext.ReadinessState
@@ -638,34 +597,59 @@ export class BrowsingContextImpl {
       throw new UnknownErrorException(cdpNavigateResult.errorText);
     }
 
-    this.#documentChanged(cdpNavigateResult.loaderId);
-
-    switch (wait) {
-      case BrowsingContext.ReadinessState.None:
-        break;
-      case BrowsingContext.ReadinessState.Interactive:
-        // No `loaderId` means same-document navigation.
-        if (cdpNavigateResult.loaderId === undefined) {
-          await this.#navigation.withinDocument;
-        } else {
-          await this.#lifecycle.DOMContentLoaded;
+    let navigationId: string;
+    if (
+      cdpNavigateResult.loaderId === undefined ||
+      this.#loaderId === cdpNavigateResult.loaderId
+    ) {
+      navigationId = uuidv4();
+      this.#fragmentNavigation = navigationId;
+      switch (wait) {
+        case BrowsingContext.ReadinessState.None:
+          break;
+        case BrowsingContext.ReadinessState.Interactive:
+        case BrowsingContext.ReadinessState.Complete:
+          await this.#waitForLifecycle('fragment', navigationId);
+          break;
+      }
+    } else {
+      navigationId = cdpNavigateResult.loaderId;
+      switch (wait) {
+        case BrowsingContext.ReadinessState.None:
+          break;
+        case BrowsingContext.ReadinessState.Interactive: {
+          await this.#waitForLifecycle('DOMContentLoaded', navigationId);
+          break;
         }
-        break;
-      case BrowsingContext.ReadinessState.Complete:
-        // No `loaderId` means same-document navigation.
-        if (cdpNavigateResult.loaderId === undefined) {
-          await this.#navigation.withinDocument;
-        } else {
-          await this.#lifecycle.load;
+        case BrowsingContext.ReadinessState.Complete: {
+          await this.#waitForLifecycle('load', navigationId);
+          break;
         }
-        break;
+      }
     }
 
     return {
-      navigation: cdpNavigateResult.loaderId ?? null,
+      navigation: navigationId,
       // Url can change due to redirect get the latest one.
       url: wait === BrowsingContext.ReadinessState.None ? url : this.#url,
     };
+  }
+
+  async #waitForLifecycle(
+    name: 'DOMContentLoaded' | 'load' | 'fragment',
+    navigationId?: string
+  ) {
+    await new Promise<void>((resolve, reject) => {
+      const handler = (id: string) => {
+        if (navigationId && id !== navigationId) {
+          return;
+        }
+        this.#lifecycle.off(name, handler);
+        resolve();
+      };
+      this.#lifecycle.on(name, handler);
+      this.#lifecycle.once('closed', reject);
+    });
   }
 
   async reload(
@@ -678,24 +662,24 @@ export class BrowsingContextImpl {
       ignoreCache,
     });
 
-    this.#resetLifecycleIfFinished();
-
     switch (wait) {
       case BrowsingContext.ReadinessState.None:
         break;
-      case BrowsingContext.ReadinessState.Interactive:
-        await this.#lifecycle.DOMContentLoaded;
+      case BrowsingContext.ReadinessState.Interactive: {
+        await this.#waitForLifecycle('DOMContentLoaded');
         break;
-      case BrowsingContext.ReadinessState.Complete:
-        await this.#lifecycle.load;
+      }
+      case BrowsingContext.ReadinessState.Complete: {
+        await this.#waitForLifecycle('load');
         break;
+      }
     }
 
     return {
       navigation:
         wait === BrowsingContext.ReadinessState.None
           ? null
-          : this.navigableId ?? null,
+          : this.#loaderId ?? null,
       url: this.url,
     };
   }
