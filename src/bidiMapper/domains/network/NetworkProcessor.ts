@@ -155,7 +155,7 @@ export class NetworkProcessor {
     const request = this.#getRequestOrFail(networkId);
     if (request.phase === Network.InterceptPhase.AuthRequired) {
       throw new InvalidArgumentException(
-        `Request '${networkId}' in AuthRequired phase cannot be failed`
+        `Request '${networkId}' in 'authRequired' phase cannot be failed`
       );
     }
     if (!request.blocked) {
