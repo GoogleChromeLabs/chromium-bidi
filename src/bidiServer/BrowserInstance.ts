@@ -72,7 +72,7 @@ export class BrowserInstance {
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
     const chromeArguments = [
       ...(chromeOptions.headless
-        ? ['--headless', '--hide-scrollbars', '--mute-audio']
+        ? ['--headless=new', '--hide-scrollbars', '--mute-audio']
         : []),
       // keep-sorted start
       '--allow-browser-signin=false',
