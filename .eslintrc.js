@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+const CI = process.env.CI || false;
+
 module.exports = {
   root: true,
   env: {
@@ -65,7 +67,8 @@ module.exports = {
     ],
     'mocha/no-mocha-arrows': 'off',
     'mocha/no-setup-in-describe': 'off',
-    'no-console': 'warn',
+    'mocha/no-exclusive-tests': 'error',
+    'no-console': CI ? 'error' : 'warn',
     'no-else-return': 'warn',
     'no-empty': ['warn', {allowEmptyCatch: true}],
     'no-implicit-coercion': 'error',
