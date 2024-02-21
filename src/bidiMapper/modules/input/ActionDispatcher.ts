@@ -218,15 +218,23 @@ export class ActionDispatcher {
       return;
     }
     source.pressed.add(button);
-    const {x, y, subtype: pointerType} = source;
-    const {width, height, pressure, twist, tangentialPressure} = action;
-    const {tiltX, tiltY} = getTilt(action);
 
     // --- Platform-specific code begins here ---
+    source.updateProperties(action);
+
     const {modifiers} = keyState;
-    switch (pointerType) {
+    switch (source.subtype) {
       case Input.PointerType.Mouse:
-      case Input.PointerType.Pen:
+      case Input.PointerType.Pen: {
+        const {
+          x,
+          y,
+          subtype: pointerType,
+          tangentialPressure,
+          twist,
+          pressure,
+        } = source;
+        const {tiltX, tiltY} = getTilt(source);
         // TODO: Implement width and height when available.
         return this.#context.cdpTarget.cdpClient.sendCommand(
           'Input.dispatchMouseEvent',
@@ -249,27 +257,31 @@ export class ActionDispatcher {
             force: pressure,
           }
         );
-      case Input.PointerType.Touch:
+      }
+      case Input.PointerType.Touch: {
         return this.#context.cdpTarget.cdpClient.sendCommand(
           'Input.dispatchTouchEvent',
           {
             type: 'touchStart',
-            touchPoints: [
-              {
-                x,
-                y,
-                ...getRadii(width ?? 1, height ?? 1),
-                tangentialPressure,
-                tiltX,
-                tiltY,
-                twist,
-                force: pressure,
-                id: source.pointerId,
-              },
-            ],
+            touchPoints: this.#inputState
+              .getPressedTouchPointerSources()
+              .map((source) => {
+                // TODO: Implement rotationAngle when available.
+                return {
+                  x: source.x,
+                  y: source.y,
+                  ...getRadii(source),
+                  tangentialPressure: source.tangentialPressure,
+                  ...getTilt(source),
+                  twist: source.twist,
+                  force: source.pressure,
+                  id: source.pointerId,
+                };
+              }),
             modifiers,
           }
         );
+      }
     }
     // --- Platform-specific code ends here ---
   }
@@ -287,6 +299,10 @@ export class ActionDispatcher {
     const {x, y, subtype: pointerType} = source;
 
     // --- Platform-specific code begins here ---
+    if (source.pressed.size === 0) {
+      source.resetProperties();
+    }
+
     const {modifiers} = keyState;
     switch (pointerType) {
       case Input.PointerType.Mouse:
@@ -310,13 +326,21 @@ export class ActionDispatcher {
           'Input.dispatchTouchEvent',
           {
             type: 'touchEnd',
-            touchPoints: [
-              {
-                x,
-                y,
-                id: source.pointerId,
-              },
-            ],
+            touchPoints: this.#inputState
+              .getPressedTouchPointerSources()
+              .map((source) => {
+                // TODO: Implement rotationAngle when available.
+                return {
+                  x: source.x,
+                  y: source.y,
+                  ...getRadii(source),
+                  tangentialPressure: source.tangentialPressure,
+                  ...getTilt(source),
+                  twist: source.twist,
+                  force: source.pressure,
+                  id: source.pointerId,
+                };
+              }),
             modifiers,
           }
         );
@@ -330,18 +354,17 @@ export class ActionDispatcher {
     action: Readonly<Input.PointerMoveAction>
   ): Promise<void> {
     const {x: startX, y: startY, subtype: pointerType} = source;
+
+    // --- Platform-specific code begins here ---
+    source.updateProperties(action);
+    // --- Platform-specific code ends here ---
+
     const {
-      width,
-      height,
-      pressure,
-      twist,
-      tangentialPressure,
       x: offsetX,
       y: offsetY,
       origin = 'viewport',
       duration = this.#tickDuration,
     } = action;
-    const {tiltX, tiltY} = getTilt(action);
 
     const {targetX, targetY} = await this.#getCoordinateFromOrigin(
       origin,
@@ -377,7 +400,8 @@ export class ActionDispatcher {
         // --- Platform-specific code begins here ---
         const {modifiers} = keyState;
         switch (pointerType) {
-          case Input.PointerType.Mouse:
+          case Input.PointerType.Mouse: {
+            const {tangentialPressure, twist, pressure} = source;
             // TODO: Implement width and height when available.
             await this.#context.cdpTarget.cdpClient.sendCommand(
               'Input.dispatchMouseEvent',
@@ -391,61 +415,65 @@ export class ActionDispatcher {
                 buttons: source.buttons,
                 pointerType,
                 tangentialPressure,
-                tiltX,
-                tiltY,
+                ...getTilt(source),
                 twist,
                 force: pressure,
               }
             );
             break;
-          case Input.PointerType.Pen:
-            if (source.pressed.size !== 0) {
-              // TODO: Implement width and height when available.
-              await this.#context.cdpTarget.cdpClient.sendCommand(
-                'Input.dispatchMouseEvent',
-                {
-                  type: 'mouseMoved',
-                  x,
-                  y,
-                  modifiers,
-                  clickCount: 0,
-                  button: getCdpButton(
-                    source.pressed.values().next().value ?? 5
-                  ),
-                  buttons: source.buttons,
-                  pointerType,
-                  tangentialPressure,
-                  tiltX,
-                  tiltY,
-                  twist,
-                  force: pressure,
-                }
-              );
+          }
+          case Input.PointerType.Pen: {
+            if (source.pressed.size === 0) {
+              break;
             }
+            const {tangentialPressure, twist, pressure} = source;
+            // TODO: Implement width and height when available.
+            await this.#context.cdpTarget.cdpClient.sendCommand(
+              'Input.dispatchMouseEvent',
+              {
+                type: 'mouseMoved',
+                x,
+                y,
+                modifiers,
+                clickCount: 0,
+                button: getCdpButton(source.pressed.values().next().value ?? 5),
+                buttons: source.buttons,
+                pointerType,
+                tangentialPressure,
+                ...getTilt(source),
+                twist,
+                force: pressure,
+              }
+            );
             break;
+          }
           case Input.PointerType.Touch:
-            if (source.pressed.size !== 0) {
-              await this.#context.cdpTarget.cdpClient.sendCommand(
-                'Input.dispatchTouchEvent',
-                {
-                  type: 'touchMove',
-                  touchPoints: [
-                    {
-                      x,
-                      y,
-                      ...getRadii(width ?? 1, height ?? 1),
-                      tangentialPressure,
-                      tiltX,
-                      tiltY,
-                      twist,
-                      force: pressure,
-                      id: source.pointerId,
-                    },
-                  ],
-                  modifiers,
-                }
-              );
+            if (source.pressed.size === 0) {
+              break;
             }
+            await this.#context.cdpTarget.cdpClient.sendCommand(
+              'Input.dispatchTouchEvent',
+              {
+                type: 'touchMove',
+                touchPoints: this.#inputState
+                  .getPressedTouchPointerSources()
+                  .map((pressedSource) => {
+                    // TODO: Implement rotationAngle when available.
+                    return {
+                      ...(pressedSource === source
+                        ? {x, y}
+                        : {x: pressedSource.x, y: pressedSource.y}),
+                      ...getRadii(pressedSource),
+                      tangentialPressure: pressedSource.tangentialPressure,
+                      ...getTilt(pressedSource),
+                      twist: pressedSource.twist,
+                      force: pressedSource.pressure,
+                      id: pressedSource.pointerId,
+                    };
+                  }),
+                modifiers,
+              }
+            );
             break;
         }
         // --- Platform-specific code ends here ---
@@ -895,10 +923,10 @@ function getTilt(action: {azimuthAngle?: number; altitudeAngle?: number}): {
   };
 }
 
-function getRadii(
-  width: number,
-  height: number
-): {radiusX: number; radiusY: number} {
+function getRadii({width, height}: {width: number; height: number}): {
+  radiusX: number;
+  radiusY: number;
+} {
   return {
     radiusX: width ? width / 2 : 0.5,
     radiusY: height ? height / 2 : 0.5,

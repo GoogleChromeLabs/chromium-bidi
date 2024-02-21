@@ -1602,6 +1602,624 @@
     'type': 'success',
   })
 # ---
+# name: test_input_performActionsEmitsTouchEvents[websocket0]
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'touchstart',
+              }),
+            ]),
+            list([
+              'changedTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 0,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 0,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+            list([
+              'activeTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 0,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 0,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'touchmove',
+              }),
+            ]),
+            list([
+              'changedTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 30,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 30,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+            list([
+              'activeTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 30,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 30,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'touchmove',
+              }),
+            ]),
+            list([
+              'changedTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 48,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 34,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+            list([
+              'activeTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 48,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 34,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'touchmove',
+              }),
+            ]),
+            list([
+              'changedTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 78.5,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 49,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+            list([
+              'activeTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 78.5,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 49,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'touchmove',
+              }),
+            ]),
+            list([
+              'changedTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 97,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 99,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+            list([
+              'activeTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 97,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 99,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'touchend',
+              }),
+            ]),
+            list([
+              'changedTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'object',
+                    'value': list([
+                      list([
+                        'clientX',
+                        dict({
+                          'type': 'number',
+                          'value': 97,
+                        }),
+                      ]),
+                      list([
+                        'clientY',
+                        dict({
+                          'type': 'number',
+                          'value': 95.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusX',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'radiusY',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                      list([
+                        'force',
+                        dict({
+                          'type': 'number',
+                          'value': 0.5,
+                        }),
+                      ]),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+            list([
+              'activeTouches',
+              dict({
+                'type': 'array',
+                'value': list([
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---
 # name: test_input_performActionsEmitsWheelEvents[websocket0]
   dict({
     'result': dict({
