@@ -32,7 +32,7 @@ jobs:
       - run: npm ci
       - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
-          python-version: '3.11'
+          python-version: '3.12.2'
           cache: pip
       - uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507 #v3.0.0
         with:
