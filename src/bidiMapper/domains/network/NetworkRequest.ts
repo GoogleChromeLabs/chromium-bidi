@@ -26,10 +26,9 @@ import {
   Network,
   type BrowsingContext,
   ChromiumBidi,
+  type NetworkEvent,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
-import {Deferred} from '../../../utils/Deferred.js';
-import type {Result} from '../../../utils/result.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -78,13 +77,17 @@ export class NetworkRequest {
     paused?: Protocol.Fetch.RequestPausedEvent;
   } = {};
 
-  #beforeRequestSentDeferred = new Deferred<Result<void>>();
-  #responseStartedDeferred = new Deferred<Result<void>>();
-  #responseCompletedDeferred = new Deferred<Result<void>>();
-
   #eventManager: EventManager;
   #networkStorage: NetworkStorage;
   #cdpTarget: CdpTarget;
+
+  #emittedEvents: Record<ChromiumBidi.Network.EventNames, boolean> = {
+    [ChromiumBidi.Network.EventNames.AuthRequired]: false,
+    [ChromiumBidi.Network.EventNames.BeforeRequestSent]: false,
+    [ChromiumBidi.Network.EventNames.FetchError]: false,
+    [ChromiumBidi.Network.EventNames.ResponseCompleted]: false,
+    [ChromiumBidi.Network.EventNames.ResponseStarted]: false,
+  };
 
   constructor(
     id: Network.Request,
@@ -116,8 +119,8 @@ export class NetworkRequest {
     return (
       this.#response.info?.url ??
       this.#request.info?.request.url ??
-      this.#request.paused?.request.url ??
-      this.#response.paused?.request.url
+      this.#response.paused?.request.url ??
+      this.#request.paused?.request.url
     );
   }
 
@@ -142,8 +145,6 @@ export class NetworkRequest {
   }
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
-    this.#queueResponseStartedEvent();
-    this.#queueResponseCompletedEvent();
     this.#response.hasExtraInfo = event.redirectHasExtraInfo;
     this.#response.info = event.redirectResponse!;
     this.#emitEventsIfReady(true);
@@ -174,9 +175,8 @@ export class NetworkRequest {
         ? requestInterceptionCompleted
         : requestExtraInfoCompleted)
     ) {
-      this.#beforeRequestSentDeferred.resolve({
-        kind: 'success',
-        value: undefined,
+      this.#emitEvent(() => {
+        return this.#getBeforeRequestEvent();
       });
     }
 
@@ -195,15 +195,12 @@ export class NetworkRequest {
       (responseInterceptionExpected && Boolean(this.#response.paused)) ||
       !responseInterceptionExpected;
 
-    if (responseInterceptionExpected && Boolean(this.#response.paused)) {
-      this.#responseStartedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-    } else if (this.#response.info) {
-      this.#responseStartedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
+    if (
+      (responseInterceptionExpected && Boolean(this.#response.paused)) ||
+      this.#response.info
+    ) {
+      this.#emitEvent(() => {
+        return this.#getResponseStartedEvent();
       });
     }
 
@@ -212,16 +209,14 @@ export class NetworkRequest {
       responseExtraInfoCompleted &&
       responseInterceptionCompleted
     ) {
-      this.#responseCompletedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
+      this.#emitEvent(() => {
+        return this.#getResponseReceivedEvent();
       });
     }
   }
 
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#request.info = event;
-    this.#queueBeforeRequestSentEvent();
     this.#emitEventsIfReady();
   }
 
@@ -242,8 +237,6 @@ export class NetworkRequest {
   onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent) {
     this.#response.hasExtraInfo = event.hasExtraInfo;
     this.#response.info = event.response;
-    this.#queueResponseStartedEvent();
-    this.#queueResponseCompletedEvent();
     this.#emitEventsIfReady();
   }
 
@@ -253,33 +246,15 @@ export class NetworkRequest {
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
-    this.#beforeRequestSentDeferred.resolve({
-      kind: 'success',
-      value: undefined,
+    this.#emitEvent(() => {
+      return {
+        method: ChromiumBidi.Network.EventNames.FetchError,
+        params: {
+          ...this.#getBaseEventParams(),
+          errorText: event.errorText,
+        },
+      };
     });
-    this.#responseStartedDeferred.resolve({
-      kind: 'error',
-      error: new Error('Network event loading failed'),
-    });
-    this.#responseCompletedDeferred.resolve({
-      kind: 'error',
-      error: new Error('Network event loading failed'),
-    });
-
-    this.#queueEventPromise(
-      Promise.resolve({kind: 'success', value: undefined}),
-      () => {
-        return {
-          params: {
-            ...this.#getBaseEventParams(),
-            errorText: event.errorText,
-          },
-          method: ChromiumBidi.Network.EventNames.FetchError,
-          type: 'event' as const,
-        };
-      },
-      ChromiumBidi.Network.EventNames.FetchError
-    );
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
@@ -306,8 +281,7 @@ export class NetworkRequest {
       if (!this.blocked) {
         void this.continueResponse();
       } else if (!this.#response.info) {
-        this.#queueResponseStartedEvent();
-        this.#queueResponseCompletedEvent();
+        this.#emitEventsIfReady();
       }
     } else {
       this.#request.paused = event;
@@ -325,22 +299,17 @@ export class NetworkRequest {
       void this.continueWithAuth();
     }
 
-    this.#queueEventPromise(
-      Promise.resolve({kind: 'success', value: undefined}),
-      () => {
-        return {
-          params: {
-            ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
-            // TODO: Why is this on the Spec
-            // How are we suppose to know the response if we are blocked by Auth
-            response: {} as any,
-          },
-          method: ChromiumBidi.Network.EventNames.AuthRequired,
-          type: 'event' as const,
-        };
-      },
-      ChromiumBidi.Network.EventNames.AuthRequired
-    );
+    this.#emitEvent((): Network.AuthRequired => {
+      return {
+        method: ChromiumBidi.Network.EventNames.AuthRequired,
+        params: {
+          ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
+          // TODO: Why is this on the Spec
+          // How are we suppose to know the response if we are blocked by Auth
+          response: {} as any,
+        },
+      };
+    });
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
@@ -420,13 +389,7 @@ export class NetworkRequest {
   }
 
   dispose() {
-    const result = {
-      kind: 'error' as const,
-      error: new Error('Network processor detached'),
-    };
-    this.#beforeRequestSentDeferred.resolve(result);
-    this.#responseStartedDeferred.resolve(result);
-    this.#responseCompletedDeferred.resolve(result);
+    // TODO: ???
   }
 
   get #context() {
@@ -436,38 +399,25 @@ export class NetworkRequest {
   /** Returns the HTTP status code associated with this request if any. */
   get statusCode(): number {
     return (
-      this.#response.info?.status ?? this.#response.extraInfo?.statusCode ?? -1 // TODO: Throw an exception or use some other status code?
+      this.#response.paused?.responseStatusCode ??
+      this.#response.extraInfo?.statusCode ??
+      this.#response.info?.status ??
+      -1 // TODO: Throw an exception or use some other status code?
     );
   }
 
-  #queueEventPromise(
-    deferred: Promise<Result<void>>,
-    getEventData: () => ChromiumBidi.Event,
-    eventName: ChromiumBidi.Network.EventNames
-  ) {
-    if (this.#isIgnoredEvent()) {
+  #emitEvent(getEventData: () => NetworkEvent) {
+    const event = getEventData();
+    if (this.#isIgnoredEvent() || this.#emittedEvents[event.method]) {
       return;
     }
 
-    this.#eventManager.registerPromiseEvent(
-      deferred.then((result) => {
-        if (result.kind === 'success') {
-          try {
-            return {
-              kind: 'success',
-              value: getEventData(),
-            };
-          } catch (error) {
-            return {
-              kind: 'error',
-              error: error instanceof Error ? error : new Error('Unknown'),
-            };
-          }
-        }
-        return result;
+    this.#emittedEvents[event.method] = true;
+    this.#eventManager.registerEvent(
+      Object.assign(event, {
+        type: 'event' as const,
       }),
-      this.#context,
-      eventName
+      this.#context
     );
   }
 
@@ -556,18 +506,6 @@ export class NetworkRequest {
     };
   }
 
-  #queueBeforeRequestSentEvent() {
-    this.#queueEventPromise(
-      this.#beforeRequestSentDeferred,
-      () => {
-        return Object.assign(this.#getBeforeRequestEvent(), {
-          type: 'event' as const,
-        });
-      },
-      ChromiumBidi.Network.EventNames.BeforeRequestSent
-    );
-  }
-
   #getBeforeRequestEvent(): Network.BeforeRequestSent {
     assert(this.#request.info, 'RequestWillBeSentEvent is not set');
 
@@ -582,18 +520,6 @@ export class NetworkRequest {
         },
       },
     };
-  }
-
-  #queueResponseStartedEvent() {
-    this.#queueEventPromise(
-      this.#responseStartedDeferred,
-      () => {
-        return Object.assign(this.#getResponseStartedEvent(), {
-          type: 'event' as const,
-        });
-      },
-      ChromiumBidi.Network.EventNames.ResponseStarted
-    );
   }
 
   #getResponseStartedEvent(): Network.ResponseStarted {
@@ -626,8 +552,7 @@ export class NetworkRequest {
             this.#response.paused?.request.url ??
             NetworkRequest.#unknown,
           protocol: this.#response.info?.protocol ?? '',
-          status:
-            this.statusCode || this.#response.paused?.responseStatusCode || 0,
+          status: this.statusCode,
           statusText:
             this.#response.info?.statusText ||
             this.#response.paused?.responseStatusText ||
@@ -649,18 +574,6 @@ export class NetworkRequest {
         },
       },
     };
-  }
-
-  #queueResponseCompletedEvent() {
-    this.#queueEventPromise(
-      this.#responseCompletedDeferred,
-      () => {
-        return Object.assign(this.#getResponseReceivedEvent(), {
-          type: 'event' as const,
-        });
-      },
-      ChromiumBidi.Network.EventNames.ResponseCompleted
-    );
   }
 
   #getResponseReceivedEvent(): Network.ResponseCompleted {

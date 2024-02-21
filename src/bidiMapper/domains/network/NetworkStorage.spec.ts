@@ -30,11 +30,13 @@ import {EventManager, EventManagerEvents} from '../session/EventManager.js';
 
 import {NetworkStorage} from './NetworkStorage.js';
 
-// type Ka = keyof Protocol.Network.RequestWillBeSentEvent;
-// type Kb = keyof Protocol.Network.RequestWillBeSentExtraInfoEvent;
-// type Kc = keyof Protocol.Network.ResponseReceivedExtraInfoEvent;
-// type Kd = keyof Protocol.Network.ResponseReceivedEvent;
-// type Kz = Exclude<(Ka & Kb) | (Ka & Kd) | (Kb & Kc), 'headers' | 'timestamp'>;
+function logger(...args: any[]) {
+  // eslint-disable-next-line no-constant-condition
+  if (false) {
+    // eslint-disable-next-line no-console
+    console.log(...args);
+  }
+}
 
 // TODO: Extend with Redirect
 class MockCdpNetworkEvents {
@@ -43,10 +45,10 @@ class MockCdpNetworkEvents {
 
   cdpClient: CdpClient;
 
+  url: string;
   requestId: string;
   fetchId: string;
   private loaderId: string;
-  private url: string;
   private frameId: string;
   private type: Protocol.Network.ResourceType;
 
@@ -272,8 +274,17 @@ class MockCdpNetworkEvents {
 }
 
 class MockCdpClient extends EventEmitter<CdpEvents> {
+  #logger: (...args: any[]) => void;
+
   sessionId = '23E8E97ED43449740710991CD32AEFA3';
-  sendCommand() {
+
+  constructor(logger: (...args: any[]) => void) {
+    super();
+    this.#logger = logger;
+  }
+
+  sendCommand(...args: any[]) {
+    this.#logger(...args);
     return Promise.resolve();
   }
 
@@ -283,8 +294,16 @@ class MockCdpClient extends EventEmitter<CdpEvents> {
 }
 
 class MockCdpTarget {
-  cdpClient = new MockCdpClient() as CdpClient;
+  cdpClient: CdpClient;
+  #logger: (...args: any[]) => void;
+
+  constructor(logger: (...args: any[]) => void) {
+    this.#logger = logger;
+    this.cdpClient = new MockCdpClient(logger) as CdpClient;
+  }
+
   enableFetchIfNeeded() {
+    this.#logger('Fetch.enabled called');
     return Promise.resolve();
   }
 }
@@ -294,8 +313,10 @@ describe('NetworkStorage', () => {
     ChromiumBidi.Event['method'],
     ChromiumBidi.Event['params']
   >();
+  let eventManager!: EventManager;
   let networkStorage!: NetworkStorage;
   let cdpClient!: CdpClient;
+  let processingQueue!: ProcessingQueue<OutgoingMessage>;
 
   // TODO: Better way of getting Events
   async function getEvent(name: ChromiumBidi.Event['method']) {
@@ -306,7 +327,7 @@ describe('NetworkStorage', () => {
   beforeEach(() => {
     processedEvents = new Map();
     const browsingContextStorage = new BrowsingContextStorage();
-    const cdpTarget = new MockCdpTarget() as unknown as CdpTarget;
+    const cdpTarget = new MockCdpTarget(logger) as unknown as CdpTarget;
     const browsingContext = {
       cdpTarget,
       id: MockCdpNetworkEvents.defaultFrameId,
@@ -314,13 +335,14 @@ describe('NetworkStorage', () => {
     cdpClient = cdpTarget.cdpClient;
     // We need to add it the storage to emit properly
     browsingContextStorage.addContext(browsingContext);
-    const eventManager = new EventManager(browsingContextStorage);
-    const processingQueue = new ProcessingQueue<OutgoingMessage>(
+    eventManager = new EventManager(browsingContextStorage);
+    processingQueue = new ProcessingQueue<OutgoingMessage>(
       async ({message}) => {
         const cdpEvent = message as unknown as ChromiumBidi.Event;
         processedEvents.set(cdpEvent.method, cdpEvent.params);
         return await Promise.resolve();
-      }
+      },
+      logger
     );
     // Subscribe to the `network` module globally
     eventManager.subscriptionManager.subscribe(
@@ -366,13 +388,11 @@ describe('NetworkStorage', () => {
     });
 
     it('should work interception', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
       const interception = await networkStorage.addIntercept({
-        urlPatterns: [
-          {type: 'string', pattern: MockCdpNetworkEvents.defaultUrl},
-        ],
+        urlPatterns: [{type: 'string', pattern: request.url}],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
-      const request = new MockCdpNetworkEvents(cdpClient);
 
       request.requestWillBeSent();
       let event = await getEvent('network.beforeRequestSent');
@@ -387,13 +407,11 @@ describe('NetworkStorage', () => {
     });
 
     it('should work interception pause first', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
       const interception = await networkStorage.addIntercept({
-        urlPatterns: [
-          {type: 'string', pattern: MockCdpNetworkEvents.defaultUrl},
-        ],
+        urlPatterns: [{type: 'string', pattern: request.url}],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
-      const request = new MockCdpNetworkEvents(cdpClient);
 
       request.requestPaused();
       let event = await getEvent('network.beforeRequestSent');
@@ -461,13 +479,11 @@ describe('NetworkStorage', () => {
       expect(event).to.exist;
     });
     it('should work interception', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
       const interception = await networkStorage.addIntercept({
-        urlPatterns: [
-          {type: 'string', pattern: MockCdpNetworkEvents.defaultUrl},
-        ],
+        urlPatterns: [{type: 'string', pattern: request.url}],
         phases: [Network.InterceptPhase.ResponseStarted],
       });
-      const request = new MockCdpNetworkEvents(cdpClient);
 
       request.requestWillBeSent();
       request.requestWillBeSentExtraInfo();

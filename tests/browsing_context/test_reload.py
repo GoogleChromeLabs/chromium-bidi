@@ -195,10 +195,6 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
 @pytest.mark.parametrize("ignoreCache", [True, False])
 async def test_browsingContext_reload_ignoreCache(websocket, context_id,
                                                   ignoreCache, cacheable_url):
-    if not ignoreCache:
-        pytest.xfail(
-            "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/pull/1466/files#r1377517937 need to be fixed"
-        )
 
     await subscribe(websocket, [
         "network.beforeRequestSent",
