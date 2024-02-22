@@ -87,7 +87,7 @@
       ]
     },
     "server:headless": {
-      "command": "tools/run-bidi-server.mjs --headless=true",
+      "command": "tools/run-bidi-server.mjs --headless=true -v",
       "files": [
         "tools/run-bidi-server.mjs"
       ],
