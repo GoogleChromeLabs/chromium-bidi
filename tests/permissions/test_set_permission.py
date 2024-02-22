@@ -47,8 +47,8 @@ async def test_permissions_set_permission_in_user_context(
         "params": {}
     })
 
-    another_browsing_context = await create_context(
-        user_context_id=user_context["userContext"])
+    another_browsing_context_id = (await create_context(
+        user_context_id=user_context["userContext"]))['context']
     origin = get_origin(example_url)
 
     await goto_url(websocket, another_browsing_context['context'], example_url)
