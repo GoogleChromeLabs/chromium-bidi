@@ -17,6 +17,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
+import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
@@ -33,6 +34,7 @@ interface NetworkInterception {
 /** Stores network and intercept maps. */
 export class NetworkStorage {
   #eventManager: EventManager;
+  #logger?: LoggerFn;
 
   readonly #targets = new Set<CdpTarget>();
   /**
@@ -50,7 +52,11 @@ export class NetworkStorage {
     auth: false,
   };
 
-  constructor(eventManager: EventManager, browserClient: CdpClient) {
+  constructor(
+    eventManager: EventManager,
+    browserClient: CdpClient,
+    logger?: LoggerFn
+  ) {
     this.#eventManager = eventManager;
 
     browserClient.on(
@@ -59,6 +65,8 @@ export class NetworkStorage {
         this.disposeRequestMap(sessionId);
       }
     );
+
+    this.#logger = logger;
   }
 
   /**
@@ -80,7 +88,8 @@ export class NetworkStorage {
       this.#eventManager,
       this,
       cdpTarget,
-      redirectCount
+      redirectCount,
+      this.#logger
     );
 
     this.addRequest(request);

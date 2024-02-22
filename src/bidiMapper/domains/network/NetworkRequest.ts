@@ -29,6 +29,7 @@ import {
   type NetworkEvent,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -80,6 +81,7 @@ export class NetworkRequest {
   #eventManager: EventManager;
   #networkStorage: NetworkStorage;
   #cdpTarget: CdpTarget;
+  #logger?: LoggerFn;
 
   #emittedEvents: Record<ChromiumBidi.Network.EventNames, boolean> = {
     [ChromiumBidi.Network.EventNames.AuthRequired]: false,
@@ -94,13 +96,15 @@ export class NetworkRequest {
     eventManager: EventManager,
     networkStorage: NetworkStorage,
     cdpTarget: CdpTarget,
-    redirectCount = 0
+    redirectCount = 0,
+    logger?: LoggerFn
   ) {
     this.#id = id;
     this.#eventManager = eventManager;
     this.#networkStorage = networkStorage;
     this.#cdpTarget = cdpTarget;
     this.#redirectCount = redirectCount;
+    this.#logger = logger;
   }
 
   get id(): string {
@@ -175,7 +179,7 @@ export class NetworkRequest {
         ? requestInterceptionCompleted
         : requestExtraInfoCompleted)
     ) {
-      this.#emitEvent(this.#getBeforeRequestEvent());
+      this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
     }
 
     const responseExtraInfoCompleted =
@@ -197,7 +201,7 @@ export class NetworkRequest {
       this.#response.info ||
       (responseInterceptionExpected && Boolean(this.#response.paused))
     ) {
-      this.#emitEvent(this.#getResponseStartedEvent());
+      this.#emitEvent(this.#getResponseStartedEvent.bind(this));
     }
 
     if (
@@ -205,7 +209,7 @@ export class NetworkRequest {
       responseExtraInfoCompleted &&
       responseInterceptionCompleted
     ) {
-      this.#emitEvent(this.#getResponseReceivedEvent());
+      this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
     }
   }
 
@@ -240,12 +244,14 @@ export class NetworkRequest {
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
-    this.#emitEvent({
-      method: ChromiumBidi.Network.EventNames.FetchError,
-      params: {
-        ...this.#getBaseEventParams(),
-        errorText: event.errorText,
-      },
+    this.#emitEvent(() => {
+      return {
+        method: ChromiumBidi.Network.EventNames.FetchError,
+        params: {
+          ...this.#getBaseEventParams(),
+          errorText: event.errorText,
+        },
+      };
     });
   }
 
@@ -291,14 +297,16 @@ export class NetworkRequest {
       void this.continueWithAuth();
     }
 
-    this.#emitEvent({
-      method: ChromiumBidi.Network.EventNames.AuthRequired,
-      params: {
-        ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
-        // TODO: Why is this on the Spec
-        // How are we suppose to know the response if we are blocked by Auth
-        response: {} as any,
-      },
+    this.#emitEvent(() => {
+      return {
+        method: ChromiumBidi.Network.EventNames.AuthRequired,
+        params: {
+          ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
+          // TODO: Why is this on the Spec
+          // How are we suppose to know the response if we are blocked by Auth
+          response: {} as any,
+        },
+      };
     });
   }
 
@@ -396,7 +404,15 @@ export class NetworkRequest {
     );
   }
 
-  #emitEvent(event: NetworkEvent) {
+  #emitEvent(getEvent: () => NetworkEvent) {
+    let event: NetworkEvent;
+    try {
+      event = getEvent();
+    } catch (error) {
+      this.#logger?.(LogType.debugError, error);
+      throw error;
+    }
+
     if (this.#isIgnoredEvent() || this.#emittedEvents[event.method]) {
       return;
     }
