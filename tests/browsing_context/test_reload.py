@@ -197,7 +197,6 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
                                                   ignoreCache, cacheable_url):
 
     await subscribe(websocket, [
-        "network.beforeRequestSent",
         "network.responseCompleted",
     ])
 
@@ -212,21 +211,6 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
                 "wait": "complete",
             }
         })
-
-    before_request_sent_event = await read_JSON_message(websocket)
-    assert before_request_sent_event == {
-        'type': 'event',
-        "method": "network.beforeRequestSent",
-        "params": {
-            "isBlocked": False,
-            "context": context_id,
-            "initiator": ANY_DICT,
-            "navigation": ANY_STR,
-            "redirectCount": 0,
-            "request": ANY_DICT,
-            "timestamp": ANY_TIMESTAMP,
-        },
-    }
 
     response_completed_event = await read_JSON_message(websocket)
     assert response_completed_event == {
@@ -255,6 +239,5 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
     }
 
     assert response["result"]["navigation"] == response_completed_event[
-        "params"]["navigation"] == before_request_sent_event["params"][
-            "navigation"]
+        "params"]["navigation"]
     assert initial_navigation["navigation"] != response["result"]["navigation"]

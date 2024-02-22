@@ -175,9 +175,7 @@ export class NetworkRequest {
         ? requestInterceptionCompleted
         : requestExtraInfoCompleted)
     ) {
-      this.#emitEvent(() => {
-        return this.#getBeforeRequestEvent();
-      });
+      this.#emitEvent(this.#getBeforeRequestEvent());
     }
 
     const responseExtraInfoCompleted =
@@ -196,12 +194,10 @@ export class NetworkRequest {
       !responseInterceptionExpected;
 
     if (
-      (responseInterceptionExpected && Boolean(this.#response.paused)) ||
-      this.#response.info
+      this.#response.info ||
+      (responseInterceptionExpected && Boolean(this.#response.paused))
     ) {
-      this.#emitEvent(() => {
-        return this.#getResponseStartedEvent();
-      });
+      this.#emitEvent(this.#getResponseStartedEvent());
     }
 
     if (
@@ -209,9 +205,7 @@ export class NetworkRequest {
       responseExtraInfoCompleted &&
       responseInterceptionCompleted
     ) {
-      this.#emitEvent(() => {
-        return this.#getResponseReceivedEvent();
-      });
+      this.#emitEvent(this.#getResponseReceivedEvent());
     }
   }
 
@@ -246,14 +240,12 @@ export class NetworkRequest {
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
-    this.#emitEvent(() => {
-      return {
-        method: ChromiumBidi.Network.EventNames.FetchError,
-        params: {
-          ...this.#getBaseEventParams(),
-          errorText: event.errorText,
-        },
-      };
+    this.#emitEvent({
+      method: ChromiumBidi.Network.EventNames.FetchError,
+      params: {
+        ...this.#getBaseEventParams(),
+        errorText: event.errorText,
+      },
     });
   }
 
@@ -299,16 +291,14 @@ export class NetworkRequest {
       void this.continueWithAuth();
     }
 
-    this.#emitEvent((): Network.AuthRequired => {
-      return {
-        method: ChromiumBidi.Network.EventNames.AuthRequired,
-        params: {
-          ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
-          // TODO: Why is this on the Spec
-          // How are we suppose to know the response if we are blocked by Auth
-          response: {} as any,
-        },
-      };
+    this.#emitEvent({
+      method: ChromiumBidi.Network.EventNames.AuthRequired,
+      params: {
+        ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
+        // TODO: Why is this on the Spec
+        // How are we suppose to know the response if we are blocked by Auth
+        response: {} as any,
+      },
     });
   }
 
@@ -406,8 +396,7 @@ export class NetworkRequest {
     );
   }
 
-  #emitEvent(getEventData: () => NetworkEvent) {
-    const event = getEventData();
+  #emitEvent(event: NetworkEvent) {
     if (this.#isIgnoredEvent() || this.#emittedEvents[event.method]) {
       return;
     }
