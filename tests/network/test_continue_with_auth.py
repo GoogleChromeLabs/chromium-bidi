@@ -117,11 +117,14 @@ async def test_continue_with_auth_non_blocked_request(
     "username": "user",
     "password": "pass"
 }],
-    ids=["empty", "invalid type value"])
-@pytest.mark.parametrize('execution_number', range(1))
-async def test_continue_with_auth_invalid_credentials(websocket, context_id,
-                                                      auth_required_url,
-                                                      credentials, base_url, execution_number):
+                         ids=["empty", "invalid type value"])
+async def test_continue_with_auth_invalid_credentials(
+    websocket,
+    context_id,
+    auth_required_url,
+    credentials,
+    base_url,
+):
     await goto_url(websocket, context_id, base_url)
 
     network_id = await create_blocked_request(websocket,

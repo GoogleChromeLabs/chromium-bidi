@@ -17,7 +17,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
+import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
