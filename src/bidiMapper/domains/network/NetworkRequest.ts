@@ -170,8 +170,8 @@ export class NetworkRequest {
     );
 
     const requestInterceptionCompleted =
-      (requestInterceptionExpected && Boolean(this.#request.paused)) ||
-      !requestInterceptionExpected;
+      !requestInterceptionExpected ||
+      (requestInterceptionExpected && Boolean(this.#request.paused));
 
     if (
       Boolean(this.#request.info) &&
@@ -194,8 +194,8 @@ export class NetworkRequest {
     );
 
     const responseInterceptionCompleted =
-      (responseInterceptionExpected && Boolean(this.#response.paused)) ||
-      !responseInterceptionExpected;
+      !responseInterceptionExpected ||
+      (responseInterceptionExpected && Boolean(this.#response.paused));
 
     if (
       this.#response.info ||
@@ -291,7 +291,8 @@ export class NetworkRequest {
     }
   }
 
-  onAuthRequired(_event: Protocol.Fetch.AuthRequiredEvent) {
+  onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
+    this.#fetchId = event.requestId;
     this.#interceptPhase = Network.InterceptPhase.AuthRequired;
     if (!this.blocked) {
       void this.continueWithAuth();

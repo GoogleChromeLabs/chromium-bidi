@@ -338,8 +338,9 @@ describe('NetworkStorage', () => {
     eventManager = new EventManager(browsingContextStorage);
     processingQueue = new ProcessingQueue<OutgoingMessage>(
       async ({message}) => {
-        const cdpEvent = message as unknown as ChromiumBidi.Event;
-        processedEvents.set(cdpEvent.method, cdpEvent.params);
+        if (message.type === 'event') {
+          processedEvents.set(message.method, message.params);
+        }
         return await Promise.resolve();
       },
       logger
@@ -536,6 +537,14 @@ describe('NetworkStorage', () => {
       const event = await getEvent('network.authRequired');
       expect(event).to.exist;
       request.requestWillBeSent();
+    });
+
+    it('should work with only authRequired', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.authRequired();
+      const event = await getEvent('network.authRequired');
+      expect(event).to.exist;
     });
   });
 });
