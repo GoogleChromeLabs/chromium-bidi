@@ -282,7 +282,6 @@ async def test_fail_request_completes(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
 async def test_fail_request_completes_new_request_still_blocks(
         websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
@@ -593,8 +592,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason='TODO: #1890')
+@pytest.mark.skip(reason='TODO: #1890')
 async def test_fail_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
 

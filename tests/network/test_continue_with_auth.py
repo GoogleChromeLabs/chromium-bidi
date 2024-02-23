@@ -14,9 +14,8 @@
 #  limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, goto_url, send_JSON_command,
-                          subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command, goto_url,
+                          send_JSON_command, subscribe, wait_for_event)
 
 from . import create_blocked_request
 
@@ -115,7 +114,7 @@ async def test_continue_with_auth_non_blocked_request(
     "username": "user",
     "password": "pass"
 }],
-    ids=["empty", "invalid type value"])
+                         ids=["empty", "invalid type value"])
 async def test_continue_with_auth_invalid_credentials(
     websocket,
     context_id,
@@ -147,13 +146,11 @@ async def test_continue_with_auth_invalid_credentials(
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
 async def test_continue_with_auth_completes(websocket, context_id,
                                             auth_required_url):
-    await subscribe(websocket, [
-        "network.beforeRequestSent", "network.authRequired",
-        "network.responseCompleted"
-    ], [context_id])
+    await subscribe(websocket,
+                    ["network.authRequired", "network.responseCompleted"],
+                    [context_id])
 
     await execute_command(
         websocket, {
@@ -177,15 +174,12 @@ async def test_continue_with_auth_completes(websocket, context_id,
             }
         })
 
-    event_response = await wait_for_event(websocket,
-                                          "network.beforeRequestSent")
+    event_response = await wait_for_event(websocket, "network.authRequired")
     assert event_response == {
-        "method": "network.beforeRequestSent",
+        "method": "network.authRequired",
         "params": {
             "context": context_id,
-            "initiator": {
-                "type": "other",
-            },
+            "intercepts": ANY_LIST,
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -199,6 +193,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
                 "bodySize": 0,
                 "timings": ANY_DICT,
             },
+            "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
@@ -224,18 +219,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": ANY_DICT,
-            "response": AnyExtending({
-                "headers": [{
-                    "name": "header1",
-                    "value": {
-                        "type": "string",
-                        "value": "value1",
-                    },
-                }, ],
-                "url": auth_required_url,
-                "status": 501,
-                "statusText": "Remember to drink water",
-            }),
+            "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
@@ -243,20 +227,20 @@ async def test_continue_with_auth_completes(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
-async def test_continue_with_auth_twice(websocket, context_id, example_url):
+async def test_continue_with_auth_twice(websocket, context_id,
+                                        auth_required_url):
     await subscribe(websocket,
-                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    ["network.authRequired", "network.responseCompleted"],
                     [context_id])
 
     await execute_command(
         websocket, {
             "method": "network.addIntercept",
             "params": {
-                "phases": ["responseStarted"],
+                "phases": ["authRequired"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": auth_required_url,
                 }, ],
             },
         })
@@ -265,27 +249,24 @@ async def test_continue_with_auth_twice(websocket, context_id, example_url):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": auth_required_url,
                 "context": context_id,
                 "wait": "complete",
             }
         })
 
-    event_response = await wait_for_event(websocket,
-                                          "network.beforeRequestSent")
+    event_response = await wait_for_event(websocket, "network.authRequired")
     assert event_response == {
-        "method": "network.beforeRequestSent",
+        "method": "network.authRequired",
         "params": {
             "context": context_id,
-            "initiator": {
-                "type": "other",
-            },
-            "isBlocked": False,
+            "intercepts": ANY_LIST,
+            "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": auth_required_url,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -293,6 +274,7 @@ async def test_continue_with_auth_twice(websocket, context_id, example_url):
                 "bodySize": 0,
                 "timings": ANY_DICT,
             },
+            "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",

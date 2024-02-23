@@ -152,7 +152,7 @@ export class NetworkRequest {
     return this.#isBlockedByInPhase(phase).size > 0;
   }
 
-  handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
+  handleRedirect(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#response.hasExtraInfo = event.redirectHasExtraInfo;
     this.#response.info = event.redirectResponse!;
     this.#emitEventsIfReady(true);
@@ -197,16 +197,16 @@ export class NetworkRequest {
       Network.InterceptPhase.ResponseStarted
     );
 
-    const responseInterceptionCompleted =
-      !responseInterceptionExpected ||
-      (responseInterceptionExpected && Boolean(this.#response.paused));
-
     if (
       this.#response.info ||
       (responseInterceptionExpected && Boolean(this.#response.paused))
     ) {
       this.#emitEvent(this.#getResponseStartedEvent.bind(this));
     }
+
+    const responseInterceptionCompleted =
+      !responseInterceptionExpected ||
+      (responseInterceptionExpected && Boolean(this.#response.paused));
 
     if (
       Boolean(this.#response.info) &&
