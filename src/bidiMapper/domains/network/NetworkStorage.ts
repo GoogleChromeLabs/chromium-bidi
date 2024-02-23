@@ -300,13 +300,10 @@ export class NetworkStorage {
   }
 
   disposeRequestMap(sessionId: string) {
-    const requests = [...this.#requests.values()].filter((request) => {
-      return request.cdpClient.sessionId === sessionId;
-    });
-
-    for (const request of requests) {
-      request.dispose();
-      this.#requests.delete(request.id);
+    for (const request of this.#requests.values()) {
+      if (request.cdpClient.sessionId === sessionId) {
+        this.#requests.delete(request.id);
+      }
     }
   }
 
@@ -359,10 +356,6 @@ export class NetworkStorage {
   }
 
   deleteRequest(id: Network.Request) {
-    const request = this.#requests.get(id);
-    if (request) {
-      request.dispose();
-      this.#requests.delete(id);
-    }
+    this.#requests.delete(id);
   }
 }

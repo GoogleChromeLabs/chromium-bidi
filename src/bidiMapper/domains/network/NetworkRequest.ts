@@ -115,7 +115,10 @@ export class NetworkRequest {
     return this.#fetchId;
   }
 
-  get phase(): Network.InterceptPhase | undefined {
+  /**
+   * When block returns the phase for it
+   */
+  get blockedIn(): Network.InterceptPhase | undefined {
     return this.#interceptPhase;
   }
 
@@ -132,10 +135,6 @@ export class NetworkRequest {
     return this.#redirectCount;
   }
 
-  get blocked() {
-    return this.#isBlockedInPhase(this.#interceptPhase);
-  }
-
   get cdpClient() {
     return this.#cdpTarget.cdpClient;
   }
@@ -144,11 +143,11 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
-  #isBlockedByInPhase(phase?: Network.InterceptPhase) {
+  #isBlockedByInPhase(phase: Network.InterceptPhase) {
     return this.#networkStorage.requestBlockedBy(this, phase);
   }
 
-  #isBlockedInPhase(phase?: Network.InterceptPhase) {
+  #isBlockedInPhase(phase: Network.InterceptPhase) {
     return this.#isBlockedByInPhase(phase).size > 0;
   }
 
@@ -382,10 +381,6 @@ export class NetworkRequest {
     });
   }
 
-  dispose() {
-    // TODO: ???
-  }
-
   get #context() {
     return this.#request.info?.frameId ?? null;
   }
@@ -430,13 +425,15 @@ export class NetworkRequest {
       isBlocked: false,
     };
 
-    const blockedBy = this.#isBlockedByInPhase(phase);
-    interceptProps.isBlocked = blockedBy.size > 0;
-    if (interceptProps.isBlocked) {
-      interceptProps.intercepts = [...blockedBy] as [
-        Network.Intercept,
-        ...Network.Intercept[],
-      ];
+    if (phase) {
+      const blockedBy = this.#isBlockedByInPhase(phase);
+      interceptProps.isBlocked = blockedBy.size > 0;
+      if (interceptProps.isBlocked) {
+        interceptProps.intercepts = [...blockedBy] as [
+          Network.Intercept,
+          ...Network.Intercept[],
+        ];
+      }
     }
 
     return {
