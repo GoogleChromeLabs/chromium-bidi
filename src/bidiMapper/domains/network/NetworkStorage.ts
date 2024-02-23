@@ -272,9 +272,9 @@ export class NetworkStorage {
 
   requestBlockedBy(
     request: NetworkRequest,
-    phase?: Network.InterceptPhase
+    phase: Network.InterceptPhase
   ): Set<Network.Intercept> {
-    if (request.url === undefined || phase === undefined) {
+    if (request.url === undefined) {
       return new Set();
     }
 
