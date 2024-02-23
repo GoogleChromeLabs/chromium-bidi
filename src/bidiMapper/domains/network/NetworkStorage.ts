@@ -17,7 +17,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
-import type {LoggerFn} from '../../../utils/log.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
@@ -116,8 +116,6 @@ export class NetworkStorage {
               cdpTarget,
               request.redirectCount + 1
             ).onRequestWillBeSentEvent(params);
-          } else if (request) {
-            request.onRequestWillBeSentEvent(params);
           } else {
             this.#getOrCreateNetworkRequest(
               params.requestId,
@@ -174,13 +172,25 @@ export class NetworkStorage {
       [
         'Fetch.requestPaused',
         (event: Protocol.Fetch.RequestPausedEvent) => {
-          this.#handleNetworkInterception(event, cdpTarget);
+          this.#getOrCreateNetworkRequest(
+            // CDP quirk if the Network domain is not present this is undefined
+            event.networkId ?? event.requestId,
+            cdpTarget
+          ).onRequestPaused(event);
         },
       ],
       [
         'Fetch.authRequired',
         (event: Protocol.Fetch.AuthRequiredEvent) => {
-          this.#handleAuthInterception(event, cdpTarget);
+          let request = this.getRequestByFetchId(event.requestId);
+          if (!request) {
+            request = this.#getOrCreateNetworkRequest(
+              event.requestId,
+              cdpTarget
+            );
+          }
+
+          request.onAuthRequired(event);
         },
       ],
     ] as const;
@@ -298,36 +308,6 @@ export class NetworkStorage {
       request.dispose();
       this.#requests.delete(request.id);
     }
-  }
-
-  #handleNetworkInterception(
-    event: Protocol.Fetch.RequestPausedEvent,
-    cdpTarget: CdpTarget
-  ) {
-    // CDP quirk if the Network domain is not present this is undefined
-    let request = this.getRequestByFetchId(event.requestId);
-
-    if (!request) {
-      request = this.#getOrCreateNetworkRequest(
-        event.networkId ?? event.requestId,
-        cdpTarget
-      );
-    }
-
-    request.onRequestPaused(event);
-  }
-
-  #handleAuthInterception(
-    event: Protocol.Fetch.AuthRequiredEvent,
-    cdpTarget: CdpTarget
-  ) {
-    // CDP quirk if the Network domain is not present this is undefined
-    let request = this.getRequestByFetchId(event.requestId);
-    if (!request) {
-      request = this.#getOrCreateNetworkRequest(event.requestId, cdpTarget);
-    }
-
-    request.onAuthRequired(event);
   }
 
   /**

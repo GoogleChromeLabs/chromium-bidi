@@ -40,7 +40,6 @@ async def test_continue_response_non_existent_request(websocket):
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_response_invalid_phase(websocket, context_id,
                                                example_url):
@@ -74,7 +73,6 @@ async def test_continue_response_invalid_phase(websocket, context_id,
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_response_invalid_status_code(websocket, context_id,
                                                      example_url):
@@ -100,7 +98,6 @@ async def test_continue_response_invalid_status_code(websocket, context_id,
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_response_invalid_reason_phrase(websocket, context_id,
                                                        example_url):
@@ -125,7 +122,6 @@ async def test_continue_response_invalid_reason_phrase(websocket, context_id,
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_response_invalid_headers(websocket, context_id,
                                                  example_url):
@@ -209,7 +205,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
         "statusCode": 401,
     },
 ],
-                         ids=["headers-only", "statusCode-only"])
+    ids=["headers-only", "statusCode-only"])
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: Fix this test, as it's racy")
 async def test_continue_response_must_specify_both_status_and_headers(

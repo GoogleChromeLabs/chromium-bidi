@@ -39,7 +39,6 @@ async def test_continue_with_auth_non_existent_request(websocket):
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 @pytest.mark.parametrize("phase", ["beforeRequestSent", "responseStarted"])
 async def test_continue_with_auth_invalid_phase(websocket, context_id,
@@ -112,17 +111,17 @@ async def test_continue_with_auth_non_blocked_request(
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 @pytest.mark.parametrize("credentials", [{}, {
     "type": "notapassword",
     "username": "user",
     "password": "pass"
 }],
-                         ids=["empty", "invalid type value"])
+    ids=["empty", "invalid type value"])
+@pytest.mark.parametrize('execution_number', range(1))
 async def test_continue_with_auth_invalid_credentials(websocket, context_id,
                                                       auth_required_url,
-                                                      credentials, base_url):
+                                                      credentials, base_url, execution_number):
     await goto_url(websocket, context_id, base_url)
 
     network_id = await create_blocked_request(websocket,

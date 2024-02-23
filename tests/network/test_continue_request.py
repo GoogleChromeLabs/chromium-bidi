@@ -38,7 +38,6 @@ async def test_continue_request_non_existent_request(websocket):
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_request_invalid_phase_response_started(
         websocket, context_id, example_url):
@@ -64,7 +63,6 @@ async def test_continue_request_invalid_phase_response_started(
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_request_invalid_phase_auth_required(
         websocket, context_id, base_url, auth_required_url):
@@ -92,7 +90,6 @@ async def test_continue_request_invalid_phase_auth_required(
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_request_invalid_url(websocket, context_id,
                                             example_url):

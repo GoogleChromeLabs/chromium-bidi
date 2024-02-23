@@ -144,8 +144,12 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
+  #isBlockedByInPhase(phase?: Network.InterceptPhase) {
+    return this.#networkStorage.requestBlockedBy(this, phase);
+  }
+
   #isBlockedInPhase(phase?: Network.InterceptPhase) {
-    return this.#networkStorage.requestBlockedBy(this, phase).size > 0;
+    return this.#isBlockedByInPhase(phase).size > 0;
   }
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
@@ -259,12 +263,11 @@ export class NetworkRequest {
   async failRequest(errorReason: Protocol.Network.ErrorReason) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.failRequest', {
       requestId: this.#fetchId,
       errorReason,
     });
-
-    this.#interceptPhase = undefined;
   }
 
   onRequestPaused(event: Protocol.Fetch.RequestPausedEvent) {
@@ -272,29 +275,26 @@ export class NetworkRequest {
 
     // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     if (event.responseStatusCode || event.responseErrorReason) {
-      this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       this.#response.paused = event;
-
-      this.#emitEventsIfReady();
-      if (!this.blocked) {
+      this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
+      if (!this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)) {
         void this.continueResponse();
-      } else if (!this.#response.info) {
-        this.#emitEventsIfReady();
       }
     } else {
       this.#request.paused = event;
       this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
-      this.#emitEventsIfReady();
-      if (!this.blocked) {
+      if (!this.#isBlockedInPhase(Network.InterceptPhase.BeforeRequestSent)) {
         void this.continueRequest();
       }
     }
+
+    this.#emitEventsIfReady();
   }
 
   onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
     this.#fetchId = event.requestId;
     this.#interceptPhase = Network.InterceptPhase.AuthRequired;
-    if (!this.blocked) {
+    if (!this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
       void this.continueWithAuth();
     }
 
@@ -318,8 +318,8 @@ export class NetworkRequest {
     headers?: Protocol.Fetch.HeaderEntry[]
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
-    // TODO: Expand.
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueRequest', {
       requestId: this.#fetchId,
       url,
@@ -329,8 +329,6 @@ export class NetworkRequest {
       // postData:,
       // interceptResponse:,
     });
-
-    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
@@ -341,14 +339,13 @@ export class NetworkRequest {
   }: Omit<Protocol.Fetch.ContinueResponseRequest, 'requestId'> = {}) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueResponse', {
       requestId: this.#fetchId,
       responseCode,
       responsePhrase,
       responseHeaders,
     });
-
-    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
@@ -359,12 +356,11 @@ export class NetworkRequest {
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
       requestId: this.#fetchId,
       authChallengeResponse,
     });
-
-    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
@@ -376,6 +372,7 @@ export class NetworkRequest {
   }: Omit<Protocol.Fetch.FulfillRequestRequest, 'requestId'>) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
       requestId: this.#fetchId,
       responseCode,
@@ -383,8 +380,6 @@ export class NetworkRequest {
       responseHeaders,
       ...(body ? {body: btoa(body)} : {}), // TODO: Double-check if btoa usage is correct.
     });
-
-    this.#interceptPhase = undefined;
   }
 
   dispose() {
@@ -434,15 +429,14 @@ export class NetworkRequest {
     > = {
       isBlocked: false,
     };
-    if (phase && phase === this.#interceptPhase) {
-      const blockedBy = this.#networkStorage.requestBlockedBy(this, phase);
-      interceptProps.isBlocked = blockedBy.size > 0;
-      if (interceptProps.isBlocked) {
-        interceptProps.intercepts = [...blockedBy] as [
-          Network.Intercept,
-          ...Network.Intercept[],
-        ];
-      }
+
+    const blockedBy = this.#isBlockedByInPhase(phase);
+    interceptProps.isBlocked = blockedBy.size > 0;
+    if (interceptProps.isBlocked) {
+      interceptProps.intercepts = [...blockedBy] as [
+        Network.Intercept,
+        ...Network.Intercept[],
+      ];
     }
 
     return {
