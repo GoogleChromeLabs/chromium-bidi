@@ -205,7 +205,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
         "statusCode": 401,
     },
 ],
-    ids=["headers-only", "statusCode-only"])
+                         ids=["headers-only", "statusCode-only"])
 @pytest.mark.asyncio
 async def test_continue_response_must_specify_both_status_and_headers(
         websocket, context_id, example_url, continueResponseParams):
