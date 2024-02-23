@@ -396,7 +396,7 @@ async def test_provide_response_twice(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
+@pytest.mark.skip(reason="TODO: #1890")
 async def test_provide_response_remove_intercept_inflight_request(
         websocket, context_id, example_url):
     await subscribe(websocket,

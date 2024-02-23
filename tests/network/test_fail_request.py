@@ -594,7 +594,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
 @pytest.mark.asyncio
 @pytest.mark.skip(
-    reason='TODO: Clarify the behavior after last intercept is removed')
+    reason='TODO: #1890')
 async def test_fail_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
 

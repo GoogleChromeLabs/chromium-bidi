@@ -117,7 +117,7 @@ async def test_continue_with_auth_non_blocked_request(
     "username": "user",
     "password": "pass"
 }],
-                         ids=["empty", "invalid type value"])
+    ids=["empty", "invalid type value"])
 async def test_continue_with_auth_invalid_credentials(
     websocket,
     context_id,
@@ -330,7 +330,7 @@ async def test_continue_with_auth_twice(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
+@pytest.mark.skip(reason="TODO: #1890")
 async def test_continue_with_auth_remove_intercept_inflight_request(
         websocket, context_id, example_url, auth_required_url):
     await subscribe(websocket,

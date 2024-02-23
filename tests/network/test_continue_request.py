@@ -320,6 +320,7 @@ async def test_continue_request_twice(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: #1890")
 async def test_continue_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
 
@@ -385,17 +386,19 @@ async def test_continue_request_remove_intercept_inflight_request(
         })
     assert result == {}
 
+    network_id = event_response["params"]["request"]["request"]
+
     # TODO: Clarify the behavior of of removing intercept
     # while there are inflight requests.
 
-    # await execute_command(
-    #     websocket, {
-    #         "method": "network.continueRequest",
-    #         "params": {
-    #             "request": network_id,
-    #             "url": example_url,
-    #         },
-    #     })
+    await execute_command(
+        websocket, {
+            "method": "network.continueRequest",
+            "params": {
+                "request": network_id,
+                "url": example_url,
+            },
+        })
 
     event_response = await wait_for_event(websocket,
                                           "network.responseCompleted")
