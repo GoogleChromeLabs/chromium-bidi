@@ -388,9 +388,6 @@ async def test_continue_request_remove_intercept_inflight_request(
 
     network_id = event_response["params"]["request"]["request"]
 
-    # TODO: Clarify the behavior of of removing intercept
-    # while there are inflight requests.
-
     await execute_command(
         websocket, {
             "method": "network.continueRequest",
