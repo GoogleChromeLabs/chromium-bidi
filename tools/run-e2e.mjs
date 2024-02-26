@@ -90,9 +90,8 @@ const addPrefix = () =>
   });
 
 class SyncFileStreams extends Transform {
-  // Patches lines like `PyTest: FAILED [ 39%]`
+  // Matches lines like `PyTest: XXX [ 39%]` or
   static percentRegEx = /\[ \d+%\]/;
-  testRunning = false;
   serverLogs = Buffer.from('');
 
   _transform(chunk, _, callback) {
@@ -104,9 +103,6 @@ class SyncFileStreams extends Transform {
           this.push(this.serverLogs);
         }
         this.serverLogs = Buffer.from('');
-        this.testRunning = false;
-      } else {
-        this.testRunning = true;
       }
       this.push(chunk);
       // Handles output from BiDi server
