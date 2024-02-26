@@ -116,9 +116,9 @@ export class NetworkRequest {
   }
 
   /**
-   * When block returns the phase for it
+   * When blocked returns the phase for it
    */
-  get blockedIn(): Network.InterceptPhase | undefined {
+  get currentInterceptPhase(): Network.InterceptPhase | undefined {
     return this.#interceptPhase;
   }
 
@@ -143,24 +143,32 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
-  #isBlockedByInPhase(phase: Network.InterceptPhase) {
-    return this.#networkStorage.requestBlockedBy(this, phase);
+  #interceptsInPhase(phase: Network.InterceptPhase) {
+    return this.#networkStorage.getInterceptsForPhase(this, phase);
   }
 
   #isBlockedInPhase(phase: Network.InterceptPhase) {
-    return this.#isBlockedByInPhase(phase).size > 0;
+    return this.#interceptsInPhase(phase).size > 0;
   }
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#response.hasExtraInfo = event.redirectHasExtraInfo;
     this.#response.info = event.redirectResponse!;
-    this.#emitEventsIfReady(true);
+    this.#emitEventsIfReady({
+      wasRedirected: true,
+    });
   }
 
-  #emitEventsIfReady(wasRedirected = false) {
+  #emitEventsIfReady(
+    options: {
+      wasRedirected?: boolean;
+      hasFailed?: boolean;
+    } = {}
+  ) {
     const requestExtraInfoCompleted =
       // Flush redirects
-      wasRedirected ||
+      options.wasRedirected ||
+      options.hasFailed ||
       Boolean(this.#request.extraInfo) ||
       // Requests from cache don't have extra info
       this.#servedFromCache ||
@@ -247,6 +255,9 @@ export class NetworkRequest {
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
+    this.#emitEventsIfReady({
+      hasFailed: true,
+    });
     this.#emitEvent(() => {
       return {
         method: ChromiumBidi.Network.EventNames.FetchError,
@@ -426,7 +437,7 @@ export class NetworkRequest {
     };
 
     if (phase) {
-      const blockedBy = this.#isBlockedByInPhase(phase);
+      const blockedBy = this.#interceptsInPhase(phase);
       interceptProps.isBlocked = blockedBy.size > 0;
       if (interceptProps.isBlocked) {
         interceptProps.intercepts = [...blockedBy] as [

@@ -271,6 +271,16 @@ class MockCdpNetworkEvents {
       },
     });
   }
+
+  loadingFailed() {
+    this.cdpClient.emit('Network.loadingFailed', {
+      requestId: this.requestId,
+      timestamp: 279179.745291,
+      type: 'Fetch',
+      errorText: 'net::ERR_NAME_NOT_RESOLVED',
+      canceled: false,
+    });
+  }
 }
 
 class MockCdpClient extends EventEmitter<CdpEvents> {
@@ -439,6 +449,25 @@ describe('NetworkStorage', () => {
       expect(event).to.not.exist;
 
       request.requestWillBeSentExtraInfo();
+      event = await getEvent('network.beforeRequestSent');
+      expect(event).to.deep.include({
+        isBlocked: false,
+      });
+    });
+
+    it.only('should work with non blocking interception and fail response', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+      await networkStorage.addIntercept({
+        urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      request.requestWillBeSent();
+      request.requestPaused();
+      let event = await getEvent('network.beforeRequestSent');
+      expect(event).to.not.exist;
+
+      request.loadingFailed();
       event = await getEvent('network.beforeRequestSent');
       expect(event).to.deep.include({
         isBlocked: false,

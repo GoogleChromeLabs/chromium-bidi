@@ -270,7 +270,7 @@ export class NetworkStorage {
     }
   }
 
-  requestBlockedBy(
+  getInterceptsForPhase(
     request: NetworkRequest,
     phase: Network.InterceptPhase
   ): Set<Network.Intercept> {
