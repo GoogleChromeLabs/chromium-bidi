@@ -455,7 +455,7 @@ describe('NetworkStorage', () => {
       });
     });
 
-    it.only('should work with non blocking interception and fail response', async () => {
+    it('should work with non blocking interception and fail response', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
       await networkStorage.addIntercept({
         urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
