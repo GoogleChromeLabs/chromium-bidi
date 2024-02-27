@@ -69,6 +69,7 @@ export class NetworkRequest {
     info?: Protocol.Network.RequestWillBeSentEvent;
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
     paused?: Protocol.Fetch.RequestPausedEvent;
+    auth?: Protocol.Fetch.AuthRequiredEvent;
   } = {};
 
   #response: {
@@ -127,7 +128,8 @@ export class NetworkRequest {
       this.#response.info?.url ??
       this.#request.info?.request.url ??
       this.#response.paused?.request.url ??
-      this.#request.paused?.request.url
+      this.#request.paused?.request.url ??
+      this.#request.auth?.request.url
     );
   }
 
@@ -305,6 +307,7 @@ export class NetworkRequest {
 
   onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
     this.#fetchId = event.requestId;
+    this.#request.auth = event;
     if (this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
     } else {
@@ -396,7 +399,13 @@ export class NetworkRequest {
   }
 
   get #context() {
-    return this.#request.info?.frameId ?? null;
+    return (
+      this.#response.paused?.frameId ??
+      this.#request.info?.frameId ??
+      this.#request.paused?.frameId ??
+      this.#request.auth?.frameId ??
+      null
+    );
   }
 
   /** Returns the HTTP status code associated with this request if any. */
