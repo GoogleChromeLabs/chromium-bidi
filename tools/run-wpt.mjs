@@ -39,7 +39,7 @@ function usage() {
       [HEADLESS=<true | default: false>]
       [MANIFEST=<default: 'MANIFEST.json'>]
       [RUN_TESTS=<default: true | false>]
-      [TIMEOUT_MULTIPLIER=<number, default: 4>]
+      [TIMEOUT_MULTIPLIER=<number, default: 1>]
       [THIS_CHUNK=<number, default: 1>]
       [TOTAL_CHUNKS=<number, default: 1>]
       [UPDATE_EXPECTATIONS=<true | default: false>]
