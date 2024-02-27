@@ -136,13 +136,20 @@ await matchLine(serverProcess).catch(() => {
   process.exit(1);
 });
 
-const e2eArgs = ['run', 'pytest', '--verbose', '-vv'];
+const e2eArgs = ['run', 'pytest'];
+e2eArgs.push('--verbose', '-vv');
+if (argv.fileOrFolder) {
+  e2eArgs.push(argv.fileOrFolder);
+}
 if (!argv.headless) {
   e2eArgs.push('--ignore=tests/input');
 }
 if (argv.k) {
   e2eArgs.push('-k', argv.k);
 }
+
+console.log(argv, e2eArgs);
+
 const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
 });
