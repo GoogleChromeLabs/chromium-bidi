@@ -288,8 +288,10 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentExtraInfo();
       request.authRequired();
       const event = await getEvent('network.authRequired');
-      expect(event).to.exist;
-      request.requestWillBeSent();
+      expect(event).to.deep.nested.include({
+        'request.request': request.requestId,
+        'request.method': 'GET',
+      });
     });
 
     it('should work with only authRequired', async () => {
@@ -297,7 +299,11 @@ describe('NetworkStorage', () => {
 
       request.authRequired();
       const event = await getEvent('network.authRequired');
-      expect(event).to.exist;
+      event;
+      expect(event).to.deep.nested.include({
+        'request.request': request.fetchId,
+        'request.method': 'GET',
+      });
     });
   });
 });

@@ -42,7 +42,7 @@ import {
 
 /** Abstracts one individual network request. */
 export class NetworkRequest {
-  static #unknown = 'UNKNOWN';
+  static unknownParameter = 'UNKNOWN';
 
   /**
    * Each network request has an associated request id, which is a string
@@ -123,13 +123,24 @@ export class NetworkRequest {
     return this.#interceptPhase;
   }
 
-  get url(): string | undefined {
+  get url(): string {
     return (
       this.#response.info?.url ??
-      this.#request.info?.request.url ??
       this.#response.paused?.request.url ??
+      this.#request.auth?.request.url ??
+      this.#request.info?.request.url ??
       this.#request.paused?.request.url ??
-      this.#request.auth?.request.url
+      NetworkRequest.unknownParameter
+    );
+  }
+
+  get method(): string {
+    return (
+      this.#request.info?.request.method ??
+      this.#request.paused?.request.method ??
+      this.#request.auth?.request.method ??
+      this.#response.paused?.request.method ??
+      NetworkRequest.unknownParameter
     );
   }
 
@@ -495,9 +506,9 @@ export class NetworkRequest {
     );
 
     return {
-      request: this.#request.info?.requestId ?? NetworkRequest.#unknown,
-      url: this.#request.info?.request.url ?? NetworkRequest.#unknown,
-      method: this.#request.info?.request.method ?? NetworkRequest.#unknown,
+      request: this.#id,
+      url: this.url,
+      method: this.method,
       headers,
       cookies,
       headersSize: computeHeadersSize(headers),
@@ -567,10 +578,7 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(Network.InterceptPhase.ResponseStarted),
         response: {
-          url:
-            this.#response.info?.url ??
-            this.#response.paused?.request.url ??
-            NetworkRequest.#unknown,
+          url: this.url,
           protocol: this.#response.info?.protocol ?? '',
           status: this.statusCode,
           statusText:
@@ -616,7 +624,7 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(),
         response: {
-          url: this.#response.info.url ?? NetworkRequest.#unknown,
+          url: this.url,
           protocol: this.#response.info.protocol ?? '',
           status: this.statusCode,
           statusText: this.#response.info.statusText,

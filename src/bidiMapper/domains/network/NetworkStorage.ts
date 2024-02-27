@@ -274,7 +274,7 @@ export class NetworkStorage {
     request: NetworkRequest,
     phase: Network.InterceptPhase
   ): Set<Network.Intercept> {
-    if (request.url === undefined) {
+    if (request.url === NetworkRequest.unknownParameter) {
       return new Set();
     }
 
