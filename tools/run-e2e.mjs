@@ -115,9 +115,8 @@ class SyncFileStreams extends Transform {
 }
 
 const fileWriteStream = createWriteStream(LOG_FILE);
-const syncFileStreams = process.env.LOG_ALL
-  ? new PassThrough()
-  : new SyncFileStreams();
+const syncFileStreams =
+  process.env.VERBOSE === 'true' ? new PassThrough() : new SyncFileStreams();
 syncFileStreams.pipe(fileWriteStream);
 
 const serverProcess = createBiDiServerProcess(argv);
