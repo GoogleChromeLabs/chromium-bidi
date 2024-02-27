@@ -148,8 +148,6 @@ if (argv.k) {
   e2eArgs.push('-k', argv.k);
 }
 
-console.log(argv, e2eArgs);
-
 const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
 });
