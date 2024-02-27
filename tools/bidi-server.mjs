@@ -58,6 +58,10 @@ export function parseCommandLineArgs() {
       type: 'boolean',
       default: process.env.HEADLESS === 'true',
     })
+    .option('k', {
+      describe: 'If running though e2e specifies the test name to execute',
+      type: 'string',
+    })
     .parse();
 }
 

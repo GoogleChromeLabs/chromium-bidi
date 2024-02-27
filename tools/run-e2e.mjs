@@ -140,6 +140,9 @@ const e2eArgs = ['run', 'pytest', '--verbose', '-vv'];
 if (!argv.headless) {
   e2eArgs.push('--ignore=tests/input');
 }
+if (argv.k) {
+  e2eArgs.push('-k', argv.k);
+}
 const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
 });
