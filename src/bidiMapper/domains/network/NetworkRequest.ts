@@ -286,14 +286,16 @@ export class NetworkRequest {
     // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     if (event.responseStatusCode || event.responseErrorReason) {
       this.#response.paused = event;
-      this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
-      if (!this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)) {
+      if (this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)) {
+        this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
+      } else {
         void this.continueResponse();
       }
     } else {
       this.#request.paused = event;
-      this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
-      if (!this.#isBlockedInPhase(Network.InterceptPhase.BeforeRequestSent)) {
+      if (this.#isBlockedInPhase(Network.InterceptPhase.BeforeRequestSent)) {
+        this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
+      } else {
         void this.continueRequest();
       }
     }
@@ -303,8 +305,9 @@ export class NetworkRequest {
 
   onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
     this.#fetchId = event.requestId;
-    this.#interceptPhase = Network.InterceptPhase.AuthRequired;
-    if (!this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
+    if (this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
+      this.#interceptPhase = Network.InterceptPhase.AuthRequired;
+    } else {
       void this.continueWithAuth();
     }
 
