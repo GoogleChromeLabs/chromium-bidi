@@ -287,7 +287,9 @@ async def test_fail_request_completes_new_request_still_blocks(
 
     await goto_url(websocket, context_id, base_url)
 
-    await subscribe(websocket, ["network.beforeRequestSent", "network.fetchError"], [context_id])
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.fetchError"],
+                    [context_id])
 
     network_id_1 = await create_blocked_request(websocket,
                                                 context_id,

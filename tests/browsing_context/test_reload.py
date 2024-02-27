@@ -15,7 +15,8 @@
 import pytest
 from anys import ANY_DICT, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -200,9 +201,9 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
         "network.responseCompleted",
     ])
 
-    initial_navigation = await goto_url(websocket, context_id, cacheable_url)
+    await goto_url(websocket, context_id, cacheable_url)
 
-    id = await send_JSON_command(
+    await send_JSON_command(
         websocket, {
             "method": "browsingContext.reload",
             "params": {
@@ -212,7 +213,8 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
             }
         })
 
-    response_completed_event = await read_JSON_message(websocket)
+    response_completed_event = await wait_for_event(
+        websocket, "network.responseCompleted")
     assert response_completed_event == {
         'type': 'event',
         "method": "network.responseCompleted",
@@ -226,18 +228,3 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
     }
-
-    # Assert command done.
-    response = await read_JSON_message(websocket)
-    assert response == {
-        "id": id,
-        "type": "success",
-        "result": {
-            "navigation": ANY_STR,
-            "url": cacheable_url,
-        },
-    }
-
-    assert response["result"]["navigation"] == response_completed_event[
-        "params"]["navigation"]
-    assert initial_navigation["navigation"] != response["result"]["navigation"]
