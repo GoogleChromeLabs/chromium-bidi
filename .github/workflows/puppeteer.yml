@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   add-label-to-release:
-    name: Add label to relase
+    name: Add label to release
     runs-on: ubuntu-latest
     if: contains(github.head_ref, 'release-please')
     permissions:
