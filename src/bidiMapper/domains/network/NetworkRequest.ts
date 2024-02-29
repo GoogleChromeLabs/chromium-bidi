@@ -669,7 +669,9 @@ export class NetworkRequest {
     for (const [header, value] of Object.entries(headers)) {
       // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
       // Or verify this works
-      if (header.localeCompare(headerName, undefined, {sensitivity: 'base'})) {
+      if (
+        header.localeCompare(headerName, undefined, {sensitivity: 'base'}) === 0
+      ) {
         authChallenges.push({
           scheme: value.split(' ').at(0) ?? '',
           realm: value.match(REALM_REGEX)?.at(0) ?? '',
