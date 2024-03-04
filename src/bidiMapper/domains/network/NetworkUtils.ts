@@ -23,7 +23,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
 import {Network, type Storage} from '../../../protocol/protocol.js';
-import {base64ToString} from '../../../utils/base64';
+import {base64ToString} from '../../../utils/Base64.js';
 import {URLPattern} from '../../../utils/UrlPattern.js';
 
 export function computeHeadersSize(headers: Network.Header[]): number {
