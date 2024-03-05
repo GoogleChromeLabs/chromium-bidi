@@ -130,6 +130,7 @@ export class CdpTarget {
         BiDiModule.Network,
         this.#id
       );
+    this.#networkDomainEnabled = enabledNetwork;
 
     try {
       await Promise.all([
@@ -143,9 +144,10 @@ export class CdpTarget {
           ignore: this.#acceptInsecureCerts,
         }),
         // TODO: enable Network domain for OOPiF targets.
-        this.toggleNetworkIfNeeded(enabledNetwork).then(async () => {
-          return await this.toggleFetchIfNeeded();
-        }),
+        enabledNetwork
+          ? this.#cdpClient.sendCommand('Network.enable')
+          : undefined,
+        this.toggleFetchIfNeeded(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,
