@@ -176,10 +176,10 @@ export class CdpTarget {
 
     if (
       // Only toggle interception when Network is enabled
-      !this.#networkDomainEnabled &&
-      this.#fetchDomainStages.request === stages.request &&
-      this.#fetchDomainStages.response === stages.response &&
-      this.#fetchDomainStages.auth === stages.auth
+      !this.#networkDomainEnabled ||
+      (this.#fetchDomainStages.request === stages.request &&
+        this.#fetchDomainStages.response === stages.response &&
+        this.#fetchDomainStages.auth === stages.auth)
     ) {
       return;
     }
