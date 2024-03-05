@@ -5,7 +5,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "incremental": true,
-    "module": "commonjs",
+    "module": "ES2022",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -24,6 +24,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "target": "ESNext",
-    "useUnknownInCatchVariables": true
+    "useUnknownInCatchVariables": true,
+    "removeComments": true
   }
 }

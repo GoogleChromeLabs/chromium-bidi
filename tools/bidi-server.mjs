@@ -108,7 +108,7 @@ export function createBiDiServerProcess(headless) {
   return child_process.spawn(
     'node',
     [
-      resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
+      resolve(join('lib', 'esm', 'bidiServer', 'index.js')),
       `--channel`,
       CHANNEL,
       `--headless`,

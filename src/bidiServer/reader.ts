@@ -17,6 +17,10 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import url from 'url';
+
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export async function getMapperTabSource(): Promise<string> {
   return await fs.readFile(

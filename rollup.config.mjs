@@ -18,11 +18,10 @@ import path from 'path';
 
 import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
-import terser from '@rollup/plugin-terser';
 import license from 'rollup-plugin-license';
 
 export default {
-  input: 'lib/cjs/bidiTab/bidiTab.js',
+  input: 'lib/esm/bidiTab/bidiTab.js',
   output: {
     name: 'mapperTab',
     file: 'lib/iife/mapperTab.js',
@@ -71,11 +70,6 @@ export default {
       // `crypto` is only imported in the uuid polyfill for Node versions
       // without webcrypto exposes globally.
       ignore: ['crypto'],
-    }),
-    terser({
-      format: {
-        ascii_only: true,
-      },
     }),
   ],
 };

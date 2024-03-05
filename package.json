@@ -70,7 +70,7 @@
         "tsc"
       ],
       "files": [
-        "lib/cjs/bidiMapper/index.js",
+        "lib/esm/bidiMapper/index.js",
         "rollup.config.mjs"
       ],
       "output": [
@@ -117,7 +117,7 @@
         "src/**/*.ts"
       ],
       "output": [
-        "lib/cjs/**"
+        "lib/esm/**"
       ]
     },
     "unit": {
@@ -222,5 +222,6 @@
   "dependencies": {
     "mitt": "3.0.1",
     "urlpattern-polyfill": "10.0.0"
-  }
+  },
+  "type": "module"
 }
