@@ -180,7 +180,9 @@ async def test_cookies_delete_partition_browsing_context(
         })
 
     assert resp == {
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
     # Expect no cookies to be presented.

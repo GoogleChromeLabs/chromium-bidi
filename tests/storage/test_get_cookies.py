@@ -187,7 +187,9 @@ async def test_cookies_get_partition_browsing_context(websocket, context_id):
 
     assert resp == {
         'cookies': [AnyExtending(cookie)],
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
 
