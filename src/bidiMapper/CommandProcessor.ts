@@ -368,7 +368,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // Workaround for as zod.union always take the first schema
   // https://github.com/w3c/webdriver-bidi/issues/635
   #processTargetParams(params: {target: Script.Target}) {
-    if ('context' in params.target) {
+    if (
+      typeof params.target === 'object' &&
+      'target' in params &&
+      'context' in params.target
+    ) {
       delete (params.target as any)['realm'];
     }
     return params;
