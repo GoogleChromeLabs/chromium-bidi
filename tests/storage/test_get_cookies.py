@@ -47,7 +47,9 @@ async def test_cookies_get_params_empty(websocket, context_id):
 
     assert res == {
         'cookies': [AnyExtending(cookie)],
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
 
@@ -71,7 +73,9 @@ async def test_cookies_get_result_cdp_specific_fields(websocket, context_id):
                 'goog:sourceScheme': 'Secure',
             }
         ],
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
 
@@ -165,7 +169,9 @@ async def test_cookies_get_partition_unsupported_key(websocket, context_id):
 
     assert res == {
         'cookies': [AnyExtending(cookie)],
-        'partitionKey': {},
+        'partitionKey': {
+            'userContext': 'default'
+        },
     }
 
 
