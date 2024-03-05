@@ -20,8 +20,9 @@ import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import license from 'rollup-plugin-license';
 
-export default {
-  input: 'lib/cjs/bidiTab/bidiTab.js',
+// Generate Mapper Tab from ESM as we can run that in the browser
+const mapperTabConfig = {
+  input: 'lib/esm/bidiTab/bidiTab.js',
   output: {
     name: 'mapperTab',
     file: 'lib/iife/mapperTab.js',
@@ -73,3 +74,15 @@ export default {
     }),
   ],
 };
+// Generate CJS so we can keep supporting Puppeteer
+const commonJsConfig = {
+  input: 'lib/esm/bidiTab/bidiTab.js',
+  output: {
+    dir: 'lib/cjs',
+    sourcemap: true,
+    format: 'commonjs',
+  },
+  plugins: [nodeResolve(), commonjs()],
+};
+
+export default [mapperTabConfig, commonJsConfig];
