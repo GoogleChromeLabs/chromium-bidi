@@ -110,6 +110,7 @@ async def test_cookies_get_partition_source_origin(websocket, context_id):
         'partitionKey': {
             # CDP's `partitionKey` does not support port.
             'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
+            'userContext': 'default'
         },
     }
 

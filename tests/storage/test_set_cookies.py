@@ -257,7 +257,12 @@ async def test_cookie_set_partition_source_origin(websocket, context_id):
                 }
             }
         })
-    assert resp == {'partitionKey': {'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT}}
+    assert resp == {
+        'partitionKey': {
+            'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
+            'userContext': 'default'
+        }
+    }
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',
@@ -370,7 +375,12 @@ async def test_cookies_set_params_cookie_cdp_specific_fields(
                 }
             }
         })
-    assert resp == {'partitionKey': {'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT}}
+    assert resp == {
+        'partitionKey': {
+            'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
+            'userContext': 'default',
+        }
+    }
 
     resp = await execute_command(websocket, {
         'method': 'storage.getCookies',

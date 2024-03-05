@@ -63,10 +63,7 @@ async def test_cookies_delete_params_empty(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_cookies_delete_partition_source_origin(websocket, context_id):
-    source_origin_partition = {
-        'type': 'storageKey',
-        'sourceOrigin': SOME_URL,
-    }
+    source_origin_partition = {'type': 'storageKey', 'sourceOrigin': SOME_URL}
 
     not_partitioned_cookie = get_bidi_cookie(SOME_COOKIE_NAME,
                                              SOME_COOKIE_VALUE, SOME_DOMAIN)
@@ -90,6 +87,7 @@ async def test_cookies_delete_partition_source_origin(websocket, context_id):
         'partitionKey': {
             # CDP's `partitionKey` does not support port.
             'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
+            'userContext': 'default'
         },
     }
 

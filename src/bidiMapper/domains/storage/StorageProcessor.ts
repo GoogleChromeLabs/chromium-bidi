@@ -176,11 +176,6 @@ export class StorageProcessor {
       }
     }
 
-    const userContext =
-      descriptor.userContext === 'default' ? undefined : descriptor.userContext;
-
-    // Partition spec is a storage partition.
-    // Let partition key be partition spec.
     for (const [key, value] of Object.entries(descriptor)) {
       if (
         key !== undefined &&
@@ -200,9 +195,12 @@ export class StorageProcessor {
       );
     }
 
+    // Set `userContext` to `default` if not provided, as it's required in Chromium.
+    const userContext = descriptor.userContext ?? 'default';
+
     return {
+      userContext,
       ...(sourceOrigin === undefined ? {} : {sourceOrigin}),
-      ...(userContext === undefined ? {} : {userContext}),
     };
   }
 
@@ -210,12 +208,15 @@ export class StorageProcessor {
     partitionSpec: Storage.PartitionDescriptor | undefined
   ): Storage.PartitionKey {
     if (partitionSpec === undefined) {
-      return {};
+      // `userContext` is required in Chromium.
+      return {userContext: 'default'};
     }
     if (partitionSpec.type === 'context') {
       return this.#expandStoragePartitionSpecByBrowsingContext(partitionSpec);
     }
     assert(partitionSpec.type === 'storageKey', 'Unknown partition type');
+    // Partition spec is a storage partition.
+    // Let partition key be partition spec.
     return this.#expandStoragePartitionSpecByStorageKey(partitionSpec);
   }
 
