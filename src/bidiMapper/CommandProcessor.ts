@@ -369,7 +369,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // https://github.com/w3c/webdriver-bidi/issues/635
   #processTargetParams(params: {target: Script.Target}) {
     if (
-      typeof params.target === 'object' &&
+      typeof params === 'object' &&
       'target' in params &&
       'context' in params.target
     ) {
