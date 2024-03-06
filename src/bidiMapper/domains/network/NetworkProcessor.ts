@@ -297,7 +297,7 @@ export class NetworkProcessor {
 
           if (urlPattern.protocol) {
             urlPattern.protocol = unescapeURLPattern(urlPattern.protocol);
-            if (!urlPattern.protocol.match(/[a-zA-Z+-.]/)) {
+            if (!urlPattern.protocol.match(/^[a-zA-Z+-.]+$/)) {
               throw new InvalidArgumentException('Forbidden characters');
             }
           }
