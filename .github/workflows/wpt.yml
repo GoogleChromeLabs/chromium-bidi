@@ -140,6 +140,8 @@ jobs:
       - name: Install python dependencies
         run: pipenv install
       - run: >
+          pip install pipenv;
+          pipenv install;
           PYTHONPATH="$( pwd )/../../../tools/webdriver:$( pwd )/../../../tools/third_party/websockets/src:$( pwd ):$( pwd )../../../tools/webdriver/webdriver/bidi/modules/permissions.py:$( pwd )/../../.."
           pipenv run pytest --collect-only --rootdir=../../.. -o="python_files=*.py" --quiet
         working-directory: wpt/webdriver/tests/bidi
