@@ -167,10 +167,10 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitNone_nav
     await goto_url(websocket, iframe_id, url, "complete")
 
     resp = await goto_url(websocket, iframe_id, url_with_hash_1, "none")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_1}
 
     resp = await goto_url(websocket, iframe_id, url_with_hash_2, "none")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_2}
 
 
 @pytest.mark.asyncio
@@ -184,7 +184,7 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitInteract
     await goto_url(websocket, iframe_id, url, "complete")
 
     resp = await goto_url(websocket, iframe_id, url_with_hash_1, "interactive")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_1}
 
     result = await get_tree(websocket, iframe_id)
 
@@ -199,7 +199,7 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitInteract
     } == result
 
     resp = await goto_url(websocket, iframe_id, url_with_hash_2, "interactive")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_2}
 
     result = await get_tree(websocket, iframe_id)
 
@@ -225,7 +225,7 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
     await goto_url(websocket, iframe_id, url, "complete")
 
     resp = await goto_url(websocket, iframe_id, url_with_hash_1, "complete")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_1}
 
     result = await get_tree(websocket, iframe_id)
 
@@ -240,7 +240,7 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
     } == result
 
     resp = await goto_url(websocket, iframe_id, url_with_hash_2, "complete")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_2}
 
     result = await get_tree(websocket, iframe_id)
 

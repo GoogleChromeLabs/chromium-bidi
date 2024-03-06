@@ -43,8 +43,11 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
    * @param handler The handler function to run when the event occurs
    * @return `this` to enable chaining method calls.
    */
-  once(event: EventType, handler: Handler): this {
-    const onceHandler: Handler = (eventData) => {
+  once<Key extends keyof Events>(
+    event: Key,
+    handler: Handler<Events[Key]>
+  ): this {
+    const onceHandler = (eventData: Events[Key]) => {
       handler(eventData);
       this.off(event, onceHandler);
     };

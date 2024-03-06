@@ -207,10 +207,10 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated
     await goto_url(websocket, context_id, url, "complete")
 
     resp = await goto_url(websocket, context_id, url_with_hash_1, "none")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_1}
 
     resp = await goto_url(websocket, context_id, url_with_hash_2, "none")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_2}
 
 
 @pytest.mark.asyncio
@@ -225,7 +225,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
 
     resp = await goto_url(websocket, context_id, url_with_hash_1,
                           "interactive")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_1}
 
     result = await get_tree(websocket, context_id)
 
@@ -241,7 +241,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
 
     resp = await goto_url(websocket, context_id, url_with_hash_2,
                           "interactive")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_2}
 
     result = await get_tree(websocket, context_id)
 
@@ -267,7 +267,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
     await goto_url(websocket, context_id, url, "complete")
 
     resp = await goto_url(websocket, context_id, url_with_hash_1, "complete")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_1}
 
     result = await get_tree(websocket, context_id)
 
@@ -282,7 +282,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
     } == result
 
     resp = await goto_url(websocket, context_id, url_with_hash_2, "complete")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_STR, 'url': url_with_hash_2}
 
     result = await get_tree(websocket, context_id)
 
@@ -344,13 +344,15 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
             }
         })
 
+    await read_JSON_message(websocket)
+
     response = await read_JSON_message(websocket)
     assert response == {
         'type': 'event',
         "method": "browsingContext.navigationStarted",
         "params": {
             "context": context_id,
-            "navigation": None,
+            "navigation": ANY_STR,
             "timestamp": ANY_TIMESTAMP,
             # TODO: Should report correct string
             "url": ANY_STR,
@@ -381,7 +383,7 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
         "method": "browsingContext.navigationStarted",
         "params": {
             "context": context_id,
-            "navigation": None,
+            "navigation": ANY_STR,
             "timestamp": ANY_TIMESTAMP,
             # TODO: Should report correct string
             "url": ANY_STR,
