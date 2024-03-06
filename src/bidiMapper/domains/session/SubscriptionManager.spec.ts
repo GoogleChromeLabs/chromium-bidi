@@ -487,7 +487,7 @@ describe('SubscriptionManager', () => {
     });
   });
 
-  describe('isSubscribedToModule', () => {
+  describe('isSubscribedTo', () => {
     it('should return true global subscription', () => {
       subscriptionManager.subscribe(
         ChromiumBidi.Network.EventNames.ResponseCompleted,
@@ -496,7 +496,7 @@ describe('SubscriptionManager', () => {
       );
 
       expect(
-        subscriptionManager.isSubscribedToModule(
+        subscriptionManager.isSubscribedTo(
           ChromiumBidi.BiDiModule.Network,
           SOME_CONTEXT
         )
@@ -511,7 +511,7 @@ describe('SubscriptionManager', () => {
       );
 
       expect(
-        subscriptionManager.isSubscribedToModule(
+        subscriptionManager.isSubscribedTo(
           ChromiumBidi.BiDiModule.Network,
           SOME_CONTEXT
         )
@@ -526,7 +526,7 @@ describe('SubscriptionManager', () => {
       );
 
       expect(
-        subscriptionManager.isSubscribedToModule(
+        subscriptionManager.isSubscribedTo(
           ChromiumBidi.BiDiModule.Network,
           SOME_CONTEXT
         )
@@ -541,7 +541,7 @@ describe('SubscriptionManager', () => {
       );
 
       expect(
-        subscriptionManager.isSubscribedToModule(
+        subscriptionManager.isSubscribedTo(
           ChromiumBidi.BiDiModule.Network,
           SOME_NESTED_CONTEXT
         )
@@ -556,7 +556,7 @@ describe('SubscriptionManager', () => {
       );
 
       expect(
-        subscriptionManager.isSubscribedToModule(
+        subscriptionManager.isSubscribedTo(
           ChromiumBidi.BiDiModule.Network,
           ANOTHER_NESTED_CONTEXT
         )
@@ -565,7 +565,7 @@ describe('SubscriptionManager', () => {
 
     it('should return false with no subscriptions', () => {
       expect(
-        subscriptionManager.isSubscribedToModule(
+        subscriptionManager.isSubscribedTo(
           ChromiumBidi.BiDiModule.Network,
           SOME_CONTEXT
         )
