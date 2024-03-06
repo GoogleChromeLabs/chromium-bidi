@@ -137,13 +137,11 @@ jobs:
         run: pip install virtualenv
       - name: Install pipenv
         run: pip install pipenv
-        working-directory: wpt/webdriver/tests/bidi
       - name: Install python dependencies
         run: pipenv install
-        working-directory: wpt/webdriver/tests/bidi
       - run: >
           PYTHONPATH="$( pwd )/../../../tools/webdriver:$( pwd )/../../../tools/third_party/websockets/src:$( pwd ):$( pwd )../../../tools/webdriver/webdriver/bidi/modules/permissions.py:$( pwd )/../../.."
-          python -m pytest --collect-only --rootdir=../../.. -o="python_files=*.py" --quiet
+          pipenv run pytest --collect-only --rootdir=../../.. -o="python_files=*.py" --quiet
         working-directory: wpt/webdriver/tests/bidi
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
