@@ -26,17 +26,6 @@ export function escapeHtml(str) {
     .replace(/\//g, '&#47;');
 }
 
-export function flattenSingleTest(test) {
-  return (
-    test?.subtests?.map((subtest) => ({
-      path: `${test.test}/${escapeHtml(subtest.name)}`,
-      name: subtest.name,
-      status: subtest.status,
-      message: subtest.message ?? null,
-    })) ?? []
-  );
-}
-
 /**
  *  "Tentative" means a WPT test was written even though consensus was never
  *  reached in the spec whether it will actually take place.
@@ -50,13 +39,6 @@ export function flattenSingleTest(test) {
  */
 function removeWebDriverBiDiPrefix(name) {
   return name.replace('/webdriver/tests/bidi/', '');
-}
-
-export function flattenTests(report) {
-  return report.results
-    .map(flattenSingleTest)
-    .flat()
-    .sort((a, b) => a.path?.localeCompare(b.path) || 0);
 }
 
 /**
