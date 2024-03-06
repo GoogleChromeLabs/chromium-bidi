@@ -50,10 +50,10 @@ function mergeReportAndAllTests(report) {
   report.results.forEach((test) => {
     test.subtests.forEach((subtest) => {
       const path = `${test.test}/${escapeHtml(subtest.name)}`;
-      const qwe = allTests.find((t) => t.path === path);
-      if (qwe) {
-        qwe.status = subtest.status;
-        qwe.message = subtest.message ?? null;
+      const targetTest = allTests.find((t) => t.path === path);
+      if (targetTest) {
+        targetTest.status = subtest.status;
+        targetTest.message = subtest.message ?? null;
       }
     });
   });
