@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import child_process from 'child_process';
+
 export function escapeHtml(str) {
   return str
     .replace(/&/g, '&amp;')
@@ -25,23 +27,14 @@ export function escapeHtml(str) {
 }
 
 export function flattenSingleTest(test) {
-  if (test.status !== 'OK' && test.subtests.length === 0) {
-    return [
-      {
-        path: test.test,
-        name: null,
-        status: test.status,
-        message: test.message ?? null,
-      },
-    ];
-  }
-
-  return test.subtests.map((subtest) => ({
-    path: `${test.test}/${escapeHtml(subtest.name)}`,
-    name: subtest.name,
-    status: subtest.status,
-    message: subtest.message ?? null,
-  }));
+  return (
+    test?.subtests?.map((subtest) => ({
+      path: `${test.test}/${escapeHtml(subtest.name)}`,
+      name: subtest.name,
+      status: subtest.status,
+      message: subtest.message ?? null,
+    })) ?? []
+  );
 }
 
 /**
@@ -59,19 +52,30 @@ function removeWebDriverBiDiPrefix(name) {
   return name.replace('/webdriver/tests/bidi/', '');
 }
 
-function excludeTentativeTests(test) {
-  return !test.test.includes('_tentative.py');
-}
-
 export function flattenTests(report) {
   return report.results
-    .filter(excludeTentativeTests)
     .map(flattenSingleTest)
     .flat()
-    .sort(
-      (a, b) =>
-        a.path?.localeCompare(b.path) || a.name?.localeCompare(b.name) || 0
-    );
+    .sort((a, b) => a.path?.localeCompare(b.path) || 0);
+}
+
+/**
+ * For all tests from the actual report, update status and message of the test
+ * from the allTests array. `allTests` statuses are initially set to `SKIPPED`.
+ */
+function mergeReportAndAllTests(report) {
+  const allTests = getAllTests();
+  report.results.forEach((test) => {
+    test.subtests.forEach((subtest) => {
+      const path = `${test.test}/${escapeHtml(subtest.name)}`;
+      const qwe = allTests.find((t) => t.path === path);
+      if (qwe) {
+        qwe.status = subtest.status;
+        qwe.message = subtest.message ?? null;
+      }
+    });
+  });
+  return allTests;
 }
 
 export function groupTests(tests) {
@@ -266,6 +270,34 @@ function getCommitLink(commitHash) {
   return `https://github.com/GoogleChromeLabs/chromium-bidi/commit/${commitHash}`;
 }
 
+function getAllTests() {
+  const rawCommandResult = child_process
+    .execSync(
+      // Magic command line that makes required pytest imports and gets the list of
+      // tests. Details: go/webdriver:wpt-total-test-count.
+      '(cd ./wpt/webdriver/tests/bidi; PYTHONPATH="$( pwd )/../../../tools/webdriver:$( pwd )/../../../tools/third_party/websockets/src:$( pwd ):$( pwd )../../../tools/webdriver/webdriver/bidi/modules/permissions.py:$( pwd )/../../.."  pytest --collect-only --rootdir=../../.. -o=\'python_files=*.py\' --quiet)'
+    )
+    .toString();
+
+  const tests = [];
+  rawCommandResult.split('\n').forEach((line) => {
+    if (line.startsWith('webdriver/tests/bidi')) {
+      const [testPath, ...testNameParts] = line.split('::');
+      const testName = testNameParts.join('::');
+      tests.push({
+        path: `/${testPath}/${escapeHtml(testName)}`,
+        name: testName,
+        status: 'SKIPPED',
+        message: null,
+      });
+    }
+  });
+  return tests;
+}
+
 export function generateReport(rawReport, commitHash) {
-  return generateHtml(groupTests(flattenTests(rawReport)), commitHash);
+  return generateHtml(
+    groupTests(mergeReportAndAllTests(rawReport)),
+    commitHash
+  );
 }

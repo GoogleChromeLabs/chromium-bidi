@@ -141,38 +141,6 @@ describe('HTML WPT reporter', () => {
         },
       ]);
     });
-
-    it('should exclude tentative tests', () => {
-      expect(
-        flattenTests({
-          results: [
-            {
-              test: '/a/b/c_tentative.py',
-              subtests: [
-                {
-                  name: 'sub_1',
-                  status: 'PASS',
-                },
-              ],
-              status: 'OK',
-            },
-            {
-              test: '/d/e/f.py',
-              subtests: [],
-              status: 'TIMEOUT',
-              message: null,
-            },
-          ],
-        })
-      ).to.deep.equal([
-        {
-          message: null,
-          name: null,
-          path: '/d/e/f.py',
-          status: 'TIMEOUT',
-        },
-      ]);
-    });
   });
 
   describe('groupTests', () => {
