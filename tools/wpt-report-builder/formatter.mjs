@@ -177,6 +177,7 @@ function generateHtml(map, commitHash) {
         border: none;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2);
         border-radius: 8px;
+        font-weight: bold;
       }
     </style>
     <div class="top">
