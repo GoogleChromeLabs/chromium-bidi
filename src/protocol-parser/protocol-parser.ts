@@ -256,6 +256,20 @@ export namespace BrowsingContext {
       WebDriverBidi.BrowsingContext.HandleUserPromptParametersSchema
     );
   }
+
+  export function parseLocateNodesParams(
+    params: unknown
+  ): Protocol.BrowsingContext.LocateNodesParameters {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+    // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+    // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.LocateNodesParametersSchema
+    ) as Protocol.BrowsingContext.LocateNodesParameters;
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-session */
