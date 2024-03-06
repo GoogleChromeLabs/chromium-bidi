@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import child_process from 'child_process';
 
 export function escapeHtml(str) {
   return str
@@ -45,19 +44,18 @@ function removeWebDriverBiDiPrefix(name) {
  * For all tests from the actual report, update status and message of the test
  * from the allTests array. `allTests` statuses are initially set to `SKIPPED`.
  */
-function mergeReportAndAllTests(report) {
-  const allTests = getAllTests();
+function mergeReportAndAllTests(report, allWptTestsList) {
   report.results.forEach((test) => {
     test.subtests.forEach((subtest) => {
       const path = `${test.test}/${escapeHtml(subtest.name)}`;
-      const targetTest = allTests.find((t) => t.path === path);
+      const targetTest = allWptTestsList.find((t) => t.path === path);
       if (targetTest) {
         targetTest.status = subtest.status;
         targetTest.message = subtest.message ?? null;
       }
     });
   });
-  return allTests;
+  return allWptTestsList;
 }
 
 export function groupTests(tests) {
@@ -252,34 +250,9 @@ function getCommitLink(commitHash) {
   return `https://github.com/GoogleChromeLabs/chromium-bidi/commit/${commitHash}`;
 }
 
-function getAllTests() {
-  const rawCommandResult = child_process
-    .execSync(
-      // Magic command line that makes required pytest imports and gets the list of
-      // tests. Details: go/webdriver:wpt-total-test-count.
-      '(cd ./wpt/webdriver/tests/bidi; PYTHONPATH="$( pwd )/../../../tools/webdriver:$( pwd )/../../../tools/third_party/websockets/src:$( pwd ):$( pwd )../../../tools/webdriver/webdriver/bidi/modules/permissions.py:$( pwd )/../../.."  pytest --collect-only --rootdir=../../.. -o=\'python_files=*.py\' --quiet)'
-    )
-    .toString();
-
-  const tests = [];
-  rawCommandResult.split('\n').forEach((line) => {
-    if (line.startsWith('webdriver/tests/bidi')) {
-      const [testPath, ...testNameParts] = line.split('::');
-      const testName = testNameParts.join('::');
-      tests.push({
-        path: `/${testPath}/${escapeHtml(testName)}`,
-        name: testName,
-        status: 'SKIPPED',
-        message: null,
-      });
-    }
-  });
-  return tests;
-}
-
-export function generateReport(rawReport, commitHash) {
+export function generateReport(rawReport, allWptTestsList, commitHash) {
   return generateHtml(
-    groupTests(mergeReportAndAllTests(rawReport)),
+    groupTests(mergeReportAndAllTests(rawReport, allWptTestsList)),
     commitHash
   );
 }
