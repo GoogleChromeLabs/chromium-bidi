@@ -370,8 +370,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #processTargetParams(params: {target: Script.Target}) {
     if (
       typeof params === 'object' &&
+      params &&
       'target' in params &&
       typeof params.target === 'object' &&
+      params.target &&
       'context' in params.target
     ) {
       delete (params.target as any)['realm'];
