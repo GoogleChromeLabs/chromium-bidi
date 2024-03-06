@@ -47,7 +47,7 @@ function getAllTests() {
       // tests. Details: go/webdriver:wpt-total-test-count.
       '(cd ./wpt/webdriver/tests/bidi; ' +
         'PYTHONPATH="$( pwd )/../../../tools/webdriver:$( pwd )/../../../tools/third_party/websockets/src:$( pwd ):$( pwd )../../../tools/webdriver/webdriver/bidi/modules/permissions.py:$( pwd )/../../.." ' +
-        "python -m pytest --collect-only --rootdir=../../.. -o='python_files=*.py' --quiet)"
+        ' python -m pytest --collect-only --rootdir=../../.. -o="python_files=*.py" --quiet)'
     )
     .toString();
 
