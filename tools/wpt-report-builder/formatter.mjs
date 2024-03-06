@@ -200,26 +200,39 @@ function generateHtml(map, commitHash) {
       </div>
       <script>
         const toggle = document.querySelector('.toggle');
-        let state = 'short';
+        let toggleState = 'short';
         toggle.addEventListener('click', () => {
-          toggle.innerText = state.charAt(0).toUpperCase() + state.slice(1);
+          toggle.innerText = toggleState.charAt(0).toUpperCase() + toggleState.slice(1);
 
-          const toHide = document.querySelectorAll(\`.\${state}-name\`);
+          const toHide = document.querySelectorAll(\`.\${toggleState}-name\`);
           for(const element of toHide){
             element.classList.add("hidden");
           }
 
-          state = state === 'short' ? 'long' : 'short';
-          const toShow = document.querySelectorAll(\`.\${state}-name\`);
+          toggleState = toggleState === 'short' ? 'long' : 'short';
+          const toShow = document.querySelectorAll(\`.\${toggleState}-name\`);
           for(const element of toShow){
             element.classList.remove("hidden");
           }
         })
 
-        const expand = document.querySelector('.toggle');
+        const expand = document.querySelector('.expand');
+        let toggleState = 'collapse';
         expand.addEventListener('click', () => {
-          for (element of document.querySelectorAll('summary')) {
-            element.click();
+          console.log(toggleState)
+          document.body.querySelectorAll('details')
+            .forEach((element) => {
+              if(toggleState === 'collapse'){
+                element.setAttribute('open', true);
+              } else {
+                element.removeAttribute('open');
+              }
+            });
+          expand.innerText = toggleState.charAt(0).toUpperCase() + toggleState.slice(1);
+          if(toggleState === 'collapse'){
+              toggleState = 'expand';
+          } else {
+            toggleState = 'collapse';
           }
         })
       </script>
