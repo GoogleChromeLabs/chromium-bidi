@@ -29,6 +29,7 @@ import {
   type NetworkEvent,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
+import {Deferred} from '../../../utils/Deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
@@ -93,6 +94,8 @@ export class NetworkRequest {
     [ChromiumBidi.Network.EventNames.ResponseCompleted]: false,
     [ChromiumBidi.Network.EventNames.ResponseStarted]: false,
   };
+
+  waitResponseBlocked = new Deferred<void>();
 
   constructor(
     id: Network.Request,
@@ -281,6 +284,8 @@ export class NetworkRequest {
     this.#emitEventsIfReady({
       hasFailed: true,
     });
+    this.waitResponseBlocked.resolve();
+
     this.#emitEvent(() => {
       return {
         method: ChromiumBidi.Network.EventNames.FetchError,
@@ -309,6 +314,9 @@ export class NetworkRequest {
     // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     if (event.responseStatusCode || event.responseErrorReason) {
       this.#response.paused = event;
+      this.waitResponseBlocked.resolve();
+      this.waitResponseBlocked = new Deferred();
+
       if (this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)) {
         this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       } else {
@@ -329,6 +337,10 @@ export class NetworkRequest {
   onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
     this.#fetchId = event.requestId;
     this.#request.auth = event;
+
+    this.waitResponseBlocked.resolve();
+    this.waitResponseBlocked = new Deferred();
+
     if (this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
     } else {
@@ -446,7 +458,12 @@ export class NetworkRequest {
       return;
     }
 
-    if (this.#isIgnoredEvent() || this.#emittedEvents[event.method]) {
+    if (
+      this.#isIgnoredEvent() ||
+      (this.#emittedEvents[event.method] &&
+        // Special case this event can be emitted multiple times
+        event.method !== ChromiumBidi.Network.EventNames.AuthRequired)
+    ) {
       return;
     }
 

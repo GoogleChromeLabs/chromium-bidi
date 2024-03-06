@@ -103,17 +103,38 @@ export class NetworkProcessor {
   ): Promise<EmptyResult> {
     const networkId = params.request;
     const {statusCode, reasonPhrase, headers} = params;
-    const request = this.#getBlockedRequestOrFail(networkId, [
-      Network.InterceptPhase.ResponseStarted,
-    ]);
 
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(headers);
 
+    if (params.credentials) {
+      const request = this.#getBlockedRequestOrFail(networkId, [
+        Network.InterceptPhase.AuthRequired,
+      ]);
+      await Promise.all([
+        request.waitResponseBlocked,
+        request.continueWithAuth({
+          response: 'ProvideCredentials',
+          username: params.credentials.username,
+          password: params.credentials.password,
+        }),
+      ]);
+
+      if (
+        // If the credentials were wrong just return
+        // TODO: clarify if we should fail in such case
+        request.currentInterceptPhase === Network.InterceptPhase.AuthRequired
+      ) {
+        return {};
+      }
+    }
+
+    const request = this.#getBlockedRequestOrFail(networkId, [
+      Network.InterceptPhase.ResponseStarted,
+    ]);
+
     // TODO: Set / expand.
     // ; Step 10. cookies
-    // ; Step 11. credentials
-
     await request.continueResponse({
       responseCode: statusCode,
       responsePhrase: reasonPhrase,
@@ -205,6 +226,7 @@ export class NetworkProcessor {
       Network.InterceptPhase.ResponseStarted,
       Network.InterceptPhase.AuthRequired,
     ]);
+
     await request.provideResponse({
       responseCode: statusCode ?? request.statusCode,
       responsePhrase: reasonPhrase,
