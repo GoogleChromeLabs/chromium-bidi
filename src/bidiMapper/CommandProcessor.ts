@@ -371,6 +371,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     if (
       typeof params === 'object' &&
       'target' in params &&
+      typeof params.target === 'object' &&
       'context' in params.target
     ) {
       delete (params.target as any)['realm'];
