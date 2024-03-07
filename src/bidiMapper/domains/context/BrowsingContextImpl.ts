@@ -41,6 +41,8 @@ import type {EventManager} from '../session/EventManager.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import type {CdpTarget} from './CdpTarget.js';
 
+import ResultOwnership = Script.ResultOwnership;
+
 export class BrowsingContextImpl {
   static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
 
@@ -1011,6 +1013,99 @@ export class BrowsingContextImpl {
     );
 
     await this.#cdpTarget.toggleNetworkIfNeeded(enableNetwork);
+  }
+
+  async locateNodes(
+    params: BrowsingContext.LocateNodesParameters
+  ): Promise<BrowsingContext.LocateNodesResult> {
+    // TODO: test sandboxing.
+    const realm = await this.getOrCreateSandbox(params.sandbox);
+    if (params.maxNodeCount !== undefined) {
+      // TODO: implement.
+      throw new UnsupportedOperationException(`maxNodeCount is not supported`);
+    }
+    if (params.ownership === ResultOwnership.Root) {
+      // TODO: implement.
+      throw new UnsupportedOperationException(
+        `ownership:root is not supported`
+      );
+    }
+    if (params.serializationOptions !== undefined) {
+      // TODO: implement.
+      throw new UnsupportedOperationException(
+        `serializationOptions is not supported`
+      );
+    }
+    if (params.startNodes !== undefined) {
+      // TODO: implement.
+      throw new UnsupportedOperationException(
+        `serializationOptions is not supported`
+      );
+    }
+
+    switch (params.locator.type) {
+      case 'css':
+        return await this.#locateNodesByCssSelector(
+          realm,
+          params.locator.value
+        );
+      default:
+        throw new UnsupportedOperationException(
+          `locateNodes does not support ${params.locator.type} locator type.`
+        );
+    }
+  }
+
+  async #locateNodesByCssSelector(
+    realm: Realm,
+    selector: string
+  ): Promise<{nodes: any[]}> {
+    const selectorScriptResult = await realm.callFunction(
+      String((selector: string) => {
+        const results = document.querySelectorAll(selector);
+        const array = [];
+        for (const item of results) {
+          array.push(item);
+        }
+        return array;
+      }),
+      {type: 'undefined'},
+      [{type: 'string', value: selector}],
+      false,
+      Script.ResultOwnership.None,
+      {},
+      false
+    );
+
+    this.#logger?.(
+      BrowsingContextImpl.LOGGER_PREFIX,
+      'selectorScriptResult',
+      selectorScriptResult
+    );
+
+    if (selectorScriptResult.type !== 'success') {
+      throw new UnknownErrorException(
+        `Unexpected error in selector script: ${selectorScriptResult.exceptionDetails.text}`
+      );
+    }
+
+    if (selectorScriptResult.result.type !== 'array') {
+      throw new UnknownErrorException(
+        `Unexpected selector script result type: ${selectorScriptResult.result.type}`
+      );
+    }
+
+    // Check there are no non-node elements in the result.
+    const nodes = selectorScriptResult.result.value!.map((value) => {
+      if (value.type !== 'node') {
+        throw new UnknownErrorException(
+          `Unexpected selector script result element: ${value.type}`
+        );
+      }
+      return value;
+    });
+
+    return {nodes};
   }
 }
 
