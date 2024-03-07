@@ -168,7 +168,8 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
 
 
 @pytest.mark.asyncio
-async def test_network_response_completed_event_emitted(websocket, context_id, base_url):
+async def test_network_response_completed_event_emitted(
+        websocket, context_id, base_url):
     await subscribe(websocket, ["network.responseCompleted"], [context_id])
 
     await send_JSON_command(
@@ -224,7 +225,8 @@ async def test_network_response_completed_event_emitted(websocket, context_id, b
 
 
 @pytest.mark.asyncio
-async def test_network_response_started_event_emitted(websocket, context_id, base_url):
+async def test_network_response_started_event_emitted(websocket, context_id,
+                                                      base_url):
     await subscribe(websocket, ["network.responseStarted"], [context_id])
 
     await send_JSON_command(
@@ -391,7 +393,8 @@ async def test_network_specific_context_subscription_does_not_enable_cdp_network
 
 
 @pytest.mark.asyncio
-async def test_network_sends_only_included_cookies(websocket, context_id, base_url):
+async def test_network_sends_only_included_cookies(websocket, context_id,
+                                                   base_url):
 
     await goto_url(websocket, context_id, "https://example.com")
 
