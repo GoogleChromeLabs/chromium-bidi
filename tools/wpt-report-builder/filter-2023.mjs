@@ -197,7 +197,7 @@ const RELEVANT_TESTS = new Set([
   '/webdriver/tests/bidi/session/unsubscribe/invalid.py',
 ]);
 
-export const apply2013Filter = (reportData) => {
+export const apply2023Filter = (reportData) => {
   const filteredResults = [];
   for (const result of reportData.results) {
     if (RELEVANT_TESTS.has(result.test)) {

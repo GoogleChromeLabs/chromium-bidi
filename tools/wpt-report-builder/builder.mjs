@@ -17,7 +17,7 @@
 import child_process from 'child_process';
 import fs from 'fs';
 
-import {apply2013Filter} from './filter-2023.mjs';
+import {apply2023Filter} from './filter-2023.mjs';
 import {generateReport} from './formatter.mjs';
 
 function getCurrentCommit() {
@@ -37,7 +37,7 @@ const jsonPath = process.argv[2];
 const outputPath = process.argv[3];
 const filteredOutputPath = process.argv[4];
 const reportData = readReport(jsonPath);
-const filteredReportData = apply2013Filter(reportData);
+const filteredReportData = apply2023Filter(reportData);
 const currentCommit = getCurrentCommit();
 
 fs.writeFileSync(outputPath, generateReport(reportData, currentCommit));
