@@ -423,7 +423,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
             }
         })
 
-    response = await read_JSON_message(websocket)
+    response = await wait_for_event(websocket, "network.beforeRequestSent")
     assert response == {
         'type': 'event',
         "method": "network.beforeRequestSent",
