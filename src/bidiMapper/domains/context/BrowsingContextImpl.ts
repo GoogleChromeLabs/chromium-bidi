@@ -1043,34 +1043,50 @@ export class BrowsingContextImpl {
 
     const realm = await this.getOrCreateSandbox(params.sandbox);
 
-    switch (params.locator.type) {
+    return await this.#locateNodesBySelector(realm, params.locator);
+  }
+
+  #getLocatorFunction(selector: BrowsingContext.Locator): string {
+    switch (selector.type) {
       case 'css':
-        return await this.#locateNodesByCssSelector(
-          realm,
-          params.locator.value
-        );
+        return String((selector: string) => {
+          const results = document.querySelectorAll(selector);
+          const array = [];
+          for (const item of results) {
+            array.push(item);
+          }
+          return array;
+        });
+      case 'xpath':
+        return String((xPathSelector: string) => {
+          // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
+          const evaluator = new XPathEvaluator();
+          const expression = evaluator.createExpression(xPathSelector);
+          const xPathResult = expression.evaluate(
+            document,
+            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+          );
+          const result = [];
+          for (let i = 0; i < xPathResult.snapshotLength; i++)
+            result.push(xPathResult.snapshotItem(i));
+          return result;
+        });
       default:
         throw new UnsupportedOperationException(
-          `locateNodes does not support ${params.locator.type} locator type.`
+          `locateNodes does not support ${selector.type} locator type.`
         );
     }
   }
 
-  async #locateNodesByCssSelector(
+  async #locateNodesBySelector(
     realm: Realm,
-    selector: string
+    selector: BrowsingContext.Locator
   ): Promise<BrowsingContext.LocateNodesResult> {
+    const selectorFunction = this.#getLocatorFunction(selector);
     const selectorScriptResult = await realm.callFunction(
-      String((selector: string) => {
-        const results = document.querySelectorAll(selector);
-        const array = [];
-        for (const item of results) {
-          array.push(item);
-        }
-        return array;
-      }),
+      selectorFunction,
       {type: 'undefined'},
-      [{type: 'string', value: selector}],
+      [{type: 'string', value: selector.value}],
       false,
       Script.ResultOwnership.None,
       {},
@@ -1084,16 +1100,20 @@ export class BrowsingContextImpl {
     );
 
     if (selectorScriptResult.type !== 'success') {
-      // Heuristic to detect invalid selector.
+      // Heuristic to detect invalid selector for different types of selectors.
       if (
-        selectorScriptResult.exceptionDetails.text?.startsWith(
-          'SyntaxError:'
-        ) &&
+        // CSS selector.
         selectorScriptResult.exceptionDetails.text?.endsWith(
           'is not a valid selector.'
+        ) ||
+        // XPath selector.
+        selectorScriptResult.exceptionDetails.text?.endsWith(
+          'is not a valid XPath expression.'
         )
       ) {
-        throw new InvalidSelectorException(`Not valid selector ${selector}`);
+        throw new InvalidSelectorException(
+          `Not valid selector ${selector.value}`
+        );
       }
       throw new UnknownErrorException(
         `Unexpected error in selector script: ${selectorScriptResult.exceptionDetails.text}`
