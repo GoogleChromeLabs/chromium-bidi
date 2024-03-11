@@ -1058,7 +1058,7 @@ export class BrowsingContextImpl {
   async #locateNodesByCssSelector(
     realm: Realm,
     selector: string
-  ): Promise<{nodes: Script.NodeRemoteValue[]}> {
+  ): Promise<BrowsingContext.LocateNodesResult> {
     const selectorScriptResult = await realm.callFunction(
       String((selector: string) => {
         const results = document.querySelectorAll(selector);
