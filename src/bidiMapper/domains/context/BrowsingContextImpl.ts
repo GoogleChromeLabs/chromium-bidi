@@ -1067,8 +1067,9 @@ export class BrowsingContextImpl {
             XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
           );
           const result = [];
-          for (let i = 0; i < xPathResult.snapshotLength; i++)
+          for (let i = 0; i < xPathResult.snapshotLength; i++) {
             result.push(xPathResult.snapshotItem(i));
+          }
           return result;
         });
       default:
