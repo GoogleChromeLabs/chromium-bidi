@@ -41,8 +41,6 @@ import type {EventManager} from '../session/EventManager.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import type {CdpTarget} from './CdpTarget.js';
 
-import ResultOwnership = Script.ResultOwnership;
-
 export class BrowsingContextImpl {
   static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
 
@@ -1019,12 +1017,11 @@ export class BrowsingContextImpl {
     params: BrowsingContext.LocateNodesParameters
   ): Promise<BrowsingContext.LocateNodesResult> {
     // TODO: test sandboxing.
-    const realm = await this.getOrCreateSandbox(params.sandbox);
     if (params.maxNodeCount !== undefined) {
       // TODO: implement.
       throw new UnsupportedOperationException(`maxNodeCount is not supported`);
     }
-    if (params.ownership === ResultOwnership.Root) {
+    if (params.ownership === Script.ResultOwnership.Root) {
       // TODO: implement.
       throw new UnsupportedOperationException(
         `ownership:root is not supported`
@@ -1043,6 +1040,8 @@ export class BrowsingContextImpl {
       );
     }
 
+    const realm = await this.getOrCreateSandbox(params.sandbox);
+
     switch (params.locator.type) {
       case 'css':
         return await this.#locateNodesByCssSelector(
@@ -1059,7 +1058,7 @@ export class BrowsingContextImpl {
   async #locateNodesByCssSelector(
     realm: Realm,
     selector: string
-  ): Promise<{nodes: any[]}> {
+  ): Promise<{nodes: Script.NodeRemoteValue[]}> {
     const selectorScriptResult = await realm.callFunction(
       String((selector: string) => {
         const results = document.querySelectorAll(selector);
@@ -1096,14 +1095,16 @@ export class BrowsingContextImpl {
     }
 
     // Check there are no non-node elements in the result.
-    const nodes = selectorScriptResult.result.value!.map((value) => {
-      if (value.type !== 'node') {
-        throw new UnknownErrorException(
-          `Unexpected selector script result element: ${value.type}`
-        );
+    const nodes = selectorScriptResult.result.value!.map(
+      (value): Script.NodeRemoteValue => {
+        if (value.type !== 'node') {
+          throw new UnknownErrorException(
+            `Unexpected selector script result element: ${value.type}`
+          );
+        }
+        return value;
       }
-      return value;
-    });
+    );
 
     return {nodes};
   }
