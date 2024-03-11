@@ -78,7 +78,7 @@ async def test_locate_nodes_css_locator_invalid(websocket, context_id, html):
                        match=re.escape(
                            str({
                                'error': 'invalid selector',
-                               'message': 'Not valid css selector ' +
+                               'message': 'Not valid selector ' +
                                           invalid_css_selector
                            }))):
         await execute_command(

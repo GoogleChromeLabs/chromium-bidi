@@ -1086,13 +1086,14 @@ export class BrowsingContextImpl {
     if (selectorScriptResult.type !== 'success') {
       // Heuristic to detect invalid selector.
       if (
+        selectorScriptResult.exceptionDetails.text?.startsWith(
+          'SyntaxError:'
+        ) &&
         selectorScriptResult.exceptionDetails.text?.endsWith(
           'is not a valid selector.'
         )
       ) {
-        throw new InvalidSelectorException(
-          `Not valid css selector ${selector}`
-        );
+        throw new InvalidSelectorException(`Not valid selector ${selector}`);
       }
       throw new UnknownErrorException(
         `Unexpected error in selector script: ${selectorScriptResult.exceptionDetails.text}`
