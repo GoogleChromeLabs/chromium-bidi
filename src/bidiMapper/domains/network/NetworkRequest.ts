@@ -491,11 +491,6 @@ export class NetworkRequest {
   }
 
   #getResponseEventParams(): Network.ResponseData {
-    assert(
-      // The response paused comes before any data for the response
-      this.#response.paused || this.#response.info,
-      'ResponseReceivedEvent is not set'
-    );
     // Chromium sends wrong extraInfo events for responses served from cache.
     // See https://github.com/puppeteer/puppeteer/issues/9965 and
     // https://crbug.com/1340398.
@@ -610,6 +605,13 @@ export class NetworkRequest {
   }
 
   #getResponseStartedEvent(): Network.ResponseStarted {
+    assert(this.#request.info, 'RequestWillBeSentEvent is not set');
+    assert(
+      // The response paused comes before any data for the response
+      this.#response.paused || this.#response.info,
+      'ResponseReceivedEvent is not set'
+    );
+
     return {
       method: ChromiumBidi.Network.EventNames.ResponseStarted,
       params: {
@@ -620,6 +622,9 @@ export class NetworkRequest {
   }
 
   #getResponseReceivedEvent(): Network.ResponseCompleted {
+    assert(this.#request.info, 'RequestWillBeSentEvent is not set');
+    assert(this.#response.info, 'ResponseReceivedEvent is not set');
+
     return {
       method: ChromiumBidi.Network.EventNames.ResponseCompleted,
       params: {
