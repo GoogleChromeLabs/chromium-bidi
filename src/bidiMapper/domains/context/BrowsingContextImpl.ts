@@ -1043,14 +1043,14 @@ export class BrowsingContextImpl {
 
     const realm = await this.getOrCreateSandbox(params.sandbox);
 
-    return await this.#locateNodesBySelector(realm, params.locator);
+    return await this.#locateNodesByLocator(realm, params.locator);
   }
 
-  #getLocatorFunction(selector: BrowsingContext.Locator): string {
-    switch (selector.type) {
+  #getLocatorFunction(locator: BrowsingContext.Locator): string {
+    switch (locator.type) {
       case 'css':
-        return String((selector: string) => {
-          const results = document.querySelectorAll(selector);
+        return String((cssSelector: string) => {
+          const results = document.querySelectorAll(cssSelector);
           const array = [];
           for (const item of results) {
             array.push(item);
@@ -1073,61 +1073,61 @@ export class BrowsingContextImpl {
         });
       default:
         throw new UnsupportedOperationException(
-          `locateNodes does not support ${selector.type} locator type.`
+          `locateNodes does not support ${locator.type} locator type.`
         );
     }
   }
 
-  async #locateNodesBySelector(
+  async #locateNodesByLocator(
     realm: Realm,
-    selector: BrowsingContext.Locator
+    locator: BrowsingContext.Locator
   ): Promise<BrowsingContext.LocateNodesResult> {
-    const selectorFunction = this.#getLocatorFunction(selector);
-    const selectorScriptResult = await realm.callFunction(
-      selectorFunction,
+    const locatorFunction = this.#getLocatorFunction(locator);
+    const locatorResult = await realm.callFunction(
+      locatorFunction,
       {type: 'undefined'},
-      [{type: 'string', value: selector.value}],
+      [{type: 'string', value: locator.value}],
       false,
       Script.ResultOwnership.None,
       {},
       false
     );
 
-    this.#logger?.(
-      BrowsingContextImpl.LOGGER_PREFIX,
-      'selectorScriptResult',
-      selectorScriptResult
-    );
+    if (locatorResult.type !== 'success') {
+      this.#logger?.(
+        BrowsingContextImpl.LOGGER_PREFIX,
+        'Failed locateNodesByLocator',
+        locatorResult
+      );
 
-    if (selectorScriptResult.type !== 'success') {
       // Heuristic to detect invalid selector for different types of selectors.
       if (
         // CSS selector.
-        selectorScriptResult.exceptionDetails.text?.endsWith(
+        locatorResult.exceptionDetails.text?.endsWith(
           'is not a valid selector.'
         ) ||
         // XPath selector.
-        selectorScriptResult.exceptionDetails.text?.endsWith(
+        locatorResult.exceptionDetails.text?.endsWith(
           'is not a valid XPath expression.'
         )
       ) {
         throw new InvalidSelectorException(
-          `Not valid selector ${selector.value}`
+          `Not valid selector ${locator.value}`
         );
       }
       throw new UnknownErrorException(
-        `Unexpected error in selector script: ${selectorScriptResult.exceptionDetails.text}`
+        `Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`
       );
     }
 
-    if (selectorScriptResult.result.type !== 'array') {
+    if (locatorResult.result.type !== 'array') {
       throw new UnknownErrorException(
-        `Unexpected selector script result type: ${selectorScriptResult.result.type}`
+        `Unexpected selector script result type: ${locatorResult.result.type}`
       );
     }
 
     // Check there are no non-node elements in the result.
-    const nodes = selectorScriptResult.result.value!.map(
+    const nodes = locatorResult.result.value!.map(
       (value): Script.NodeRemoteValue => {
         if (value.type !== 'node') {
           throw new UnknownErrorException(
