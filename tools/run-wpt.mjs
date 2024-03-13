@@ -156,10 +156,17 @@ if (RUN_TESTS === 'true') {
   }
 
   if (HEADLESS === 'true') {
-    // Pass `--headless=new` to the browser to force it to start in headless mode.
-    wptRunArgs.push('--binary-arg=--headless=new');
-    wptRunArgs.push('--binary-arg=--hide-scrollbars');
-    wptRunArgs.push('--binary-arg=--mute-audio');
+    if (CHROMEDRIVER === 'true') {
+      // For chroemdriver use new headless.
+      wptRunArgs.push('--binary-arg=--headless=new');
+    } else {
+      // TODO: switch to new headless.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/949.
+      // For nodejs mapper runner supports only old headless.
+      wptRunArgs.push('--binary-arg=--headless');
+      wptRunArgs.push('--binary-arg=--hide-scrollbars');
+      wptRunArgs.push('--binary-arg=--mute-audio');
+    }
   } else {
     // Pass `--no-headless` to the WPT runner to enable headful mode.
     wptRunArgs.push('--no-headless');
