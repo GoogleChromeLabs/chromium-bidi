@@ -95,7 +95,7 @@ export class NetworkRequest {
     [ChromiumBidi.Network.EventNames.ResponseStarted]: false,
   };
 
-  waitResponseBlocked = new Deferred<void>();
+  waitNextPhase = new Deferred<void>();
 
   constructor(
     id: Network.Request,
@@ -124,7 +124,7 @@ export class NetworkRequest {
   /**
    * When blocked returns the phase for it
    */
-  get currentInterceptPhase(): Network.InterceptPhase | undefined {
+  get interceptPhase(): Network.InterceptPhase | undefined {
     return this.#interceptPhase;
   }
 
@@ -163,6 +163,11 @@ export class NetworkRequest {
 
   isRedirecting(): boolean {
     return Boolean(this.#request.info);
+  }
+
+  #phaseChanged() {
+    this.waitNextPhase.resolve();
+    this.waitNextPhase = new Deferred();
   }
 
   #interceptsInPhase(phase: Network.InterceptPhase) {
@@ -284,7 +289,6 @@ export class NetworkRequest {
     this.#emitEventsIfReady({
       hasFailed: true,
     });
-    this.waitResponseBlocked.resolve();
 
     this.#emitEvent(() => {
       return {
@@ -314,8 +318,6 @@ export class NetworkRequest {
     // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     if (event.responseStatusCode || event.responseErrorReason) {
       this.#response.paused = event;
-      this.waitResponseBlocked.resolve();
-      this.waitResponseBlocked = new Deferred();
 
       if (this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)) {
         this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
@@ -337,9 +339,6 @@ export class NetworkRequest {
   onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
     this.#fetchId = event.requestId;
     this.#request.auth = event;
-
-    this.waitResponseBlocked.resolve();
-    this.waitResponseBlocked = new Deferred();
 
     if (this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
@@ -466,7 +465,7 @@ export class NetworkRequest {
     ) {
       return;
     }
-
+    this.#phaseChanged();
     this.#emittedEvents[event.method] = true;
     this.#eventManager.registerEvent(
       Object.assign(event, {
