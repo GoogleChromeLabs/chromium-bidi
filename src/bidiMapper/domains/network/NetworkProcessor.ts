@@ -111,24 +111,22 @@ export class NetworkProcessor {
       Network.InterceptPhase.ResponseStarted,
     ]);
 
-    if (
-      params.credentials &&
-      request.interceptPhase === Network.InterceptPhase.AuthRequired
-    ) {
-      await Promise.all([
-        request.waitNextPhase,
-        request.continueWithAuth({
+    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
+      if (params.credentials) {
+        await Promise.all([
+          request.waitNextPhase,
+          request.continueWithAuth({
+            response: 'ProvideCredentials',
+            username: params.credentials.username,
+            password: params.credentials.password,
+          }),
+        ]);
+      } else {
+        // We need to use `ProvideCredentials`
+        // As `Default` may cancel the request
+        await request.continueWithAuth({
           response: 'ProvideCredentials',
-          username: params.credentials.username,
-          password: params.credentials.password,
-        }),
-      ]);
-
-      if (
-        // If the credentials were wrong just return
-        // TODO: clarify if we should fail in such case
-        request.interceptPhase === Network.InterceptPhase.AuthRequired
-      ) {
+        });
         return {};
       }
     }
