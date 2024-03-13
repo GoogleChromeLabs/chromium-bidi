@@ -15,7 +15,7 @@
     "pre-commit": "pre-commit run --hook-stage manual --all-files",
     "prepare": "wireit",
     "rollup": "wireit",
-    "server": "npm run server --",
+    "server": "wireit",
     "test": "wireit",
     "tsc": "wireit",
     "unit": "wireit",
