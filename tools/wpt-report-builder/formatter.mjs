@@ -37,7 +37,7 @@ export function flattenSingleTest(test) {
   }
 
   return test.subtests.map((subtest) => ({
-    path: `${test.test}/${escapeHtml(subtest.name)}`,
+    path: `${test.test}::${escapeHtml(subtest.name)}`,
     name: subtest.name,
     status: subtest.status,
     message: subtest.message ?? null,
@@ -167,10 +167,12 @@ function generateHtml(map, commitHash, isFiltered, baseline) {
       body { font-family: Roboto, serif; font-size: 13px; color: #202124; }
       .path { font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; line-height: 180%; padding: 5px 18px; margin: 0; }
       .top { box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px; margin: auto; padding: 60px; max-width: 1200px; }
-      .test-card { padding-left: 20px; max-width: 1200px; }
+      .test-card { margin-left: 20px; max-width: 1200px; }
+      .test-card-subtest { display: flex; flex-direction: row; justify-content: space-between; align-items: center;}
       .divider { margin-left: 20px; height: 1px; background: #a0a0a0; }
-      .non-collapsible-item { padding-left: 27px; padding-right: 15px; }
-      .stat { float: right }
+      .non-collapsible-item { padding-left: 27px; padding-right: 15px; word-break: break-all; }
+      .result { padding-right: 18px; padding-left: 5px; }
+      .stat { float: right; }
       .pass { background: #D5F2D7; }
       .part { background: #F2EDD5; }
       .fail { background: #F2D7D5; }
@@ -300,19 +302,25 @@ function generateSubtestReport(subtest) {
   const name =
     subtest.name ?? removeWebDriverBiDiPrefix(subtest.path).split('/').at(-1);
   return `<div class="divider"></div>
-      <div class="test-card">
-        <p class="non-collapsible-item path ${
-          subtest.status === 'PASS' ? 'pass' : 'fail'
-        }">
-          <span class="short-name">${escapeHtml(name)}</span>
-          <span class="long-name hidden">${escapeHtml(subtest.path)}</span>
+      <div class="test-card test-card-subtest ${
+        subtest.status === 'PASS' ? 'pass' : 'fail'
+      }">
+        <div class="test-name">
+          <p class="non-collapsible-item path">
+          <span class="short-name">${escapeHtml(name).replaceAll('&#47;', '/')}</span>
+          <span class="long-name hidden">${escapeHtml(subtest.path).replaceAll('&#47;', '/')}</span>
           ${
             subtest.message
               ? `<br /><small>${escapeHtml(subtest.message)}</small>`
               : ''
           }
-          <span class="stat"><b>${escapeHtml(subtest.status)}</b></span>
         </p>
+        </div>
+        <div class="result">
+          <span>
+            <b>${escapeHtml(subtest.status)}</b>
+          </span>
+        </div>
       </div>`;
 }
 
