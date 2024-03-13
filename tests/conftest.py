@@ -24,7 +24,8 @@ import pytest_asyncio
 import websockets
 from pytest_httpserver import HTTPServer
 from test_helpers import (execute_command, get_tree, goto_url,
-                          read_JSON_message, wait_for_event, wait_for_events)
+                          read_JSON_message, send_JSON_command, wait_for_event,
+                          wait_for_events)
 
 from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
@@ -56,7 +57,9 @@ async def _websocket_connection():
     url = f"ws://localhost:{port}/session"
     async with websockets.connect(url) as connection:
         yield connection
-        await execute_command(connection, {
+        # Don't wait for the session is actually ended to save time between
+        # tests.
+        await send_JSON_command(connection, {
             "method": "session.end",
             "params": {}
         })
