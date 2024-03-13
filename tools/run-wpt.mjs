@@ -160,9 +160,6 @@ if (RUN_TESTS === 'true') {
     wptRunArgs.push('--binary-arg=--headless=new');
     wptRunArgs.push('--binary-arg=--hide-scrollbars');
     wptRunArgs.push('--binary-arg=--mute-audio');
-
-    // Pass `--headless` to the WPT runner to enable headless mode.
-    wptRunArgs.push('--headless');
   } else {
     // Pass `--no-headless` to the WPT runner to enable headful mode.
     wptRunArgs.push('--no-headless');
