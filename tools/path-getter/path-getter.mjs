@@ -29,7 +29,9 @@ import {Browser, computeSystemExecutablePath} from '@puppeteer/browsers';
  * @return {string}
  */
 export function installAndGetChromePath() {
-  if (process.env.BROWSER_BIN) return process.env.BROWSER_BIN;
+  if (process.env.BROWSER_BIN) {
+    return process.env.BROWSER_BIN;
+  }
 
   const channel = getChannel();
 
@@ -53,7 +55,9 @@ export function installAndGetChromePath() {
  * @return {string}
  */
 export function installAndGetChromeDriverPath() {
-  if (process.env.CHROMEDRIVER_BIN) return process.env.CHROMEDRIVER_BIN;
+  if (process.env.CHROMEDRIVER_BIN) {
+    return process.env.CHROMEDRIVER_BIN;
+  }
 
   if (getChannel() !== 'local') {
     throw new Error(
