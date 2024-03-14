@@ -57,12 +57,19 @@ async def _websocket_connection():
     url = f"ws://localhost:{port}/session"
     async with websockets.connect(url) as connection:
         yield connection
-        # Don't wait for the session is actually ended to save time between
-        # tests.
-        await send_JSON_command(connection, {
-            "method": "session.end",
-            "params": {}
-        })
+
+        if os.getenv("WAIT_SESSION_ENDS") == "true":
+            await execute_command(connection, {
+                "method": "session.end",
+                "params": {}
+            })
+        else:
+            # Don't wait for the session is actually ended to save time between
+            # tests.
+            await send_JSON_command(connection, {
+                "method": "session.end",
+                "params": {}
+            })
 
 
 @pytest_asyncio.fixture(params=[{"capabilities": {}}])
