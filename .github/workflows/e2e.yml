@@ -44,7 +44,7 @@ jobs:
       matrix:
         # TODO(#876): Add Windows CI.
         os: [ubuntu-latest, macos-latest]
-        head: [headful, headless]
+        head: [headful, headless, 'headless:old']
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
