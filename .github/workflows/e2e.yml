@@ -43,8 +43,8 @@ jobs:
       fail-fast: false
       matrix:
         # TODO(#876): Add Windows CI.
-        os: [ubuntu-latest] # macos-latest
-        head: [headful, new-headless, old-headless]
+        os: [ubuntu-latest, macos-latest]
+        head: [headful] #, headful, old-headless
         runner: [nodejs, chromedriver]
         exclude:
           # For macOS keep only headful tests.
@@ -54,6 +54,7 @@ jobs:
             head: old-headless
           - os: macos-latest
             head: headful
+            runner: nodejs
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
