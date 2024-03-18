@@ -28,7 +28,14 @@ from test_helpers import (assert_images_similar, get_tree, goto_url,
         "gradient_without_alpha_channel.png",
     ],
     ids=["gradient with alpha channel", "gradient without alpha channel"])
-async def test_screenshot(websocket, context_id, png_filename):
+async def test_screenshot(websocket, context_id, png_filename,
+                          is_chromedriver):
+    if is_chromedriver:
+        pytest.xfail(
+            reason=  # noqa: E251. The line is too long.
+            "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2020"
+        )
+
     with open(Path(__file__).parent.resolve() / png_filename,
               'rb') as image_file:
         png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
@@ -155,8 +162,14 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe):
 
 
 @pytest.mark.asyncio
-async def test_screenshot_document(websocket, context_id, query_selector,
-                                   html):
+async def test_screenshot_document(websocket, context_id, query_selector, html,
+                                   is_chromedriver):
+    if is_chromedriver:
+        pytest.xfail(
+            reason=  # noqa: E251. The line is too long.
+            "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2020"
+        )
+
     await goto_url(
         websocket, context_id,
         html('<div style="width: 100px; height: 100px; background: red"></div>'
