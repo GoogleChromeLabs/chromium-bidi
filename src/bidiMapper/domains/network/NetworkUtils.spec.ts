@@ -56,9 +56,8 @@ describe('NetworkUtils', () => {
 
   describe('should convert CDP network headers to Bidi network headers', () => {
     it('empty', () => {
-      const cdpNetworkHeaders = {};
       const bidiNetworkHeaders =
-        networkUtils.bidiNetworkHeadersFromCdpNetworkHeaders(cdpNetworkHeaders);
+        networkUtils.bidiNetworkHeadersFromCdpNetworkHeaders(undefined);
 
       expect(bidiNetworkHeaders).to.deep.equal([]);
     });
@@ -70,6 +69,47 @@ describe('NetworkUtils', () => {
       };
       const bidiNetworkHeaders =
         networkUtils.bidiNetworkHeadersFromCdpNetworkHeaders(cdpNetworkHeaders);
+
+      expect(bidiNetworkHeaders).to.deep.equal([
+        {
+          name: 'Content-Type',
+          value: {
+            type: 'string',
+            value: 'text/html',
+          },
+        },
+        {
+          name: 'Content-Length',
+          value: {
+            type: 'string',
+            value: '123',
+          },
+        },
+      ]);
+    });
+  });
+
+  describe('should convert CDP fetch header entries to Bidi network headers', () => {
+    it('empty', () => {
+      const bidiNetworkHeaders =
+        networkUtils.bidiNetworkHeadersFromCdpNetworkHeaderEntries(undefined);
+
+      expect(bidiNetworkHeaders).to.deep.equal([]);
+    });
+
+    it('non-empty', () => {
+      const entries = [
+        {
+          name: 'Content-Type',
+          value: 'text/html',
+        },
+        {
+          name: 'Content-Length',
+          value: '123',
+        },
+      ];
+      const bidiNetworkHeaders =
+        networkUtils.bidiNetworkHeadersFromCdpNetworkHeaderEntries(entries);
 
       expect(bidiNetworkHeaders).to.deep.equal([
         {

@@ -39,6 +39,7 @@ import {
   computeHeadersSize,
   bidiNetworkHeadersFromCdpNetworkHeaders,
   cdpToBiDiCookie,
+  bidiNetworkHeadersFromCdpNetworkHeaderEntries,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -319,14 +320,28 @@ export class NetworkRequest {
     if (event.responseStatusCode || event.responseErrorReason) {
       this.#response.paused = event;
 
-      if (this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)) {
+      if (
+        this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted) &&
+        // CDP may emit multiple events for a single request
+        !this.#emittedEvents[ChromiumBidi.Network.EventNames.ResponseStarted] &&
+        // Continue all response that have not enabled Network domain
+        this.#fetchId !== this.id
+      ) {
         this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       } else {
         void this.continueResponse();
       }
     } else {
       this.#request.paused = event;
-      if (this.#isBlockedInPhase(Network.InterceptPhase.BeforeRequestSent)) {
+      if (
+        this.#isBlockedInPhase(Network.InterceptPhase.BeforeRequestSent) &&
+        // CDP may emit multiple events for a single request
+        !this.#emittedEvents[
+          ChromiumBidi.Network.EventNames.BeforeRequestSent
+        ] &&
+        // Continue all requests that have not enabled Network domain
+        this.#fetchId !== this.id
+      ) {
         this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
       } else {
         void this.continueRequest();
@@ -340,7 +355,11 @@ export class NetworkRequest {
     this.#fetchId = event.requestId;
     this.#request.auth = event;
 
-    if (this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
+    if (
+      this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired) &&
+      // Continue all auth requests that have not enabled Network domain
+      this.#fetchId !== this.id
+    ) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
     } else {
       void this.continueWithAuth();
@@ -514,14 +533,14 @@ export class NetworkRequest {
       this.#response.extraInfo = undefined;
     }
 
-    // TODO: get headers from Fetch.requestPaused
-    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
-      this.#response.info?.headers
-    );
+    const headers = [
+      ...bidiNetworkHeadersFromCdpNetworkHeaderEntries(
+        this.#response.paused?.responseHeaders
+      ),
+      ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.info?.headers),
+    ];
 
-    const authChallenges = this.#authChallenges(
-      this.#response.info?.headers ?? {}
-    );
+    const authChallenges = this.#authChallenges(this.#response.info?.headers);
 
     return {
       url: this.url,
@@ -568,9 +587,10 @@ export class NetworkRequest {
       ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
       : [];
 
-    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
-      this.#request.info?.request.headers
-    );
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders({
+      ...this.#request.info?.request.headers,
+      ...this.#request.paused?.request.headers,
+    });
 
     return {
       request: this.#id,
@@ -660,8 +680,12 @@ export class NetworkRequest {
   }
 
   #authChallenges(
-    headers: Protocol.Network.Headers
+    headers?: Protocol.Network.Headers
   ): Network.AuthChallenge[] | undefined {
+    if (!headers) {
+      return undefined;
+    }
+
     if (!(this.statusCode === 401 || this.statusCode === 407)) {
       return undefined;
     }
