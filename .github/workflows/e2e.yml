@@ -44,12 +44,16 @@ jobs:
       matrix:
         # TODO(#876): Add Windows CI.
         os: [ubuntu-latest] # macos-latest
-        head: [headful, 'new-headless', 'old-headless']
+        head: [headful, new-headless, old-headless]
+        runner: [nodejs, chromedriver]
         exclude:
+          # For macOS keep only headful tests.
           - os: macos-latest
             head: new-headless
           - os: macos-latest
             head: old-headless
+          - os: macos-latest
+            head: headful
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -84,7 +88,7 @@ jobs:
         timeout-minutes: 20
         run: >
           xvfb-run --auto-servernum
-          npm run e2e:${{ matrix.head }}
+          npm run e2e:${{ matrix.runner }}:${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
@@ -92,7 +96,7 @@ jobs:
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
-        run: npm run e2e:${{ matrix.head }}
+        run: npm run e2e:${{ matrix.runner }}:${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
@@ -101,5 +105,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
-          name: ${{ matrix.os }}-${{ matrix.head }}-artifacts
+          name: ${{ matrix.os }}-${{ matrix.runner }}-${{ matrix.head }}-artifacts
           path: logs
