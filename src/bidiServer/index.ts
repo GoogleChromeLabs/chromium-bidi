@@ -25,13 +25,14 @@ export function parseCommandLineArgs() {
     .usage(`$0`, `[PORT=8080] [VERBOSE=8080]`)
     .option('port', {
       alias: 'p',
-      describe: 'Provide a test name to filter by',
+      describe: 'Port that BiDi server should listen to. Default is 8080.',
       type: 'number',
-      default: Number(process.env['PORT']) ?? 8080,
+      default: process.env['PORT'] ? Number(process.env['PORT']) : 8080,
     })
     .option('verbose', {
       alias: 'v',
-      describe: 'Provide a test name to filter by',
+      describe:
+        'If present, the Mapper debug log, including CDP commands and events will be logged into the server output.',
       type: 'boolean',
       default: process.env['VERBOSE'] === 'true' || false,
     })
