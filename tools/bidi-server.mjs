@@ -68,7 +68,7 @@ export function parseCommandLineArgs() {
       describe: 'Provide a test name to filter by',
       type: 'string',
     })
-    .parse();
+    .parseSync();
 }
 
 /**
