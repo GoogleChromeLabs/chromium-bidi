@@ -1084,7 +1084,7 @@ export class BrowsingContextImpl {
           argumentsLocalValues: [
             // `xPathSelector`
             {type: 'string', value: locator.value},
-            // // `maxNodeCount` with `0` means no limit.
+            // `maxNodeCount` with `0` means no limit.
             {type: 'number', value: maxNodeCount ?? 0},
           ],
         };
