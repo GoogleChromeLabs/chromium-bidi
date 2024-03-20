@@ -94,6 +94,18 @@ export class InputState {
     return source as InputSourceFor<Type>;
   }
 
+  getPressedTouchPointerSources(): PointerSource[] {
+    return [...this.#sources.values()].filter(
+      (source): source is PointerSource => {
+        return (
+          source.type === SourceType.Pointer &&
+          source.subtype === Input.PointerType.Touch &&
+          source.pressed.size > 0
+        );
+      }
+    );
+  }
+
   get(id: string): InputSource {
     const source = this.#sources.get(id);
     if (!source) {

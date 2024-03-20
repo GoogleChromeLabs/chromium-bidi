@@ -71,13 +71,31 @@ export class KeySource {
   }
 }
 
-export class PointerSource {
+export interface PointerProperties {
+  altitudeAngle: number;
+  azimuthAngle: number;
+  height: number;
+  pressure: number;
+  tangentialPressure: number;
+  twist: number;
+  width: number;
+}
+
+export class PointerSource implements PointerProperties {
   type = SourceType.Pointer as const;
   subtype: Input.PointerType;
   pointerId: number;
   pressed = new Set<number>();
   x = 0;
   y = 0;
+
+  altitudeAngle = Math.PI / 2;
+  azimuthAngle = 0;
+  height = 1;
+  pressure = 0.5;
+  tangentialPressure = 0;
+  twist = 0;
+  width = 1;
 
   constructor(id: number, subtype: Input.PointerType) {
     this.pointerId = id;
@@ -111,6 +129,39 @@ export class PointerSource {
   }
 
   // --- Platform-specific code starts here ---
+  updateProperties(properties: Partial<PointerProperties>) {
+    if (properties.altitudeAngle !== undefined) {
+      this.altitudeAngle = properties.altitudeAngle;
+    }
+    if (properties.azimuthAngle !== undefined) {
+      this.azimuthAngle = properties.azimuthAngle;
+    }
+    if (properties.height !== undefined) {
+      this.height = properties.height;
+    }
+    if (properties.pressure !== undefined) {
+      this.pressure = properties.pressure;
+    }
+    if (properties.tangentialPressure !== undefined) {
+      this.tangentialPressure = properties.tangentialPressure;
+    }
+    if (properties.twist !== undefined) {
+      this.twist = properties.twist;
+    }
+    if (properties.width !== undefined) {
+      this.width = properties.width;
+    }
+  }
+  resetProperties() {
+    this.altitudeAngle = Math.PI / 2;
+    this.azimuthAngle = 0;
+    this.height = 1;
+    this.pressure = 0.5;
+    this.tangentialPressure = 0;
+    this.twist = 0;
+    this.width = 1;
+  }
+
   // Input.dispatchMouseEvent doesn't know the concept of double click, so we
   // need to create the logic, similar to how it's done for OSes:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:ui/events/event.cc;l=479

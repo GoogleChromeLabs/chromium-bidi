@@ -38,6 +38,9 @@ SET_FILES_HTML = """
 """
 
 SCRIPT = """
+<!DOCTYPE html>
+<html>
+<body style="touch-action: none">
 <div style="height: 2000px; width: 10px"></div>
 <script>
     var allEvents = [];
@@ -45,6 +48,9 @@ SCRIPT = """
         "mousedown",
         "mousemove",
         "mouseup",
+        "touchmove",
+        "touchstart",
+        "touchend",
         "keydown",
         "keypress",
         "keyup",
@@ -52,6 +58,24 @@ SCRIPT = """
     ]) {
         window.addEventListener(name, (event) => {
             switch (name) {
+                case "pointerdown":
+                case "pointermove":
+                case "pointerup":
+                    allEvents.push({
+                        type: name,
+                        x: event.x,
+                        y: event.y,
+                        width: event.width,
+                        height: event.height,
+                        altitudeAngle: event.altitudeAngle,
+                        azimuthAngle: event.azimuthAngle,
+                        pressure: event.pressure,
+                        pointerType: event.pointerType,
+                        twist: event.twist,
+                        tiltX: event.tiltX,
+                        tiltY: event.tiltY,
+                    });
+                    break;
                 case "mousedown":
                 case "mousemove":
                 case "mouseup":
@@ -75,6 +99,27 @@ SCRIPT = """
                         keyCode: event.keyCode,
                     });
                     break;
+                case "touchstart":
+                case "touchmove":
+                case "touchend":
+                    allEvents.push({
+                        event: name,
+                        changedTouches: [...event.changedTouches].map((touch) => ({
+                            clientX: touch.clientX,
+                            clientY: touch.clientY,
+                            radiusX: touch.radiusX,
+                            radiusY: touch.radiusY,
+                            force: touch.force,
+                        })),
+                        activeTouches: [...event.touches].map((touch) => ({
+                            clientX: touch.clientX,
+                            clientY: touch.clientY,
+                            radiusX: touch.radiusX,
+                            radiusY: touch.radiusY,
+                            force: touch.force,
+                        })),
+                    });
+                    break;
                 case "wheel":
                     allEvents.push({
                         event: name,
@@ -87,6 +132,8 @@ SCRIPT = """
         });
     }
 </script>
+</body>
+</html>
 """
 
 DRAG_SCRIPT = """
@@ -710,3 +757,58 @@ async def test_input_setFiles_unableToSetFileInput(websocket, context_id, html,
         message = exception.args[0]['error']
 
     assert message == snapshot
+
+
+@pytest.mark.asyncio
+async def test_input_performActionsEmitsTouchEvents(websocket, context_id,
+                                                    html, activate_main_tab,
+                                                    snapshot):
+    await goto_url(websocket, context_id, html(SCRIPT))
+    await activate_main_tab()
+    await reset_mouse(websocket, context_id)
+
+    await execute_command(
+        websocket, {
+            "method": "input.performActions",
+            "params": {
+                "context": context_id,
+                "actions": [{
+                    "type": "pointer",
+                    "id": "main_touch",
+                    "parameters": {
+                        "pointerType": "touch"
+                    },
+                    "actions": [{
+                        "type": "pointerMove",
+                        "x": 0,
+                        "y": 0
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerMove",
+                        "x": 30,
+                        "y": 30
+                    }, {
+                        "type": "pointerMove",
+                        "x": 48,
+                        "y": 35
+                    }, {
+                        "type": "pointerMove",
+                        "x": 80,
+                        "y": 50
+                    }, {
+                        "type": "pointerMove",
+                        "x": 100,
+                        "y": 100
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
+                    }]
+                }]
+            }
+        })
+
+    result = await get_events(websocket, context_id)
+
+    assert result == snapshot(exclude=props("realm"))
