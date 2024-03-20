@@ -1050,12 +1050,7 @@ export class BrowsingContextImpl {
                     'startNodes in css selector should be HTMLElement'
                   );
                 }
-                const results = element.querySelectorAll(cssSelector);
-                const returnedNodes = [];
-                for (const item of results) {
-                  returnedNodes.push(item);
-                }
-                return returnedNodes;
+                return [...element.querySelectorAll(cssSelector)];
               };
 
               startNodes = startNodes.length > 0 ? startNodes : [document.body];
