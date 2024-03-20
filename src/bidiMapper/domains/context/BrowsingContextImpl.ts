@@ -1017,24 +1017,27 @@ export class BrowsingContextImpl {
         `serializationOptions is not supported`
       );
     }
-    if (params.startNodes !== undefined) {
+    if ((params.startNodes?.length ?? 0) > 1) {
       // TODO: implement.
       throw new UnsupportedOperationException(
-        `serializationOptions is not supported`
+        `multiple startNodes are not supported`
       );
     }
+    const startNode = params.startNodes?.[0];
 
     // TODO: create a dedicated sandbox instead of `#defaultRealm`.
     return await this.#locateNodesByLocator(
       this.#defaultRealm,
       params.locator,
-      params.maxNodeCount
+      params.maxNodeCount,
+      startNode
     );
   }
 
   #getLocatorDelegate(
     locator: BrowsingContext.Locator,
-    maxNodeCount?: number
+    maxNodeCount?: number,
+    startNode?: Script.SharedReference
   ): {
     functionDeclaration: string;
     argumentsLocalValues: Script.LocalValue[];
@@ -1043,8 +1046,14 @@ export class BrowsingContextImpl {
       case 'css':
         return {
           functionDeclaration: String(
-            (cssSelector: string, maxNodeCount: number) => {
-              const results = document.querySelectorAll(cssSelector);
+            (
+              cssSelector: string,
+              maxNodeCount: number,
+              startNode?: HTMLElement
+            ) => {
+              const results = (startNode ?? document.body).querySelectorAll(
+                cssSelector
+              );
               const returnedNodes = [];
               for (const item of results) {
                 returnedNodes.push(item);
@@ -1059,17 +1068,23 @@ export class BrowsingContextImpl {
             {type: 'string', value: locator.value},
             // `maxNodeCount` with `0` means no limit.
             {type: 'number', value: maxNodeCount ?? 0},
+            // `startNode` if provided.
+            ...(startNode !== undefined ? [startNode] : []),
           ],
         };
       case 'xpath':
         return {
           functionDeclaration: String(
-            (xPathSelector: string, maxNodeCount: number) => {
+            (
+              xPathSelector: string,
+              maxNodeCount: number,
+              startNode?: HTMLElement
+            ) => {
               // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
               const evaluator = new XPathEvaluator();
               const expression = evaluator.createExpression(xPathSelector);
               const xPathResult = expression.evaluate(
-                document,
+                startNode ?? document.body,
                 XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
               );
               const returnedNodes = [];
@@ -1086,6 +1101,8 @@ export class BrowsingContextImpl {
             {type: 'string', value: locator.value},
             // `maxNodeCount` with `0` means no limit.
             {type: 'number', value: maxNodeCount ?? 0},
+            // `startNode` if provided.
+            ...(startNode !== undefined ? [startNode] : []),
           ],
         };
       case 'innerText':
@@ -1101,7 +1118,8 @@ export class BrowsingContextImpl {
               innerTextSelector: string,
               fullMatch: boolean,
               ignoreCase: boolean,
-              maxNodeCount: number
+              maxNodeCount: number,
+              startNode?: HTMLElement
             ) => {
               const searchText = ignoreCase
                 ? innerTextSelector.toUpperCase()
@@ -1149,7 +1167,7 @@ export class BrowsingContextImpl {
               };
               // TODO: add maxDepth.
               // TODO: provide proper start node.
-              return locateNodesUsingInnerText(document.body);
+              return locateNodesUsingInnerText(startNode ?? document.body);
             }
           ),
           argumentsLocalValues: [
@@ -1161,6 +1179,8 @@ export class BrowsingContextImpl {
             {type: 'boolean', value: locator.ignoreCase === true},
             // `maxNodeCount` with `0` means no limit.
             {type: 'number', value: maxNodeCount ?? 0},
+            // `startNode` if provided.
+            ...(startNode !== undefined ? [startNode] : []),
           ],
         };
     }
@@ -1169,9 +1189,14 @@ export class BrowsingContextImpl {
   async #locateNodesByLocator(
     realm: Realm,
     locator: BrowsingContext.Locator,
-    maxNodeCount?: number
+    maxNodeCount?: number,
+    startNode?: Script.SharedReference
   ): Promise<BrowsingContext.LocateNodesResult> {
-    const locatorDelegate = this.#getLocatorDelegate(locator, maxNodeCount);
+    const locatorDelegate = this.#getLocatorDelegate(
+      locator,
+      maxNodeCount,
+      startNode
+    );
     const locatorResult = await realm.callFunction(
       locatorDelegate.functionDeclaration,
       {type: 'undefined'},
