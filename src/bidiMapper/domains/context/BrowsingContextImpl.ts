@@ -1045,6 +1045,11 @@ export class BrowsingContextImpl {
               ...startNodes: HTMLElement[]
             ) => {
               const locateNodesUsingCss = (element: HTMLElement) => {
+                if (!(element instanceof HTMLElement)) {
+                  throw new Error(
+                    'startNodes in css selector should be HTMLElement'
+                  );
+                }
                 const results = element.querySelectorAll(cssSelector);
                 const returnedNodes = [];
                 for (const item of results) {
@@ -1247,6 +1252,15 @@ export class BrowsingContextImpl {
       ) {
         throw new InvalidSelectorException(
           `Not valid selector ${locator.value}`
+        );
+      }
+      // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
+      if (
+        locatorResult.exceptionDetails.text ===
+        'Error: startNodes in css selector should be HTMLElement'
+      ) {
+        throw new InvalidArgumentException(
+          `startNodes in css selector should be HTMLElement`
         );
       }
       throw new UnknownErrorException(
