@@ -36,8 +36,8 @@ const argv = parseCommandLineArgs();
 const LOG_FILE = createLogFile('e2e');
 const PYTEST_PREFIX = 'PyTest';
 
-const PYTEST_TOTAL_CHUNKS = process.env.PYTEST_TOTAL_CHUNKS || '1';
-const PYTEST_THIS_CHUNK = process.env.PYTEST_THIS_CHUNK || '0';
+const PYTEST_TOTAL_CHUNKS = argv['total-chunks'];
+const PYTEST_THIS_CHUNK = argv['this-chunk'];
 
 /**
  *
