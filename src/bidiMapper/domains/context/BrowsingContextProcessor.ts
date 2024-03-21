@@ -24,6 +24,7 @@ import {
   type EmptyResult,
   NoSuchUserContextException,
   type Browser,
+  NoSuchAlertException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -258,7 +259,14 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.HandleUserPromptParameters
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
-    await context.handleUserPrompt(params);
+    try {
+      await context.handleUserPrompt(params);
+    } catch (error: any) {
+      if (error.message?.includes('No dialog is showing')) {
+        throw new NoSuchAlertException('No dialog is showing');
+      }
+      throw error;
+    }
     return {};
   }
 
