@@ -70,12 +70,11 @@ async def test_preloadScript_remove_addAndRemoveIsNoop_secondRemoval_fails(
     assert result["result"] == {"type": "undefined"}
 
     # Ensure script was removed
-    with pytest.raises(
-            Exception,
-            match=str({
-                'error': 'no such script',
-                'message': f"No preload script with id '{bidi_id}'"
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           'error': 'no such script',
+                           'message': f"No preload script with id '{bidi_id}'"
+                       })):
         await execute_command(
             websocket, {
                 "method": "script.removePreloadScript",
