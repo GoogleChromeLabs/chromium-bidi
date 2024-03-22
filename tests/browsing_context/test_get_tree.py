@@ -61,7 +61,13 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket):
 
 @pytest.mark.asyncio
 async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
-        websocket, context_id, html, iframe, example_url, another_example_url):
+        websocket, context_id, html, iframe, example_url, another_example_url,
+        is_chromedriver):
+    if is_chromedriver:
+        pytest.xfail(
+            reason=  # noqa: E251. The line is too long.
+            "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2020"
+        )
     page_with_nested_iframe = html(iframe(example_url))
     another_page_with_nested_iframe = html(iframe(another_example_url))
 

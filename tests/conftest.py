@@ -48,6 +48,13 @@ def http_proxy_server() -> HttpProxyServer:
 
 
 @pytest_asyncio.fixture
+async def is_chromedriver():
+    """ Returns True if the test is running with chromedriver, False otherwise.
+    """
+    return os.getenv("CHROMEDRIVER") == "true"
+
+
+@pytest_asyncio.fixture
 async def _websocket_connection():
     """ Return a websocket connection to the browser on localhost without an
     active BiDi session.

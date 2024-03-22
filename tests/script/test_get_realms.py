@@ -18,7 +18,7 @@ from test_helpers import execute_command
 
 
 @pytest.mark.asyncio
-async def test_scriptGetRealms(websocket, context_id):
+async def test_scriptGetRealms(websocket, context_id, is_chromedriver):
     result = await execute_command(websocket, {
         "method": "script.getRealms",
         "params": {}
@@ -87,10 +87,19 @@ async def test_scriptGetRealms(websocket, context_id):
         }
     })
 
-    result = await execute_command(websocket, {
-        "method": "script.getRealms",
-        "params": {}
-    })
+    # Chromedriver and nodejs runners behaves differently here. Chromedriver
+    # closes the session after the last tab is closed, while nodejs runner keeps
+    # the session running.
+    # TODO: revisit after BiDi specification is clarified:
+    #  https://github.com/w3c/webdriver-bidi/issues/187
 
-    # Assert no more realms existed.
-    assert {"realms": []} == result
+    if is_chromedriver:
+        await websocket.wait_closed()
+    else:
+        result = await execute_command(websocket, {
+            "method": "script.getRealms",
+            "params": {}
+        })
+
+        # Assert no more realms existed.
+        assert {"realms": []} == result
