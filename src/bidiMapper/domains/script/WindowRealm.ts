@@ -37,7 +37,6 @@ import {getSharedId, parseSharedId} from './SharedId.js';
 export class WindowRealm extends Realm {
   readonly #browsingContextId: BrowsingContext.BrowsingContext;
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #sharedIdWithFrame: boolean;
   readonly sandbox: string | undefined;
 
   constructor(
@@ -50,8 +49,7 @@ export class WindowRealm extends Realm {
     origin: string,
     realmId: Script.Realm,
     realmStorage: RealmStorage,
-    sandbox: string | undefined,
-    sharedIdWithFrame: boolean
+    sandbox: string | undefined
   ) {
     super(
       cdpClient,
@@ -65,7 +63,6 @@ export class WindowRealm extends Realm {
 
     this.#browsingContextId = browsingContextId;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#sharedIdWithFrame = sharedIdWithFrame;
     this.sandbox = sandbox;
 
     this.initialize();
@@ -111,7 +108,7 @@ export class WindowRealm extends Realm {
     internalIdMap: Map<number, string>
   ) {
     const bidiValue = deepSerializedValue.value;
-    if (deepSerializedValue.type === 'node') {
+    if (deepSerializedValue.type === 'node' && bidiValue !== undefined) {
       if (Object.hasOwn(bidiValue, 'backendNodeId')) {
         let navigableId = this.browsingContext.navigableId ?? 'UNKNOWN';
         if (Object.hasOwn(bidiValue, 'loaderId')) {
@@ -125,8 +122,7 @@ export class WindowRealm extends Realm {
           getSharedId(
             this.#getBrowsingContextId(navigableId),
             navigableId,
-            bidiValue.backendNodeId,
-            this.#sharedIdWithFrame
+            bidiValue.backendNodeId
           );
         delete bidiValue['backendNodeId'];
       }

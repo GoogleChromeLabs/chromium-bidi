@@ -27,9 +27,9 @@ import {
   installAndGetChromePath,
 } from './path-getter/path-getter.mjs';
 
-function log(message) {
+function log(...message) {
   // eslint-disable-next-line no-console
-  console.log(`(${basename(process.argv[1])}) ${message}`);
+  console.log(`(${basename(process.argv[1])})`, ...message);
 }
 
 /**
@@ -68,7 +68,18 @@ export function parseCommandLineArgs() {
       describe: 'Provide a test name to filter by',
       type: 'string',
     })
-    .parse();
+    .option('total-chunks', {
+      describe: 'If provided, will split tests into this many shards.',
+      type: 'number',
+      default: process.env.PYTEST_TOTAL_CHUNKS || 1,
+    })
+    .option('this-chunk', {
+      describe:
+        'If provided, will only run tests for this shard. Shard IDs are 0-indexed.',
+      type: 'number',
+      default: process.env.PYTEST_THIS_CHUNK || 0,
+    })
+    .parseSync();
 }
 
 /**
@@ -100,7 +111,10 @@ export function createBiDiServerProcess() {
         `--readable-timestamp`,
         ...(VERBOSE ? ['--verbose'] : []),
       ],
-      env: {},
+      options: {
+        stdio: ['inherit', 'pipe', 'pipe'],
+        env: {},
+      },
     };
   } else {
     runParams = {
@@ -109,17 +123,20 @@ export function createBiDiServerProcess() {
         resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
         ...process.argv.slice(2),
       ],
-      env: {
-        ...process.env,
-        // keep-sorted start
-        BROWSER_BIN,
-        DEBUG,
-        DEBUG_COLORS,
-        DEBUG_DEPTH,
-        NODE_OPTIONS,
-        PORT,
-        VERBOSE,
-        // keep-sorted end
+      options: {
+        stdio: ['inherit', 'pipe', 'pipe'],
+        env: {
+          ...process.env,
+          // keep-sorted start
+          BROWSER_BIN,
+          DEBUG,
+          DEBUG_COLORS,
+          DEBUG_DEPTH,
+          NODE_OPTIONS,
+          PORT,
+          VERBOSE,
+          // keep-sorted end
+        },
       },
     };
   }
@@ -128,12 +145,12 @@ export function createBiDiServerProcess() {
     `Starting ${CHROMEDRIVER ? 'ChromeDriver' : 'Mapper'} with DEBUG='${DEBUG}'...`
   );
 
-  if (VERBOSE) {
-    log(`Environment variables: `, runParams.env);
+  if (process.env.VERBOSE === 'true' || process.env.CI) {
+    log(`Environment variables:`, runParams.options);
     log(
       `Command: ${runParams.file} ${runParams.args.map((a) => (a.indexOf(' ') < 0 ? a : a.replaceAll(' ', '\\ '))).join(' ')}`
     );
   }
 
-  return child_process.spawn(runParams.file, runParams.args, runParams.env);
+  return child_process.spawn(runParams.file, runParams.args, runParams.options);
 }

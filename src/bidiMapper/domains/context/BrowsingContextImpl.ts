@@ -75,7 +75,6 @@ export class BrowsingContextImpl {
   #loaderId?: Protocol.Network.LoaderId;
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm?: Realm;
-  readonly #sharedIdWithFrame: boolean;
   readonly #logger?: LoggerFn;
 
   private constructor(
@@ -86,7 +85,6 @@ export class BrowsingContextImpl {
     userContext: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
-    sharedIdWithFrame: boolean,
     logger?: LoggerFn
   ) {
     this.#cdpTarget = cdpTarget;
@@ -96,7 +94,6 @@ export class BrowsingContextImpl {
     this.userContext = userContext;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#sharedIdWithFrame = sharedIdWithFrame;
     this.#logger = logger;
   }
 
@@ -108,7 +105,6 @@ export class BrowsingContextImpl {
     userContext: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
-    sharedIdWithFrame: boolean,
     logger?: LoggerFn
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
@@ -119,7 +115,6 @@ export class BrowsingContextImpl {
       userContext,
       eventManager,
       browsingContextStorage,
-      sharedIdWithFrame,
       logger
     );
 
@@ -486,8 +481,7 @@ export class BrowsingContextImpl {
           origin,
           uniqueId,
           this.#realmStorage,
-          sandbox,
-          this.#sharedIdWithFrame
+          sandbox
         );
 
         if (auxData.isDefault) {
@@ -1017,72 +1011,235 @@ export class BrowsingContextImpl {
   async locateNodes(
     params: BrowsingContext.LocateNodesParameters
   ): Promise<BrowsingContext.LocateNodesResult> {
-    // TODO: test sandboxing.
-    if (params.maxNodeCount !== undefined) {
-      // TODO: implement.
-      throw new UnsupportedOperationException(`maxNodeCount is not supported`);
-    }
-    if (params.serializationOptions !== undefined) {
-      // TODO: implement.
-      throw new UnsupportedOperationException(
-        `serializationOptions is not supported`
-      );
-    }
-    if (params.startNodes !== undefined) {
-      // TODO: implement.
-      throw new UnsupportedOperationException(
-        `serializationOptions is not supported`
-      );
-    }
-
-    return await this.#locateNodesByLocator(this.#defaultRealm, params.locator);
+    // TODO: create a dedicated sandbox instead of `#defaultRealm`.
+    return await this.#locateNodesByLocator(
+      this.#defaultRealm,
+      params.locator,
+      params.startNodes ?? [],
+      params.maxNodeCount,
+      params.serializationOptions
+    );
   }
 
-  #getLocatorFunction(locator: BrowsingContext.Locator): string {
+  #getLocatorDelegate(
+    locator: BrowsingContext.Locator,
+    maxNodeCount: number | undefined,
+    startNodes: Script.SharedReference[]
+  ): {
+    functionDeclaration: string;
+    argumentsLocalValues: Script.LocalValue[];
+  } {
     switch (locator.type) {
       case 'css':
-        return String((cssSelector: string) => {
-          const results = document.querySelectorAll(cssSelector);
-          const array = [];
-          for (const item of results) {
-            array.push(item);
-          }
-          return array;
-        });
+        return {
+          functionDeclaration: String(
+            (
+              cssSelector: string,
+              maxNodeCount: number,
+              ...startNodes: HTMLElement[]
+            ) => {
+              const locateNodesUsingCss = (element: HTMLElement) => {
+                if (!(element instanceof HTMLElement)) {
+                  throw new Error(
+                    'startNodes in css selector should be HTMLElement'
+                  );
+                }
+                return [...element.querySelectorAll(cssSelector)];
+              };
+
+              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              const returnedNodes = startNodes
+                .map((startNode) =>
+                  // TODO: stop search early if `maxNodeCount` is reached.
+                  locateNodesUsingCss(startNode)
+                )
+                .flat(1);
+              return maxNodeCount === 0
+                ? returnedNodes
+                : returnedNodes.slice(0, maxNodeCount);
+            }
+          ),
+          argumentsLocalValues: [
+            // `cssSelector`
+            {type: 'string', value: locator.value},
+            // `maxNodeCount` with `0` means no limit.
+            {type: 'number', value: maxNodeCount ?? 0},
+            // `startNodes`
+            ...startNodes,
+          ],
+        };
       case 'xpath':
-        return String((xPathSelector: string) => {
-          // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
-          const evaluator = new XPathEvaluator();
-          const expression = evaluator.createExpression(xPathSelector);
-          const xPathResult = expression.evaluate(
-            document,
-            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+        return {
+          functionDeclaration: String(
+            (
+              xPathSelector: string,
+              maxNodeCount: number,
+              ...startNodes: HTMLElement[]
+            ) => {
+              // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
+              const evaluator = new XPathEvaluator();
+              const expression = evaluator.createExpression(xPathSelector);
+              const locateNodesUsingXpath = (element: HTMLElement) => {
+                const xPathResult = expression.evaluate(
+                  element,
+                  XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+                );
+                const returnedNodes = [];
+                for (let i = 0; i < xPathResult.snapshotLength; i++) {
+                  returnedNodes.push(xPathResult.snapshotItem(i));
+                }
+                return returnedNodes;
+              };
+              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              const returnedNodes = startNodes
+                .map((startNode) =>
+                  // TODO: stop search early if `maxNodeCount` is reached.
+                  locateNodesUsingXpath(startNode)
+                )
+                .flat(1);
+              return maxNodeCount === 0
+                ? returnedNodes
+                : returnedNodes.slice(0, maxNodeCount);
+            }
+          ),
+          argumentsLocalValues: [
+            // `xPathSelector`
+            {type: 'string', value: locator.value},
+            // `maxNodeCount` with `0` means no limit.
+            {type: 'number', value: maxNodeCount ?? 0},
+            // `startNodes`
+            ...startNodes,
+          ],
+        };
+      case 'innerText':
+        // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-inner-text
+        if (locator.value === '') {
+          throw new InvalidSelectorException(
+            'innerText locator cannot be empty'
           );
-          const result = [];
-          for (let i = 0; i < xPathResult.snapshotLength; i++) {
-            result.push(xPathResult.snapshotItem(i));
-          }
-          return result;
-        });
-      default:
-        throw new UnsupportedOperationException(
-          `locateNodes does not support ${locator.type} locator type.`
-        );
+        }
+        return {
+          functionDeclaration: String(
+            (
+              innerTextSelector: string,
+              fullMatch: boolean,
+              ignoreCase: boolean,
+              maxNodeCount: number,
+              maxDepth: number,
+              ...startNodes: HTMLElement[]
+            ) => {
+              const searchText = ignoreCase
+                ? innerTextSelector.toUpperCase()
+                : innerTextSelector;
+              const locateNodesUsingInnerText = (
+                element: HTMLElement,
+                currentMaxDepth: number
+              ) => {
+                const returnedNodes: HTMLElement[] = [];
+                const nodeInnerText = ignoreCase
+                  ? element.innerText?.toUpperCase()
+                  : element.innerText;
+                if (!nodeInnerText.includes(searchText)) {
+                  return [];
+                }
+                const childNodes = [];
+                for (const child of element.children) {
+                  if (child instanceof HTMLElement) {
+                    childNodes.push(child);
+                  }
+                }
+                if (childNodes.length === 0) {
+                  if (fullMatch && nodeInnerText === searchText) {
+                    returnedNodes.push(element);
+                  } else {
+                    if (!fullMatch) {
+                      // Note: `nodeInnerText.includes(searchText)` is already checked
+                      returnedNodes.push(element);
+                    }
+                  }
+                } else {
+                  const childNodeMatches =
+                    // Don't search deeper if `maxDepth` is reached.
+                    currentMaxDepth === 0
+                      ? []
+                      : childNodes
+                          .map((child) =>
+                            locateNodesUsingInnerText(
+                              child,
+                              currentMaxDepth - 1
+                            )
+                          )
+                          .flat(1);
+                  if (childNodeMatches.length === 0) {
+                    // Note: `nodeInnerText.includes(searchText)` is already checked
+                    if (!fullMatch || nodeInnerText === searchText) {
+                      returnedNodes.push(element);
+                    }
+                  } else {
+                    returnedNodes.push(...childNodeMatches);
+                  }
+                }
+                // TODO: stop search early if `maxNodeCount` is reached.
+                return returnedNodes;
+              };
+              // TODO: add maxDepth.
+              // TODO: stop search early if `maxNodeCount` is reached.
+              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              const returnedNodes = startNodes
+                .map((startNode) =>
+                  // TODO: stop search early if `maxNodeCount` is reached.
+                  locateNodesUsingInnerText(startNode, maxDepth)
+                )
+                .flat(1);
+              return maxNodeCount === 0
+                ? returnedNodes
+                : returnedNodes.slice(0, maxNodeCount);
+            }
+          ),
+          argumentsLocalValues: [
+            // `innerTextSelector`
+            {type: 'string', value: locator.value},
+            // `fullMatch` with default `true`.
+            {type: 'boolean', value: locator.matchType !== 'partial'},
+            // `ignoreCase` with default `false`.
+            {type: 'boolean', value: locator.ignoreCase === true},
+            // `maxNodeCount` with `0` means no limit.
+            {type: 'number', value: maxNodeCount ?? 0},
+            // `maxDepth` with default `1000` (same as default full serialization depth).
+            {type: 'number', value: locator.maxDepth ?? 1000},
+            // `startNodes`
+            ...startNodes,
+          ],
+        };
     }
   }
 
   async #locateNodesByLocator(
     realm: Realm,
-    locator: BrowsingContext.Locator
+    locator: BrowsingContext.Locator,
+    startNodes: Script.SharedReference[],
+    maxNodeCount: number | undefined,
+    serializationOptions: Script.SerializationOptions | undefined
   ): Promise<BrowsingContext.LocateNodesResult> {
-    const locatorFunction = this.#getLocatorFunction(locator);
+    const locatorDelegate = this.#getLocatorDelegate(
+      locator,
+      maxNodeCount,
+      startNodes
+    );
+
+    serializationOptions = {
+      ...serializationOptions,
+      // The returned object is an array of nodes, so no need in deeper JS serialization.
+      maxObjectDepth: 1,
+    };
+
     const locatorResult = await realm.callFunction(
-      locatorFunction,
+      locatorDelegate.functionDeclaration,
       {type: 'undefined'},
-      [{type: 'string', value: locator.value}],
+      locatorDelegate.argumentsLocalValues,
       false,
       Script.ResultOwnership.None,
-      {},
+      serializationOptions,
       false
     );
 
@@ -1106,6 +1263,15 @@ export class BrowsingContextImpl {
       ) {
         throw new InvalidSelectorException(
           `Not valid selector ${locator.value}`
+        );
+      }
+      // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
+      if (
+        locatorResult.exceptionDetails.text ===
+        'Error: startNodes in css selector should be HTMLElement'
+      ) {
+        throw new InvalidArgumentException(
+          `startNodes in css selector should be HTMLElement`
         );
       }
       throw new UnknownErrorException(
