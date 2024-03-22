@@ -22,7 +22,6 @@ import {
   NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
-import {assert} from '../../../utils/assert.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
@@ -48,7 +47,7 @@ export class NetworkProcessor {
   async addIntercept(
     params: Network.AddInterceptParameters
   ): Promise<Network.AddInterceptResult> {
-    this.#browsingContextStorage.verifyContextsList(params.contexts);
+    this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
 
     const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
     const parsedUrlPatterns: Network.UrlPattern[] =
@@ -75,7 +74,7 @@ export class NetworkProcessor {
   async continueRequest(
     params: Network.ContinueRequestParameters
   ): Promise<EmptyResult> {
-    const networkId = params.request;
+    const {url, method, headers, request: networkId} = params;
 
     if (params.url !== undefined) {
       NetworkProcessor.parseUrlString(params.url);
@@ -85,14 +84,12 @@ export class NetworkProcessor {
       Network.InterceptPhase.BeforeRequestSent,
     ]);
 
-    const {url, method, headers} = params;
-    // TODO: Set / expand.
-    // ; Step 9. cookies
-    // ; Step 10. body
-
     const requestHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(headers);
 
+    // TODO: Set / expand.
+    // ; Step 9. cookies
+    // ; Step 10. body
     await request.continueRequest(url, method, requestHeaders);
 
     return {};
@@ -160,12 +157,6 @@ export class NetworkProcessor {
 
       username = credentials.username;
       password = credentials.password;
-      // TODO: This should be invalid argument exception.
-      // Spec may need to be updated.
-      assert(
-        credentials.type === 'password',
-        `Credentials type ${credentials.type} must be 'password'`
-      );
     }
 
     const response = cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
@@ -206,7 +197,7 @@ export class NetworkProcessor {
   ): Promise<EmptyResult> {
     const {
       statusCode,
-      reasonPhrase,
+      reasonPhrase: responsePhrase,
       headers,
       body,
       request: networkId,
@@ -227,11 +218,38 @@ export class NetworkProcessor {
       Network.InterceptPhase.AuthRequired,
     ]);
 
+    // We need to pass through if the request is already in
+    // AuthRequired phase
+    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
+      // We need to use `ProvideCredentials`
+      // As `Default` may cancel the request
+      await request.continueWithAuth({
+        response: 'ProvideCredentials',
+      });
+      return {};
+    }
+
+    // If we con't modify the response
+    // Just continue the request
+    if (!body && !headers) {
+      await request.continueRequest();
+      return {};
+    }
+
+    const responseCode = statusCode ?? request.statusCode ?? 200;
+
+    let parsedBody: string | undefined;
+    if (body?.type === 'string') {
+      parsedBody = btoa(body.value);
+    } else if (body?.type === 'base64') {
+      parsedBody = body.value;
+    }
+
     await request.provideResponse({
-      responseCode: statusCode ?? request.statusCode,
-      responsePhrase: reasonPhrase,
+      responseCode,
+      responsePhrase,
       responseHeaders,
-      body: body?.value, // TODO: Differ base64 / string
+      body: parsedBody,
     });
 
     return {};
