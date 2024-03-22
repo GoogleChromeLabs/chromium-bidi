@@ -18,10 +18,9 @@ from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree, goto_url,
                           read_JSON_message, send_JSON_command, subscribe)
 
 
-@pytest.mark.parametrize('n', range(100))
 @pytest.mark.asyncio
 async def test_browsingContext_create_eventContextCreatedEmitted(
-        websocket, read_sorted_messages, n):
+        websocket, read_sorted_messages):
     await subscribe(websocket, [
         "browsingContext.contextCreated", "browsingContext.domContentLoaded",
         "browsingContext.load"

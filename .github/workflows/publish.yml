@@ -1,0 +1,35 @@
+name: Publish
+
+# Declare default permissions as read only.
+permissions: read-all
+
+env:
+  FORCE_COLOR: 3
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+on:
+  push:
+    tags:
+      - '*v*'
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Set up Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Publish
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: |
+          npm config set registry 'https://wombat-dressing-room.appspot.com/'
+          npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
+          npm publish
