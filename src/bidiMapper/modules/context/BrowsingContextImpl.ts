@@ -1216,6 +1216,7 @@ export class BrowsingContextImpl {
 
   async toggleModulesIfNeeded(): Promise<void> {
     await this.#cdpTarget.toggleNetworkIfNeeded();
+    await this.#cdpTarget.toggleDeviceAccessIfNeeded();
   }
 
   async locateNodes(
