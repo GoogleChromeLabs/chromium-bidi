@@ -31,6 +31,7 @@ import type {Result} from '../utils/result.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {MapperOptions} from './BidiServer.js';
+import {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
@@ -60,6 +61,7 @@ type CommandProcessorEventsMap = {
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
+  #bluetoothProcessor: BluetoothProcessor;
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
   #cdpProcessor: CdpProcessor;
@@ -91,10 +93,15 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#logger = logger;
 
     // keep-sorted start block=yes
+    this.#bluetoothProcessor = new BluetoothProcessor(
+      eventManager,
+      browsingContextStorage
+    );
     this.#browserProcessor = new BrowserProcessor(browserCdpClient);
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       browserCdpClient,
       browsingContextStorage,
+      this.#bluetoothProcessor,
       eventManager
     );
     this.#cdpProcessor = new CdpProcessor(
@@ -136,6 +143,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'session.end':
         // TODO: Implement.
         break;
+
+      // Bluetooth domain
+      // keep-sorted start block=yes
+      case 'bluetooth.handleRequestDevicePrompt':
+        return await this.#bluetoothProcessor.handleRequestDevicePrompt(
+          command.params
+        );
+      // keep-sorted end
 
       // Browser domain
       // keep-sorted start block=yes
