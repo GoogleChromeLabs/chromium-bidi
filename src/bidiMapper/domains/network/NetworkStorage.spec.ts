@@ -301,6 +301,17 @@ describe('NetworkStorage', () => {
         isBlocked: false,
       });
     });
+
+    it('should work with data url', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: 'data:text/html,<div>yo</div>',
+      });
+
+      request.requestWillBeSent();
+      request.responseReceived();
+      const event = await getEvent('network.responseStarted');
+      expect(event).to.exist;
+    });
   });
 
   describe('network.authRequired', () => {
@@ -338,6 +349,19 @@ describe('NetworkStorage', () => {
       request.authRequired();
       events = await getEvents('network.authRequired');
       expect(events).to.have.length(2);
+    });
+  });
+
+  describe('network.responseCompleted', () => {
+    it('should work with data url', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: 'data:text/html,<div>yo</div>',
+      });
+
+      request.requestWillBeSent();
+      request.responseReceived();
+      const event = await getEvent('network.responseCompleted');
+      expect(event).to.exist;
     });
   });
 });
