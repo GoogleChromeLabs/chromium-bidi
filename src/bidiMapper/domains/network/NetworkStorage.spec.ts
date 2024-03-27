@@ -217,7 +217,7 @@ describe('NetworkStorage', () => {
       expect(event).to.exist;
     });
 
-    it.only('should work with data url and global interception', async () => {
+    it('should work with data url and global interception', async () => {
       networkStorage.addIntercept({
         urlPatterns: [{type: 'pattern'}],
         phases: [Network.InterceptPhase.BeforeRequestSent],
