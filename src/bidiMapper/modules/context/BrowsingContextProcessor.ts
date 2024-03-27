@@ -28,6 +28,7 @@ import {
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
+import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {Realm} from '../script/Realm.js';
@@ -51,6 +52,8 @@ export class BrowsingContextProcessor {
   readonly #selfTargetId: string;
   readonly #eventManager: EventManager;
 
+  readonly #bluetoothProcessor: BluetoothProcessor;
+
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
   readonly #acceptInsecureCerts: boolean;
@@ -67,6 +70,7 @@ export class BrowsingContextProcessor {
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    bluetoothProcessor: BluetoothProcessor,
     networkStorage: NetworkStorage,
     preloadScriptStorage: PreloadScriptStorage,
     acceptInsecureCerts: boolean,
@@ -74,6 +78,7 @@ export class BrowsingContextProcessor {
     logger?: LoggerFn
   ) {
     this.#acceptInsecureCerts = acceptInsecureCerts;
+    this.#bluetoothProcessor = bluetoothProcessor;
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
     this.#selfTargetId = selfTargetId;
@@ -499,6 +504,7 @@ export class BrowsingContextProcessor {
     );
 
     this.#networkStorage.onCdpTargetCreated(target);
+    this.#bluetoothProcessor.onCdpTargetCreated(target);
 
     return target;
   }

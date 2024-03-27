@@ -31,6 +31,7 @@ import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
+import {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
@@ -60,6 +61,7 @@ type CommandProcessorEventsMap = {
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
+  #bluetoothProcessor: BluetoothProcessor;
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
   #cdpProcessor: CdpProcessor;
@@ -98,6 +100,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     const preloadScriptStorage = new PreloadScriptStorage();
 
     // keep-sorted start block=yes
+    this.#bluetoothProcessor = new BluetoothProcessor(
+      eventManager,
+      browsingContextStorage
+    );
     this.#browserProcessor = new BrowserProcessor(browserCdpClient);
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
@@ -106,6 +112,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       eventManager,
       browsingContextStorage,
       realmStorage,
+      this.#bluetoothProcessor,
       networkStorage,
       preloadScriptStorage,
       acceptInsecureCerts,
@@ -152,6 +159,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'session.end':
         // TODO: Implement.
         break;
+
+      // Bluetooth domain
+      // keep-sorted start block=yes
+      case 'bluetooth.handleRequestDevicePrompt':
+        return await this.#bluetoothProcessor.handleRequestDevicePrompt(
+          command.params
+        );
+      // keep-sorted end
 
       // Browser domain
       // keep-sorted start block=yes

@@ -1001,6 +1001,8 @@ export class BrowsingContextImpl {
     );
 
     await this.#cdpTarget.toggleNetworkIfNeeded(enableNetwork);
+
+    await this.#cdpTarget.toggleDeviceAccessIfNeeded();
   }
 
   async locateNodes(

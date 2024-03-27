@@ -152,6 +152,7 @@ export class CdpTarget {
         }),
         this.#initAndEvaluatePreloadScripts(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+        this.toggleDeviceAccessIfNeeded(),
       ]);
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
@@ -224,6 +225,14 @@ export class CdpTarget {
     } catch (err) {
       this.#networkDomainEnabled = !enabled;
     }
+  }
+
+  async toggleDeviceAccessIfNeeded(): Promise<void> {
+    const enabled = this.isSubscribedTo(BiDiModule.Bluetooth);
+    await this.#cdpClient.sendCommand(
+      enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
+    );
+    return;
   }
 
   #setEventListeners() {
