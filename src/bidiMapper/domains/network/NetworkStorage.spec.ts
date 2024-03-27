@@ -216,6 +216,20 @@ describe('NetworkStorage', () => {
       const event = await getEvent('network.beforeRequestSent');
       expect(event).to.exist;
     });
+
+    it.only('should work with data url and global interception', async () => {
+      networkStorage.addIntercept({
+        urlPatterns: [{type: 'pattern'}],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: 'data:text/html,<div>yo</div>',
+      });
+
+      request.requestWillBeSent();
+      const event = await getEvent('network.beforeRequestSent');
+      expect(event).to.exist;
+    });
   });
 
   describe('network.responseStarted', () => {

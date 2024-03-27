@@ -217,9 +217,9 @@ export class NetworkRequest {
       // is the only place we can find out
       Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
-    const requestInterceptionExpected = this.#isBlockedInPhase(
-      Network.InterceptPhase.BeforeRequestSent
-    );
+    const requestInterceptionExpected =
+      !this.isDataUrl() &&
+      this.#isBlockedInPhase(Network.InterceptPhase.BeforeRequestSent);
 
     const requestInterceptionCompleted =
       !requestInterceptionExpected ||
@@ -238,13 +238,12 @@ export class NetworkRequest {
       Boolean(this.#response.extraInfo) ||
       // Response from cache don't have extra info
       this.#servedFromCache ||
-      this.isDataUrl() ||
       // Don't expect extra info if the flag is false
       Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
-    const responseInterceptionExpected = this.#isBlockedInPhase(
-      Network.InterceptPhase.ResponseStarted
-    );
+    const responseInterceptionExpected =
+      !this.isDataUrl() &&
+      this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted);
 
     if (
       this.#response.info ||
