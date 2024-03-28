@@ -26,10 +26,10 @@ import type {Result} from '../utils/result.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
-import {CdpTargetManager} from './modules/cdp/CdpTargetManager';
+import {CdpTargetManager} from './modules/cdp/CdpTargetManager.js';
 import {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
 import {NetworkStorage} from './modules/network/NetworkStorage.js';
-import {PreloadScriptStorage} from './modules/script/PreloadScriptStorage';
+import {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import {RealmStorage} from './modules/script/RealmStorage.js';
 import {
   EventManager,
