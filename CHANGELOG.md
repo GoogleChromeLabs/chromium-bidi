@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.17](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.16...chromium-bidi-v0.5.17) (2024-03-28)
+
+
+### Bug Fixes
+
+* don't expect interception for cached events ([#2087](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2087)) ([063c1d1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/063c1d1d6cfee35a6a5df33612137b95bd7075f3))
+
 ## [0.5.16](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.15...chromium-bidi-v0.5.16) (2024-03-27)
 
 
