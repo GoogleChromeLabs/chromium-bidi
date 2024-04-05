@@ -21,7 +21,7 @@ import {
   Network,
   NoSuchInterceptException,
 } from '../../../protocol/protocol.js';
-import type {LoggerFn} from '../../../utils/log.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
@@ -238,7 +238,7 @@ export class NetworkStorage {
       if (
         !intercept.phases.includes(phase) ||
         (intercept.contexts &&
-          !intercept.contexts.includes(request.cdpTarget.id))
+          !intercept.contexts.includes(request.cdpTarget.topLevelId))
       ) {
         continue;
       }
