@@ -644,7 +644,7 @@ export class BrowsingContextImpl {
             context: this.id,
             navigation: cdpNavigateResult.loaderId ?? null,
             timestamp: BrowsingContextImpl.getTimestamp(),
-            url: this.#url,
+            url,
           },
         },
         this.id
