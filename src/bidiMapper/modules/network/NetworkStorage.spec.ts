@@ -390,7 +390,7 @@ describe('NetworkStorage', () => {
   });
 
   describe('redirects', () => {
-    it.only('should return 200 from last response', async () => {
+    it('should return 200 from last response', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
 
       request.requestWillBeSentRedirect();
