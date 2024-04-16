@@ -499,8 +499,7 @@ export class NetworkRequest {
       event = getEvent();
     } catch (error) {
       this.#logger?.(LogType.debugError, error);
-      // return;
-      throw error;
+      return;
     }
 
     if (
@@ -513,7 +512,6 @@ export class NetworkRequest {
     }
     this.#phaseChanged();
 
-    // console.log('Emitting event', event.method);
     this.#emittedEvents[event.method] = true;
     this.#eventManager.registerEvent(
       Object.assign(event, {
