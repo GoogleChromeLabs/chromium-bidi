@@ -732,6 +732,10 @@ export class NetworkRequest {
     this.#interceptPhase = undefined;
   }
 
+  dispose() {
+    this.waitNextPhase.reject(new Error());
+  }
+
   async #continueWithAuth(
     authChallengeResponse: Protocol.Fetch.ContinueWithAuthRequest['authChallengeResponse'],
   ) {
