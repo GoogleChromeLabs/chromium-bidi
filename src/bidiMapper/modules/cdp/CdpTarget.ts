@@ -262,7 +262,18 @@ export class CdpTarget {
         handleAuthRequests: stages.auth,
       });
     } else {
-      await this.#cdpClient.sendCommand('Fetch.disable');
+      const blockedRequest = this.#networkStorage
+        .getRequestsByTarget(this)
+        .filter((request) => request.interceptPhase);
+      void Promise.allSettled(
+        blockedRequest.map((request) => request.waitNextPhase)
+      )
+        .then(async () => {
+          return await this.#cdpClient.sendCommand('Fetch.disable');
+        })
+        .catch((error) => {
+          this.#logger?.(LogType.bidi, 'Disable failed', error);
+        });
     }
   }
 

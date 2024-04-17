@@ -576,6 +576,10 @@ export class NetworkRequest {
     this.#interceptPhase = undefined;
   }
 
+  dispose() {
+    this.waitNextPhase.reject(new Error());
+  }
+
   get #context() {
     return (
       this.#response.paused?.frameId ??
