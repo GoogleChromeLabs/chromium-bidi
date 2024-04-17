@@ -61,6 +61,8 @@ export class BrowsingContextImpl {
 
   #lifecycle = {
     DOMContentLoaded: new Deferred<void>(),
+    // Needed for the screenshot capturing.
+    firstPaint: new Deferred<void>(),
     load: new Deferred<void>(),
   };
 
@@ -451,6 +453,8 @@ export class BrowsingContextImpl {
             );
             this.#lifecycle.load.resolve();
             break;
+          case 'firstPaint':
+            this.#lifecycle.firstPaint.resolve();
         }
       }
     );
@@ -596,6 +600,15 @@ export class BrowsingContextImpl {
       this.#logger?.(
         BrowsingContextImpl.LOGGER_PREFIX,
         'Document changed (load)'
+      );
+    }
+
+    if (this.#lifecycle.firstPaint.isFinished) {
+      this.#lifecycle.firstPaint = new Deferred();
+    } else {
+      this.#logger?.(
+        BrowsingContextImpl.LOGGER_PREFIX,
+        'Document changed (firstPaint)'
       );
     }
   }
@@ -788,7 +801,9 @@ export class BrowsingContextImpl {
 
     // XXX: Focus the original tab after the screenshot is taken.
     // This is needed because the screenshot gets blocked until the active tab gets focus.
-    await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
+    await this.activate();
+    // This is needed to ensure that the screenshot is taken after the first paint.
+    await this.#lifecycle.firstPaint;
 
     let captureBeyondViewport = false;
     let script: string;
