@@ -387,20 +387,7 @@ export class CdpTarget {
 
     void Promise.all(blockedRequest.map((request) => request.waitNextPhase))
       .then(async () => {
-        const fetchEnable = Object.values(this.#fetchDomainStages).some(
-          (value) => value
-        );
-        if (!fetchEnable) {
-          return;
-        }
-        this.#fetchDomainStages = {
-          request: false,
-          response: false,
-          auth: false,
-        };
-        await this.#cdpClient.sendCommand('Fetch.disable');
-        await this.#toggleNetwork(network);
-        return;
+        return await this.toggleNetwork();
       })
       .catch((error) => {
         this.#logger?.(LogType.bidi, 'Disable failed', error);
