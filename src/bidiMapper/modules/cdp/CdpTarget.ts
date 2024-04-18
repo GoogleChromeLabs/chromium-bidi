@@ -377,11 +377,27 @@ export class CdpTarget {
       .filter((request) => request.interceptPhase);
 
     if (blockedRequest.length === 0) {
+      this.#fetchDomainStages = {
+        request: false,
+        response: false,
+        auth: false,
+      };
       return await this.#cdpClient.sendCommand('Fetch.disable');
     }
 
     void Promise.all(blockedRequest.map((request) => request.waitNextPhase))
       .then(async () => {
+        const fetchEnable = Object.values(this.#fetchDomainStages).some(
+          (value) => value
+        );
+        if (!fetchEnable) {
+          return;
+        }
+        this.#fetchDomainStages = {
+          request: false,
+          response: false,
+          auth: false,
+        };
         await this.#cdpClient.sendCommand('Fetch.disable');
         await this.#toggleNetwork(network);
         return;
