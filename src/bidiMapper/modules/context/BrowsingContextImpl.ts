@@ -836,7 +836,19 @@ export class BrowsingContextImpl {
       );
     }
 
-    return await this.#cdpTarget.cdpClient.sendCommand(
+    // Heuristic to wait for the viewport to be restored after screenshot. The resize
+    // happens during screenshot capture. This is not 100% guarantees that the viewport is
+    // restored, but provides a good enough approximation.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2137
+    const viewportRestoredPromise: Promise<unknown> = captureBeyondViewport
+      ? new Promise((resolve) => {
+          // TODO: consider fallback in case of the `frameResized` event is not emitted.
+          // setTimeout(resolve, 200);
+          this.#cdpTarget.cdpClient.once('Page.frameResized', resolve);
+        })
+      : Promise.resolve();
+
+    const screenshot = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
       {
         clip: {...rect, scale: 1.0},
@@ -844,6 +856,13 @@ export class BrowsingContextImpl {
         captureBeyondViewport,
       }
     );
+
+    // Wait for the frame to resize before returning the screenshot. This is required to
+    // make sure the viewport is restored after taking the screenshot.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2137
+    await viewportRestoredPromise;
+
+    return screenshot;
   }
 
   async print(
