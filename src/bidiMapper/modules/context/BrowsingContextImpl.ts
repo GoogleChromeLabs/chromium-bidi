@@ -1261,10 +1261,15 @@ export class BrowsingContextImpl {
             ) => {
               const returnedNodes: Element[] = [];
 
+              let aborted = false;
+
               function collect(
                 contextNodes: Element[],
                 selector: {role: string; name: string}
               ) {
+                if (aborted) {
+                  return;
+                }
                 for (const contextNode of contextNodes) {
                   let match = true;
 
@@ -1287,6 +1292,7 @@ export class BrowsingContextImpl {
                       maxNodeCount !== 0 &&
                       returnedNodes.length === maxNodeCount
                     ) {
+                      aborted = true;
                       break;
                     }
 
