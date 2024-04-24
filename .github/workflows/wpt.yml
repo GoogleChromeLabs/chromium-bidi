@@ -117,6 +117,9 @@ jobs:
         with:
           commit_message: Update WPT expectations
           commit_options: -n --signoff
+          commit_user_name: Browser Automation Bot
+          commit_user_email: browser-automation-bot@google.com
+          commit_author: Browser Automation Bot <browser-automation-bot@google.com>
           file_pattern: 'wpt-metadata/**/*.ini'
 
   wpt:
