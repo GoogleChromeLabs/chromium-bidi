@@ -117,7 +117,7 @@ jobs:
   wpt:
     name: ${{ matrix.kind }}-${{ matrix.head }}
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-expectations')  }}
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-expectations') || github.event_name == 'workflow_dispatch' }}
     strategy:
       fail-fast: false
       matrix:
