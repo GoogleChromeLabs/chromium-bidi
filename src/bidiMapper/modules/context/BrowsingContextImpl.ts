@@ -1151,35 +1151,53 @@ export class BrowsingContextImpl {
               ignoreCase: boolean,
               maxNodeCount: number,
               maxDepth: number,
-              ...startNodes: HTMLElement[]
+              ...startNodes: Node[]
             ) => {
               const searchText = ignoreCase
                 ? innerTextSelector.toUpperCase()
                 : innerTextSelector;
               const locateNodesUsingInnerText = (
-                element: HTMLElement,
+                node: Node,
                 currentMaxDepth: number
-              ) => {
+              ): HTMLElement[] => {
+                if (node instanceof Document) {
+                  return locateNodesUsingInnerText(
+                    node.body,
+                    currentMaxDepth - 1
+                  );
+                }
+                if (node instanceof DocumentFragment) {
+                  const result = [];
+                  for (const child of node.children) {
+                    result.push(
+                      ...locateNodesUsingInnerText(child, currentMaxDepth - 1)
+                    );
+                  }
+                  return result;
+                }
+                if (!(node instanceof HTMLElement)) {
+                  return [];
+                }
                 const returnedNodes: HTMLElement[] = [];
                 const nodeInnerText = ignoreCase
-                  ? element.innerText?.toUpperCase()
-                  : element.innerText;
+                  ? node.innerText?.toUpperCase()
+                  : node.innerText;
                 if (!nodeInnerText.includes(searchText)) {
                   return [];
                 }
                 const childNodes = [];
-                for (const child of element.children) {
+                for (const child of node.children) {
                   if (child instanceof HTMLElement) {
                     childNodes.push(child);
                   }
                 }
                 if (childNodes.length === 0) {
                   if (fullMatch && nodeInnerText === searchText) {
-                    returnedNodes.push(element);
+                    returnedNodes.push(node);
                   } else {
                     if (!fullMatch) {
                       // Note: `nodeInnerText.includes(searchText)` is already checked
-                      returnedNodes.push(element);
+                      returnedNodes.push(node);
                     }
                   }
                 } else {
@@ -1198,7 +1216,7 @@ export class BrowsingContextImpl {
                   if (childNodeMatches.length === 0) {
                     // Note: `nodeInnerText.includes(searchText)` is already checked
                     if (!fullMatch || nodeInnerText === searchText) {
-                      returnedNodes.push(element);
+                      returnedNodes.push(node);
                     }
                   } else {
                     returnedNodes.push(...childNodeMatches);
@@ -1207,7 +1225,6 @@ export class BrowsingContextImpl {
                 // TODO: stop search early if `maxNodeCount` is reached.
                 return returnedNodes;
               };
-              // TODO: add maxDepth.
               // TODO: stop search early if `maxNodeCount` is reached.
               startNodes = startNodes.length > 0 ? startNodes : [document.body];
               const returnedNodes = startNodes
