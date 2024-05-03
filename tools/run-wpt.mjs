@@ -168,6 +168,10 @@ if (RUN_TESTS === 'true') {
     );
   }
 
+  // Experimental flag. Disable background timer throttling to unleash Mapper's
+  // performance.
+  wptRunArgs.push('--binary-arg=--disable-background-timer-throttling');
+
   if (HEADLESS === 'true') {
     if (CHROMEDRIVER === 'true') {
       // For chromedriver use new headless.
