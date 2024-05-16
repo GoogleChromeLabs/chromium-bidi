@@ -570,7 +570,7 @@ export class ActionDispatcher {
     if (!isSingleGrapheme(rawKey)) {
       // https://w3c.github.io/webdriver/#dfn-process-a-key-action
       // WebDriver spec allows a grapheme to be used.
-      throw new InvalidArgumentException(`Invalid key value: ${action.value}`);
+      throw new InvalidArgumentException(`Invalid key value: ${rawKey}`);
     }
     const isGrapheme = isSingleComplexGrapheme(rawKey);
     const key = getNormalizedKey(rawKey);
@@ -657,10 +657,10 @@ export class ActionDispatcher {
 
   #dispatchKeyUpAction(source: KeySource, action: Readonly<Input.KeyUpAction>) {
     const rawKey = action.value;
-    if (isSingleGrapheme(rawKey)) {
+    if (!isSingleGrapheme(rawKey)) {
       // https://w3c.github.io/webdriver/#dfn-process-a-key-action
       // WebDriver spec allows a grapheme to be used.
-      throw new InvalidArgumentException(`Invalid key value: ${action.value}`);
+      throw new InvalidArgumentException(`Invalid key value: ${rawKey}`);
     }
     const isGrapheme = isSingleComplexGrapheme(rawKey);
     const key = getNormalizedKey(rawKey);
