@@ -22,6 +22,10 @@ import {isSingleComplexGrapheme, isSingleGrapheme} from './GraphemeTools';
 describe('GraphemeTools', () => {
   describe('isSingleGrapheme', () => {
     describe('should return true for a single grapheme', () => {
+      it('"a", a single char', async () => {
+        expect(isSingleGrapheme('a')).to.be.true;
+      });
+
       it('"😄", a single surrogate codepoint', async () => {
         expect(isSingleGrapheme('\ud83d\ude04')).to.be.true;
       });
