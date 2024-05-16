@@ -22,53 +22,53 @@ import {isSingleComplexGrapheme, isSingleGrapheme} from './GraphemeTools';
 describe('GraphemeTools', () => {
   describe('isSingleGrapheme', () => {
     describe('should return true for a single grapheme', () => {
-      it('"a", a single char', async () => {
+      it('"a", a single char', () => {
         expect(isSingleGrapheme('a')).to.be.true;
       });
 
-      it('"😄", a single surrogate codepoint', async () => {
+      it('"😄", a single surrogate codepoint', () => {
         expect(isSingleGrapheme('\ud83d\ude04')).to.be.true;
       });
 
-      it('"நி", a grapheme containing several chars', async () => {
+      it('"நி", a grapheme containing several chars', () => {
         expect(isSingleGrapheme('\u0BA8\u0BBF')).to.be.true;
       });
 
-      it('"각", a grapheme containing several chars', async () => {
+      it('"각", a grapheme containing several chars', () => {
         expect(isSingleGrapheme('\u1100\u1161\u11A8')).to.be.true;
       });
 
-      it('"❤️", a grapheme containing several codepoints', async () => {
+      it('"❤️", a grapheme containing several codepoints', () => {
         expect(isSingleGrapheme('\u2764\ufe0f')).to.be.true;
       });
     });
 
     describe('should return false for multiple graphemes', () => {
-      it('2 symbols', async () => {
+      it('2 symbols', () => {
         expect(isSingleGrapheme('fa')).to.be.false;
       });
 
-      it('"😄a" a codepoint with a symbol', async () => {
+      it('"😄a" a codepoint with a symbol', () => {
         expect(isSingleGrapheme('\ud83d\ude04a')).to.be.false;
       });
 
-      it('"நிa" a grapheme with a symbol', async () => {
+      it('"நிa" a grapheme with a symbol', () => {
         expect(isSingleGrapheme('\u0BA8\u0BBFa')).to.be.false;
       });
 
-      it('"각a" a grapheme with a symbol', async () => {
+      it('"각a" a grapheme with a symbol', () => {
         expect(isSingleGrapheme('\u1100\u1161\u11A8a')).to.be.false;
       });
 
-      it('"❤️a" a grapheme with a symbol', async () => {
+      it('"❤️a" a grapheme with a symbol', () => {
         expect(isSingleGrapheme('\u2764\ufe0fa')).to.be.false;
       });
 
-      it('"😄😍" 2 graphemes', async () => {
+      it('"😄😍" 2 graphemes', () => {
         expect(isSingleGrapheme('\ud83d\ude04\ud83d\ude0d')).to.be.false;
       });
 
-      it('"ch" 2 graphemes', async () => {
+      it('"ch" 2 graphemes', () => {
         // https://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries
         // Spec says it's a single grapheme in slovak locale. We support only `en` locale.
         expect(isSingleGrapheme('\ud83d\ude04\ud83d\ude0d')).to.be.false;
@@ -78,19 +78,19 @@ describe('GraphemeTools', () => {
 
   describe('isSingleComplexGrapheme', () => {
     describe('should return true', () => {
-      it('"😄", a single surrogate codepoint', async () => {
+      it('"😄", a single surrogate codepoint', () => {
         expect(isSingleComplexGrapheme('\ud83d\ude04')).to.be.true;
       });
 
-      it('"நி", a grapheme containing several chars', async () => {
+      it('"நி", a grapheme containing several chars', () => {
         expect(isSingleComplexGrapheme('\u0BA8\u0BBF')).to.be.true;
       });
 
-      it('"각", a grapheme containing several chars', async () => {
+      it('"각", a grapheme containing several chars', () => {
         expect(isSingleComplexGrapheme('\u1100\u1161\u11A8')).to.be.true;
       });
 
-      it('"❤️", a grapheme containing several codepoints', async () => {
+      it('"❤️", a grapheme containing several codepoints', () => {
         expect(isSingleComplexGrapheme('\u2764\ufe0f')).to.be.true;
       });
     });
