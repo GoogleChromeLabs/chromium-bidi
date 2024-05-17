@@ -170,6 +170,11 @@ export class MapperServerCdpConnection {
       userGesture: true,
     });
 
+    // Create and activate new tab with a blank page.
+    await browserClient.sendCommand('Target.createTarget', {
+      url: 'about:blank',
+    });
+
     const bidiSession = new SimpleTransport(
       async (message) => await this.#sendMessage(mapperCdpClient, message)
     );
@@ -214,11 +219,6 @@ export class MapperServerCdpConnection {
         mapperOptions
       )})`,
       awaitPromise: true,
-    });
-
-    // Create and activate new tab with a blank page.
-    await browserClient.sendCommand('Target.createTarget', {
-      url: 'about:blank',
     });
 
     debugInternal('Mapper is launched!');
