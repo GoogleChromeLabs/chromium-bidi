@@ -1173,6 +1173,8 @@ export class BrowsingContextImpl {
                 ) {
                   const children = [...node.children];
                   children.forEach((child) =>
+                    // `currentMaxDepth` is not decremented intentionally according to
+                    // https://github.com/w3c/webdriver-bidi/pull/713.
                     returnedNodes.push(
                       ...locateNodesUsingInnerText(child, currentMaxDepth)
                     )
