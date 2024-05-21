@@ -1174,7 +1174,7 @@ export class BrowsingContextImpl {
                   const children = [...node.children];
                   children.forEach((child) =>
                     returnedNodes.push(
-                      ...locateNodesUsingInnerText(child, currentMaxDepth - 1)
+                      ...locateNodesUsingInnerText(child, currentMaxDepth)
                     )
                   );
                   return returnedNodes;
@@ -1209,7 +1209,7 @@ export class BrowsingContextImpl {
                 } else {
                   const childNodeMatches =
                     // Don't search deeper if `maxDepth` is reached.
-                    currentMaxDepth === 0
+                    currentMaxDepth <= 0
                       ? []
                       : childNodes
                           .map((child) =>
