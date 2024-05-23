@@ -539,7 +539,9 @@ export class BrowsingContextImpl {
             context: this.id,
             type: params.type,
             message: params.message,
-            defaultValue: params.defaultPrompt,
+            ...(params.type === 'prompt'
+              ? {defaultValue: params.defaultPrompt}
+              : {}),
           },
         },
         this.id
