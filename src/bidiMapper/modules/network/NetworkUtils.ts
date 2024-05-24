@@ -52,6 +52,23 @@ export function bidiNetworkHeadersFromCdpNetworkHeaders(
   }));
 }
 
+/** Converts from CDP Network domain headers to Bidi network headers. */
+export function bidiNetworkHeadersFromCdpNetworkHeadersEntries(
+  headers?: Protocol.Fetch.HeaderEntry[]
+): Network.Header[] {
+  if (!headers) {
+    return [];
+  }
+
+  return headers.map(({name, value}) => ({
+    name,
+    value: {
+      type: 'string',
+      value,
+    },
+  }));
+}
+
 /** Converts from Bidi network headers to CDP Network domain headers. */
 export function cdpNetworkHeadersFromBidiNetworkHeaders(
   headers?: Network.Header[]
