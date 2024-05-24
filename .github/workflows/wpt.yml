@@ -177,7 +177,7 @@ jobs:
         timeout-minutes: 60
         run: >
           xvfb-run --auto-servernum
-          npm run wpt -- "webdriver/tests/bidi/interop/"
+          npm run wpt -- "webdriver/tests/interop/"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: ${{matrix.kind == 'chromedriver'}}
