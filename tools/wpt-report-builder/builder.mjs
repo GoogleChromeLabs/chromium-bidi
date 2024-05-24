@@ -63,7 +63,7 @@ function readReport(filePath) {
 const jsonPath = process.argv[2];
 const jsonInteropPath = process.argv[3];
 const outputPath = process.argv[4];
-const filteredOutputPath = process.argv[6];
+const filteredOutputPath = process.argv[5];
 const reportData = readReport(jsonPath);
 const reportInteropData = readReport(jsonInteropPath);
 const filteredReportData = apply2023Filter(reportData);
