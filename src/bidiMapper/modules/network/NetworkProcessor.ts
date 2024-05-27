@@ -94,12 +94,20 @@ export class NetworkProcessor {
 
     // TODO: Set / expand.
     // ; Step 9. cookies
-    await request.continueRequest({
-      url,
-      method,
-      headers,
-      postData: getCdpBodyFromBiDiBytesValue(body),
-    });
+    try {
+      await request.continueRequest({
+        url,
+        method,
+        headers,
+        postData: getCdpBodyFromBiDiBytesValue(body),
+      });
+    } catch (error) {
+      // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
+      if (error instanceof Error && error.message.includes('Invalid header')) {
+        throw new InvalidArgumentException('Tried setting invalid header');
+      }
+      throw error;
+    }
 
     return {};
   }
