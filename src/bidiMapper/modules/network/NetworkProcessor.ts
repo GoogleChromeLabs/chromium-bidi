@@ -89,10 +89,6 @@ export class NetworkProcessor {
       NetworkProcessor.validateHeaders(params.headers);
     }
 
-    if (params.method !== undefined) {
-      NetworkProcessor.validateMethod(params.method);
-    }
-
     const request = this.#getBlockedRequestOrFail(networkId, [
       Network.InterceptPhase.BeforeRequestSent,
     ]);
@@ -337,18 +333,6 @@ export class NetworkProcessor {
           `Header value '${headerValue}' is not acceptable value`
         );
       }
-    }
-  }
-
-  /**
-   * Validate https://httpwg.org/specs/rfc9110.html#method.overview
-   * CDP accepts custom Methods but they fail in the fetch script
-   */
-  static validateMethod(method: string) {
-    if (!/^(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE)$/.test(method)) {
-      throw new InvalidArgumentException(
-        `Method '${method}' is not acceptable value`
-      );
     }
   }
 
