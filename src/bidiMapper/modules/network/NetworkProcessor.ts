@@ -85,6 +85,14 @@ export class NetworkProcessor {
       NetworkProcessor.parseUrlString(params.url);
     }
 
+    if (params.headers) {
+      NetworkProcessor.validateHeaders(params.headers);
+    }
+
+    if (params.method !== undefined) {
+      NetworkProcessor.validateMethod(params.method);
+    }
+
     const request = this.#getBlockedRequestOrFail(networkId, [
       Network.InterceptPhase.BeforeRequestSent,
     ]);
@@ -103,7 +111,7 @@ export class NetworkProcessor {
       });
     } catch (error) {
       // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
-      if (error instanceof Error && error.message.includes('Invalid header')) {
+      if ((error as any)?.message.includes('Invalid header')) {
         throw new InvalidArgumentException('Tried setting invalid header');
       }
       throw error;
@@ -309,10 +317,46 @@ export class NetworkProcessor {
   }
 
   /**
+   * Validate https://fetch.spec.whatwg.org/#header-value
+   */
+  static validateHeaders(headers: Network.Header[]) {
+    for (const header of headers) {
+      let headerValue: string;
+      if (header.value.type === 'string') {
+        headerValue = header.value.value;
+      } else {
+        headerValue = atob(header.value.value);
+      }
+
+      if (
+        headerValue !== headerValue.trim() ||
+        headerValue.includes('\n') ||
+        headerValue.includes('\0')
+      ) {
+        throw new InvalidArgumentException(
+          `Header value '${headerValue}' is not acceptable value`
+        );
+      }
+    }
+  }
+
+  /**
+   * Validate https://httpwg.org/specs/rfc9110.html#method.overview
+   * CDP accepts custom Methods but they fail in the fetch script
+   */
+  static validateMethod(method: string) {
+    if (!/^(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE)$/.test(method)) {
+      throw new InvalidArgumentException(
+        `Method '${method}' is not acceptable value`
+      );
+    }
+  }
+
+  /**
    * Attempts to parse the given url.
    * Throws an InvalidArgumentException if the url is invalid.
    */
-  static parseUrlString(url: string): URL {
+  static parseUrlString(url: string) {
     try {
       return new URL(url);
     } catch (error) {
