@@ -22,6 +22,7 @@ import {
 } from '../../../protocol/protocol.js';
 import {Buffer} from '../../../utils/Buffer.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
+import {distinctValues} from '../../../utils/DistinctValues.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {IdWrapper} from '../../../utils/IdWrapper.js';
 import type {Result} from '../../../utils/result.js';
@@ -97,11 +98,19 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   #lastMessageSent = new Map<string, number>();
   #subscriptionManager: SubscriptionManager;
   #browsingContextStorage: BrowsingContextStorage;
+  /**
+   * Map of event name to hooks to be called when client is subscribed to the event.
+   */
+  #subscribeHooks: Map<
+    ChromiumBidi.EventNames,
+    ((contextId: BrowsingContext.BrowsingContext) => void)[]
+  >;
 
   constructor(browsingContextStorage: BrowsingContextStorage) {
     super();
     this.#browsingContextStorage = browsingContextStorage;
     this.#subscriptionManager = new SubscriptionManager(browsingContextStorage);
+    this.#subscribeHooks = new Map();
   }
 
   get subscriptionManager(): SubscriptionManager {
@@ -117,6 +126,16 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     channel?: BidiPlusChannel
   ) {
     return JSON.stringify({eventName, browsingContext, channel});
+  }
+
+  addSubscribeHook(
+    event: ChromiumBidi.EventNames,
+    hook: (contextId: BrowsingContext.BrowsingContext) => Promise<void>
+  ): void {
+    if (!this.#subscribeHooks.has(event)) {
+      this.#subscribeHooks.set(event, []);
+    }
+    this.#subscribeHooks.get(event)!.push(hook);
   }
 
   registerEvent(
@@ -172,9 +191,20 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       }
     }
 
+    // List of the subscriptions that were actually added. Each contains a specific event
+    // and context. No domain event (like "network") or global context subscription (like
+    // null) are included.
+    const newSubscriptions: {
+      contextId: BrowsingContext.BrowsingContext;
+      event: ChromiumBidi.EventNames;
+    }[] = [];
+
     for (const eventName of eventNames) {
       for (const contextId of contextIds) {
-        this.#subscriptionManager.subscribe(eventName, contextId, channel);
+        newSubscriptions.push(
+          ...this.#subscriptionManager.subscribe(eventName, contextId, channel)
+        );
+
         for (const eventWrapper of this.#getBufferedEvents(
           eventName,
           contextId,
@@ -192,6 +222,14 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
         }
       }
     }
+
+    // Iterate over all new subscriptions and call hooks if any. There can be duplicates,
+    // e.g. when subscribing to the whole domain and some specific event:
+    // ["network", "network.responseCompleted"]. `distinctValues` guarantees that hooks
+    // are called only once per pair event + context.
+    distinctValues(newSubscriptions).forEach(({contextId, event}) => {
+      this.#subscribeHooks.get(event)?.forEach((hook) => hook(contextId));
+    });
 
     await this.toggleModulesIfNeeded();
   }
