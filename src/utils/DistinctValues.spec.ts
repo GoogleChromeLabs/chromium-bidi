@@ -122,7 +122,6 @@ describe('functions from DistinctValues.ts', () => {
       const arr = [{a: 1}, {a: 1}, {b: 2}, {a: 1, b: 2}, {b: 2}, {b: 2, a: 1}];
       const expected = [{a: 1}, {b: 2}, {a: 1, b: 2}];
       const result = distinctValues(arr);
-      console.log(result);
       expect(result).to.have.deep.members(expected);
     });
 

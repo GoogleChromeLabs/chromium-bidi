@@ -295,7 +295,7 @@ export class BrowsingContextProcessor {
     return await context.locateNodes(params);
   }
 
-  async #onContextCreatedSubscribeHook(
+  #onContextCreatedSubscribeHook(
     contextId: BrowsingContext.BrowsingContext
   ): Promise<void> {
     const context = this.#browsingContextStorage.getContext(contextId);
@@ -313,5 +313,6 @@ export class BrowsingContextProcessor {
         context.id
       );
     });
+    return Promise.resolve();
   }
 }
