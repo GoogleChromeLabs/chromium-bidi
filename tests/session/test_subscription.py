@@ -441,11 +441,15 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
 
     # Empty string channel is considered as no channel provided.
     resp = await read_JSON_message(websocket)
-    assert {
-        "type": "event",
-        "method": "log.entryAdded",
-        "params": ANY_DICT
-    } == resp
+    if "channel" in resp:
+        # Chromedriver adds channel even if it is an empty string.
+        pytest.xfail("TODO: http://b/343698990")
+    else:
+        assert {
+            "type": "event",
+            "method": "log.entryAdded",
+            "params": ANY_DICT
+        } == resp
 
     resp = await read_JSON_message(websocket)
     assert {
