@@ -106,7 +106,7 @@ export class NetworkProcessor {
         postData: getCdpBodyFromBiDiBytesValue(body),
       });
     } catch (error) {
-      NetworkProcessor.wrapInterceptionError(error);
+      throw NetworkProcessor.wrapInterceptionError(error);
     }
 
     return {};
@@ -159,7 +159,7 @@ export class NetworkProcessor {
           responseHeaders,
         });
       } catch (error) {
-        NetworkProcessor.wrapInterceptionError(error);
+        throw NetworkProcessor.wrapInterceptionError(error);
       }
     }
 
@@ -273,7 +273,7 @@ export class NetworkProcessor {
         body: getCdpBodyFromBiDiBytesValue(body),
       });
     } catch (error) {
-      NetworkProcessor.wrapInterceptionError(error);
+      throw NetworkProcessor.wrapInterceptionError(error);
     }
 
     return {};
@@ -462,9 +462,9 @@ export class NetworkProcessor {
   static wrapInterceptionError(error: any) {
     // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
     if (error?.message.includes('Invalid header')) {
-      throw new InvalidArgumentException('Invalid header');
+      return new InvalidArgumentException('Invalid header');
     }
-    throw error;
+    return error;
   }
 }
 
