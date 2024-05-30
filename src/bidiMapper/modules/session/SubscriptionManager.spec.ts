@@ -83,7 +83,7 @@ describe('SubscriptionManager', () => {
         ).to.deep.equal([{event: SOME_EVENT, contextId: SOME_CONTEXT}]);
       });
 
-      it('exising subscription', () => {
+      it('existing subscription', () => {
         subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
         expect(
           subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL)
@@ -101,7 +101,7 @@ describe('SubscriptionManager', () => {
         ]);
       });
 
-      it('exising subscription', () => {
+      it('existing subscription', () => {
         subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
         expect(
           subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL)

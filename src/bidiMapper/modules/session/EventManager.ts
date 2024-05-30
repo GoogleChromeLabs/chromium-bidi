@@ -75,6 +75,14 @@ const eventBufferLength: ReadonlyMap<ChromiumBidi.EventNames, number> = new Map(
   [[ChromiumBidi.Log.EventNames.LogEntryAdded, 100]]
 );
 
+/**
+ * Subscription item is a pair of event name and context id.
+ */
+export type SubscriptionItem = {
+  contextId: BrowsingContext.BrowsingContext;
+  event: ChromiumBidi.EventNames;
+};
+
 export class EventManager extends EventEmitter<EventManagerEventsMap> {
   /**
    * Maps event name to a set of contexts where this event already happened.
@@ -188,17 +196,14 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       }
     }
 
-    // List of the subscriptions that were actually added. Each contains a specific event
-    // and context. No domain event (like "network") or global context subscription (like
-    // null) are included.
-    const newSubscriptions: {
-      contextId: BrowsingContext.BrowsingContext;
-      event: ChromiumBidi.EventNames;
-    }[] = [];
+    // List of the subscription items that were actually added. Each contains a specific
+    // event and context. No domain event (like "network") or global context subscription
+    // (like null) are included.
+    const addedSubscriptionItems: SubscriptionItem[] = [];
 
     for (const eventName of eventNames) {
       for (const contextId of contextIds) {
-        newSubscriptions.push(
+        addedSubscriptionItems.push(
           ...this.#subscriptionManager.subscribe(eventName, contextId, channel)
         );
 
@@ -220,11 +225,11 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       }
     }
 
-    // Iterate over all new subscriptions and call hooks if any. There can be duplicates,
-    // e.g. when subscribing to the whole domain and some specific event:
-    // ["network", "network.responseCompleted"]. `distinctValues` guarantees that hooks
-    // are called only once per pair event + context.
-    distinctValues(newSubscriptions).forEach(({contextId, event}) => {
+    // Iterate over all new subscription items and call hooks if any. There can be
+    // duplicates, e.g. when subscribing to the whole domain and some specific event in
+    // the same time ("network", "network.responseCompleted"). `distinctValues` guarantees
+    // that hooks are called only once per pair event + context.
+    distinctValues(addedSubscriptionItems).forEach(({contextId, event}) => {
       this.#subscribeHooks.get(event).forEach((hook) => hook(contextId));
     });
 

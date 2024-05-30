@@ -23,6 +23,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+import type {SubscriptionItem} from './EventManager.js';
 import {isCdpEvent} from './events.js';
 
 /**
@@ -209,7 +210,7 @@ export class SubscriptionManager {
    * @param {EventNames} event
    * @param {BrowsingContext.BrowsingContext | null} contextId
    * @param {BidiPlusChannel} channel
-   * @return {{contextId: BrowsingContext.BrowsingContext, event: EventNames}[]} List of
+   * @return {SubscriptionItem[]} List of
    * subscriptions. If the event is a whole module, it will return all the specific
    * events. If the contextId is null, it will return all the top-level contexts which were
    * not subscribed before the command.
@@ -218,10 +219,7 @@ export class SubscriptionManager {
     event: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
     channel: BidiPlusChannel
-  ): {
-    contextId: BrowsingContext.BrowsingContext;
-    event: ChromiumBidi.EventNames;
-  }[] {
+  ): SubscriptionItem[] {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
 
