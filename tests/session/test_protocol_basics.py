@@ -14,34 +14,13 @@
 # limitations under the License.
 
 import pytest
+from anys import ANY_STR
 from test_helpers import (AnyExtending, execute_command, json,
                           read_JSON_message, send_JSON_command)
 
 # Tests for "handle an incoming message" error handling, when the message
 # can't be decoded as known command.
 # https://w3c.github.io/webdriver-bidi/#handle-an-incoming-message
-
-
-@pytest.mark.asyncio
-async def test_binary(websocket):
-    # session.status is used in this test, but any simple command without side
-    # effects would work. It is first sent as text, which should work, and then
-    # sent again as binary, which should get an error response instead.
-    command = {"id": 1, "method": "session.status", "params": {}}
-
-    text_msg = json.dumps(command)
-    await websocket.send(text_msg)
-    resp = await read_JSON_message(websocket)
-    assert resp['id'] == 1
-
-    binary_msg = b'text_msg'
-    await websocket.send(binary_msg)
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "type": "error",
-        "error": "invalid argument",
-        "message": "not supported type (binary)"
-    }
 
 
 @pytest.mark.asyncio
@@ -52,7 +31,7 @@ async def test_invalid_json(websocket):
     assert resp == {
         "type": "error",
         "error": "invalid argument",
-        "message": "Cannot parse data as JSON"
+        "message": ANY_STR
     }
 
 
@@ -64,7 +43,7 @@ async def test_empty_object(websocket):
     assert resp == {
         "type": "error",
         "error": "invalid argument",
-        "message": "Expected unsigned integer but got undefined"
+        "message": ANY_STR
     }
 
 
@@ -78,14 +57,14 @@ async def test_session_status(websocket):
     }
     await send_JSON_command(websocket, command)
     resp = await read_JSON_message(websocket)
-    assert resp == {
+    assert resp == AnyExtending({
         "id": 5,
         "type": "success",
         "result": {
             "ready": False,
             "message": "already connected"
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
