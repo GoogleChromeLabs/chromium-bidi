@@ -101,7 +101,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   /**
    * Map of event name to hooks to be called when client is subscribed to the event.
    */
-  #subscribeHooks: Map<
+  #subscribeHooks: DefaultMap<
     ChromiumBidi.EventNames,
     ((contextId: BrowsingContext.BrowsingContext) => void)[]
   >;
@@ -110,7 +110,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     super();
     this.#browsingContextStorage = browsingContextStorage;
     this.#subscriptionManager = new SubscriptionManager(browsingContextStorage);
-    this.#subscribeHooks = new Map();
+    this.#subscribeHooks = new DefaultMap(() => []);
   }
 
   get subscriptionManager(): SubscriptionManager {
@@ -132,10 +132,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     event: ChromiumBidi.EventNames,
     hook: (contextId: BrowsingContext.BrowsingContext) => Promise<void>
   ): void {
-    if (!this.#subscribeHooks.has(event)) {
-      this.#subscribeHooks.set(event, []);
-    }
-    this.#subscribeHooks.get(event)!.push(hook);
+    this.#subscribeHooks.get(event).push(hook);
   }
 
   registerEvent(
@@ -228,7 +225,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     // ["network", "network.responseCompleted"]. `distinctValues` guarantees that hooks
     // are called only once per pair event + context.
     distinctValues(newSubscriptions).forEach(({contextId, event}) => {
-      this.#subscribeHooks.get(event)?.forEach((hook) => hook(contextId));
+      this.#subscribeHooks.get(event).forEach((hook) => hook(contextId));
     });
 
     await this.toggleModulesIfNeeded();
