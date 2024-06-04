@@ -126,6 +126,9 @@ export class CdpTargetManager {
         this.#eventManager,
         this.#browsingContextStorage,
         this.#realmStorage,
+        // At this point, we don't know the URL of the frame yet, so it will be updated
+        // later.
+        'about:blank',
         this.#logger
       );
     }
@@ -175,6 +178,7 @@ export class CdpTargetManager {
             this.#eventManager,
             this.#browsingContextStorage,
             this.#realmStorage,
+            targetInfo.url,
             this.#logger
           );
         }
