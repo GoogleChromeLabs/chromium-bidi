@@ -178,7 +178,15 @@ export class CdpTargetManager {
             this.#eventManager,
             this.#browsingContextStorage,
             this.#realmStorage,
-            targetInfo.url,
+            // Hack: when a new target created, CDP emits targetInfoChanged with an empty
+            // url, and navigates it to about:blank later. When the event is emitted for
+            // an existing target (reconnect), the url is already known, and navigation
+            // events will not be emitted anymore. Replacing empty url with `about:blank`
+            // allows to handle both cases in the same way.
+            // "7.3.2.1 Creating browsing contexts".
+            // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
+            // TODO: check who to deal with non-null creator and its `creatorOrigin`.
+            targetInfo.url === '' ? 'about:blank' : targetInfo.url,
             this.#logger
           );
         }
