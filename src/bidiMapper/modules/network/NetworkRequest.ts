@@ -648,8 +648,8 @@ export class NetworkRequest {
 
     return {
       request: this.#id,
-      url: this.url,
-      method: this.method,
+      url: this.#request.overrides?.url ?? this.url,
+      method: this.#request.overrides?.method ?? this.method,
       headers,
       cookies,
       headersSize: computeHeadersSize(headers),
