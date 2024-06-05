@@ -15,15 +15,6 @@ env:
 on:
   merge_group:
   pull_request:
-    types:
-      # These are the defaults. See
-      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
-      - opened
-      - reopened
-      - synchronize
-
-      # Used for trigger on label change
-      - labeled
   workflow_dispatch:
     inputs:
       tests:
