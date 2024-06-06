@@ -196,11 +196,10 @@ export function bidiToCdpCookie(
     path: params.cookie.path ?? '/',
     secure: params.cookie.secure ?? false,
     httpOnly: params.cookie.httpOnly ?? false,
-    // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
     ...(partitionKey.sourceOrigin !== undefined && {
       partitionKey: {
-        // TODO: check if the `hasCrossSiteAncestor: false` is correct.
         hasCrossSiteAncestor: false,
+        // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
         topLevelSite: partitionKey.sourceOrigin,
       },
     }),
