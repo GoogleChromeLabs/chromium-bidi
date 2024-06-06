@@ -143,15 +143,15 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
-      await this.#cdpClient.sendCommand('Page.enable');
       // There can be some existing frames in the target, if reconnecting to an existing
       // browser instance, e.g. via Puppeteer. Need to restore the browsing contexts for
       // the frames BEFORE enabling the other domains to correctly handle further events,
       // like `Runtime.executionContextCreated`.
-      const frameTree = await this.#cdpClient.sendCommand('Page.getFrameTree');
-      this.#restoreFrameTreeState(frameTree.frameTree);
-
       await Promise.all([
+        this.#cdpClient.sendCommand('Page.enable'),
+        this.#cdpClient.sendCommand('Page.getFrameTree').then((event) => {
+          this.#restoreFrameTreeState(event.frameTree);
+        }),
         this.#cdpClient.sendCommand('Runtime.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
@@ -207,7 +207,8 @@ export class CdpTarget {
         // At this point, we don't know the URL of the frame yet, so it will be updated
         // later.
         frame.url,
-        this.#logger
+        this.#logger,
+        false
       );
     }
     frameTree.childFrames?.map((frameTree) =>

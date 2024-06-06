@@ -109,7 +109,8 @@ export class BrowsingContextImpl {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     url: string,
-    logger?: LoggerFn
+    logger?: LoggerFn,
+    emit = true
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
       id,
@@ -130,14 +131,16 @@ export class BrowsingContextImpl {
       context.parent!.addChild(context.id);
     }
 
-    eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-        params: context.serializeToBidiValue(),
-      },
-      context.id
-    );
+    if (emit) {
+      eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+          params: context.serializeToBidiValue(),
+        },
+        context.id
+      );
+    }
 
     return context;
   }
