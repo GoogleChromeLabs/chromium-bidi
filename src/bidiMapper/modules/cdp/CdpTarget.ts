@@ -20,9 +20,11 @@ import type {Protocol} from 'devtools-protocol';
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {BiDiModule} from '../../../protocol/chromium-bidi.js';
 import type {ChromiumBidi} from '../../../protocol/protocol.js';
+import {UnknownErrorException} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
+import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {LogManager} from '../log/LogManager.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
@@ -35,6 +37,7 @@ export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
+  readonly #realmStorage: RealmStorage;
   readonly #eventManager: EventManager;
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
@@ -43,6 +46,7 @@ export class CdpTarget {
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #acceptInsecureCerts: boolean;
+  readonly #logger: LoggerFn | undefined;
 
   #networkDomainEnabled = false;
   #fetchDomainStages = {
@@ -68,10 +72,12 @@ export class CdpTarget {
       cdpClient,
       browserCdpClient,
       eventManager,
+      realmStorage,
       preloadScriptStorage,
       browsingContextStorage,
       networkStorage,
-      acceptInsecureCerts
+      acceptInsecureCerts,
+      logger
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
@@ -90,19 +96,23 @@ export class CdpTarget {
     cdpClient: CdpClient,
     browserCdpClient: CdpClient,
     eventManager: EventManager,
+    realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
-    acceptInsecureCerts: boolean
+    acceptInsecureCerts: boolean,
+    logger?: LoggerFn
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
     this.#eventManager = eventManager;
+    this.#realmStorage = realmStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#acceptInsecureCerts = acceptInsecureCerts;
+    this.#logger = logger;
   }
 
   /** Returns a deferred that resolves when the target is unblocked. */
@@ -133,9 +143,16 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
+      await this.#cdpClient.sendCommand('Page.enable');
+      // There can be some existing frames in the target, if reconnecting to an existing
+      // browser instance, e.g. via Puppeteer. Need to restore the browsing contexts for
+      // the frames BEFORE enabling the other domains to correctly handle further events,
+      // like `Runtime.executionContextCreated`.
+      const frameTree = await this.#cdpClient.sendCommand('Page.getFrameTree');
+      this.#restoreFrameTreeState(frameTree.frameTree);
+
       await Promise.all([
         this.#cdpClient.sendCommand('Runtime.enable'),
-        this.#cdpClient.sendCommand('Page.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
         }),
@@ -167,6 +184,35 @@ export class CdpTarget {
       kind: 'success',
       value: undefined,
     });
+  }
+
+  #restoreFrameTreeState(frameTree: Protocol.Page.FrameTree) {
+    const frame = frameTree.frame;
+    if (this.#browsingContextStorage.findContext(frame.id) === undefined) {
+      if (frame.parentId === undefined) {
+        // TODO: do not throw.
+        throw new UnknownErrorException('Parent frame not found');
+      }
+      const parentBrowsingContext = this.#browsingContextStorage.getContext(
+        frame.parentId
+      );
+      BrowsingContextImpl.create(
+        frame.id,
+        frame.parentId,
+        parentBrowsingContext.userContext,
+        parentBrowsingContext.cdpTarget,
+        this.#eventManager,
+        this.#browsingContextStorage,
+        this.#realmStorage,
+        // At this point, we don't know the URL of the frame yet, so it will be updated
+        // later.
+        frame.url,
+        this.#logger
+      );
+    }
+    frameTree.childFrames?.map((frameTree) =>
+      this.#restoreFrameTreeState(frameTree)
+    );
   }
 
   async toggleFetchIfNeeded() {
