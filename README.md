@@ -313,6 +313,12 @@ npm run e2e -- --snapshot-update
 
 See https://github.com/tophat/syrupy for more information.
 
+#### Updating screenshots
+
+```sh
+npm run e2e -- --screenshot-update
+```
+
 ### Local http server
 
 E2E tests use local http
