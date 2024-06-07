@@ -69,14 +69,14 @@ describe('Deferred', () => {
     });
 
     describe('result', () => {
-      it('should throw if not finished', async () => {
+      it('should throw if not finished', () => {
         const deferred = new Deferred<string>();
         expect(() => {
           deferred.result;
         }).to.throw('Deferred is not finished yet');
       });
 
-      it('should return when finished', async () => {
+      it('should return when finished', () => {
         const deferred = new Deferred<string>();
         deferred.resolve('done');
         expect(deferred.result).to.equal('done');

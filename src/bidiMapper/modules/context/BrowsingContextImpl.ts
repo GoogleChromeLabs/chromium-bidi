@@ -506,6 +506,14 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextDestroyed',
       (params) => {
+        if (
+          this.#defaultRealmDeferred.isFinished &&
+          this.#defaultRealmDeferred.result.executionContextId ===
+            params.executionContextId
+        ) {
+          this.#defaultRealmDeferred = new Deferred<Realm>();
+        }
+
         this.#realmStorage.deleteRealms({
           cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.executionContextId,
@@ -514,6 +522,12 @@ export class BrowsingContextImpl {
     );
 
     this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
+      if (!this.#defaultRealmDeferred.isFinished) {
+        this.#defaultRealmDeferred.reject(
+          new UnknownErrorException('execution contexts cleared')
+        );
+      }
+      this.#defaultRealmDeferred = new Deferred<Realm>();
       this.#realmStorage.deleteRealms({
         cdpSessionId: this.#cdpTarget.cdpSessionId,
       });
