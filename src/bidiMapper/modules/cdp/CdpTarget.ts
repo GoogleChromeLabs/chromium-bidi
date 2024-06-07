@@ -152,6 +152,7 @@ export class CdpTarget {
         // It's important to schedule this task together with enabling domains commands to
         // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
         // coming.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
         this.#cdpClient
           .sendCommand('Page.getFrameTree')
           .then((frameTree) =>
