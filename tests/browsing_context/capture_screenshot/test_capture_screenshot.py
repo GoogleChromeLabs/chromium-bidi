@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (assert_images_similar, execute_command, get_tree,
-                          goto_url, read_JSON_message, send_JSON_command)
+from test_helpers import (execute_command, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command)
 
 
 @pytest.mark.asyncio
@@ -28,7 +28,8 @@ from test_helpers import (assert_images_similar, execute_command, get_tree,
         "gradient_without_alpha_channel.png",
     ],
     ids=["gradient with alpha channel", "gradient without alpha channel"])
-async def test_screenshot(websocket, context_id, png_filename):
+async def test_screenshot(websocket, assert_screenshot, context_id,
+                          png_filename):
     with open(Path(__file__).parent.resolve() / png_filename,
               'rb') as image_file:
         png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
@@ -61,14 +62,15 @@ async def test_screenshot(websocket, context_id, png_filename):
 
         resp = await read_JSON_message(websocket)
         assert resp["result"] == {'data': ANY_STR}
-        with open(Path(__file__).parent.resolve() / png_filename, 'wb') as im:
-            im.write(base64.b64decode(resp["result"]["data"]))
 
-        assert_images_similar(resp["result"]["data"], png_base64)
+        assert_screenshot(
+            Path(__file__).parent.resolve() / png_filename,
+            resp["result"]["data"])
 
 
 @pytest.mark.asyncio
-async def test_screenshot_element(websocket, context_id, query_selector, html):
+async def test_screenshot_element(websocket, assert_screenshot, context_id,
+                                  query_selector, html):
     await goto_url(websocket, context_id, html('<div>hello</div>'))
 
     # Set a fixed viewport to make the test deterministic.
@@ -101,16 +103,15 @@ async def test_screenshot_element(websocket, context_id, query_selector, html):
     resp = await read_JSON_message(websocket)
     assert resp["result"] == {'data': ANY_STR}
 
-    with open(Path(__file__).parent.resolve() / 'element.png',
-              'rb') as image_file:
-        assert_images_similar(
-            resp["result"]["data"],
-            base64.b64encode(image_file.read()).decode('utf-8'))
+    assert_screenshot(
+        Path(__file__).parent.resolve() / "element.png",
+        resp["result"]["data"])
 
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: fails on CI")
-async def test_screenshot_oopif(websocket, context_id, html, iframe):
+async def test_screenshot_oopif(websocket, assert_screenshot, context_id, html,
+                                iframe):
     await goto_url(websocket,
                    context_id,
                    html(iframe("https://www.example.com")),
@@ -146,17 +147,13 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe):
     resp = await read_JSON_message(websocket)
     assert resp["result"] == {'data': ANY_STR}
 
-    png_filename = "oopif.png"
-    with open(Path(__file__).parent.resolve() / png_filename,
-              'rb') as image_file:
-        png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
-
-        assert_images_similar(resp["result"]["data"], png_base64)
+    assert_screenshot(
+        Path(__file__).parent.resolve() / "oopif.png", resp["result"]["data"])
 
 
 @pytest.mark.asyncio
-async def test_screenshot_document(websocket, context_id, query_selector,
-                                   html):
+async def test_screenshot_document(websocket, assert_screenshot, context_id,
+                                   query_selector, html):
     await goto_url(
         websocket, context_id,
         html('<div style="width: 100px; height: 100px; background: red"></div>'
@@ -193,16 +190,14 @@ async def test_screenshot_document(websocket, context_id, query_selector,
     resp = await read_JSON_message(websocket)
     assert resp["result"] == {'data': ANY_STR}
 
-    with open(Path(__file__).parent.resolve() / 'element-document.png',
-              'rb') as image_file:
-        assert_images_similar(
-            resp["result"]["data"],
-            base64.b64encode(image_file.read()).decode('utf-8'))
+    assert_screenshot(
+        Path(__file__).parent.resolve() / 'element-document.png',
+        resp["result"]["data"])
 
 
 @pytest.mark.asyncio
 async def test_screenshot_viewport_clip_scroll(websocket, context_id,
-                                               query_selector, html):
+                                               assert_screenshot, html):
     """
     The test checks the screenshot in a scrolled viewport origin. The clip
     should be relative to the viewport, not the document.
@@ -278,8 +273,57 @@ async def test_screenshot_viewport_clip_scroll(websocket, context_id,
 
     assert resp == {'data': ANY_STR}
 
-    with open(Path(__file__).parent.resolve() / 'element-document.png',
-              'rb') as image_file:
-        assert_images_similar(
-            resp["data"],
-            base64.b64encode(image_file.read()).decode('utf-8'))
+    assert_screenshot(
+        Path(__file__).parent.resolve() / 'element-document.png',
+        resp["result"]["data"])
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("origin", [
+    "document",
+    "viewport",
+])
+@pytest.mark.parametrize("attributes", [
+    ["width", "height"],
+    ["height", "width"],
+])
+async def test_screenshot_truncated_document_or_viewport(
+        websocket, context_id, attributes, origin, query_selector, html,
+        assert_screenshot):
+    await goto_url(
+        websocket, context_id,
+        html(
+            f'<body style="{attributes[0]}: 50px; {attributes[1]}: 100px; background: red"></body>'
+        ))
+
+    # Set a fixed viewport to make the test deterministic.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": {
+                    attributes[0]: 100,
+                    attributes[1]: 50,
+                },
+                "devicePixelRatio": 1.0,
+            }
+        })
+    await read_JSON_message(websocket)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+                "origin": origin,
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp["result"] == {'data': ANY_STR}
+
+    assert_screenshot(
+        Path(__file__).parent.resolve() /
+        f'{origin}-{attributes[0]}-document-{attributes[1]}-viewport.png',
+        resp["result"]["data"])
