@@ -67,5 +67,20 @@ describe('Deferred', () => {
 
       await expect(deferredFinally).to.eventually.equal('done');
     });
+
+    describe('result', () => {
+      it('should throw if not finished', async () => {
+        const deferred = new Deferred<string>();
+        expect(() => {
+          deferred.result;
+        }).to.throw('Deferred is not finished yet');
+      });
+
+      it('should return when finished', async () => {
+        const deferred = new Deferred<string>();
+        deferred.resolve('done');
+        expect(deferred.result).to.equal('done');
+      });
+    });
   });
 });
