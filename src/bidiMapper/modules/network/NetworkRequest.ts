@@ -693,6 +693,8 @@ export class NetworkRequest {
           lineNumber: this.#request.info.initiator.lineNumber,
           stackTrace: this.#request.info.initiator.stack,
           request: this.#request.info.initiator.requestId,
+          // @ts-ignore url is not aded to the types yet.
+          url: this.#request.info.initiator.url,
         },
       },
     };
