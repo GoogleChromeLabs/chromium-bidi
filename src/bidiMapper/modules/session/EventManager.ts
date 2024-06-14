@@ -35,10 +35,10 @@ import {SubscriptionManager} from './SubscriptionManager.js';
 class EventWrapper {
   readonly #idWrapper = new IdWrapper();
   readonly #contextId: BrowsingContext.BrowsingContext | null;
-  readonly #event: Promise<Result<ChromiumBidi.Event>>;
+  readonly #event: ChromiumBidi.Event;
 
   constructor(
-    event: Promise<Result<ChromiumBidi.Event>>,
+    event: ChromiumBidi.Event,
     contextId: BrowsingContext.BrowsingContext | null
   ) {
     this.#event = event;
@@ -53,7 +53,7 @@ class EventWrapper {
     return this.#contextId;
   }
 
-  get event(): Promise<Result<ChromiumBidi.Event>> {
+  get event(): ChromiumBidi.Event {
     return this.#event;
   }
 }
@@ -147,35 +147,22 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     event: ChromiumBidi.Event,
     contextId: BrowsingContext.BrowsingContext | null
   ): void {
-    this.registerPromiseEvent(
-      Promise.resolve({
-        kind: 'success',
-        value: event,
-      }),
-      contextId,
-      event.method
-    );
-  }
-
-  registerPromiseEvent(
-    event: Promise<Result<ChromiumBidi.Event>>,
-    contextId: BrowsingContext.BrowsingContext | null,
-    eventName: ChromiumBidi.EventNames
-  ): void {
     const eventWrapper = new EventWrapper(event, contextId);
+
     const sortedChannels =
       this.#subscriptionManager.getChannelsSubscribedToEvent(
-        eventName,
+        event.method,
         contextId
       );
-    this.#bufferEvent(eventWrapper, eventName);
+    this.#bufferEvent(eventWrapper, event.method);
+
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {
       this.emit(EventManagerEvents.Event, {
-        message: OutgoingMessage.createFromPromise(event, channel),
-        event: eventName,
+        message: OutgoingMessage.createResolved(event, channel),
+        event: event.method,
       });
-      this.#markEventSent(eventWrapper, channel, eventName);
+      this.#markEventSent(eventWrapper, channel, event.method);
     }
   }
 
@@ -214,7 +201,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
         )) {
           // The order of the events is important.
           this.emit(EventManagerEvents.Event, {
-            message: OutgoingMessage.createFromPromise(
+            message: OutgoingMessage.createResolved(
               eventWrapper.event,
               channel
             ),
