@@ -235,7 +235,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
             "children": [],
             "parent": None,
             "url": url_with_hash_1,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -251,7 +252,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
             "children": [],
             "parent": None,
             "url": url_with_hash_2,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -277,7 +279,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "children": [],
             "parent": None,
             "url": url_with_hash_1,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -292,7 +295,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "children": [],
             "parent": None,
             "url": url_with_hash_2,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -314,7 +318,8 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
             "children": [],
             "parent": None,
             "url": url_with_hash_1,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     }
 
@@ -448,7 +453,7 @@ async def test_browsingContext_navigateBadSsl_notNavigated(
         'acceptInsecureCerts': True
     }
 }],
-                         indirect=['websocket'])
+    indirect=['websocket'])
 async def test_browsingContext_navigateBadSslAndAcceptInsecureCerts_navigated(
         websocket, context_id, bad_ssl_url):
     await execute_command(
