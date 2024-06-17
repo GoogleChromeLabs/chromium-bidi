@@ -453,7 +453,7 @@ async def test_browsingContext_navigateBadSsl_notNavigated(
         'acceptInsecureCerts': True
     }
 }],
-    indirect=['websocket'])
+                         indirect=['websocket'])
 async def test_browsingContext_navigateBadSslAndAcceptInsecureCerts_navigated(
         websocket, context_id, bad_ssl_url):
     await execute_command(

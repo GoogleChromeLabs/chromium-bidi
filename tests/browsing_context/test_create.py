@@ -319,8 +319,8 @@ async def test_browsingContext_subscribe_to_contextCreated_emits_for_existing(
                 ],
                 # Missing "contexts" means global subscription.
                 **({} if global_subscription else {
-                    "contexts": [another_context_id]
-                })
+                       "contexts": [another_context_id]
+                   })
             }
         })
 
