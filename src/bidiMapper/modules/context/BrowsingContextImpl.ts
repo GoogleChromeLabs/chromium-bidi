@@ -275,6 +275,8 @@ export class BrowsingContextImpl {
 
   async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {
     if (sandbox === undefined || sandbox === '') {
+      await this.#lifecycle.DOMContentLoaded;
+
       // Default realm is not guaranteed to be created at this point, so return a deferred.
       return await this.#defaultRealmDeferred;
     }
