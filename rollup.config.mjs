@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {spawnSync} from 'child_process';
 import path from 'path';
 
 import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import license from 'rollup-plugin-license';
+import request from 'sync-request';
 
 export default {
   input: 'lib/cjs/bidiTab/bidiTab.js',
@@ -87,14 +87,12 @@ function getRevision(dependency) {
     return 'N/A';
   }
   try {
-    // Chromium requires the revision to be specified for any dependency.
     // Even though the revision is not available in the local npm package info,
     // it can be fetched from the registry.
     const npmRegistryUrl = `https://registry.npmjs.org/${dependency.name}/${dependency.version}`;
-    const dependencyRegistryInfo = JSON.parse(
-      spawnSync('curl', ['-s', npmRegistryUrl]).stdout.toString()
-    );
-    return dependencyRegistryInfo.gitHead ?? 'N/A';
+    const dependencyRegistryResponse = request('GET', npmRegistryUrl).getBody();
+    const dependencyRegistryParsedInfo = JSON.parse(dependencyRegistryResponse);
+    return dependencyRegistryParsedInfo.gitHead ?? 'N/A';
   } catch (e) {
     // Fall back to `N/A` if the revision cannot be fetched. E.g. if the build
     // agent does not have internet access.
