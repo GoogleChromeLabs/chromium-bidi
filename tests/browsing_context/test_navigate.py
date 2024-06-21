@@ -505,6 +505,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
             "context": context_id,
             "navigation": ANY_UUID,
             "timestamp": ANY_TIMESTAMP,
+            "url": base_url + "#test",
         }
     })
 
