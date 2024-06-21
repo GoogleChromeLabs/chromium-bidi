@@ -432,6 +432,87 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
 
 @pytest.mark.asyncio
+async def test_browsingContext_navigationStarted_sameDocumentNavigation(
+        websocket, context_id, base_url):
+    await subscribe(
+        websocket,
+        ["browsingContext.navigationStarted", "browsingContext.load"])
+
+    # Make an initial navigation.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": base_url,
+                "context": context_id,
+                "wait": "none"
+            }
+        })
+    # Assert that the navigation started event was received.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.navigationStarted",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_UUID,
+            "timestamp": ANY_TIMESTAMP,
+            "url": base_url,
+        }
+    }
+    navigation_id = response["params"]["navigation"]
+
+    # Assert that the navigation command was finished with the correct
+    # navigation id.
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        'id': command_id,
+        'result': {
+            'navigation': navigation_id,
+            'url': base_url
+        }
+    })
+
+    # Assert that the page is loaded.
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        'method': 'browsingContext.load',
+        'params': {
+            'context': context_id,
+            'navigation': navigation_id,
+        },
+        'type': 'event',
+    })
+
+    # Make same-document navigation.
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "location.href = '#test';",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": False
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        'type': 'event',
+        "method": "browsingContext.navigationStarted",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_UUID,
+            "timestamp": ANY_TIMESTAMP,
+        }
+    })
+
+    new_navigation_id = response["params"]["navigation"]
+    assert new_navigation_id != navigation_id
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_navigateBadSsl_notNavigated(
         websocket, context_id, bad_ssl_url):
     with pytest.raises(Exception,

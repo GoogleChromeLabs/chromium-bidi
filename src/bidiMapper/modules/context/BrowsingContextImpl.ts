@@ -79,8 +79,9 @@ export class BrowsingContextImpl {
   readonly #logger?: LoggerFn;
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
-  // The URL of the navigation that is currently in progress. Required for the
-  // `Browser.navigationStarted` event.
+  // The URL of the navigation that is currently in progress. A workaround for the
+  // BiDi-initiated navigations. Stores the URL of the navigation that was requested and
+  // empty after the navigation is completed.
   #pendingNavigationUrl: string | undefined;
   #virtualNavigationId: string = uuidv4();
 
@@ -347,7 +348,6 @@ export class BrowsingContextImpl {
         return;
       }
       this.#url = params.frame.url + (params.frame.urlFragment ?? '');
-      // TODO: verify there can be no more then 1 pending navigations.
       this.#pendingNavigationUrl = undefined;
 
       // At the point the page is initialized, all the nested iframes from the
@@ -360,7 +360,6 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
-      // TODO: verify there can be no more then 1 pending navigations.
       this.#pendingNavigationUrl = undefined;
       const timestamp = BrowsingContextImpl.getTimestamp();
       this.#url = params.url;
@@ -385,8 +384,7 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
-      // Reset current navigationId.
-      // TODO: check the previous navigationId is not required for any kind of events.
+      // Generate a new virtual navigation id.
       this.#virtualNavigationId = uuidv4();
       this.#eventManager.registerEvent(
         {
@@ -396,7 +394,10 @@ export class BrowsingContextImpl {
             context: this.id,
             navigation: this.#virtualNavigationId,
             timestamp: BrowsingContextImpl.getTimestamp(),
-            // TODO: handle `UNKNOWN` properly.
+            // The URL of the navigation that is currently in progress. Although the URL
+            // is not yet known in case of user-initiated navigations, it is possible to
+            // provide the URL in case of BiDi-initiated navigations.
+            // TODO: provide proper URL in case of user-initiated navigations.
             url: this.#pendingNavigationUrl ?? 'UNKNOWN',
           },
         },
