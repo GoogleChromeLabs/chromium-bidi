@@ -82,8 +82,6 @@ export class BrowsingContextImpl {
   // The URL of the navigation that is currently in progress. Required for the
   // `Browser.navigationStarted` event.
   #pendingNavigationUrl: string | undefined;
-  // The ID of the current navigation. Required, as loaderId cannot be mapped 1:1 to all
-  // the navigations (e.g. same document navigations).
   #virtualNavigationId: string = uuidv4();
 
   #originalOpener?: string;
@@ -170,6 +168,15 @@ export class BrowsingContextImpl {
    */
   get navigableId(): string | undefined {
     return this.#loaderId;
+  }
+
+  /**
+   * Virtual navigation ID. Required, as CDP `loaderId` cannot be mapped 1:1 to all the
+   * navigations (e.g. same document navigations). Updated after each navigation,
+   * including same-document ones.
+   */
+  get virtualNavigationId(): string {
+    return this.#virtualNavigationId;
   }
 
   dispose() {
