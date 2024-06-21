@@ -33,6 +33,7 @@ import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
+import {uuidv4} from '../../../utils/uuid';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -78,6 +79,12 @@ export class BrowsingContextImpl {
   readonly #logger?: LoggerFn;
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
+  // The URL of the navigation that is currently in progress. Required for the
+  // `Browser.navigationStarted` event.
+  #pendingNavigationUrl: string | undefined;
+  // The ID of the current navigation. Required, as loaderId cannot be mapped 1:1 to all
+  // the navigations (e.g. same document navigations).
+  #virtualNavigationId: string = uuidv4();
 
   #originalOpener?: string;
 
@@ -333,6 +340,8 @@ export class BrowsingContextImpl {
         return;
       }
       this.#url = params.frame.url + (params.frame.urlFragment ?? '');
+      // TODO: verify there can be no more then 1 pending navigations.
+      this.#pendingNavigationUrl = undefined;
 
       // At the point the page is initialized, all the nested iframes from the
       // previous page are detached and realms are destroyed.
@@ -344,6 +353,8 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
+      // TODO: verify there can be no more then 1 pending navigations.
+      this.#pendingNavigationUrl = undefined;
       const timestamp = BrowsingContextImpl.getTimestamp();
       this.#url = params.url;
       this.#navigation.withinDocument.resolve();
@@ -354,7 +365,7 @@ export class BrowsingContextImpl {
           method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
           params: {
             context: this.id,
-            navigation: null,
+            navigation: this.#virtualNavigationId,
             timestamp,
             url: this.#url,
           },
@@ -367,15 +378,19 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
+      // Reset current navigationId.
+      // TODO: check the previous navigationId is not required for any kind of events.
+      this.#virtualNavigationId = uuidv4();
       this.#eventManager.registerEvent(
         {
           type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           params: {
             context: this.id,
-            navigation: null,
+            navigation: this.#virtualNavigationId,
             timestamp: BrowsingContextImpl.getTimestamp(),
-            url: '',
+            // TODO: handle `UNKNOWN` properly.
+            url: this.#pendingNavigationUrl ?? 'UNKNOWN',
           },
         },
         this.id
@@ -419,7 +434,7 @@ export class BrowsingContextImpl {
               method: ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
               params: {
                 context: this.id,
-                navigation: this.#loaderId ?? null,
+                navigation: this.#virtualNavigationId,
                 timestamp,
                 url: this.#url,
               },
@@ -436,7 +451,7 @@ export class BrowsingContextImpl {
               method: ChromiumBidi.BrowsingContext.EventNames.Load,
               params: {
                 context: this.id,
-                navigation: this.#loaderId ?? null,
+                navigation: this.#virtualNavigationId,
                 timestamp,
                 url: this.#url,
               },
@@ -643,6 +658,12 @@ export class BrowsingContextImpl {
 
     await this.targetUnblockedOrThrow();
 
+    // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
+    // event.
+    // TODO: detect navigation start not from CDP. Check if
+    //  `Page.frameRequestedNavigation` can be used for this purpose.
+    this.#pendingNavigationUrl = url;
+
     // TODO: handle loading errors.
     const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.navigate',
@@ -653,13 +674,15 @@ export class BrowsingContextImpl {
     );
 
     if (cdpNavigateResult.errorText) {
+      // If navigation failed, no pending navigation is left.
+      this.#pendingNavigationUrl = undefined;
       this.#eventManager.registerEvent(
         {
           type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
           params: {
             context: this.id,
-            navigation: cdpNavigateResult.loaderId ?? null,
+            navigation: this.#virtualNavigationId,
             timestamp: BrowsingContextImpl.getTimestamp(),
             url,
           },
@@ -694,7 +717,7 @@ export class BrowsingContextImpl {
     }
 
     return {
-      navigation: cdpNavigateResult.loaderId ?? null,
+      navigation: this.#virtualNavigationId,
       // Url can change due to redirect get the latest one.
       url: wait === BrowsingContext.ReadinessState.None ? url : this.#url,
     };
@@ -724,10 +747,7 @@ export class BrowsingContextImpl {
     }
 
     return {
-      navigation:
-        wait === BrowsingContext.ReadinessState.None
-          ? null
-          : this.navigableId ?? null,
+      navigation: this.#virtualNavigationId,
       url: this.url,
     };
   }

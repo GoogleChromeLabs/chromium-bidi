@@ -621,6 +621,7 @@ export class NetworkRequest {
     ) {
       return null;
     }
+    // TODO: get the navigationId from browsing context.
     return this.#request.info.loaderId;
   }
 
