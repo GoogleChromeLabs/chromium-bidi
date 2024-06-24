@@ -194,24 +194,6 @@ export class NetworkProcessor {
       Network.InterceptPhase.AuthRequired,
     ]);
 
-    // We need to pass through if the request is already in
-    // AuthRequired phase
-    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
-      // We need to use `ProvideCredentials`
-      // As `Default` may cancel the request
-      await request.continueWithAuth({
-        action: 'provideCredentials',
-      });
-      return {};
-    }
-
-    // If we don't modify the response
-    // just continue the request
-    if (!params.body && !params.headers) {
-      await request.continueRequest();
-      return {};
-    }
-
     try {
       await request.provideResponse(params);
     } catch (error) {

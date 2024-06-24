@@ -501,6 +501,26 @@ export class NetworkRequest {
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    // We need to pass through if the request is already in
+    // AuthRequired phase
+    if (this.interceptPhase === Network.InterceptPhase.AuthRequired) {
+      // We need to use `ProvideCredentials`
+      // As `Default` may cancel the request
+      await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
+        requestId: this.#fetchId,
+        authChallengeResponse: {
+          response: 'ProvideCredentials',
+        },
+      });
+      return {};
+    }
+
+    // If we don't modify the response
+    // just continue the request
+    if (!overrides.body && !overrides.headers) {
+      return await this.continueRequest();
+    }
+
     // TODO: Step 6
     // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
