@@ -39,7 +39,8 @@ import {
   computeHeadersSize,
   bidiNetworkHeadersFromCdpNetworkHeaders,
   cdpToBiDiCookie,
-  bidiNetworkHeadersFromCdpNetworkHeadersEntries,
+  cdpFetchHeadersFromBidiNetworkHeaders,
+  cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -73,9 +74,14 @@ export class NetworkRequest {
     info?: Protocol.Network.RequestWillBeSentEvent;
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
     paused?: Protocol.Fetch.RequestPausedEvent;
-    overrides?: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'>;
     auth?: Protocol.Fetch.AuthRequiredEvent;
   } = {};
+
+  #requestOverrides?: {
+    url?: string;
+    method?: string;
+    headers?: Network.Header[];
+  };
 
   #response: {
     hasExtraInfo?: boolean;
@@ -138,7 +144,7 @@ export class NetworkRequest {
     const url =
       this.#response.info?.url ??
       this.#response.paused?.request.url ??
-      this.#request.overrides?.url ??
+      this.#requestOverrides?.url ??
       this.#request.auth?.request.url ??
       this.#request.info?.request.url ??
       this.#request.paused?.request.url ??
@@ -149,7 +155,7 @@ export class NetworkRequest {
 
   get method(): string {
     return (
-      this.#request.overrides?.method ??
+      this.#requestOverrides?.method ??
       this.#request.info?.request.method ??
       this.#request.paused?.request.method ??
       this.#request.auth?.request.method ??
@@ -395,7 +401,9 @@ export class NetworkRequest {
     ) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
     } else {
-      void this.continueWithAuth();
+      void this.continueWithAuth({
+        action: 'default',
+      });
     }
 
     this.#emitEvent(() => {
@@ -411,19 +419,25 @@ export class NetworkRequest {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
   async continueRequest(
-    overrides: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'> = {}
+    overrides: Omit<Network.ContinueRequestParameters, 'request'> = {}
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
+
+    const headers: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+
+    const postData = getCdpBodyFromBiDiBytesValue(overrides.body);
 
     await this.cdpClient.sendCommand('Fetch.continueRequest', {
       requestId: this.#fetchId,
       url: overrides.url,
       method: overrides.method,
-      headers: overrides.headers,
-      postData: overrides.postData,
+      headers,
+      postData,
     });
+
     // TODO: Store postData's size only
-    this.#request.overrides = {
+    this.#requestOverrides = {
       url: overrides.url,
       method: overrides.method,
       headers: overrides.headers,
@@ -432,17 +446,18 @@ export class NetworkRequest {
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
-  async continueResponse({
-    responseCode,
-    responsePhrase,
-    responseHeaders,
-  }: Omit<Protocol.Fetch.ContinueResponseRequest, 'requestId'> = {}) {
+  async continueResponse(
+    overrides: Omit<Network.ContinueResponseParameters, 'request'> = {}
+  ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
+
+    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
 
     await this.cdpClient.sendCommand('Fetch.continueResponse', {
       requestId: this.#fetchId,
-      responseCode,
-      responsePhrase,
+      responseCode: overrides.statusCode,
+      responsePhrase: overrides.reasonPhrase,
       responseHeaders,
     });
     this.#interceptPhase = undefined;
@@ -450,34 +465,55 @@ export class NetworkRequest {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
   async continueWithAuth(
-    authChallengeResponse: Protocol.Fetch.ContinueWithAuthRequest['authChallengeResponse'] = {
-      response: 'Default',
-    }
+    authChallenge: Omit<Network.ContinueWithAuthParameters, 'request'>
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    let username: string | undefined;
+    let password: string | undefined;
+
+    if (authChallenge.action === 'provideCredentials') {
+      const {credentials} =
+        authChallenge as Network.ContinueWithAuthCredentials;
+
+      username = credentials.username;
+      password = credentials.password;
+    }
+
+    const response = cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
+      authChallenge.action
+    );
+
     await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
       requestId: this.#fetchId,
-      authChallengeResponse,
+      authChallengeResponse: {
+        response,
+        username,
+        password,
+      },
     });
     this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
-  async provideResponse({
-    responseCode,
-    responsePhrase,
-    responseHeaders,
-    body,
-  }: Omit<Protocol.Fetch.FulfillRequestRequest, 'requestId'>) {
+  async provideResponse(
+    overrides: Omit<Network.ProvideResponseParameters, 'request'>
+  ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
+
+    // TODO: Step 6
+    // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
+    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+
+    const responseCode = overrides.statusCode ?? this.statusCode ?? 200;
 
     await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
       requestId: this.#fetchId,
       responseCode,
-      responsePhrase,
+      responsePhrase: overrides.reasonPhrase,
       responseHeaders,
-      body,
+      body: getCdpBodyFromBiDiBytesValue(overrides.body),
     });
     this.#interceptPhase = undefined;
   }
@@ -635,12 +671,8 @@ export class NetworkRequest {
       : [];
 
     let headers: Network.Header[] = [];
-    if (this.#request.overrides?.headers) {
-      headers = [
-        ...bidiNetworkHeadersFromCdpNetworkHeadersEntries(
-          this.#request.overrides?.headers
-        ),
-      ];
+    if (this.#requestOverrides?.headers) {
+      headers = this.#requestOverrides.headers;
     } else {
       headers = [
         ...bidiNetworkHeadersFromCdpNetworkHeaders(
@@ -792,4 +824,16 @@ export class NetworkRequest {
       })
       .map(({cookie}) => cdpToBiDiCookie(cookie));
   }
+}
+
+function getCdpBodyFromBiDiBytesValue(
+  body?: Network.BytesValue
+): string | undefined {
+  let parsedBody: string | undefined;
+  if (body?.type === 'string') {
+    parsedBody = btoa(body.value);
+  } else if (body?.type === 'base64') {
+    parsedBody = body.value;
+  }
+  return parsedBody;
 }
