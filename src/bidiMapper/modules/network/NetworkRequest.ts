@@ -451,6 +451,34 @@ export class NetworkRequest {
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    if (this.interceptPhase === Network.InterceptPhase.AuthRequired) {
+      if (overrides.credentials) {
+        await Promise.all([
+          this.waitNextPhase,
+          this.continueWithAuth({
+            action: 'provideCredentials',
+            credentials: {
+              username: overrides.credentials.username,
+              password: overrides.credentials.password,
+            },
+          } as Network.ContinueWithAuthCredentials),
+        ]);
+      } else {
+        // We need to use `ProvideCredentials`
+        // As `Default` may cancel the request
+        return await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
+          requestId: this.#fetchId,
+          authChallengeResponse: {
+            response: 'ProvideCredentials',
+          },
+        });
+      }
+    }
+
+    if (this.interceptPhase !== Network.InterceptPhase.ResponseStarted) {
+      return;
+    }
+
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
 
@@ -506,13 +534,12 @@ export class NetworkRequest {
     if (this.interceptPhase === Network.InterceptPhase.AuthRequired) {
       // We need to use `ProvideCredentials`
       // As `Default` may cancel the request
-      await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
+      return await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
         requestId: this.#fetchId,
         authChallengeResponse: {
           response: 'ProvideCredentials',
         },
       });
-      return {};
     }
 
     // If we don't modify the response

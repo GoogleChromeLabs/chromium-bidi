@@ -111,36 +111,12 @@ export class NetworkProcessor {
       Network.InterceptPhase.ResponseStarted,
     ]);
 
-    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
-      if (params.credentials) {
-        await Promise.all([
-          request.waitNextPhase,
-          request.continueWithAuth({
-            action: 'provideCredentials',
-            credentials: {
-              username: params.credentials.username,
-              password: params.credentials.password,
-            },
-          } as Network.ContinueWithAuthCredentials),
-        ]);
-      } else {
-        // We need to use `ProvideCredentials`
-        // As `Default` may cancel the request
-        await request.continueWithAuth({
-          action: 'provideCredentials',
-        });
-        return {};
-      }
-    }
-
-    if (request.interceptPhase === Network.InterceptPhase.ResponseStarted) {
-      // TODO: Set / expand.
-      // ; Step 10. cookies
-      try {
-        await request.continueResponse(params);
-      } catch (error) {
-        throw NetworkProcessor.wrapInterceptionError(error);
-      }
+    // TODO: Set / expand.
+    // ; Step 10. cookies
+    try {
+      await request.continueResponse(params);
+    } catch (error) {
+      throw NetworkProcessor.wrapInterceptionError(error);
     }
 
     return {};
