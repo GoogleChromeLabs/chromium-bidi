@@ -475,10 +475,6 @@ export class NetworkRequest {
       }
     }
 
-    if (this.interceptPhase !== Network.InterceptPhase.ResponseStarted) {
-      return;
-    }
-
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
 
