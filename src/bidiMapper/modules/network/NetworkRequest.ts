@@ -754,7 +754,7 @@ export class NetworkRequest {
       ];
     }
     let bodySize: number = 0;
-    if (this.#requestOverrides?.bodySize !== undefined) {
+    if (typeof this.#requestOverrides?.bodySize === 'number') {
       bodySize = this.#requestOverrides.bodySize;
     } else {
       bodySize = bidiBodySizeFromCdpPostDataEntries(
