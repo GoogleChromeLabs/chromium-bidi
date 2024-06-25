@@ -149,6 +149,12 @@ async def test_browsingContext_userPromptOpened_userPromptClosed(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'unhandledPromptBehavior': {
+        'default': 'ignore'
+    }
+}],
+                         indirect=True)
 async def test_browsingContext_userPromptOpened_event_default_value(
         websocket, context_id):
 

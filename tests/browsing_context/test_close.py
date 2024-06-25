@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
+from anys import ANY_STR
 from syrupy.filters import paths
 from test_helpers import (AnyExtending, execute_command, get_tree, goto_url,
                           read_JSON_message, send_JSON_command, subscribe,
@@ -54,8 +55,13 @@ async def test_browsingContext_close(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_close_prompt(websocket, context_id, html,
-                                            snapshot):
+@pytest.mark.parametrize('capabilities', [{
+    'unhandledPromptBehavior': {
+        'default': 'ignore'
+    }
+}],
+                         indirect=True)
+async def test_browsingContext_close_prompt(websocket, context_id, html):
     await subscribe(websocket, [
         "browsingContext.userPromptOpened", "browsingContext.contextDestroyed"
     ])
@@ -103,7 +109,7 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
             "context": context_id,
             "message": "",
             "type": "beforeunload",
-            "handler": "ignore"
+            "handler": "ignore",
         }
     }
 
@@ -118,8 +124,19 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
     # Assert "browsingContext.contextDestroyed"" event emitted.
     response = await wait_for_event(websocket,
                                     "browsingContext.contextDestroyed")
-    assert response == snapshot(exclude=paths("params.context"))
-    assert response['params']['context'] == context_id
+    assert response == {
+        'method': 'browsingContext.contextDestroyed',
+        'params': {
+            'context': context_id,
+            'children': None,
+            'originalOpener': None,
+            'parent': None,
+            # Url-encoded `url`.
+            'url': ANY_STR,
+            'userContext': 'default',
+        },
+        'type': 'event',
+    }
 
     resp = await read_JSON_message(websocket)
     assert resp == {"type": "success", "id": command_id, "result": {}}
