@@ -61,7 +61,7 @@ async def test_browsingContext_close(websocket, context_id):
                          indirect=True)
 @pytest.mark.parametrize("accept", [True, False])
 async def test_browsingContext_close_prompt(websocket, context_id, html,
-                                            read_sorted_messages, accept):
+                                            accept):
     await subscribe(websocket, [
         "browsingContext.userPromptOpened", "browsingContext.contextDestroyed"
     ])
@@ -177,8 +177,7 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
 # @pytest.mark.parametrize("accept", [True])
 @pytest.mark.parametrize("accept", [True, False])
 async def test_browsingContext_navigate_prompt(websocket, context_id, html,
-                                               read_sorted_messages, accept,
-                                               example_url):
+                                               accept, example_url):
     await subscribe(websocket, ["browsingContext.userPromptOpened"])
 
     url = html("""
