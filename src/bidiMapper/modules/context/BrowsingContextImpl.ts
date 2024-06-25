@@ -578,10 +578,12 @@ export class BrowsingContextImpl {
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
       const accepted = params.result;
-      assert(
-        this.#lastUserPromptType !== undefined,
-        'Unexpectedly no opening prompt event before closing one'
-      );
+      if (this.#lastUserPromptType === undefined) {
+        this.#logger?.(
+          LogType.debugError,
+          'Unexpectedly no opening prompt event before closing one'
+        );
+      }
       this.#eventManager.registerEvent(
         {
           type: 'event',
@@ -589,7 +591,13 @@ export class BrowsingContextImpl {
           params: {
             context: this.id,
             accepted,
-            type: this.#lastUserPromptType,
+            // `lastUserPromptType` should never be undefined here, so fallback to
+            // `UNKNOWN`. The fallback is required to prevent tests from hanging while
+            // waiting for the closing event. The cast is required, as the `UNKNOWN` value
+            // is not standard.
+            type:
+              this.#lastUserPromptType ??
+              ('UNKNOWN' as BrowsingContext.UserPromptType),
             userText:
               accepted && params.userInput ? params.userInput : undefined,
           },
