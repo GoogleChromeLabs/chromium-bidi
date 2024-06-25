@@ -88,6 +88,9 @@ export class BrowsingContextImpl {
 
   #originalOpener?: string;
 
+  // Set when the user prompt is opened. Required to provide the type in closing event.
+  #lastUserPromptType?: BrowsingContext.UserPromptType;
+
   private constructor(
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
@@ -575,7 +578,10 @@ export class BrowsingContextImpl {
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
       const accepted = params.result;
-
+      assert(
+        this.#lastUserPromptType !== undefined,
+        'Unexpectedly no opening prompt event before closing one'
+      );
       this.#eventManager.registerEvent(
         {
           type: 'event',
@@ -583,17 +589,20 @@ export class BrowsingContextImpl {
           params: {
             context: this.id,
             accepted,
-            // TODO
-            type: BrowsingContextImpl.#getPromptType(undefined as any),
+            type: this.#lastUserPromptType,
             userText:
               accepted && params.userInput ? params.userInput : undefined,
           },
         },
         this.id
       );
+      this.#lastUserPromptType = undefined;
     });
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
+      const promptType = BrowsingContextImpl.#getPromptType(params.type);
+      // Set the last prompt type to provide it in closing event.
+      this.#lastUserPromptType = promptType;
       this.#eventManager.registerEvent(
         {
           type: 'event',
@@ -601,7 +610,7 @@ export class BrowsingContextImpl {
           params: {
             context: this.id,
             handler: this.#getPromptHandler(),
-            type: BrowsingContextImpl.#getPromptType(params.type),
+            type: promptType,
             message: params.message,
             ...(params.type === 'prompt'
               ? {defaultValue: params.defaultPrompt}
@@ -619,12 +628,12 @@ export class BrowsingContextImpl {
     switch (cdpType) {
       case 'alert':
         return BrowsingContext.UserPromptType.Alert;
+      case 'beforeunload':
+        return BrowsingContext.UserPromptType.Beforeunload;
       case 'confirm':
         return BrowsingContext.UserPromptType.Confirm;
       case 'prompt':
         return BrowsingContext.UserPromptType.Prompt;
-      case 'beforeunload':
-        return BrowsingContext.UserPromptType.Beforeunload;
     }
   }
 
