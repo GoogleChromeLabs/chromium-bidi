@@ -69,6 +69,8 @@ async def test_headless_mode():
 
 @pytest_asyncio.fixture
 async def capabilities(request):
+    if not hasattr(request, 'param') or request.param is None:
+        return {}
     return request.param
 
 
