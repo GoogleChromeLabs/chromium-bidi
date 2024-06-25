@@ -401,8 +401,8 @@ export class NetworkRequest {
     ) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
     } else {
-      void this.continueWithAuth({
-        action: 'default',
+      void this.#continueWithAuth({
+        response: 'Default',
       });
     }
 
@@ -455,44 +455,39 @@ export class NetworkRequest {
       if (overrides.credentials) {
         await Promise.all([
           this.waitNextPhase,
-          this.continueWithAuth({
-            action: 'provideCredentials',
-            credentials: {
-              username: overrides.credentials.username,
-              password: overrides.credentials.password,
-            },
-          } as Network.ContinueWithAuthCredentials),
+          await this.#continueWithAuth({
+            response: 'ProvideCredentials',
+            username: overrides.credentials.username,
+            password: overrides.credentials.password,
+          }),
         ]);
       } else {
         // We need to use `ProvideCredentials`
         // As `Default` may cancel the request
-        return await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
-          requestId: this.#fetchId,
-          authChallengeResponse: {
-            response: 'ProvideCredentials',
-          },
+        return await this.#continueWithAuth({
+          response: 'ProvideCredentials',
         });
       }
     }
 
-    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+    if (this.#interceptPhase === Network.InterceptPhase.ResponseStarted) {
+      const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
+        cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
 
-    await this.cdpClient.sendCommand('Fetch.continueResponse', {
-      requestId: this.#fetchId,
-      responseCode: overrides.statusCode,
-      responsePhrase: overrides.reasonPhrase,
-      responseHeaders,
-    });
-    this.#interceptPhase = undefined;
+      await this.cdpClient.sendCommand('Fetch.continueResponse', {
+        requestId: this.#fetchId,
+        responseCode: overrides.statusCode,
+        responsePhrase: overrides.reasonPhrase,
+        responseHeaders,
+      });
+      this.#interceptPhase = undefined;
+    }
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
   async continueWithAuth(
     authChallenge: Omit<Network.ContinueWithAuthParameters, 'request'>
   ) {
-    assert(this.#fetchId, 'Network Interception not set-up.');
-
     let username: string | undefined;
     let password: string | undefined;
 
@@ -508,15 +503,11 @@ export class NetworkRequest {
       authChallenge.action
     );
 
-    await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
-      requestId: this.#fetchId,
-      authChallengeResponse: {
-        response,
-        username,
-        password,
-      },
+    await this.#continueWithAuth({
+      response,
+      username,
+      password,
     });
-    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
@@ -530,11 +521,8 @@ export class NetworkRequest {
     if (this.interceptPhase === Network.InterceptPhase.AuthRequired) {
       // We need to use `ProvideCredentials`
       // As `Default` may cancel the request
-      return await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
-        requestId: this.#fetchId,
-        authChallengeResponse: {
-          response: 'ProvideCredentials',
-        },
+      return await this.#continueWithAuth({
+        response: 'ProvideCredentials',
       });
     }
 
@@ -578,6 +566,18 @@ export class NetworkRequest {
       this.#response.extraInfo?.statusCode ??
       this.#response.info?.status
     );
+  }
+
+  async #continueWithAuth(
+    authChallengeResponse: Protocol.Fetch.ContinueWithAuthRequest['authChallengeResponse']
+  ) {
+    assert(this.#fetchId, 'Network Interception not set-up.');
+
+    await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
+      requestId: this.#fetchId,
+      authChallengeResponse,
+    });
+    this.#interceptPhase = undefined;
   }
 
   #emitEvent(getEvent: () => NetworkEvent) {
