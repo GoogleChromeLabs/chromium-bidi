@@ -368,7 +368,7 @@ export class NetworkRequest {
       ) {
         this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       } else {
-        void this.continueResponse();
+        void this.#continueResponse();
       }
     } else {
       this.#request.paused = event;
@@ -383,7 +383,7 @@ export class NetworkRequest {
       ) {
         this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
       } else {
-        void this.continueRequest();
+        void this.#continueRequest();
       }
     }
 
@@ -421,15 +421,12 @@ export class NetworkRequest {
   async continueRequest(
     overrides: Omit<Network.ContinueRequestParameters, 'request'> = {}
   ) {
-    assert(this.#fetchId, 'Network Interception not set-up.');
-
     const headers: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
 
     const postData = getCdpBodyFromBiDiBytesValue(overrides.body);
 
-    await this.cdpClient.sendCommand('Fetch.continueRequest', {
-      requestId: this.#fetchId,
+    await this.#continueRequest({
       url: overrides.url,
       method: overrides.method,
       headers,
@@ -442,6 +439,21 @@ export class NetworkRequest {
       method: overrides.method,
       headers: overrides.headers,
     };
+  }
+
+  async #continueRequest(
+    overrides: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'> = {}
+  ) {
+    assert(this.#fetchId, 'Network Interception not set-up.');
+
+    await this.cdpClient.sendCommand('Fetch.continueRequest', {
+      requestId: this.#fetchId,
+      url: overrides.url,
+      method: overrides.method,
+      headers: overrides.headers,
+      postData: overrides.postData,
+    });
+
     this.#interceptPhase = undefined;
   }
 
@@ -449,8 +461,6 @@ export class NetworkRequest {
   async continueResponse(
     overrides: Omit<Network.ContinueResponseParameters, 'request'> = {}
   ) {
-    assert(this.#fetchId, 'Network Interception not set-up.');
-
     if (this.interceptPhase === Network.InterceptPhase.AuthRequired) {
       if (overrides.credentials) {
         await Promise.all([
@@ -474,14 +484,28 @@ export class NetworkRequest {
       const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
         cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
 
-      await this.cdpClient.sendCommand('Fetch.continueResponse', {
-        requestId: this.#fetchId,
+      this.#continueResponse({
         responseCode: overrides.statusCode,
         responsePhrase: overrides.reasonPhrase,
         responseHeaders,
       });
-      this.#interceptPhase = undefined;
     }
+  }
+
+  async #continueResponse({
+    responseCode,
+    responsePhrase,
+    responseHeaders,
+  }: Omit<Protocol.Fetch.ContinueResponseRequest, 'requestId'> = {}) {
+    assert(this.#fetchId, 'Network Interception not set-up.');
+
+    await this.cdpClient.sendCommand('Fetch.continueResponse', {
+      requestId: this.#fetchId,
+      responseCode,
+      responsePhrase,
+      responseHeaders,
+    });
+    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
@@ -529,7 +553,7 @@ export class NetworkRequest {
     // If we don't modify the response
     // just continue the request
     if (!overrides.body && !overrides.headers) {
-      return await this.continueRequest();
+      return await this.#continueRequest();
     }
 
     // TODO: Step 6
