@@ -484,7 +484,7 @@ export class NetworkRequest {
       const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
         cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
 
-      this.#continueResponse({
+      await this.#continueResponse({
         responseCode: overrides.statusCode,
         responsePhrase: overrides.reasonPhrase,
         responseHeaders,
