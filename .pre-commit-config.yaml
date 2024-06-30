@@ -20,7 +20,6 @@
 #
 # Apply all pre-commit hooks to all files:
 #   $ pre-commit run --all-files
-default_stages: [pre-push, manual]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -87,7 +86,9 @@ repos:
       - id: codespell
         # skip false positives
         args:
-          [--skip=package-lock.json, --skip=tests/screenshot/test_screenshot.py]
+          - --skip=package-lock.json
+          - --skip=tests/screenshot/test_screenshot.py
+          - -L=thirdParty
         exclude_types: [pem]
   - repo: https://github.com/google/keep-sorted
     rev: v0.4.0
