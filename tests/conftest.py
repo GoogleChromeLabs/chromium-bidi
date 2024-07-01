@@ -15,15 +15,12 @@
 
 import asyncio
 import os
-import ssl
-from collections.abc import Callable
-from pathlib import Path
+from collections.abc import Callable, Generator
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
 import websockets
-from pytest_httpserver import HTTPServer
 from test_helpers import (execute_command, get_tree, goto_url,
                           read_JSON_message, wait_for_event, wait_for_events)
 
@@ -31,12 +28,18 @@ from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
 
 
-@pytest_asyncio.fixture
-def local_server(httpserver) -> LocalHttpServer:
+@pytest_asyncio.fixture(scope='session')
+def local_server() -> Generator[LocalHttpServer, None, None]:
     """ Returns an instance of a LocalHttpServer. It can be used for testing
-    HTTP requests locally.
+    HTTP or BAD SSL requests.
     """
-    return LocalHttpServer(httpserver)
+    server = LocalHttpServer()
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
 
 
 @pytest_asyncio.fixture
@@ -223,26 +226,26 @@ def url_all_origins(request):
 
 
 @pytest.fixture
-def base_url(local_server: LocalHttpServer):
+def url_base(local_server: LocalHttpServer):
     """Return a generic example URL with status code 200."""
     return local_server.url_base()
 
 
 @pytest.fixture
-def example_url(local_server: LocalHttpServer):
+def url_example(local_server: LocalHttpServer):
     """Return a generic example URL with status code 200."""
     return local_server.url_200()
 
 
 @pytest.fixture
-def another_example_url(local_server: LocalHttpServer):
+def url_another_example(local_server: LocalHttpServer):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
     return local_server.url_200('127.0.0.1')
 
 
 @pytest.fixture
-def auth_required_url(local_server: LocalHttpServer):
+def url_auth_required(local_server: LocalHttpServer):
     """Return a URL that requires authentication (status code 401).
     Alternatively, any of the following URLs could also be used:
         - "https://authenticationtest.com/HTTPAuth/"
@@ -253,7 +256,7 @@ def auth_required_url(local_server: LocalHttpServer):
 
 
 @pytest.fixture
-def hang_url(local_server: LocalHttpServer):
+def url_hang_forever(local_server: LocalHttpServer):
     """Return a URL that hangs forever."""
     try:
         yield local_server.url_hang_forever()
@@ -262,35 +265,7 @@ def hang_url(local_server: LocalHttpServer):
 
 
 @pytest.fixture(scope="session")
-def ssl_context_err_cert_authority_invalid():
-    """Return a SSL context with an invalid certificate authority."""
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-
-    cert_file_name = Path(__file__).parent / "tools" / "cert.pem"
-    key_file_name = Path(__file__).parent / "tools" / "key.pem"
-
-    context.load_cert_chain(cert_file_name, key_file_name)
-
-    return context
-
-
-@pytest.fixture(scope="session")
-def https_server_err_cert_authority_invalid(
-        ssl_context_err_cert_authority_invalid):
-    """Return a HTTPServer instance with SSL enabled.
-    See https://pytest-httpserver.readthedocs.io/en/latest/fixtures.html#make-httpserver"""
-    server = HTTPServer(ssl_context=ssl_context_err_cert_authority_invalid)
-    server.start()
-
-    yield server
-
-    server.clear()
-    if server.is_running():
-        server.stop()
-
-
-@pytest.fixture(scope="session")
-def bad_ssl_url(https_server_err_cert_authority_invalid):
+def url_bad_ssl(local_server: LocalHttpServer):
     """
     Return a URL with an invalid certificate authority from a SSL certificate.
     In Chromium, this generates the following error:
@@ -298,11 +273,11 @@ def bad_ssl_url(https_server_err_cert_authority_invalid):
     > Your connection is not private
     > NET::ERR_CERT_AUTHORITY_INVALID
     """
-    return https_server_err_cert_authority_invalid.url_for("/")
+    return local_server.url_bad_ssl()
 
 
 @pytest.fixture
-def cacheable_url(local_server: LocalHttpServer):
+def url_cacheable(local_server: LocalHttpServer):
     """Return a generic example URL that can be cached."""
     return local_server.url_cacheable()
 

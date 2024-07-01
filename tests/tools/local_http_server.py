@@ -14,7 +14,9 @@
 #  limitations under the License.
 
 import base64
+import ssl
 from datetime import datetime
+from pathlib import Path
 from threading import Event
 
 from pytest_httpserver import HTTPServer
@@ -39,11 +41,30 @@ class LocalHttpServer:
 
     default_200_page_content: str = 'default 200 page'
 
-    def __init__(self, http_server: HTTPServer) -> None:
-        super().__init__()
-        self.__http_server = http_server
+    def clear(self):
+        self.__http_server.clear()
 
-        http_server.clear()
+    def is_running(self):
+        return self.__http_server.is_running()
+
+    def stop(self):
+        self.hang_forever_stop()
+        self.__http_server.stop()
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        bad_ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+
+        cert_file_name = Path(__file__).parent / "cert.pem"
+        key_file_name = Path(__file__).parent / "key.pem"
+
+        bad_ssl_context.load_cert_chain(cert_file_name, key_file_name)
+
+        self.__http_server = HTTPServer(sl_context=bad_ssl_context)
+
+        self.__http_server.start()
+        self.__http_server.clear()
 
         self.__start_time = datetime.now()
 
@@ -130,7 +151,10 @@ class LocalHttpServer:
         if self.hang_forever_stop_flag is not None:
             self.hang_forever_stop_flag.set()
 
-    def _url_for(self, suffix: str, host: str = 'localhost') -> str:
+    def _url_for(self,
+                 suffix: str,
+                 host: str = 'localhost',
+                 protocol='http') -> str:
         """
         Return an url for a given suffix.
 
@@ -141,11 +165,6 @@ class LocalHttpServer:
         :param host: the host to use in the url. Default is ``localhost``.
         :return: the full url which refers to the server
         """
-        if self.__http_server.ssl_context is None:
-            protocol = "http"
-        else:
-            protocol = "https"
-
         if not suffix.startswith("/"):
             suffix = "/" + suffix
 
@@ -163,6 +182,11 @@ class LocalHttpServer:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
         return self._url_for(self.__path_200, host)
+
+    def url_bad_ssl(self) -> str:
+        """Returns the url for the 200 page with the `default_200_page_content`.
+        """
+        return self._url_for(self.__path_200, protocol='https')
 
     def url_permanent_redirect(self) -> str:
         """Returns the url for the permanent redirect page, redirecting to the
