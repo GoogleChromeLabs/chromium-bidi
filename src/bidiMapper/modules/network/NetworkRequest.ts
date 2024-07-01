@@ -42,6 +42,7 @@ import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
   bidiBodySizeFromCdpPostDataEntries,
+  networkHeaderFromCookieHeaders,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -78,12 +79,13 @@ export class NetworkRequest {
     auth?: Protocol.Fetch.AuthRequiredEvent;
   } = {};
 
-  #requestOverrides?: {
+  #requestOverrides: {
     url?: string;
     method?: string;
     headers?: Network.Header[];
+    cookies?: Network.CookieHeader[];
     bodySize?: number;
-  };
+  } = {};
 
   #response: {
     hasExtraInfo?: boolean;
@@ -146,7 +148,7 @@ export class NetworkRequest {
     const url =
       this.#response.info?.url ??
       this.#response.paused?.request.url ??
-      this.#requestOverrides?.url ??
+      this.#requestOverrides.url ??
       this.#request.auth?.request.url ??
       this.#request.info?.request.url ??
       this.#request.paused?.request.url ??
@@ -157,7 +159,7 @@ export class NetworkRequest {
 
   get method(): string {
     return (
-      this.#requestOverrides?.method ??
+      this.#requestOverrides.method ??
       this.#request.info?.request.method ??
       this.#request.paused?.request.method ??
       this.#request.auth?.request.method ??
@@ -423,8 +425,24 @@ export class NetworkRequest {
   async continueRequest(
     overrides: Omit<Network.ContinueRequestParameters, 'request'> = {}
   ) {
-    const headers: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+    let overrideHeaders: Network.Header[] | undefined = overrides.headers;
+    const cookieHeader = networkHeaderFromCookieHeaders(overrides.cookies);
+
+    if (cookieHeader && !overrideHeaders) {
+      overrideHeaders = this.#requestHeaders;
+    }
+    if (cookieHeader && overrideHeaders) {
+      overrideHeaders.filter(
+        (header) =>
+          header.name.localeCompare('cookie', undefined, {
+            sensitivity: 'base',
+          }) !== 0
+      );
+      overrideHeaders.push(cookieHeader);
+    }
+
+    let headers: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
 
     const postData = getCdpBodyFromBiDiBytesValue(overrides.body);
 
@@ -435,13 +453,13 @@ export class NetworkRequest {
       postData,
     });
 
-    // TODO: Store postData's size only
-    this.#requestOverrides = {
-      url: overrides.url,
-      method: overrides.method,
-      headers: overrides.headers,
-      bodySize: getSizeFromBiDiBytesValue(overrides.body),
-    };
+    this.#requestOverrides.headers = cookieHeader
+      ? overrideHeaders
+      : overrides.headers;
+    this.#requestOverrides.cookies = overrides.cookies;
+    this.#requestOverrides.url = overrides.url;
+    this.#requestOverrides.method = overrides.method;
+    this.#requestOverrides.bodySize = getSizeFromBiDiBytesValue(overrides.body);
   }
 
   async #continueRequest(
@@ -735,13 +753,44 @@ export class NetworkRequest {
     );
   }
 
-  #getRequestData(): Network.RequestData {
-    const cookies = this.#request.extraInfo
-      ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
-      : [];
+  get #cookies() {
+    let cookies: Network.Cookie[] = [];
+    if (this.#requestOverrides.cookies) {
+      cookies = this.#requestOverrides.cookies.map((cookie) => ({
+        name: cookie.name,
+        value: cookie.value,
+        domain: '',
+        path: '',
+        size: 0,
+        httpOnly: false,
+        secure: false,
+        sameSite: Network.SameSite.None,
+      }));
+    } else if (this.#request.extraInfo) {
+      cookies = this.#request.extraInfo.associatedCookies
+        .filter(({blockedReasons}) => {
+          return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
+        })
+        .map(({cookie}) => cdpToBiDiCookie(cookie));
+    }
+    return cookies;
+  }
 
+  get #bodySize() {
+    let bodySize: number = 0;
+    if (typeof this.#requestOverrides.bodySize === 'number') {
+      bodySize = this.#requestOverrides.bodySize;
+    } else {
+      bodySize = bidiBodySizeFromCdpPostDataEntries(
+        this.#request.info?.request.postDataEntries ?? []
+      );
+    }
+    return bodySize;
+  }
+
+  get #requestHeaders(): Network.Header[] {
     let headers: Network.Header[] = [];
-    if (this.#requestOverrides?.headers) {
+    if (this.#requestOverrides.headers) {
       headers = this.#requestOverrides.headers;
     } else {
       headers = [
@@ -753,23 +802,21 @@ export class NetworkRequest {
         ),
       ];
     }
-    let bodySize: number = 0;
-    if (typeof this.#requestOverrides?.bodySize === 'number') {
-      bodySize = this.#requestOverrides.bodySize;
-    } else {
-      bodySize = bidiBodySizeFromCdpPostDataEntries(
-        this.#request.info?.request.postDataEntries ?? []
-      );
-    }
+
+    return headers;
+  }
+
+  #getRequestData(): Network.RequestData {
+    const headers = this.#requestHeaders;
 
     return {
       request: this.#id,
       url: this.url,
       method: this.method,
       headers,
-      cookies,
+      cookies: this.#cookies,
       headersSize: computeHeadersSize(headers),
-      bodySize,
+      bodySize: this.#bodySize,
       timings: this.#getTimings(),
     };
   }
@@ -890,16 +937,6 @@ export class NetworkRequest {
       default:
         return 'other';
     }
-  }
-
-  static #getCookies(
-    associatedCookies: Protocol.Network.AssociatedCookie[]
-  ): Network.Cookie[] {
-    return associatedCookies
-      .filter(({blockedReasons}) => {
-        return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
-      })
-      .map(({cookie}) => cdpToBiDiCookie(cookie));
   }
 }
 
