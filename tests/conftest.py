@@ -29,11 +29,21 @@ from tools.local_http_server import LocalHttpServer
 
 
 @pytest_asyncio.fixture(scope='session')
-def local_server() -> Generator[LocalHttpServer, None, None]:
-    """ Returns an instance of a LocalHttpServer. It can be used for testing
-    HTTP or BAD SSL requests.
-    """
+def local_server_http() -> Generator[LocalHttpServer, None, None]:
+    """ Returns an instance of a LocalHttpServer without SSL. """
     server = LocalHttpServer()
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
+def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
+    """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
+    server = LocalHttpServer(protocol='https')
     yield server
 
     server.clear()
@@ -226,46 +236,46 @@ def url_all_origins(request):
 
 
 @pytest.fixture
-def url_base(local_server: LocalHttpServer):
+def url_base(local_server_http):
     """Return a generic example URL with status code 200."""
-    return local_server.url_base()
+    return local_server_http.url_base()
 
 
 @pytest.fixture
-def url_example(local_server: LocalHttpServer):
+def url_example(local_server_http):
     """Return a generic example URL with status code 200."""
-    return local_server.url_200()
+    return local_server_http.url_200()
 
 
 @pytest.fixture
-def url_another_example(local_server: LocalHttpServer):
+def url_another_example(local_server_http):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server.url_200('127.0.0.1')
+    return local_server_http.url_200('127.0.0.1')
 
 
 @pytest.fixture
-def url_auth_required(local_server: LocalHttpServer):
+def url_auth_required(local_server_http):
     """Return a URL that requires authentication (status code 401).
     Alternatively, any of the following URLs could also be used:
         - "https://authenticationtest.com/HTTPAuth/"
         - "http://the-internet.herokuapp.com/basic_auth"
         - "http://httpstat.us/401"
     """
-    return local_server.url_basic_auth()
+    return local_server_http.url_basic_auth()
 
 
 @pytest.fixture
-def url_hang_forever(local_server: LocalHttpServer):
+def url_hang_forever(local_server_http):
     """Return a URL that hangs forever."""
     try:
-        yield local_server.url_hang_forever()
+        yield local_server_http.url_hang_forever()
     finally:
-        local_server.hang_forever_stop()
+        local_server_http.hang_forever_stop()
 
 
 @pytest.fixture(scope="session")
-def url_bad_ssl(local_server: LocalHttpServer):
+def url_bad_ssl(local_server_bad_ssl):
     """
     Return a URL with an invalid certificate authority from a SSL certificate.
     In Chromium, this generates the following error:
@@ -273,13 +283,13 @@ def url_bad_ssl(local_server: LocalHttpServer):
     > Your connection is not private
     > NET::ERR_CERT_AUTHORITY_INVALID
     """
-    return local_server.url_bad_ssl()
+    return local_server_bad_ssl.url_200()
 
 
 @pytest.fixture
-def url_cacheable(local_server: LocalHttpServer):
+def url_cacheable(local_server_http):
     """Return a generic example URL that can be cached."""
-    return local_server.url_cacheable()
+    return local_server_http.url_cacheable()
 
 
 @pytest.fixture

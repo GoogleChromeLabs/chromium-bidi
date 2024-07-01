@@ -18,6 +18,7 @@ import ssl
 from datetime import datetime
 from pathlib import Path
 from threading import Event
+from typing import Literal
 
 from pytest_httpserver import HTTPServer
 from werkzeug.wrappers import Request, Response
@@ -39,6 +40,8 @@ class LocalHttpServer:
     __path_hang_forever = "/hang_forever"
     __path_cacheable = "/cacheable"
 
+    __protocol: Literal['http', 'https']
+
     default_200_page_content: str = 'default 200 page'
 
     def clear(self):
@@ -51,17 +54,21 @@ class LocalHttpServer:
         self.hang_forever_stop()
         self.__http_server.stop()
 
-    def __init__(self) -> None:
+    def __init__(self, protocol: Literal['http', 'https'] = 'http') -> None:
         super().__init__()
 
-        bad_ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        self.__protocol = protocol
 
-        cert_file_name = Path(__file__).parent / "cert.pem"
-        key_file_name = Path(__file__).parent / "key.pem"
+        ssl_context = None
+        if protocol == 'https':
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            cert_file_name = Path(__file__).parent / "cert.pem"
+            key_file_name = Path(__file__).parent / "key.pem"
+            ssl_context.load_cert_chain(cert_file_name, key_file_name)
+        elif protocol != 'http':
+            raise ValueError(f"Unsupported protocol: {protocol}")
 
-        bad_ssl_context.load_cert_chain(cert_file_name, key_file_name)
-
-        self.__http_server = HTTPServer(sl_context=bad_ssl_context)
+        self.__http_server = HTTPServer(ssl_context=ssl_context)
 
         self.__http_server.start()
         self.__http_server.clear()
@@ -151,10 +158,7 @@ class LocalHttpServer:
         if self.hang_forever_stop_flag is not None:
             self.hang_forever_stop_flag.set()
 
-    def _url_for(self,
-                 suffix: str,
-                 host: str = 'localhost',
-                 protocol='http') -> str:
+    def _url_for(self, suffix: str, host: str = 'localhost') -> str:
         """
         Return an url for a given suffix.
 
@@ -170,8 +174,8 @@ class LocalHttpServer:
 
         host = self.__http_server.format_host(host)
 
-        return "{}://{}:{}{}".format(protocol, host, self.__http_server.port,
-                                     suffix)
+        return "{}://{}:{}{}".format(self.__protocol, host,
+                                     self.__http_server.port, suffix)
 
     def url_base(self, host='localhost') -> str:
         """Returns the url for the base page to navigate and prevent CORS.
@@ -182,11 +186,6 @@ class LocalHttpServer:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
         return self._url_for(self.__path_200, host)
-
-    def url_bad_ssl(self) -> str:
-        """Returns the url for the 200 page with the `default_200_page_content`.
-        """
-        return self._url_for(self.__path_200, protocol='https')
 
     def url_permanent_redirect(self) -> str:
         """Returns the url for the permanent redirect page, redirecting to the
