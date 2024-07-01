@@ -56,7 +56,7 @@ export class NetworkProcessor {
 
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map((context) => {
-        return context.cdpTarget.toggleFetchIfNeeded();
+        return context.cdpTarget.toggleNetwork();
       })
     );
 
@@ -186,7 +186,7 @@ export class NetworkProcessor {
 
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map((context) => {
-        return context.cdpTarget.toggleFetchIfNeeded();
+        return context.cdpTarget.toggleNetwork();
       })
     );
 
