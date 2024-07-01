@@ -44,10 +44,18 @@ class LocalHttpServer:
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
     __path_cacheable = "/cacheable"
+    # __path_sw_page_bad_ssl = "/sw_bad_ssl.html"
+    # __path_empty_script = "/empty.js"
 
     __protocol: Literal['http', 'https']
 
     content_200: str = 'default 200 page'
+    content_200_page: str = 'default 200 page'
+
+    # def __content_sw_page_bad_ssl(self) -> str:
+    #     return f"""<script>
+    #       window.registrationPromise = navigator.serviceWorker.register('{self.url_empty_script(protocol='https')}');
+    #     </script>"""
 
     def clear(self):
         self.__http_server.clear()

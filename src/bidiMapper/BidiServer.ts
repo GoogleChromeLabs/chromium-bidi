@@ -154,6 +154,10 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     const [{browserContextIds}, {targetInfos}] = await Promise.all([
       browserCdpClient.sendCommand('Target.getBrowserContexts'),
       browserCdpClient.sendCommand('Target.getTargets'),
+      // This is required to ignore certificate errors when service worker is fetched.
+      browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+        ignore: options?.acceptInsecureCerts ?? false,
+      }),
     ]);
     let defaultUserContextId = 'default';
     for (const info of targetInfos) {
