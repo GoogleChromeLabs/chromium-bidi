@@ -14,6 +14,7 @@
 #  limitations under the License.
 
 import pytest
+from anys import ANY_STR
 from test_helpers import execute_command
 
 
@@ -23,12 +24,18 @@ from test_helpers import execute_command
 }],
                          indirect=True)
 async def test_serviceWorker_acceptInsecureCertsCapability_respected(
-        websocket, context_id, url_bad_ssl, local_server):
+        websocket, context_id, url_bad_ssl, local_server_bad_ssl):
+    service_worker_script = local_server_bad_ssl.url_200(
+        content='', content_type='text/javascript')
+    service_worker_page = local_server_bad_ssl.url_200(content=f"""<script>
+          window.registrationPromise = navigator.serviceWorker.register('{service_worker_script}');
+        </script>""")
+
     await execute_command(
         websocket, {
             'method': 'browsingContext.navigate',
             'params': {
-                'url': local_server.url_service_worker_bad_ssl(),
+                'url': service_worker_page,
                 'wait': 'complete',
                 'context': context_id
             }
@@ -45,5 +52,11 @@ async def test_serviceWorker_acceptInsecureCertsCapability_respected(
                 }
             }
         })
-    assert resp['type'] == 'success'
-    assert resp['result'] == {'type': 'boolean', 'value': True}
+    assert resp == {
+        'realm': ANY_STR,
+        'result': {
+            'type': 'boolean',
+            'value': True,
+        },
+        'type': 'success',
+    }
