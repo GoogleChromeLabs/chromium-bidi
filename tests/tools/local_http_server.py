@@ -14,7 +14,6 @@
 #  limitations under the License.
 
 import base64
-import re
 import ssl
 import uuid
 from datetime import datetime
@@ -27,8 +26,12 @@ from werkzeug.wrappers import Request, Response
 
 
 class LocalHttpServer:
-    """A wrapper of `pytest_httpserver.httpserver` to simplify the usage. Sets
-    up common use cases and provides url for them."""
+    """
+    A wrapper of `pytest_httpserver.httpserver` to simplify the usage. Sets up
+    common use cases and provides url for them.
+    NOTE: the server does not support concurrent requests to different origins.
+    If needed, use a instance of the server per origin.
+    """
 
     __http_server: HTTPServer
 
@@ -57,7 +60,12 @@ class LocalHttpServer:
         self.hang_forever_stop()
         self.__http_server.stop()
 
-    def __init__(self, protocol: Literal['http', 'https'] = 'http') -> None:
+    def __html_doc(self, content):
+        return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
+
+    def __init__(self,
+                 host: str = 'localhost',
+                 protocol: Literal['http', 'https'] = 'http') -> None:
         super().__init__()
 
         self.__protocol = protocol
@@ -71,20 +79,17 @@ class LocalHttpServer:
         elif protocol != 'http':
             raise ValueError(f"Unsupported protocol: {protocol}")
 
-        self.__http_server = HTTPServer(ssl_context=ssl_context)
+        self.__http_server = HTTPServer(host=host, ssl_context=ssl_context)
 
         self.__http_server.start()
         self.__http_server.clear()
 
         self.__start_time = datetime.now()
 
-        def html_doc(content):
-            return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
-
         self.__http_server \
             .expect_request(self.__path_base) \
             .respond_with_data(
-                html_doc("I prevent CORS"),
+                self.__html_doc("I prevent CORS"),
                 headers={"Content-Type": "text/html"})
 
         self.__http_server \
@@ -93,22 +98,11 @@ class LocalHttpServer:
                 "",
                 headers={"Content-Type": "image/x-icon"})
 
-        def custom_content_handler(request: Request):
-            content_id = request.path.split(self.__path_200 + "/")[1]
-            if self.__content_map.get(content_id) is not None:
-                return Response(html_doc(self.__content_map[content_id]),
-                                200,
-                                content_type="text/html")
-            return Response('not found', 404, content_type="text/html")
-
-        self.__http_server.expect_request(
-            re.compile("/200/.+")).respond_with_handler(custom_content_handler)
-
         # Set up 200 page.
         self.__http_server \
             .expect_request(self.__path_200) \
             .respond_with_data(
-                html_doc(self.content_200),
+                self.__html_doc(self.content_200),
                 headers={"Content-Type": "text/html"})
 
         # Set up permanent redirect.
@@ -149,7 +143,7 @@ class LocalHttpServer:
             .respond_with_handler(hang_forever)
 
         def cache(request: Request):
-            content = html_doc(self.content_200)
+            content = self.__html_doc(self.content_200)
             if_modified_since = request.headers.get("If-Modified-Since")
 
             if if_modified_since is not None:
@@ -172,58 +166,44 @@ class LocalHttpServer:
         if self.hang_forever_stop_flag is not None:
             self.hang_forever_stop_flag.set()
 
-    def _url_for(self, suffix: str, host: str = 'localhost') -> str:
-        """
-        Return an url for a given suffix.
-
-        Implementation is the same as the original one, but with a customizable
-        host: https://github.com/csernazs/pytest-httpserver/blob/8110d9d543de3b7c151bc1b5c8e85c01b05b226d/pytest_httpserver/httpserver.py#L665
-        :param suffix: the suffix which will be added to the base url. It can
-            start with ``/`` (slash) or not, the url will be the same.
-        :param host: the host to use in the url. Default is ``localhost``.
-        :return: the full url which refers to the server
-        """
-        if not suffix.startswith("/") and suffix != "":
-            suffix = "/" + suffix
-
-        host = self.__http_server.format_host(host)
-
-        return "{}://{}:{}{}".format(self.__protocol, host,
-                                     self.__http_server.port, suffix)
-
     def origin(self) -> str:
         """Returns the url for the base page to navigate and prevent CORS.
         """
-        return self._url_for("")
+        return self.url_base()[:-1]
 
-    def url_base(self, host='localhost') -> str:
+    def url_base(self) -> str:
         """Returns the url for the base page to navigate and prevent CORS.
         """
-        return self._url_for(self.__path_base, host)
+        return self.__http_server.url_for(self.__path_base)
 
-    def url_200(self, host='localhost', content=None) -> str:
+    def url_200(self, content=None) -> str:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
         if content is not None:
-            content_id = str(uuid.uuid4())
-            self.__content_map[content_id] = content
-            return self._url_for(f"{self.__path_200}/{content_id}", host)
+            path = f"{self.__path_200}/{str(uuid.uuid4())}"
+            self.__http_server \
+                .expect_request(path) \
+                .respond_with_data(
+                    self.__html_doc(content),
+                    headers={"Content-Type": "text/html"})
 
-        return self._url_for(self.__path_200, host)
+            return self.__http_server.url_for(path)
+
+        return self.__http_server.url_for(self.__path_200)
 
     def url_permanent_redirect(self) -> str:
         """Returns the url for the permanent redirect page, redirecting to the
         200 page."""
-        return self._url_for(self.__path_permanent_redirect)
+        return self.__http_server.url_for(self.__path_permanent_redirect)
 
     def url_basic_auth(self) -> str:
         """Returns the url for the page with a basic auth."""
-        return self._url_for(self.__path_basic_auth)
+        return self.__http_server.url_for(self.__path_basic_auth)
 
     def url_hang_forever(self) -> str:
         """Returns the url for the page, request to which will never be finished."""
-        return self._url_for(self.__path_hang_forever)
+        return self.__http_server.url_for(self.__path_hang_forever)
 
-    def url_cacheable(self, host='localhost') -> str:
+    def url_cacheable(self) -> str:
         """Returns the url for the cacheable page with the `default_200_page_content`."""
-        return self._url_for(self.__path_cacheable, host)
+        return self.__http_server.url_for(self.__path_cacheable)

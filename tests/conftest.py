@@ -30,8 +30,24 @@ from tools.local_http_server import LocalHttpServer
 
 @pytest_asyncio.fixture(scope='session')
 def local_server_http() -> Generator[LocalHttpServer, None, None]:
-    """ Returns an instance of a LocalHttpServer without SSL. """
+    """
+    Returns an instance of a LocalHttpServer without SSL pointing to localhost.
+    """
     server = LocalHttpServer()
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
+def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
+    """
+    Returns an instance of a LocalHttpServer without SSL pointing to `127.0.0.1`
+    """
+    server = LocalHttpServer('127.0.0.1')
     yield server
 
     server.clear()
@@ -241,10 +257,10 @@ def url_example(local_server_http):
 
 
 @pytest.fixture
-def url_another_example(local_server_http):
+def url_another_example(local_server_http_another_host):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server_http.url_200('127.0.0.1')
+    return local_server_http_another_host.url_200()
 
 
 @pytest.fixture
