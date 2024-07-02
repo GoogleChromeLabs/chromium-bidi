@@ -47,11 +47,11 @@ async def get_content(websocket, context_id, url):
 @pytest.mark.asyncio
 async def test_local_server_200(websocket, context_id, local_server_http):
     assert await get_content(websocket, context_id, local_server_http.url_200()) \
-           == local_server_http.default_200_page_content
+           == local_server_http.content_200
 
 
 @pytest.mark.asyncio
 async def test_local_server_redirect(websocket, context_id, local_server_http):
     assert await get_content(websocket, context_id,
                              local_server_http.url_permanent_redirect()) \
-           == local_server_http.default_200_page_content
+           == local_server_http.content_200

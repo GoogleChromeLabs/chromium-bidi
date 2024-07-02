@@ -514,7 +514,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
+@pytest.mark.parametrize('capabilities', [{}, {
     'acceptInsecureCerts': True
 }, {
     'acceptInsecureCerts': False
@@ -533,7 +533,7 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
                 }
             })
 
-    if capabilities['acceptInsecureCerts']:
+    if capabilities.get('acceptInsecureCerts'):
         await navigate()
     else:
         with pytest.raises(Exception,

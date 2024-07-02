@@ -42,7 +42,7 @@ class LocalHttpServer:
 
     __protocol: Literal['http', 'https']
 
-    default_200_page_content: str = 'default 200 page'
+    content_200: str = 'default 200 page'
 
     def clear(self):
         self.__http_server.clear()
@@ -94,7 +94,7 @@ class LocalHttpServer:
         self.__http_server \
             .expect_request(self.__path_200) \
             .respond_with_data(
-                html_doc(self.default_200_page_content),
+                html_doc(self.content_200),
                 headers={"Content-Type": "text/html"})
 
         # Set up permanent redirect.
@@ -135,7 +135,7 @@ class LocalHttpServer:
             .respond_with_handler(hang_forever)
 
         def cache(request: Request):
-            content = html_doc(self.default_200_page_content)
+            content = html_doc(self.content_200)
             if_modified_since = request.headers.get("If-Modified-Since")
 
             if if_modified_since is not None:

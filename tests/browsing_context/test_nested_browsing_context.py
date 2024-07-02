@@ -326,8 +326,8 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedContexts_c
 
 @pytest.mark.asyncio
 async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
-        websocket, context_id, url_cross_origin, html, iframe):
-    page_with_nested_iframe = html(iframe(url_cross_origin))
+        websocket, context_id, url_all_origins, html, iframe):
+    page_with_nested_iframe = html(iframe(url_all_origins))
     await goto_url(websocket, context_id, page_with_nested_iframe, "complete")
 
     result = await get_tree(websocket)
@@ -337,7 +337,7 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
             "context": context_id,
             "children": [{
                 "context": ANY_STR,
-                "url": url_cross_origin,
+                "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
                 "originalOpener": None

@@ -214,25 +214,18 @@ def url_same_origin():
     return 'about:blank'
 
 
-# TODO: make offline.
-@pytest.fixture(params=[
-    'https://example.com/',  # Another domain: Cross-origin
-    'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
-])
-def url_cross_origin(request):
-    """Return a cross-origin URL."""
-    return request.param
-
-
-# TODO: make offline.
-@pytest.fixture(params=[
-    'about:blank',  # Same-origin
-    'https://example.com/',  # Another domain: Cross-origin
-    'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
-])
-def url_all_origins(request):
-    """Return a URL exhaustively, including same-origin and cross-origin."""
-    return request.param
+@pytest.fixture(
+    params=['url_example', 'url_another_example', 'html', 'about:blank'])
+def url_all_origins(request, url_example, url_another_example, html):
+    if request.param == 'url_example':
+        return url_example
+    if request.param == 'url_another_example':
+        return url_another_example
+    if request.param == 'html':
+        return html('data:text/html,<h2>some page</h2>')
+    if request.param == 'about:blank':
+        return 'about:blank'
+    raise ValueError(f"Unknown parameter: {request.param}")
 
 
 @pytest.fixture
