@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.0...chromium-bidi-v0.6.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* the capability to ignore cert errors should be browser-wide  ([#2369](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2369)) ([6db665b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6db665b2a989f93b5fa3d2b3881ba16fd5248442))
+
 ## [0.6.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.24...chromium-bidi-v0.6.0) (2024-06-28)
 
 
