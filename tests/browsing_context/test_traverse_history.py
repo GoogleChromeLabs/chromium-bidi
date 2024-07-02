@@ -25,6 +25,7 @@ async def test_traverse_history(websocket, context_id):
     urls = []
     for i in range(HISTORY_LENGTH + 1):
         # TODO: use `html` fixture instead.
+        #  https://github.com/GoogleChromeLabs/chromium-bidi/issues/2376
         url = f'data:text/html,{i}'
         urls.append(url)
         await goto_url(websocket, context_id, url)
