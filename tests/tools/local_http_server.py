@@ -14,7 +14,9 @@
 #  limitations under the License.
 
 import base64
+import re
 import ssl
+import uuid
 from datetime import datetime
 from pathlib import Path
 from threading import Event
@@ -41,6 +43,7 @@ class LocalHttpServer:
     __path_cacheable = "/cacheable"
 
     __protocol: Literal['http', 'https']
+    __content_map: dict[str, str] = {}
 
     content_200: str = 'default 200 page'
 
@@ -89,6 +92,17 @@ class LocalHttpServer:
             .respond_with_data(
                 "",
                 headers={"Content-Type": "image/x-icon"})
+
+        def custom_content_handler(request: Request):
+            content_id = request.path.split(self.__path_200 + "/")[1]
+            if self.__content_map.get(content_id) is not None:
+                return Response(html_doc(self.__content_map[content_id]),
+                                200,
+                                content_type="text/html")
+            return Response('not found', 404, content_type="text/html")
+
+        self.__http_server.expect_request(
+            re.compile("/200/.+")).respond_with_handler(custom_content_handler)
 
         # Set up 200 page.
         self.__http_server \
@@ -182,9 +196,14 @@ class LocalHttpServer:
         """
         return self._url_for(self.__path_base, host)
 
-    def url_200(self, host='localhost') -> str:
+    def url_200(self, host='localhost', content=None) -> str:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
+        if content is not None:
+            content_id = str(uuid.uuid4())
+            self.__content_map[content_id] = content
+            return self._url_for(f"{self.__path_200}/{content_id}", host)
+
         return self._url_for(self.__path_200, host)
 
     def url_permanent_redirect(self) -> str:

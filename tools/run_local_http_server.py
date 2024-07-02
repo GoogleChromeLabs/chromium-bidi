@@ -28,6 +28,7 @@ local_server_bad_ssl = local_http_server.LocalHttpServer(protocol='https')
 
 print(f"""Local http server started...
   - 200: {local_server_http.url_200()}
+  - custom content: {local_server_http.url_200(content='<h1>some custom content</h1>')}
   - 301 / permanent redirect: {local_server_http.url_permanent_redirect()}
   - 401 / basic auth: {local_server_http.url_basic_auth()}
   - hangs forever: {local_server_http.url_hang_forever()}

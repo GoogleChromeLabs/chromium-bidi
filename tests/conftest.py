@@ -397,10 +397,10 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 
 
 @pytest.fixture
-def html():
-    """Return a factory for HTML data URL with the given content."""
+def html(local_server_http):
+    """Return a factory for URL with the given content."""
     def html(content=""):
-        return f'data:text/html,{content}'
+        return local_server_http.url_200(content=content)
 
     return html
 
