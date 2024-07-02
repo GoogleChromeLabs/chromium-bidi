@@ -79,13 +79,13 @@ export class NetworkRequest {
     auth?: Protocol.Fetch.AuthRequiredEvent;
   } = {};
 
-  #requestOverrides: {
+  #requestOverrides?: {
     url?: string;
     method?: string;
     headers?: Network.Header[];
     cookies?: Network.CookieHeader[];
     bodySize?: number;
-  } = {};
+  };
 
   #response: {
     hasExtraInfo?: boolean;
@@ -148,7 +148,7 @@ export class NetworkRequest {
     const url =
       this.#response.info?.url ??
       this.#response.paused?.request.url ??
-      this.#requestOverrides.url ??
+      this.#requestOverrides?.url ??
       this.#request.auth?.request.url ??
       this.#request.info?.request.url ??
       this.#request.paused?.request.url ??
@@ -159,7 +159,7 @@ export class NetworkRequest {
 
   get method(): string {
     return (
-      this.#requestOverrides.method ??
+      this.#requestOverrides?.method ??
       this.#request.info?.request.method ??
       this.#request.paused?.request.method ??
       this.#request.auth?.request.method ??
@@ -453,13 +453,13 @@ export class NetworkRequest {
       postData,
     });
 
-    this.#requestOverrides.headers = cookieHeader
-      ? overrideHeaders
-      : overrides.headers;
-    this.#requestOverrides.cookies = overrides.cookies;
-    this.#requestOverrides.url = overrides.url;
-    this.#requestOverrides.method = overrides.method;
-    this.#requestOverrides.bodySize = getSizeFromBiDiBytesValue(overrides.body);
+    this.#requestOverrides = {
+      headers: cookieHeader ? overrideHeaders : overrides.headers,
+      cookies: overrides.cookies,
+      url: overrides.url,
+      method: overrides.method,
+      bodySize: getSizeFromBiDiBytesValue(overrides.body),
+    };
   }
 
   async #continueRequest(
@@ -755,18 +755,7 @@ export class NetworkRequest {
 
   get #cookies() {
     let cookies: Network.Cookie[] = [];
-    if (this.#requestOverrides.cookies) {
-      cookies = this.#requestOverrides.cookies.map((cookie) => ({
-        name: cookie.name,
-        value: cookie.value,
-        domain: '',
-        path: '',
-        size: 0,
-        httpOnly: false,
-        secure: false,
-        sameSite: Network.SameSite.None,
-      }));
-    } else if (this.#request.extraInfo) {
+    if (this.#request.extraInfo) {
       cookies = this.#request.extraInfo.associatedCookies
         .filter(({blockedReasons}) => {
           return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
@@ -778,7 +767,7 @@ export class NetworkRequest {
 
   get #bodySize() {
     let bodySize: number = 0;
-    if (typeof this.#requestOverrides.bodySize === 'number') {
+    if (typeof this.#requestOverrides?.bodySize === 'number') {
       bodySize = this.#requestOverrides.bodySize;
     } else {
       bodySize = bidiBodySizeFromCdpPostDataEntries(
@@ -790,7 +779,7 @@ export class NetworkRequest {
 
   get #requestHeaders(): Network.Header[] {
     let headers: Network.Header[] = [];
-    if (this.#requestOverrides.headers) {
+    if (this.#requestOverrides?.headers) {
       headers = this.#requestOverrides.headers;
     } else {
       headers = [
