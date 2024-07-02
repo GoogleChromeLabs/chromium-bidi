@@ -405,6 +405,16 @@ def html(local_server_http):
     return html
 
 
+# TODO: replace with `html` fixture.
+@pytest.fixture
+def html_data():
+    """Return a factory for data html with the given content."""
+    def html_data(content=""):
+        return f'data:text/html,{content}'
+
+    return html_data
+
+
 @pytest.fixture
 def iframe():
     """Return a factory for <iframe> with the given src."""

@@ -183,13 +183,18 @@ class LocalHttpServer:
         :param host: the host to use in the url. Default is ``localhost``.
         :return: the full url which refers to the server
         """
-        if not suffix.startswith("/"):
+        if not suffix.startswith("/") and suffix != "":
             suffix = "/" + suffix
 
         host = self.__http_server.format_host(host)
 
         return "{}://{}:{}{}".format(self.__protocol, host,
                                      self.__http_server.port, suffix)
+
+    def origin(self) -> str:
+        """Returns the url for the base page to navigate and prevent CORS.
+        """
+        return self._url_for("")
 
     def url_base(self, host='localhost') -> str:
         """Returns the url for the base page to navigate and prevent CORS.
