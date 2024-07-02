@@ -108,7 +108,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#realmStorage,
       networkStorage,
       this.#preloadScriptStorage,
-      options?.acceptInsecureCerts ?? false,
       defaultUserContextId,
       options?.unhandledPromptBehavior,
       logger
