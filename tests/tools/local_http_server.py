@@ -46,7 +46,6 @@ class LocalHttpServer:
     __path_cacheable = "/cacheable"
 
     __protocol: Literal['http', 'https']
-    __content_map: dict[str, str] = {}
 
     content_200: str = 'default 200 page'
 
