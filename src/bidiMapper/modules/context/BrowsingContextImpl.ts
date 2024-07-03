@@ -154,13 +154,30 @@ export class BrowsingContextImpl {
       context.parent!.addChild(context.id);
     }
 
-    eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-        params: context.serializeToBidiValue(),
-      },
-      context.id
+    // Hold on the `contextCreated` event until the target is unblocked. This is required,
+    // as the parent of the context can be set later in case of reconnecting to an
+    // existing browser instance + OOPiF.
+    eventManager.registerPromiseEvent(
+      context.targetUnblockedOrThrow().then(
+        () => {
+          return {
+            kind: 'success',
+            value: {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+              params: context.serializeToBidiValue(),
+            },
+          };
+        },
+        (error) => {
+          return {
+            kind: 'error',
+            error,
+          };
+        }
+      ),
+      context.id,
+      ChromiumBidi.BrowsingContext.EventNames.ContextCreated
     );
 
     return context;
