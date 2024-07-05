@@ -42,6 +42,7 @@ import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
   bidiBodySizeFromCdpPostDataEntries,
+  networkHeaderFromCookieHeaders,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -82,6 +83,7 @@ export class NetworkRequest {
     url?: string;
     method?: string;
     headers?: Network.Header[];
+    cookies?: Network.CookieHeader[];
     bodySize?: number;
   };
 
@@ -551,8 +553,24 @@ export class NetworkRequest {
   async continueRequest(
     overrides: Omit<Network.ContinueRequestParameters, 'request'> = {}
   ) {
-    const headers: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+    let overrideHeaders: Network.Header[] | undefined = overrides.headers;
+    const cookieHeader = networkHeaderFromCookieHeaders(overrides.cookies);
+
+    if (cookieHeader && !overrideHeaders) {
+      overrideHeaders = this.#requestHeaders;
+    }
+    if (cookieHeader && overrideHeaders) {
+      overrideHeaders.filter(
+        (header) =>
+          header.name.localeCompare('cookie', undefined, {
+            sensitivity: 'base',
+          }) !== 0
+      );
+      overrideHeaders.push(cookieHeader);
+    }
+
+    let headers: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
 
     const postData = getCdpBodyFromBiDiBytesValue(overrides.body);
 
@@ -567,6 +585,7 @@ export class NetworkRequest {
       url: overrides.url,
       method: overrides.method,
       headers: overrides.headers,
+      cookies: overrides.cookies,
       bodySize: getSizeFromBiDiBytesValue(overrides.body),
     };
   }
