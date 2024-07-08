@@ -174,7 +174,6 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
     }
 }],
                          indirect=True)
-# @pytest.mark.parametrize("accept", [True])
 @pytest.mark.parametrize("accept", [True, False])
 async def test_browsingContext_navigate_prompt(websocket, context_id, html,
                                                accept):
