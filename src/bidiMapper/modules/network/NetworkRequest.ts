@@ -553,25 +553,11 @@ export class NetworkRequest {
   async continueRequest(
     overrides: Omit<Network.ContinueRequestParameters, 'request'> = {}
   ) {
-    let overrideHeaders: Network.Header[] | undefined = overrides.headers;
-    const cookieHeader = networkHeaderFromCookieHeaders(overrides.cookies);
-
-    if (cookieHeader && !overrideHeaders) {
-      overrideHeaders = this.#requestHeaders;
-    }
-    if (cookieHeader && overrideHeaders) {
-      overrideHeaders.filter(
-        (header) =>
-          header.name.localeCompare('cookie', undefined, {
-            sensitivity: 'base',
-          }) !== 0
-      );
-      overrideHeaders.push(cookieHeader);
-    }
-
-    let headers: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
-
+    const overrideHeaders = this.#getOverrideHeader(
+      overrides.headers,
+      overrides.cookies
+    );
+    const headers = cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
     const postData = getCdpBodyFromBiDiBytesValue(overrides.body);
 
     await this.#continueRequest({
@@ -630,8 +616,12 @@ export class NetworkRequest {
     }
 
     if (this.#interceptPhase === Network.InterceptPhase.ResponseStarted) {
-      const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
-        cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+      const overrideHeaders = this.#getOverrideHeader(
+        overrides.headers,
+        overrides.cookies
+      );
+      const responseHeaders =
+        cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
 
       await this.#continueResponse({
         responseCode: overrides.statusCode,
@@ -707,8 +697,12 @@ export class NetworkRequest {
 
     // TODO: Step 6
     // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
-    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+    const overrideHeaders = this.#getOverrideHeader(
+      overrides.headers,
+      overrides.cookies
+    );
+    const responseHeaders =
+      cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
 
     const responseCode = overrides.statusCode ?? this.#statusCode ?? 200;
 
@@ -908,6 +902,31 @@ export class NetworkRequest {
       this.#request.info?.request.url.endsWith(faviconUrl) ??
       false
     );
+  }
+
+  #getOverrideHeader(
+    headers: Network.Header[] | undefined,
+    cookies: Network.CookieHeader[] | undefined
+  ): Network.Header[] | undefined {
+    if (!headers && !cookies) {
+      return [];
+    }
+    let overrideHeaders: Network.Header[] | undefined = headers;
+    const cookieHeader = networkHeaderFromCookieHeaders(cookies);
+    if (cookieHeader && !overrideHeaders) {
+      overrideHeaders = this.#requestHeaders;
+    }
+    if (cookieHeader && overrideHeaders) {
+      overrideHeaders.filter(
+        (header) =>
+          header.name.localeCompare('cookie', undefined, {
+            sensitivity: 'base',
+          }) !== 0
+      );
+      overrideHeaders.push(cookieHeader);
+    }
+
+    return overrideHeaders;
   }
 
   static #getInitiatorType(
