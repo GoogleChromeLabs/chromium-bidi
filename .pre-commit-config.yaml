@@ -90,6 +90,7 @@ repos:
             --skip=package-lock.json,
             --skip=tests/screenshot/test_screenshot.py,
             --skip=*.py.ini,
+            -L=thirdParty,
           ]
         exclude_types: [pem]
   - repo: https://github.com/google/keep-sorted
