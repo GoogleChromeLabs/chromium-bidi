@@ -176,13 +176,6 @@ export namespace Session {
   } & Extensible;
 }
 export namespace Session {
-  export const enum UserPromptHandlerType {
-    Accept = 'accept',
-    Dismiss = 'dismiss',
-    Ignore = 'ignore',
-  }
-}
-export namespace Session {
   export type UserPromptHandler = {
     alert?: Session.UserPromptHandlerType;
     beforeUnload?: Session.UserPromptHandlerType;
@@ -190,6 +183,13 @@ export namespace Session {
     default?: Session.UserPromptHandlerType;
     prompt?: Session.UserPromptHandlerType;
   };
+}
+export namespace Session {
+  export const enum UserPromptHandlerType {
+    Accept = 'accept',
+    Dismiss = 'dismiss',
+    Ignore = 'ignore',
+  }
 }
 export namespace Session {
   export type SubscriptionRequest = {
@@ -807,7 +807,7 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type UserPromptOpenedParameters = {
     context: BrowsingContext.BrowsingContext;
-    handler: 'accept' | 'dismiss' | 'ignore';
+    handler: Session.UserPromptHandlerType;
     message: string;
     type: BrowsingContext.UserPromptType;
     defaultValue?: string;
@@ -820,7 +820,8 @@ export type NetworkCommand =
   | Network.ContinueWithAuth
   | Network.FailRequest
   | Network.ProvideResponse
-  | Network.RemoveIntercept;
+  | Network.RemoveIntercept
+  | Network.SetCacheBehavior;
 export type NetworkEvent =
   | Network.AuthRequired
   | Network.BeforeRequestSent
@@ -1117,6 +1118,21 @@ export namespace Network {
 export namespace Network {
   export type RemoveInterceptParameters = {
     intercept: Network.Intercept;
+  };
+}
+export namespace Network {
+  export type SetCacheBehavior = {
+    method: 'network.setCacheBehavior';
+    params: Network.SetCacheBehaviorParameters;
+  };
+}
+export namespace Network {
+  export type SetCacheBehaviorParameters = {
+    cacheBehavior: 'default' | 'bypass';
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
   };
 }
 export type ScriptEvent =

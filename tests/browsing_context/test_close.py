@@ -55,7 +55,7 @@ async def test_browsingContext_close(websocket, context_id):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
     'unhandledPromptBehavior': {
-        'default': 'ignore'
+        'beforeUnload': 'ignore'
     }
 }],
                          indirect=True)
@@ -170,14 +170,13 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
     'unhandledPromptBehavior': {
-        'default': 'ignore'
+        'beforeUnload': 'ignore'
     }
 }],
                          indirect=True)
-# @pytest.mark.parametrize("accept", [True])
 @pytest.mark.parametrize("accept", [True, False])
 async def test_browsingContext_navigate_prompt(websocket, context_id, html,
-                                               accept, example_url):
+                                               accept):
     await subscribe(websocket, ["browsingContext.userPromptOpened"])
 
     url = html("""

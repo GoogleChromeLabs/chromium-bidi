@@ -101,10 +101,10 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCreatedEmitted(
         websocket, context_id, html, iframe):
     nested_iframe = html('<h1>PAGE_WITHOUT_CHILD_IFRAMES</h1>')
-    intermediate_page = html('<h1>PAGE_WITH_1_CHILD_IFRAME</h1>' +
-                             iframe(nested_iframe.replace('"', '&quot;')))
-    top_level_page = html('<h1>PAGE_WITH_2_CHILD_IFRAMES</h1>' +
-                          iframe(intermediate_page.replace('"', '&quot;')))
+    intermediate_page = html(
+        f'<h1>PAGE_WITH_1_CHILD_IFRAME</h1>{iframe(nested_iframe)}')
+    top_level_page = html(
+        f'<h1>PAGE_WITH_2_CHILD_IFRAMES</h1>{iframe(intermediate_page)}')
 
     await subscribe(websocket, ["browsingContext.contextCreated"])
 
@@ -185,9 +185,9 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
 
 @pytest.mark.asyncio
 async def test_browsingContext_create_withUserGesture_eventsEmitted(
-        websocket, context_id, html, example_url, read_sorted_messages):
+        websocket, context_id, html, url_example, read_sorted_messages):
     LINK_WITH_BLANK_TARGET = html(
-        f'''<a href="{example_url}" target="_blank">new tab</a>''')
+        f'''<a href="{url_example}" target="_blank">new tab</a>''')
 
     await goto_url(websocket, context_id, LINK_WITH_BLANK_TARGET)
 
@@ -249,7 +249,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             'context': new_context_id,
             'navigation': ANY_STR,
             'timestamp': ANY_TIMESTAMP,
-            'url': example_url
+            'url': url_example
         }
     }, {
         'type': 'event',
@@ -258,7 +258,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             'context': new_context_id,
             'navigation': ANY_STR,
             'timestamp': ANY_TIMESTAMP,
-            'url': example_url
+            'url': url_example
         }
     }]
 

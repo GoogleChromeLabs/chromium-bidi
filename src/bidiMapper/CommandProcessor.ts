@@ -264,6 +264,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#networkProcessor.removeIntercept(
           this.#parser.parseRemoveInterceptParams(command.params)
         );
+      case 'network.setCacheBehavior':
+        throw new UnknownErrorException(
+          "Method 'network.setCacheBehavior' is not implemented."
+        );
       // keep-sorted end
 
       // Permissions domain
@@ -311,7 +315,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Session domain
       // keep-sorted start block=yes
       case 'session.new':
-        return await this.#sessionProcessor.create(command.params);
+        return await this.#sessionProcessor.new(command.params);
       case 'session.status':
         return this.#sessionProcessor.status();
       case 'session.subscribe':

@@ -25,7 +25,7 @@ import {
   NoSuchElementException,
   NoSuchHistoryEntryException,
   Script,
-  type Session,
+  Session,
   UnableToCaptureScreenException,
   UnknownErrorException,
   UnsupportedOperationException,
@@ -54,7 +54,7 @@ export class BrowsingContextImpl {
    * The ID of the parent browsing context.
    * If null, this is a top-level context.
    */
-  readonly #parentId: BrowsingContext.BrowsingContext | null;
+  #parentId: BrowsingContext.BrowsingContext | null = null;
 
   /** Direct children browsing contexts. */
   readonly #children = new Set<BrowsingContext.BrowsingContext>();
@@ -154,13 +154,30 @@ export class BrowsingContextImpl {
       context.parent!.addChild(context.id);
     }
 
-    eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-        params: context.serializeToBidiValue(),
-      },
-      context.id
+    // Hold on the `contextCreated` event until the target is unblocked. This is required,
+    // as the parent of the context can be set later in case of reconnecting to an
+    // existing browser instance + OOPiF.
+    eventManager.registerPromiseEvent(
+      context.targetUnblockedOrThrow().then(
+        () => {
+          return {
+            kind: 'success',
+            value: {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+              params: context.serializeToBidiValue(),
+            },
+          };
+        },
+        (error) => {
+          return {
+            kind: 'error',
+            error,
+          };
+        }
+      ),
+      context.id,
+      ChromiumBidi.BrowsingContext.EventNames.ContextCreated
     );
 
     return context;
@@ -224,6 +241,22 @@ export class BrowsingContextImpl {
   /** Returns the parent context ID. */
   get parentId(): BrowsingContext.BrowsingContext | null {
     return this.#parentId;
+  }
+
+  /** Sets the parent context ID and updates parent's children. */
+  set parentId(parentId: BrowsingContext.BrowsingContext | null) {
+    if (this.#parentId !== null) {
+      this.#logger?.(LogType.debugError, 'Parent context already set');
+      // Cannot do anything except logging, as throwing will stop event processing. So
+      // just return,
+      return;
+    }
+
+    this.#parentId = parentId;
+
+    if (!this.isTopLevelContext()) {
+      this.parent!.addChild(this.id);
+    }
   }
 
   /** Returns the parent context. */
@@ -638,13 +671,13 @@ export class BrowsingContextImpl {
       switch (promptHandler) {
         // Based on `unhandledPromptBehavior`, check if the prompt should be handled
         // automatically (`accept`, `dismiss`) or wait for the user to do it.
-        case 'accept':
+        case Session.UserPromptHandlerType.Accept:
           void this.handleUserPrompt(true);
           break;
-        case 'dismiss':
+        case Session.UserPromptHandlerType.Dismiss:
           void this.handleUserPrompt(false);
           break;
-        case 'ignore':
+        case Session.UserPromptHandlerType.Ignore:
           break;
       }
     });
@@ -667,8 +700,8 @@ export class BrowsingContextImpl {
 
   #getPromptHandler(
     promptType: BrowsingContext.UserPromptType
-  ): 'accept' | 'dismiss' | 'ignore' {
-    const defaultPromptHandler = 'dismiss';
+  ): Session.UserPromptHandlerType {
+    const defaultPromptHandler = Session.UserPromptHandlerType.Dismiss;
     switch (promptType) {
       case BrowsingContext.UserPromptType.Alert:
         return (
@@ -679,8 +712,12 @@ export class BrowsingContextImpl {
       case BrowsingContext.UserPromptType.Beforeunload:
         return (
           this.#unhandledPromptBehavior?.beforeUnload ??
-          this.#unhandledPromptBehavior?.default ??
-          defaultPromptHandler
+          // In WebDriver Classic spec, `beforeUnload` prompt should be accepted by
+          // default. Step 4 of "Get the prompt handler" algorithm
+          // (https://w3c.github.io/webdriver/#dfn-get-the-prompt-handler):
+          // > If type is "beforeUnload", return a prompt handler configuration with
+          //   handler "accept" and notify false.
+          Session.UserPromptHandlerType.Accept
         );
       case BrowsingContext.UserPromptType.Confirm:
         return (

@@ -86,9 +86,11 @@ repos:
       - id: codespell
         # skip false positives
         args:
-          - --skip=package-lock.json
-          - --skip=tests/screenshot/test_screenshot.py
-          - -L=thirdParty
+          [
+            --skip=package-lock.json,
+            --skip=tests/screenshot/test_screenshot.py,
+            --skip=*.py.ini,
+          ]
         exclude_types: [pem]
   - repo: https://github.com/google/keep-sorted
     rev: v0.4.0

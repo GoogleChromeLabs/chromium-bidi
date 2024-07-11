@@ -15,15 +15,12 @@
 
 import asyncio
 import os
-import ssl
-from collections.abc import Callable
-from pathlib import Path
+from collections.abc import Callable, Generator
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
 import websockets
-from pytest_httpserver import HTTPServer
 from test_helpers import (execute_command, get_tree, goto_url,
                           read_JSON_message, wait_for_event, wait_for_events)
 
@@ -31,12 +28,44 @@ from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
 
 
-@pytest_asyncio.fixture
-def local_server(httpserver) -> LocalHttpServer:
-    """ Returns an instance of a LocalHttpServer. It can be used for testing
-    HTTP requests locally.
+@pytest_asyncio.fixture(scope='session')
+def local_server_http() -> Generator[LocalHttpServer, None, None]:
     """
-    return LocalHttpServer(httpserver)
+    Returns an instance of a LocalHttpServer without SSL pointing to localhost.
+    """
+    server = LocalHttpServer()
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
+def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
+    """
+    Returns an instance of a LocalHttpServer without SSL pointing to `127.0.0.1`
+    """
+    server = LocalHttpServer('127.0.0.1')
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
+def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
+    """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
+    server = LocalHttpServer(protocol='https')
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
 
 
 @pytest_asyncio.fixture
@@ -195,102 +224,62 @@ async def sandbox_realm(websocket, context_id: str):
     return result["realm"]
 
 
-@pytest.fixture
-def url_same_origin():
-    """Return a same-origin URL."""
-    return 'about:blank'
-
-
-# TODO: make offline.
 @pytest.fixture(params=[
-    'https://example.com/',  # Another domain: Cross-origin
-    'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
+    'url_example', 'url_example_another_origin', 'html', 'about:blank'
 ])
-def url_cross_origin(request):
-    """Return a cross-origin URL."""
-    return request.param
-
-
-# TODO: make offline.
-@pytest.fixture(params=[
-    'about:blank',  # Same-origin
-    'https://example.com/',  # Another domain: Cross-origin
-    'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
-])
-def url_all_origins(request):
-    """Return a URL exhaustively, including same-origin and cross-origin."""
-    return request.param
+def url_all_origins(request, url_example, url_example_another_origin, html):
+    if request.param == 'url_example':
+        return url_example
+    if request.param == 'url_example_another_origin':
+        return url_example_another_origin
+    if request.param == 'html':
+        return html('data:text/html,<h2>some page</h2>')
+    if request.param == 'about:blank':
+        return 'about:blank'
+    raise ValueError(f"Unknown parameter: {request.param}")
 
 
 @pytest.fixture
-def base_url(local_server: LocalHttpServer):
+def url_base(local_server_http):
     """Return a generic example URL with status code 200."""
-    return local_server.url_base()
+    return local_server_http.url_base()
 
 
 @pytest.fixture
-def example_url(local_server: LocalHttpServer):
+def url_example(local_server_http):
     """Return a generic example URL with status code 200."""
-    return local_server.url_200()
+    return local_server_http.url_200()
 
 
 @pytest.fixture
-def another_example_url(local_server: LocalHttpServer):
+def url_example_another_origin(local_server_http_another_host):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server.url_200('127.0.0.1')
+    return local_server_http_another_host.url_200()
 
 
 @pytest.fixture
-def auth_required_url(local_server: LocalHttpServer):
+def url_auth_required(local_server_http):
     """Return a URL that requires authentication (status code 401).
     Alternatively, any of the following URLs could also be used:
         - "https://authenticationtest.com/HTTPAuth/"
         - "http://the-internet.herokuapp.com/basic_auth"
         - "http://httpstat.us/401"
     """
-    return local_server.url_basic_auth()
+    return local_server_http.url_basic_auth()
 
 
 @pytest.fixture
-def hang_url(local_server: LocalHttpServer):
+def url_hang_forever(local_server_http):
     """Return a URL that hangs forever."""
     try:
-        yield local_server.url_hang_forever()
+        yield local_server_http.url_hang_forever()
     finally:
-        local_server.hang_forever_stop()
+        local_server_http.hang_forever_stop()
 
 
 @pytest.fixture(scope="session")
-def ssl_context_err_cert_authority_invalid():
-    """Return a SSL context with an invalid certificate authority."""
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-
-    cert_file_name = Path(__file__).parent / "tools" / "cert.pem"
-    key_file_name = Path(__file__).parent / "tools" / "key.pem"
-
-    context.load_cert_chain(cert_file_name, key_file_name)
-
-    return context
-
-
-@pytest.fixture(scope="session")
-def https_server_err_cert_authority_invalid(
-        ssl_context_err_cert_authority_invalid):
-    """Return a HTTPServer instance with SSL enabled.
-    See https://pytest-httpserver.readthedocs.io/en/latest/fixtures.html#make-httpserver"""
-    server = HTTPServer(ssl_context=ssl_context_err_cert_authority_invalid)
-    server.start()
-
-    yield server
-
-    server.clear()
-    if server.is_running():
-        server.stop()
-
-
-@pytest.fixture(scope="session")
-def bad_ssl_url(https_server_err_cert_authority_invalid):
+def url_bad_ssl(local_server_bad_ssl):
     """
     Return a URL with an invalid certificate authority from a SSL certificate.
     In Chromium, this generates the following error:
@@ -298,13 +287,13 @@ def bad_ssl_url(https_server_err_cert_authority_invalid):
     > Your connection is not private
     > NET::ERR_CERT_AUTHORITY_INVALID
     """
-    return https_server_err_cert_authority_invalid.url_for("/")
+    return local_server_bad_ssl.url_200()
 
 
 @pytest.fixture
-def cacheable_url(local_server: LocalHttpServer):
+def url_cacheable(local_server_http):
     """Return a generic example URL that can be cached."""
-    return local_server.url_cacheable()
+    return local_server_http.url_cacheable()
 
 
 @pytest.fixture
@@ -419,10 +408,10 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 
 
 @pytest.fixture
-def html():
-    """Return a factory for HTML data URL with the given content."""
+def html(local_server_http):
+    """Return a factory for URL with the given content."""
     def html(content=""):
-        return f'data:text/html,{content}'
+        return local_server_http.url_200(content=content)
 
     return html
 
@@ -436,17 +425,11 @@ def iframe():
     return iframe
 
 
-@pytest.fixture
-def html_iframe_same_origin(html, iframe, url_same_origin):
-    """Return a page URL with an iframe of the same origin."""
-    return html(iframe(url_same_origin))
-
-
 @pytest_asyncio.fixture
-async def iframe_id(websocket, context_id: str, html_iframe_same_origin, html):
+async def iframe_id(websocket, context_id, html, iframe):
     """Navigate to a page with an iframe of the same origin, and return the
     iframe browser context id."""
-    await goto_url(websocket, context_id, html_iframe_same_origin)
+    await goto_url(websocket, context_id, html(iframe(html("<h1>FRAME</h1>"))))
     result = await get_tree(websocket, context_id)
 
     iframe_id = result["contexts"][0]["children"][0]["context"]
