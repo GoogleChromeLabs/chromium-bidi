@@ -173,7 +173,7 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
-  isDataUrl(): boolean {
+  #isDataUrl(): boolean {
     return this.url.startsWith('data:');
   }
 
@@ -219,7 +219,7 @@ export class NetworkRequest {
   }
 
   get #bodySize() {
-    let bodySize: number = 0;
+    let bodySize = 0;
     if (typeof this.#requestOverrides?.bodySize === 'number') {
       bodySize = this.#requestOverrides.bodySize;
     } else {
@@ -353,7 +353,7 @@ export class NetworkRequest {
       // Flush redirects
       options.wasRedirected ||
       options.hasFailed ||
-      this.isDataUrl() ||
+      this.#isDataUrl() ||
       Boolean(this.#request.extraInfo) ||
       // Requests from cache don't have extra info
       this.#servedFromCache ||
@@ -363,7 +363,7 @@ export class NetworkRequest {
 
     const noInterceptionExpected =
       // We can't intercept data urls from CDP
-      this.isDataUrl() ||
+      this.#isDataUrl() ||
       // Cached requests never hit the network
       this.#servedFromCache;
 
@@ -380,8 +380,7 @@ export class NetworkRequest {
       (requestInterceptionExpected
         ? requestInterceptionCompleted
         : requestExtraInfoCompleted)
-    ) {
-      this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
+    ) {ODO.bind(this));
     }
 
     const responseExtraInfoCompleted =
@@ -695,8 +694,6 @@ export class NetworkRequest {
       return await this.#continueRequest();
     }
 
-    // TODO: Step 6
-    // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
     const overrideHeaders = this.#getOverrideHeader(
       overrides.headers,
       overrides.cookies
