@@ -254,7 +254,7 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
                 'default']
         if isinstance(capabilities['unhandledPromptBehavior'], str):
             if capabilities[
-                    'unhandledPromptBehavior'] == 'dismiss' | capabilities[
+                    'unhandledPromptBehavior'] == 'dismiss' or capabilities[
                         'unhandledPromptBehavior'] == 'dismiss and notify':
                 expected_handler = 'dismiss'
             elif capabilities['unhandledPromptBehavior'] == 'ignore':
