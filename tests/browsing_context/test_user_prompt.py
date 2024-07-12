@@ -89,7 +89,7 @@ from test_helpers import (AnyExtending, execute_command, goto_url,
         'default': 'accept'
     }
 }],
-    indirect=True)
+                         indirect=True)
 async def test_browsingContext_userPromptOpened_capabilityRespected(
         websocket, context_id, prompt_type, capabilities):
     await subscribe(websocket, [
@@ -165,47 +165,45 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [
-    {},
-    {
-        'unhandledPromptBehavior': 'dismiss'
-    }, {
-        'unhandledPromptBehavior': 'dismiss and notify'
-    }, {
-        'unhandledPromptBehavior': {
-            'default': 'dismiss'
-        }
-    }, {
-        'unhandledPromptBehavior': {
-            'beforeUnload': 'dismiss',
-            'default': 'ignore'
-        }
-    }, {
-        'unhandledPromptBehavior': 'accept'
-    }, {
-        'unhandledPromptBehavior': 'accept and notify'
-    }, {
-        'unhandledPromptBehavior': {
-            'default': 'accept'
-        }
-    }, {
-        'unhandledPromptBehavior': {
-            'beforeUnload': 'accept',
-            'default': 'ignore'
-        }
-    }, {
-        'unhandledPromptBehavior': 'ignore'
-    }, {
-        'unhandledPromptBehavior': {
-            'default': 'ignore'
-        }
-    }, {
-        'unhandledPromptBehavior': {
-            'beforeUnload': 'ignore',
-            'default': 'accept'
-        }
-    }],
-    indirect=True)
+@pytest.mark.parametrize('capabilities', [{}, {
+    'unhandledPromptBehavior': 'dismiss'
+}, {
+    'unhandledPromptBehavior': 'dismiss and notify'
+}, {
+    'unhandledPromptBehavior': {
+        'default': 'dismiss'
+    }
+}, {
+    'unhandledPromptBehavior': {
+        'beforeUnload': 'dismiss',
+        'default': 'ignore'
+    }
+}, {
+    'unhandledPromptBehavior': 'accept'
+}, {
+    'unhandledPromptBehavior': 'accept and notify'
+}, {
+    'unhandledPromptBehavior': {
+        'default': 'accept'
+    }
+}, {
+    'unhandledPromptBehavior': {
+        'beforeUnload': 'accept',
+        'default': 'ignore'
+    }
+}, {
+    'unhandledPromptBehavior': 'ignore'
+}, {
+    'unhandledPromptBehavior': {
+        'default': 'ignore'
+    }
+}, {
+    'unhandledPromptBehavior': {
+        'beforeUnload': 'ignore',
+        'default': 'accept'
+    }
+}],
+                         indirect=True)
 async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
         websocket, context_id, html, capabilities):
     await subscribe(websocket, ["browsingContext.userPromptOpened"])
@@ -255,11 +253,12 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
             expected_handler = capabilities['unhandledPromptBehavior'][
                 'default']
         if isinstance(capabilities['unhandledPromptBehavior'], str):
-            match  capabilities['unhandledPromptBehavior']:
-                case 'dismiss' | 'dismiss and notify':
-                    expected_handler = 'dismiss'
-                case 'ignore':
-                    expected_handler = 'ignore'
+            if capabilities[
+                    'unhandledPromptBehavior'] == 'dismiss' | capabilities[
+                        'unhandledPromptBehavior'] == 'dismiss and notify':
+                expected_handler = 'dismiss'
+            elif capabilities['unhandledPromptBehavior'] == 'ignore':
+                expected_handler = 'ignore'
 
     resp = await read_JSON_message(websocket)
     assert resp == {
