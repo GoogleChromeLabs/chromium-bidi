@@ -380,9 +380,9 @@ export class NetworkRequest {
       (requestInterceptionExpected
         ? requestInterceptionCompleted
         : requestExtraInfoCompleted)
-    ) {ODO.bind(this));
+    ) {
+      this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
     }
-
     const responseExtraInfoCompleted =
       Boolean(this.#response.extraInfo) ||
       // Response from cache don't have extra info
@@ -906,7 +906,7 @@ export class NetworkRequest {
     cookies: Network.CookieHeader[] | undefined
   ): Network.Header[] | undefined {
     if (!headers && !cookies) {
-      return [];
+      return undefined;
     }
     let overrideHeaders: Network.Header[] | undefined = headers;
     const cookieHeader = networkHeaderFromCookieHeaders(cookies);
