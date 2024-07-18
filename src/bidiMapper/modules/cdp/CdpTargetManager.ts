@@ -43,7 +43,7 @@ const cdpToBidiTargetTypes = {
 export class CdpTargetManager {
   readonly #browserCdpClient: CdpClient;
   readonly #cdpConnection: CdpConnection;
-  readonly #selfTargetId: string;
+  readonly #targetIdsToBeIgnoredByAutoAttach = new Set<string>();
   readonly #eventManager: EventManager;
 
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -70,7 +70,7 @@ export class CdpTargetManager {
   ) {
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
-    this.#selfTargetId = selfTargetId;
+    this.#targetIdsToBeIgnoredByAutoAttach.add(selfTargetId);
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
@@ -154,9 +154,13 @@ export class CdpTargetManager {
     switch (targetInfo.type) {
       case 'page':
       case 'iframe': {
-        if (targetInfo.targetId === this.#selfTargetId) {
+        // Mapper only needs one session per target. If we receive additional
+        // auto-attached sessions, that is very likely coming from custom CDP
+        // sessions.
+        if (this.#targetIdsToBeIgnoredByAutoAttach.has(targetInfo.targetId)) {
           break;
         }
+        // this.#targetIdsToBeIgnoredByAutoAttach.add(targetInfo.targetId);
 
         const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
         const maybeContext = this.#browsingContextStorage.findContext(
