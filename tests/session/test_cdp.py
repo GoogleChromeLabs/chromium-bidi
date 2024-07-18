@@ -205,6 +205,7 @@ async def test_cdp_no_extraneous_events(websocket, get_cdp_session_id,
             event = await asyncio.wait_for(read_JSON_message(websocket),
                                            timeout=1.0)
 
+    raise Exception("Unrelated CDP events detected")
     for event in events:
         if event['method'].startswith(
                 'cdp') and event['params']['session'] == session_id:
