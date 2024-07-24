@@ -305,6 +305,7 @@ export class NetworkRequest {
       redirectStart: 0,
       redirectEnd: 0,
       // TODO: Verify this is correct
+      // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=145
       fetchStart: this.#response.info?.timing?.requestTime ?? 0,
       dnsStart: this.#response.info?.timing?.dnsStart ?? 0,
       dnsEnd: this.#response.info?.timing?.dnsEnd ?? 0,
