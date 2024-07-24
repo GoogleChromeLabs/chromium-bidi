@@ -297,22 +297,24 @@ export class NetworkRequest {
     return authChallenges;
   }
 
-  // TODO: implement.
   get #timings(): Network.FetchTimingInfo {
     return {
-      timeOrigin: 0,
-      requestTime: 0,
+      // TODO: Verify this is correct
+      timeOrigin: this.#response.info?.timing?.requestTime ?? 0,
+      requestTime: this.#response.info?.timing?.requestTime ?? 0,
       redirectStart: 0,
       redirectEnd: 0,
-      fetchStart: 0,
-      dnsStart: 0,
-      dnsEnd: 0,
-      connectStart: 0,
-      connectEnd: 0,
-      tlsStart: 0,
-      requestStart: 0,
-      responseStart: 0,
-      responseEnd: 0,
+      // TODO: Verify this is correct
+      fetchStart: this.#response.info?.timing?.requestTime ?? 0,
+      dnsStart: this.#response.info?.timing?.dnsStart ?? 0,
+      dnsEnd: this.#response.info?.timing?.dnsEnd ?? 0,
+      connectStart: this.#response.info?.timing?.connectStart ?? 0,
+      connectEnd: this.#response.info?.timing?.connectEnd ?? 0,
+      tlsStart: this.#response.info?.timing?.sslStart ?? 0,
+      requestStart: this.#response.info?.timing?.sendStart ?? 0,
+      // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=196
+      responseStart: this.#response.info?.timing?.receiveHeadersStart ?? 0,
+      responseEnd: this.#response.info?.timing?.receiveHeadersEnd ?? 0,
     };
   }
 
