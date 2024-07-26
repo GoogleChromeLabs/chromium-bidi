@@ -89,16 +89,18 @@ function getChromeVersion() {
  * @param {string[]} filePaths
  */
 function readReport(filePaths) {
-  for (const filePath of filePaths) {
-    if (!fs.existsSync(filePath)) {
-      return undefined;
-    }
-  }
   const results = [];
   for (const filePath of filePaths) {
+    if (!fs.existsSync(filePath)) {
+      continue;
+    }
     const json = fs.readFileSync(filePath, 'utf8');
     const parsedReport = JSON.parse(json);
     results.push(...parsedReport.results);
+  }
+
+  if (!results.length) {
+    return undefined;
   }
 
   return {
