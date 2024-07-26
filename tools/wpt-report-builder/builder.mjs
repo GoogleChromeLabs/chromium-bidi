@@ -95,6 +95,10 @@ function readReport(filePaths) {
       continue;
     }
     const json = fs.readFileSync(filePath, 'utf8');
+    // File may be empty if the interop test shard failed
+    if (!json) {
+      continue;
+    }
     const parsedReport = JSON.parse(json);
     results.push(...parsedReport.results);
   }
