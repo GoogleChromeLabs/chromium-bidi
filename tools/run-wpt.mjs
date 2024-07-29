@@ -276,7 +276,7 @@ if (
 let exitCode = 0;
 if ((runResult?.status ?? 0) !== 0) {
   if (
-    FAIL_NO_TEST === 'true' &&
+    FAIL_NO_TEST === 'true' ||
     !runResult.stdout
       .toString()
       .includes('Unable to find any tests at the path')
