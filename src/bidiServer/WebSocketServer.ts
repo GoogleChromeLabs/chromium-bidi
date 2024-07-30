@@ -19,12 +19,7 @@ import http from 'http';
 import debug from 'debug';
 import * as websocket from 'websocket';
 
-import type {MapperOptions} from '../bidiMapper/BidiServer.js';
-import {
-  ErrorCode,
-  InvalidArgumentException,
-  Session,
-} from '../protocol/protocol.js';
+import {ErrorCode, type Session} from '../protocol/protocol.js';
 import {uuidv4} from '../utils/uuid.js';
 
 import {BrowserInstance, type ChromeOptions} from './BrowserInstance.js';
@@ -45,7 +40,6 @@ type Session = {
 };
 
 type SessionOptions = {
-  readonly mapperOptions: MapperOptions;
   readonly chromeOptions: ChromeOptions;
   readonly verbose: boolean;
 };
@@ -143,7 +137,6 @@ export class WebSocketServer {
         browserInstancePromise: undefined,
         sessionOptions: {
           chromeOptions: this.#getChromeOptions(jsonBody.capabilities),
-          mapperOptions: this.#getMapperOptions(jsonBody.capabilities),
           verbose: this.#verbose,
         },
       };
@@ -303,9 +296,6 @@ export class WebSocketServer {
             chromeOptions: this.#getChromeOptions(
               parsedCommandData.params?.capabilities
             ),
-            mapperOptions: this.#getMapperOptions(
-              parsedCommandData.params?.capabilities
-            ),
             verbose: this.#verbose,
           };
 
@@ -333,18 +323,8 @@ export class WebSocketServer {
           return;
         }
 
-        // TODO: extend with capabilities.
-        this.#sendClientMessage(
-          {
-            id: parsedCommandData.id,
-            type: 'success',
-            result: {
-              sessionId: session.sessionId,
-              capabilities: {},
-            },
-          },
-          connection
-        );
+        const browserInstance = await session.browserInstancePromise;
+        await browserInstance!.bidiSession().sendCommand(plainCommandData);
         return;
       }
 
@@ -450,47 +430,6 @@ export class WebSocketServer {
     void browserInstance.close();
   }
 
-  #getMapperOptions(capabilities: any): MapperOptions {
-    const acceptInsecureCerts =
-      capabilities?.alwaysMatch?.acceptInsecureCerts ?? false;
-    const unhandledPromptBehavior = this.#getUnhandledPromptBehavior(
-      capabilities?.alwaysMatch?.unhandledPromptBehavior
-    );
-
-    return {acceptInsecureCerts, unhandledPromptBehavior};
-  }
-
-  #getUnhandledPromptBehavior(
-    capabilityValue: unknown
-  ): Session.UserPromptHandler | undefined {
-    if (capabilityValue === undefined) {
-      return undefined;
-    }
-    if (typeof capabilityValue === 'object') {
-      // Do not validate capabilities. Incorrect ones will be ignored by Mapper.
-      return capabilityValue as Session.UserPromptHandler;
-    }
-    if (typeof capabilityValue !== 'string') {
-      throw new InvalidArgumentException(
-        `Unexpected 'unhandledPromptBehavior' type: ${typeof capabilityValue}`
-      );
-    }
-    switch (capabilityValue) {
-      case 'accept':
-      case 'accept and notify':
-        return {default: Session.UserPromptHandlerType.Accept};
-      case 'dismiss':
-      case 'dismiss and notify':
-        return {default: Session.UserPromptHandlerType.Dismiss};
-      case 'ignore':
-        return {default: Session.UserPromptHandlerType.Ignore};
-      default:
-        throw new InvalidArgumentException(
-          `Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`
-        );
-    }
-  }
-
   #getChromeOptions(capabilities: any): ChromeOptions {
     const chromeCapabilities =
       capabilities?.alwaysMatch?.['goog:chromeOptions'];
@@ -507,7 +446,6 @@ export class WebSocketServer {
     debugInfo('Scheduling browser launch...');
     const browserInstance = await BrowserInstance.run(
       sessionOptions.chromeOptions,
-      sessionOptions.mapperOptions,
       sessionOptions.verbose
     );
 
