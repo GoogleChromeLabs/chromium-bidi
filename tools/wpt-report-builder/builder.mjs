@@ -24,6 +24,7 @@ import {hideBin} from 'yargs/helpers';
 
 import {apply2023Filter} from './filter-2023.mjs';
 import {generateReport} from './formatter.mjs';
+import {debugLog} from './utils.mjs';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -122,8 +123,11 @@ const reportInteropData = readReport(interopReports);
 const filteredReportData = apply2023Filter(reportData);
 const filteredInteropReportData = apply2023Filter(reportInteropData);
 
-if (filteredReportData === undefined) {
-  throw Error('filteredReportData is undefined');
+if (reportData === undefined || filteredReportData === undefined) {
+  debugLog('No report data generated');
+  debugLog('Provided args', args);
+
+  throw Error('Reports were empty');
 }
 
 const currentCommit = getCurrentCommit();
