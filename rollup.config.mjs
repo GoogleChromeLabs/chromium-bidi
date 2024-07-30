@@ -76,9 +76,9 @@ const mapperTabConfig = {
 };
 // Generate CJS so we can keep supporting Puppeteer
 const commonJsConfig = {
-  input: 'lib/esm/bidiTab/bidiTab.js',
+  input: 'lib/esm/',
   output: {
-    dir: 'lib/cjs',
+    dir: 'lib/cjs/',
     sourcemap: true,
     format: 'commonjs',
   },
