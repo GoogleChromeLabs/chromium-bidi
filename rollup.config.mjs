@@ -16,7 +16,6 @@
  */
 import path from 'path';
 
-import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import license from 'rollup-plugin-license';
 
@@ -67,22 +66,7 @@ const mapperTabConfig = {
       },
     }),
     nodeResolve(),
-    commonjs({
-      // `crypto` is only imported in the uuid polyfill for Node versions
-      // without webcrypto exposes globally.
-      ignore: ['crypto'],
-    }),
   ],
 };
-// Generate CJS so we can keep supporting Puppeteer
-const commonJsConfig = {
-  input: 'lib/esm/',
-  output: {
-    dir: 'lib/cjs/',
-    sourcemap: true,
-    format: 'commonjs',
-  },
-  plugins: [nodeResolve(), commonjs()],
-};
 
-export default [mapperTabConfig, commonJsConfig];
+export default [mapperTabConfig];

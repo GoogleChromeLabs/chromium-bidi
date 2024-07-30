@@ -86,7 +86,8 @@
       "command": "tsc --build src/tsconfig.json --pretty",
       "clean": "if-file-deleted",
       "files": [
-        "**/tsconfig*.json",
+        "tsconfig.base.json",
+        "src/**/tsconfig*.json",
         "src/**/*.ts"
       ],
       "output": [
@@ -143,7 +144,6 @@
   "devDependencies": {
     "@actions/core": "1.10.1",
     "@puppeteer/browsers": "2.3.0",
-    "@rollup/plugin-commonjs": "26.0.1",
     "@rollup/plugin-node-resolve": "15.2.3",
     "@rollup/wasm-node": "4.19.1",
     "@types/chai": "4.3.11",
@@ -157,8 +157,8 @@
     "@types/yargs": "17.0.32",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
-    "chai": "4.4.1",
-    "chai-as-promised": "7.1.2",
+    "chai": "5.1.1",
+    "chai-as-promised": "8.0.0",
     "debug": "4.3.6",
     "devtools-protocol": "0.0.1333880",
     "eslint": "8.57.0",
