@@ -1,10 +1,6 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../tsconfig.cjs.json",
   "files": [],
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node"
-  },
   "references": [
     {"path": "./bidiMapper/tsconfig.cjs.json"},
     {"path": "./bidiTab/tsconfig.cjs.json"}

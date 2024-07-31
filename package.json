@@ -105,7 +105,7 @@
       "clean": "if-file-deleted",
       "files": [
         "tsconfig.base.json",
-        "src/**/tsconfig*.json",
+        "src/**/tsconfig*.cjs.json",
         "src/**/*.ts"
       ],
       "output": [
