@@ -83,6 +83,12 @@
       ]
     },
     "tsc": {
+      "dependencies": [
+        "tsc:esm",
+        "tsc:cjs"
+      ]
+    },
+    "tsc:esm": {
       "command": "tsc --build src/tsconfig.json --pretty",
       "clean": "if-file-deleted",
       "files": [
@@ -91,7 +97,19 @@
         "src/**/*.ts"
       ],
       "output": [
-        "lib/**"
+        "lib/esm/**"
+      ]
+    },
+    "tsc:cjs": {
+      "command": "tsc --build src/tsconfig.cjs.json --pretty",
+      "clean": "if-file-deleted",
+      "files": [
+        "tsconfig.base.json",
+        "src/**/tsconfig*.json",
+        "src/**/*.ts"
+      ],
+      "output": [
+        "lib/cjs/**"
       ]
     },
     "unit": {
