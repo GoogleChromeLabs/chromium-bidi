@@ -16,12 +16,12 @@
  */
 import path from 'path';
 
-import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import license from 'rollup-plugin-license';
 
-export default {
-  input: 'lib/cjs/bidiTab/bidiTab.js',
+// Generate Mapper Tab from ESM as we can run that in the browser
+const mapperTabConfig = {
+  input: 'lib/esm/bidiTab/bidiTab.js',
   output: {
     name: 'mapperTab',
     file: 'lib/iife/mapperTab.js',
@@ -66,10 +66,7 @@ export default {
       },
     }),
     nodeResolve(),
-    commonjs({
-      // `crypto` is only imported in the uuid polyfill for Node versions
-      // without webcrypto exposes globally.
-      ignore: ['crypto'],
-    }),
   ],
 };
+
+export default [mapperTabConfig];
