@@ -28,7 +28,8 @@
   "wireit": {
     "build": {
       "dependencies": [
-        "rollup"
+        "rollup",
+        "tsc"
       ]
     },
     "e2e": {
