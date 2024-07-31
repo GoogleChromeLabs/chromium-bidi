@@ -1,0 +1,1306 @@
+src/bidiServer/reader.ts(23,50): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', or 'nodenext'.
+node_modules/typescript/lib/lib.es5.d.ts
+  Library referenced via 'es5' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+node_modules/typescript/lib/lib.es2015.d.ts
+  Library referenced via 'es2015' from file 'node_modules/typescript/lib/lib.es2016.d.ts'
+node_modules/typescript/lib/lib.es2016.d.ts
+  Library referenced via 'es2016' from file 'node_modules/typescript/lib/lib.es2017.d.ts'
+node_modules/typescript/lib/lib.es2017.d.ts
+  Library referenced via 'es2017' from file 'node_modules/typescript/lib/lib.es2018.d.ts'
+node_modules/typescript/lib/lib.es2018.d.ts
+  Library referenced via 'es2018' from file 'node_modules/typescript/lib/lib.es2019.d.ts'
+node_modules/typescript/lib/lib.es2019.d.ts
+  Library referenced via 'es2019' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+node_modules/typescript/lib/lib.es2020.d.ts
+  Library referenced via 'es2020' from file 'node_modules/@types/node/index.d.ts'
+  Library referenced via 'es2020' from file 'node_modules/typescript/lib/lib.es2021.d.ts'
+node_modules/typescript/lib/lib.es2021.d.ts
+  Library referenced via 'es2021' from file 'node_modules/typescript/lib/lib.es2022.d.ts'
+node_modules/typescript/lib/lib.es2022.d.ts
+  Library referenced via 'es2022' from file 'node_modules/typescript/lib/lib.es2022.full.d.ts'
+node_modules/typescript/lib/lib.dom.d.ts
+  Library referenced via 'dom' from file 'node_modules/typescript/lib/lib.es2022.full.d.ts'
+node_modules/typescript/lib/lib.dom.iterable.d.ts
+  Library referenced via 'dom.iterable' from file 'node_modules/typescript/lib/lib.es2022.full.d.ts'
+node_modules/typescript/lib/lib.dom.asynciterable.d.ts
+  Library referenced via 'dom.asynciterable' from file 'node_modules/typescript/lib/lib.es2022.full.d.ts'
+node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+  Library referenced via 'webworker.importscripts' from file 'node_modules/typescript/lib/lib.es2022.full.d.ts'
+node_modules/typescript/lib/lib.scripthost.d.ts
+  Library referenced via 'scripthost' from file 'node_modules/typescript/lib/lib.es2022.full.d.ts'
+node_modules/typescript/lib/lib.es2015.core.d.ts
+  Library referenced via 'es2015.core' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+node_modules/typescript/lib/lib.es2015.collection.d.ts
+  Library referenced via 'es2015.collection' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+node_modules/typescript/lib/lib.es2015.generator.d.ts
+  Library referenced via 'es2015.generator' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+node_modules/typescript/lib/lib.es2015.iterable.d.ts
+  Library referenced via 'es2015.iterable' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+  Library referenced via 'es2015.iterable' from file 'node_modules/typescript/lib/lib.es2015.generator.d.ts'
+  Library referenced via 'es2015.iterable' from file 'node_modules/typescript/lib/lib.es2018.asynciterable.d.ts'
+  Library referenced via 'es2015.iterable' from file 'node_modules/typescript/lib/lib.es2019.object.d.ts'
+  Library referenced via 'es2015.iterable' from file 'node_modules/typescript/lib/lib.es2020.string.d.ts'
+  Library referenced via 'es2015.iterable' from file 'node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts'
+node_modules/typescript/lib/lib.es2015.promise.d.ts
+  Library referenced via 'es2015.promise' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+node_modules/typescript/lib/lib.es2015.proxy.d.ts
+  Library referenced via 'es2015.proxy' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+node_modules/typescript/lib/lib.es2015.reflect.d.ts
+  Library referenced via 'es2015.reflect' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+node_modules/typescript/lib/lib.es2015.symbol.d.ts
+  Library referenced via 'es2015.symbol' from file 'node_modules/typescript/lib/lib.es2015.iterable.d.ts'
+  Library referenced via 'es2015.symbol' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+  Library referenced via 'es2015.symbol' from file 'node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts'
+  Library referenced via 'es2015.symbol' from file 'node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts'
+  Library referenced via 'es2015.symbol' from file 'node_modules/typescript/lib/lib.es2018.asynciterable.d.ts'
+  Library referenced via 'es2015.symbol' from file 'node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts'
+node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts
+  Library referenced via 'es2015.symbol.wellknown' from file 'node_modules/typescript/lib/lib.es2015.d.ts'
+  Library referenced via 'es2015.symbol.wellknown' from file 'node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts'
+node_modules/typescript/lib/lib.es2016.array.include.d.ts
+  Library referenced via 'es2016.array.include' from file 'node_modules/typescript/lib/lib.es2016.d.ts'
+node_modules/typescript/lib/lib.es2016.intl.d.ts
+  Library referenced via 'es2016.intl' from file 'node_modules/typescript/lib/lib.es2016.d.ts'
+node_modules/typescript/lib/lib.es2017.date.d.ts
+  Library referenced via 'es2017.date' from file 'node_modules/typescript/lib/lib.es2017.d.ts'
+node_modules/typescript/lib/lib.es2017.object.d.ts
+  Library referenced via 'es2017.object' from file 'node_modules/typescript/lib/lib.es2017.d.ts'
+node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts
+  Library referenced via 'es2017.sharedmemory' from file 'node_modules/typescript/lib/lib.es2017.d.ts'
+node_modules/typescript/lib/lib.es2017.string.d.ts
+  Library referenced via 'es2017.string' from file 'node_modules/typescript/lib/lib.es2017.d.ts'
+node_modules/typescript/lib/lib.es2017.intl.d.ts
+  Library referenced via 'es2017.intl' from file 'node_modules/typescript/lib/lib.es2017.d.ts'
+node_modules/typescript/lib/lib.es2017.typedarrays.d.ts
+  Library referenced via 'es2017.typedarrays' from file 'node_modules/typescript/lib/lib.es2017.d.ts'
+node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts
+  Library referenced via 'es2018.asyncgenerator' from file 'node_modules/typescript/lib/lib.es2018.d.ts'
+node_modules/typescript/lib/lib.es2018.asynciterable.d.ts
+  Library referenced via 'es2018.asynciterable' from file 'node_modules/typescript/lib/lib.es2018.d.ts'
+  Library referenced via 'es2018.asynciterable' from file 'node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts'
+  Library referenced via 'esnext.asynciterable' from file 'node_modules/@types/node/index.d.ts'
+node_modules/typescript/lib/lib.es2018.intl.d.ts
+  Library referenced via 'es2018.intl' from file 'node_modules/typescript/lib/lib.es2018.d.ts'
+  Library referenced via 'es2018.intl' from file 'node_modules/typescript/lib/lib.es2020.intl.d.ts'
+node_modules/typescript/lib/lib.es2018.promise.d.ts
+  Library referenced via 'es2018.promise' from file 'node_modules/typescript/lib/lib.es2018.d.ts'
+node_modules/typescript/lib/lib.es2018.regexp.d.ts
+  Library referenced via 'es2018.regexp' from file 'node_modules/typescript/lib/lib.es2018.d.ts'
+node_modules/typescript/lib/lib.es2019.array.d.ts
+  Library referenced via 'es2019.array' from file 'node_modules/typescript/lib/lib.es2019.d.ts'
+node_modules/typescript/lib/lib.es2019.object.d.ts
+  Library referenced via 'es2019.object' from file 'node_modules/typescript/lib/lib.es2019.d.ts'
+node_modules/typescript/lib/lib.es2019.string.d.ts
+  Library referenced via 'es2019.string' from file 'node_modules/typescript/lib/lib.es2019.d.ts'
+node_modules/typescript/lib/lib.es2019.symbol.d.ts
+  Library referenced via 'es2019.symbol' from file 'node_modules/typescript/lib/lib.es2019.d.ts'
+node_modules/typescript/lib/lib.es2019.intl.d.ts
+  Library referenced via 'es2019.intl' from file 'node_modules/typescript/lib/lib.es2019.d.ts'
+node_modules/typescript/lib/lib.es2020.bigint.d.ts
+  Library referenced via 'es2020.bigint' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+  Library referenced via 'esnext.bigint' from file 'node_modules/@types/node/index.d.ts'
+node_modules/typescript/lib/lib.es2020.date.d.ts
+  Library referenced via 'es2020.date' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+node_modules/typescript/lib/lib.es2020.promise.d.ts
+  Library referenced via 'es2020.promise' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts
+  Library referenced via 'es2020.sharedmemory' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+node_modules/typescript/lib/lib.es2020.string.d.ts
+  Library referenced via 'es2020.string' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts
+  Library referenced via 'es2020.symbol.wellknown' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+node_modules/typescript/lib/lib.es2020.intl.d.ts
+  Library referenced via 'es2020.intl' from file 'node_modules/typescript/lib/lib.es2020.bigint.d.ts'
+  Library referenced via 'es2020.intl' from file 'node_modules/typescript/lib/lib.es2020.date.d.ts'
+  Library referenced via 'es2020.intl' from file 'node_modules/typescript/lib/lib.es2020.number.d.ts'
+  Library referenced via 'es2020.intl' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+node_modules/typescript/lib/lib.es2020.number.d.ts
+  Library referenced via 'es2020.number' from file 'node_modules/typescript/lib/lib.es2020.d.ts'
+node_modules/typescript/lib/lib.es2021.promise.d.ts
+  Library referenced via 'es2021.promise' from file 'node_modules/typescript/lib/lib.es2021.d.ts'
+node_modules/typescript/lib/lib.es2021.string.d.ts
+  Library referenced via 'es2021.string' from file 'node_modules/typescript/lib/lib.es2021.d.ts'
+node_modules/typescript/lib/lib.es2021.weakref.d.ts
+  Library referenced via 'es2021.weakref' from file 'node_modules/typescript/lib/lib.es2021.d.ts'
+node_modules/typescript/lib/lib.es2021.intl.d.ts
+  Library referenced via 'es2021.intl' from file 'node_modules/typescript/lib/lib.es2021.d.ts'
+node_modules/typescript/lib/lib.es2022.array.d.ts
+  Library referenced via 'es2022.array' from file 'node_modules/typescript/lib/lib.es2022.d.ts'
+node_modules/typescript/lib/lib.es2022.error.d.ts
+  Library referenced via 'es2022.error' from file 'node_modules/typescript/lib/lib.es2022.d.ts'
+node_modules/typescript/lib/lib.es2022.intl.d.ts
+  Library referenced via 'es2022.intl' from file 'node_modules/typescript/lib/lib.es2022.d.ts'
+node_modules/typescript/lib/lib.es2022.object.d.ts
+  Library referenced via 'es2022.object' from file 'node_modules/typescript/lib/lib.es2022.d.ts'
+node_modules/typescript/lib/lib.es2022.sharedmemory.d.ts
+  Library referenced via 'es2022.sharedmemory' from file 'node_modules/typescript/lib/lib.es2022.d.ts'
+node_modules/typescript/lib/lib.es2022.string.d.ts
+  Library referenced via 'es2022.string' from file 'node_modules/typescript/lib/lib.es2022.d.ts'
+node_modules/typescript/lib/lib.es2022.regexp.d.ts
+  Library referenced via 'es2022.regexp' from file 'node_modules/typescript/lib/lib.es2022.d.ts'
+node_modules/typescript/lib/lib.esnext.intl.d.ts
+  Library referenced via 'esnext.intl' from file 'node_modules/@types/node/index.d.ts'
+node_modules/typescript/lib/lib.decorators.d.ts
+  Library referenced via 'decorators' from file 'node_modules/typescript/lib/lib.es5.d.ts'
+node_modules/typescript/lib/lib.decorators.legacy.d.ts
+  Library referenced via 'decorators.legacy' from file 'node_modules/typescript/lib/lib.es5.d.ts'
+node_modules/typescript/lib/lib.es2022.full.d.ts
+  Default library for target 'es2022'
+node_modules/devtools-protocol/types/protocol.d.ts
+  Imported via 'devtools-protocol' from file 'lib/cjs/cdp/CdpClient.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via './protocol' from file 'node_modules/devtools-protocol/types/protocol-mapping.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/cdp/CdpConnection.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/protocol/cdp.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/script/Realm.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/script/RealmStorage.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/script/PreloadScript.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/network/NetworkModuleMocks.spec.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/network/NetworkUtils.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'src/bidiServer/MapperCdpConnection.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol' from file 'lib/cjs/cdp/cdpMessage.d.ts' with packageId 'devtools-protocol/types/protocol.d.ts@0.0.1330662'
+node_modules/devtools-protocol/types/protocol-mapping.d.ts
+  Imported via 'devtools-protocol/types/protocol-mapping.js' from file 'lib/cjs/cdp/CdpClient.d.ts' with packageId 'devtools-protocol/types/protocol-mapping.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol/types/protocol-mapping.js' from file 'lib/cjs/cdp/CdpConnection.d.ts' with packageId 'devtools-protocol/types/protocol-mapping.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol/types/protocol-mapping.js' from file 'lib/cjs/protocol/cdp.d.ts' with packageId 'devtools-protocol/types/protocol-mapping.d.ts@0.0.1330662'
+  Imported via 'devtools-protocol/types/protocol-mapping.js' from file 'lib/cjs/cdp/cdpMessage.d.ts' with packageId 'devtools-protocol/types/protocol-mapping.d.ts@0.0.1330662'
+node_modules/mitt/index.d.ts
+  Imported via 'mitt' from file 'lib/cjs/utils/EventEmitter.d.ts' with packageId 'mitt/index.d.ts@3.0.1'
+lib/cjs/utils/EventEmitter.d.ts
+  Imported via '../utils/EventEmitter.js' from file 'lib/cjs/cdp/CdpClient.d.ts'
+  Imported via '../utils/EventEmitter.js' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via '../utils/EventEmitter.js' from file 'lib/cjs/bidiMapper/BidiMapper.d.ts'
+  Imported via '../utils/EventEmitter.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../../../utils/EventEmitter.js' from file 'lib/cjs/bidiMapper/modules/session/EventManager.d.ts'
+  Imported via '../../../utils/EventEmitter.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkModuleMocks.spec.d.ts'
+  Imported via '../utils/EventEmitter.js' from file 'src/bidiServer/SimpleTransport.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/EventEmitter.ts'
+lib/cjs/utils/log.d.ts
+  Imported via '../utils/log.js' from file 'lib/cjs/cdp/CdpConnection.d.ts'
+  Imported via '../utils/log.js' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via '../utils/log.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkStorage.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/script/ChannelProxy.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/script/Realm.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/script/PreloadScript.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/log/LogManager.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/script/ScriptProcessor.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts'
+  Imported via '../../../utils/log.js' from file 'lib/cjs/bidiMapper/modules/storage/StorageProcessor.d.ts'
+  Imported via '../utils/log.js' from file 'src/bidiServer/MapperCdpConnection.ts'
+  Imported via '../utils/log.js' from file 'lib/cjs/bidiTab/mapperTabPage.d.ts'
+  Imported via './log.js' from file 'lib/cjs/utils/ProcessingQueue.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/log.ts'
+lib/cjs/utils/transport.d.ts
+  Imported via '../utils/transport.js' from file 'lib/cjs/cdp/CdpConnection.d.ts'
+  Imported via './transport.js' from file 'lib/cjs/utils/WebsocketTransport.d.ts'
+  Imported via '../utils/transport.js' from file 'lib/cjs/bidiTab/Transport.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via './transport.js' from file 'lib/cjs/utils/transportStub.spec.d.ts'
+  File is output of project reference source 'src/utils/transport.ts'
+lib/cjs/cdp/CdpConnection.d.ts
+  Imported via './CdpConnection.js' from file 'lib/cjs/cdp/CdpClient.d.ts'
+  Imported via '../cdp/CdpConnection.js' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via '../cdp/CdpConnection.js' from file 'lib/cjs/bidiMapper/BidiMapper.d.ts'
+  Imported via '../cdp/CdpConnection.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../../../cdp/CdpConnection.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Imported via '../cdp/CdpConnection.js' from file 'src/bidiServer/BrowserInstance.ts'
+  Imported via '../cdp/CdpConnection.js' from file 'src/bidiServer/MapperCdpConnection.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/cdp/CdpConnection.ts'
+lib/cjs/cdp/CdpClient.d.ts
+  Imported via '../cdp/CdpClient' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via './CdpClient.js' from file 'lib/cjs/cdp/CdpConnection.d.ts'
+  Imported via '../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/BidiMapper.d.ts'
+  Imported via '../cdp/CdpClient' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/script/Realm.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextProcessor.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkModuleMocks.spec.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/permissions/PermissionsProcessor.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/session/SessionProcessor.d.ts'
+  Imported via '../../../cdp/CdpClient.js' from file 'lib/cjs/bidiMapper/modules/storage/StorageProcessor.d.ts'
+  Imported via '../cdp/CdpClient.js' from file 'src/bidiServer/MapperCdpConnection.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/cdp/CdpClient.ts'
+lib/cjs/protocol/generated/webdriver-bidi.d.ts
+  Imported via './generated/webdriver-bidi.js' from file 'lib/cjs/protocol/cdp.d.ts'
+  Imported via './generated/webdriver-bidi.js' from file 'lib/cjs/protocol/chromium-bidi.d.ts'
+  Imported via './generated/webdriver-bidi.js' from file 'lib/cjs/protocol/protocol.d.ts'
+  Imported via './generated/webdriver-bidi.js' from file 'lib/cjs/protocol/ErrorResponse.d.ts'
+  Imported via './generated/webdriver-bidi.js' from file 'lib/cjs/protocol/ErrorResponse.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol/generated/webdriver-bidi.ts'
+lib/cjs/protocol/cdp.d.ts
+  Imported via './cdp.js' from file 'lib/cjs/protocol/protocol.d.ts'
+  Imported via './cdp.js' from file 'lib/cjs/protocol/chromium-bidi.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol/cdp.ts'
+lib/cjs/protocol/generated/webdriver-bidi-permissions.d.ts
+  Imported via './generated/webdriver-bidi-permissions.js' from file 'lib/cjs/protocol/chromium-bidi.d.ts'
+  Imported via './generated/webdriver-bidi-permissions.js' from file 'lib/cjs/protocol/protocol.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol/generated/webdriver-bidi-permissions.ts'
+lib/cjs/protocol/chromium-bidi.d.ts
+  Imported via './chromium-bidi.js' from file 'lib/cjs/protocol/protocol.d.ts'
+  Imported via '../protocol/chromium-bidi.js' from file 'lib/cjs/bidiMapper/OutgoingMessage.d.ts'
+  Imported via '../../../protocol/chromium-bidi.js' from file 'lib/cjs/bidiMapper/modules/session/EventManager.d.ts'
+  Imported via '../../../protocol/chromium-bidi.js' from file 'lib/cjs/bidiMapper/modules/session/SubscriptionManager.d.ts'
+  Imported via '../../../protocol/chromium-bidi.js' from file 'lib/cjs/bidiMapper/modules/session/SessionProcessor.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol/chromium-bidi.ts'
+lib/cjs/protocol/ErrorResponse.d.ts
+  Imported via './ErrorResponse.js' from file 'lib/cjs/protocol/protocol.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol/ErrorResponse.ts'
+lib/cjs/protocol/protocol.d.ts
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/bidiMapper/BidiParser.d.ts'
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/bidiMapper/BidiTransport.d.ts'
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/bidiMapper/OutgoingMessage.d.ts'
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/bidiMapper/BidiNoOpParser.d.ts'
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextStorage.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkStorage.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/session/EventManager.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/session/SubscriptionManager.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/script/ChannelProxy.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/script/Realm.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/script/RealmStorage.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/script/PreloadScript.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/browser/BrowserProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/input/ActionOption.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/input/InputState.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/input/InputSource.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/input/InputProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/log/logHelper.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkUtils.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/permissions/PermissionsProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/script/ScriptProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/session/SessionProcessor.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/session/events.d.ts'
+  Imported via '../../../protocol/protocol.js' from file 'lib/cjs/bidiMapper/modules/storage/StorageProcessor.d.ts'
+  Imported via '../protocol/protocol.js' from file 'src/bidiServer/WebSocketServer.ts'
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/bidiTab/BidiParser.d.ts'
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/bidiTab/Transport.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via '../protocol/protocol.js' from file 'lib/cjs/protocol-parser/protocol-parser.d.ts'
+  File is output of project reference source 'src/protocol/protocol.ts'
+lib/cjs/utils/result.d.ts
+  Imported via '../utils/result.js' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via '../utils/result.js' from file 'lib/cjs/bidiMapper/OutgoingMessage.d.ts'
+  Imported via '../utils/result.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../../../utils/result.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via '../../../utils/result.js' from file 'lib/cjs/bidiMapper/modules/session/EventManager.d.ts'
+  Imported via './result.js' from file 'lib/cjs/utils/ProcessingQueue.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/result.ts'
+lib/cjs/bidiMapper/BidiParser.d.ts
+  Imported via './BidiParser.js' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via './BidiParser.js' from file 'lib/cjs/bidiMapper/BidiMapper.d.ts'
+  Imported via './BidiParser.js' from file 'lib/cjs/bidiMapper/BidiNoOpParser.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via './BidiParser.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  File is output of project reference source 'src/bidiMapper/BidiParser.ts'
+lib/cjs/bidiMapper/BidiTransport.d.ts
+  Imported via './BidiTransport.js' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via './BidiTransport.js' from file 'lib/cjs/bidiMapper/BidiMapper.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/BidiTransport.ts'
+lib/cjs/bidiMapper/OutgoingMessage.d.ts
+  Imported via './OutgoingMessage.js' from file 'lib/cjs/bidiMapper/BidiServer.d.ts'
+  Imported via './OutgoingMessage.js' from file 'lib/cjs/bidiMapper/BidiMapper.d.ts'
+  Imported via '../../OutgoingMessage.js' from file 'lib/cjs/bidiMapper/modules/session/EventManager.d.ts'
+  Imported via './OutgoingMessage.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/OutgoingMessage.ts'
+lib/cjs/bidiMapper/BidiServer.d.ts
+  Imported via './BidiServer.js' from file 'lib/cjs/bidiMapper/BidiMapper.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via '../bidiMapper/BidiServer.js' from file 'src/bidiServer/BrowserInstance.ts'
+  Imported via '../bidiMapper/BidiServer.js' from file 'src/bidiServer/MapperCdpConnection.ts'
+  Imported via '../bidiMapper/BidiServer.js' from file 'src/bidiServer/WebSocketServer.ts'
+  File is output of project reference source 'src/bidiMapper/BidiServer.ts'
+lib/cjs/bidiMapper/BidiMapper.d.ts
+  Matched by default include pattern '**/*'
+  Imported via '../../BidiMapper.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkStorage.d.ts'
+  Imported via "../../BidiMapper.js" from file 'lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts'
+  Imported via '../../BidiMapper.js' from file 'lib/cjs/bidiMapper/modules/browser/BrowserProcessor.d.ts'
+  Imported via '../../BidiMapper.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpProcessor.d.ts'
+  Imported via '../bidiMapper/BidiMapper.js' from file 'lib/cjs/bidiTab/BidiParser.d.ts'
+  Imported via '../bidiMapper/BidiMapper.js' from file 'lib/cjs/bidiTab/Transport.d.ts'
+  File is output of project reference source 'src/bidiMapper/BidiMapper.ts'
+lib/cjs/bidiMapper/BidiNoOpParser.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/BidiNoOpParser.ts'
+lib/cjs/utils/Deferred.d.ts
+  Imported via '../../../utils/Deferred.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via '../../../utils/Deferred.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/Deferred.ts'
+lib/cjs/bidiMapper/modules/session/SubscriptionManager.d.ts
+  Imported via './SubscriptionManager.js' from file 'lib/cjs/bidiMapper/modules/session/EventManager.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/session/SubscriptionManager.ts'
+lib/cjs/bidiMapper/modules/session/EventManager.d.ts
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkStorage.d.ts'
+  Imported via './EventManager.js' from file 'lib/cjs/bidiMapper/modules/session/SubscriptionManager.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/script/ChannelProxy.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/script/Realm.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts'
+  Imported via './modules/session/EventManager.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextProcessor.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/log/LogManager.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts'
+  Imported via '../session/EventManager.js' from file 'lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via './EventManager.js' from file 'lib/cjs/bidiMapper/modules/session/SessionProcessor.d.ts'
+  File is output of project reference source 'src/bidiMapper/modules/session/EventManager.ts'
+lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts
+  Imported via './NetworkRequest.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkStorage.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/network/NetworkRequest.ts'
+lib/cjs/bidiMapper/modules/network/NetworkStorage.d.ts
+  Imported via '../network/NetworkStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via './NetworkStorage.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts'
+  Imported via './modules/network/NetworkStorage.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../network/NetworkStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Imported via './NetworkStorage.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkProcessor.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/network/NetworkStorage.ts'
+lib/cjs/bidiMapper/modules/script/RealmStorage.d.ts
+  Imported via './RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/script/Realm.d.ts'
+  Imported via '../script/RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via '../script/RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts'
+  Imported via './modules/script/RealmStorage.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../script/RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpProcessor.d.ts'
+  Imported via '../script/RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Imported via '../script/RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/input/InputProcessor.d.ts'
+  Imported via '../script/RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/log/LogManager.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via './RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/script/ScriptProcessor.d.ts'
+  Imported via './RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts'
+  Imported via './RealmStorage.js' from file 'lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts'
+  File is output of project reference source 'src/bidiMapper/modules/script/RealmStorage.ts'
+lib/cjs/bidiMapper/modules/script/Realm.d.ts
+  Imported via './Realm.js' from file 'lib/cjs/bidiMapper/modules/script/ChannelProxy.d.ts'
+  Imported via './Realm.js' from file 'lib/cjs/bidiMapper/modules/script/RealmStorage.d.ts'
+  Imported via '../script/Realm.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via './Realm.js' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts'
+  Imported via './Realm.js' from file 'lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts'
+  File is output of project reference source 'src/bidiMapper/modules/script/Realm.ts'
+lib/cjs/bidiMapper/modules/script/ChannelProxy.d.ts
+  Imported via '../script/ChannelProxy.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via './ChannelProxy.js' from file 'lib/cjs/bidiMapper/modules/script/PreloadScript.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/script/ChannelProxy.ts'
+lib/cjs/bidiMapper/modules/script/PreloadScript.d.ts
+  Imported via './PreloadScript.js' from file 'lib/cjs/bidiMapper/modules/script/PreloadScriptStorage.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/script/PreloadScript.ts'
+lib/cjs/bidiMapper/modules/script/PreloadScriptStorage.d.ts
+  Imported via '../script/PreloadScriptStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via './modules/script/PreloadScriptStorage.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../script/PreloadScriptStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via './PreloadScriptStorage.js' from file 'lib/cjs/bidiMapper/modules/script/ScriptProcessor.d.ts'
+  File is output of project reference source 'src/bidiMapper/modules/script/PreloadScriptStorage.ts'
+lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts
+  Imported via '../cdp/CdpTarget.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts'
+  Imported via '../cdp/CdpTarget.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkStorage.d.ts'
+  Imported via '../cdp/CdpTarget.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkRequest.d.ts'
+  Imported via '../cdp/CdpTarget.js' from file 'lib/cjs/bidiMapper/modules/script/PreloadScriptStorage.d.ts'
+  Imported via '../cdp/CdpTarget.js' from file 'lib/cjs/bidiMapper/modules/script/PreloadScript.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via '../cdp/CdpTarget.js' from file 'lib/cjs/bidiMapper/modules/log/LogManager.d.ts'
+  File is output of project reference source 'src/bidiMapper/modules/cdp/CdpTarget.ts'
+lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts
+  Imported via './BrowsingContextImpl.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextStorage.d.ts'
+  Imported via '../context/BrowsingContextImpl.js' from file 'lib/cjs/bidiMapper/modules/script/Realm.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via '../context/BrowsingContextImpl.js' from file 'lib/cjs/bidiMapper/modules/input/ActionDispatcher.d.ts'
+  Imported via '../context/BrowsingContextImpl.js' from file 'lib/cjs/bidiMapper/modules/input/InputStateManager.d.ts'
+  Imported via '../context/BrowsingContextImpl.js' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts'
+  Imported via '../context/BrowsingContextImpl.js' from file 'lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts'
+  File is output of project reference source 'src/bidiMapper/modules/context/BrowsingContextImpl.ts'
+lib/cjs/bidiMapper/modules/context/BrowsingContextStorage.d.ts
+  Imported via './modules/context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/CommandProcessor.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTarget.d.ts'
+  Imported via '../context/BrowsingContextStorage' from file 'lib/cjs/bidiMapper/modules/network/NetworkStorage.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/session/EventManager.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/session/SubscriptionManager.d.ts'
+  Imported via './BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextImpl.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpProcessor.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts'
+  Imported via './BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/context/BrowsingContextProcessor.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/input/InputProcessor.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/network/NetworkProcessor.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/script/ScriptProcessor.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts'
+  Imported via '../context/BrowsingContextStorage.js' from file 'lib/cjs/bidiMapper/modules/storage/StorageProcessor.d.ts'
+  File is output of project reference source 'src/bidiMapper/modules/context/BrowsingContextStorage.ts'
+lib/cjs/bidiMapper/CommandProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/CommandProcessor.ts'
+lib/cjs/bidiMapper/modules/browser/BrowserProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/browser/BrowserProcessor.ts'
+lib/cjs/bidiMapper/modules/cdp/CdpProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/cdp/CdpProcessor.ts'
+lib/cjs/bidiMapper/modules/cdp/CdpTargetManager.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/cdp/CdpTargetManager.ts'
+lib/cjs/bidiMapper/modules/context/BrowsingContextProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/context/BrowsingContextProcessor.ts'
+lib/cjs/bidiMapper/modules/context/BrowsingContextStorage.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/context/BrowsingContextStorage.spec.ts'
+lib/cjs/bidiMapper/modules/input/ActionOption.d.ts
+  Imported via './ActionOption.js' from file 'lib/cjs/bidiMapper/modules/input/ActionDispatcher.d.ts'
+  Imported via './ActionOption.js' from file 'lib/cjs/bidiMapper/modules/input/InputState.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/input/ActionOption.ts'
+lib/cjs/utils/Mutex.d.ts
+  Imported via '../../../utils/Mutex.js' from file 'lib/cjs/bidiMapper/modules/input/InputState.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/Mutex.ts'
+lib/cjs/bidiMapper/modules/input/InputSource.d.ts
+  Imported via './InputSource.js' from file 'lib/cjs/bidiMapper/modules/input/InputState.d.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/input/InputSource.ts'
+lib/cjs/bidiMapper/modules/input/InputState.d.ts
+  Imported via './InputState.js' from file 'lib/cjs/bidiMapper/modules/input/ActionDispatcher.d.ts'
+  Matched by default include pattern '**/*'
+  Imported via './InputState.js' from file 'lib/cjs/bidiMapper/modules/input/InputStateManager.d.ts'
+  File is output of project reference source 'src/bidiMapper/modules/input/InputState.ts'
+lib/cjs/bidiMapper/modules/input/ActionDispatcher.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/input/ActionDispatcher.ts'
+lib/cjs/bidiMapper/modules/input/InputProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/input/InputProcessor.ts'
+lib/cjs/bidiMapper/modules/input/InputStateManager.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/input/InputStateManager.ts'
+lib/cjs/bidiMapper/modules/input/USKeyboardLayout.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/input/USKeyboardLayout.ts'
+lib/cjs/bidiMapper/modules/input/keyUtils.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/input/keyUtils.ts'
+lib/cjs/bidiMapper/modules/log/LogManager.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/log/LogManager.ts'
+lib/cjs/bidiMapper/modules/log/logHelper.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/log/logHelper.spec.ts'
+lib/cjs/bidiMapper/modules/log/logHelper.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/log/logHelper.ts'
+lib/cjs/bidiMapper/modules/network/NetworkModuleMocks.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/network/NetworkModuleMocks.spec.ts'
+lib/cjs/bidiMapper/modules/network/NetworkProcessor.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/network/NetworkProcessor.spec.ts'
+lib/cjs/bidiMapper/modules/network/NetworkProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/network/NetworkProcessor.ts'
+lib/cjs/bidiMapper/modules/network/NetworkStorage.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/network/NetworkStorage.spec.ts'
+lib/cjs/bidiMapper/modules/network/NetworkUtils.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/network/NetworkUtils.spec.ts'
+lib/cjs/bidiMapper/modules/network/NetworkUtils.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/network/NetworkUtils.ts'
+lib/cjs/bidiMapper/modules/permissions/PermissionsProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/permissions/PermissionsProcessor.ts'
+lib/cjs/bidiMapper/modules/script/PreloadScriptStorage.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/script/PreloadScriptStorage.spec.ts'
+lib/cjs/bidiMapper/modules/script/ScriptProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/script/ScriptProcessor.ts'
+lib/cjs/bidiMapper/modules/script/SharedId.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/script/SharedId.spec.ts'
+lib/cjs/bidiMapper/modules/script/SharedId.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/script/SharedId.ts'
+lib/cjs/bidiMapper/modules/script/WindowRealm.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/script/WindowRealm.ts'
+lib/cjs/bidiMapper/modules/script/WorkerRealm.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/script/WorkerRealm.ts'
+lib/cjs/bidiMapper/modules/session/SessionProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/session/SessionProcessor.ts'
+lib/cjs/bidiMapper/modules/session/SubscriptionManager.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/session/SubscriptionManager.spec.ts'
+lib/cjs/bidiMapper/modules/session/events.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/session/events.spec.ts'
+lib/cjs/bidiMapper/modules/session/events.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/session/events.ts'
+lib/cjs/bidiMapper/modules/storage/StorageProcessor.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiMapper/modules/storage/StorageProcessor.ts'
+node_modules/@types/node/assert.d.ts
+  Referenced via 'assert.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/assert/strict.d.ts
+  Referenced via 'assert/strict.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/buffer/index.d.ts
+  Imported via 'buffer' from file 'node_modules/undici-types/dispatcher.d.ts' with packageId 'buffer/index.d.ts@5.7.1'
+  Imported via 'buffer' from file 'node_modules/undici-types/readable.d.ts' with packageId 'buffer/index.d.ts@5.7.1'
+  Imported via 'buffer' from file 'node_modules/undici-types/file.d.ts' with packageId 'buffer/index.d.ts@5.7.1'
+  Imported via 'buffer' from file 'node_modules/undici-types/fetch.d.ts' with packageId 'buffer/index.d.ts@5.7.1'
+  Imported via 'buffer' from file 'node_modules/undici-types/filereader.d.ts' with packageId 'buffer/index.d.ts@5.7.1'
+  Imported via 'buffer' from file 'node_modules/undici-types/websocket.d.ts' with packageId 'buffer/index.d.ts@5.7.1'
+node_modules/undici-types/header.d.ts
+  Imported via './header' from file 'node_modules/undici-types/dispatcher.d.ts' with packageId 'undici-types/header.d.ts@5.26.5'
+  Imported via "./header" from file 'node_modules/undici-types/errors.d.ts' with packageId 'undici-types/header.d.ts@5.26.5'
+  Imported via './header' from file 'node_modules/undici-types/mock-interceptor.d.ts' with packageId 'undici-types/header.d.ts@5.26.5'
+  Imported via './header' from file 'node_modules/undici-types/proxy-agent.d.ts' with packageId 'undici-types/header.d.ts@5.26.5'
+node_modules/undici-types/readable.d.ts
+  Imported via './readable' from file 'node_modules/undici-types/dispatcher.d.ts' with packageId 'undici-types/readable.d.ts@5.26.5'
+node_modules/undici-types/file.d.ts
+  Imported via './file' from file 'node_modules/undici-types/formdata.d.ts' with packageId 'undici-types/file.d.ts@5.26.5'
+  Imported via './file' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/file.d.ts@5.26.5'
+  Imported via './file' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/file.d.ts@5.26.5'
+node_modules/undici-types/fetch.d.ts
+  Imported via './fetch' from file 'node_modules/undici-types/formdata.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/mock-interceptor.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/cookies.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/websocket.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/cache.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+  Imported via './fetch' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/fetch.d.ts@5.26.5'
+node_modules/undici-types/formdata.d.ts
+  Imported via './formdata' from file 'node_modules/undici-types/dispatcher.d.ts' with packageId 'undici-types/formdata.d.ts@5.26.5'
+  Imported via './formdata' from file 'node_modules/undici-types/fetch.d.ts' with packageId 'undici-types/formdata.d.ts@5.26.5'
+  Imported via './formdata' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/formdata.d.ts@5.26.5'
+  Imported via './formdata' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/formdata.d.ts@5.26.5'
+node_modules/undici-types/connector.d.ts
+  Imported via "./connector" from file 'node_modules/undici-types/client.d.ts' with packageId 'undici-types/connector.d.ts@5.26.5'
+  Imported via './connector' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/connector.d.ts@5.26.5'
+  Imported via './connector' from file 'node_modules/undici-types/proxy-agent.d.ts' with packageId 'undici-types/connector.d.ts@5.26.5'
+  Imported via "./connector" from file 'node_modules/undici-types/diagnostics-channel.d.ts' with packageId 'undici-types/connector.d.ts@5.26.5'
+  Imported via './connector' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/connector.d.ts@5.26.5'
+node_modules/undici-types/client.d.ts
+  Imported via './client' from file 'node_modules/undici-types/errors.d.ts' with packageId 'undici-types/client.d.ts@5.26.5'
+  Imported via './client' from file 'node_modules/undici-types/pool.d.ts' with packageId 'undici-types/client.d.ts@5.26.5'
+  Imported via './client' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/client.d.ts@5.26.5'
+  Imported via './client' from file 'node_modules/undici-types/mock-client.d.ts' with packageId 'undici-types/client.d.ts@5.26.5'
+  Imported via './client' from file 'node_modules/undici-types/proxy-agent.d.ts' with packageId 'undici-types/client.d.ts@5.26.5'
+  Imported via './client' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/client.d.ts@5.26.5'
+node_modules/undici-types/errors.d.ts
+  Imported via './errors' from file 'node_modules/undici-types/dispatcher.d.ts' with packageId 'undici-types/errors.d.ts@5.26.5'
+  Imported via './errors' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/errors.d.ts@5.26.5'
+  Imported via './errors' from file 'node_modules/undici-types/mock-errors.d.ts' with packageId 'undici-types/errors.d.ts@5.26.5'
+  Imported via './errors' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/errors.d.ts@5.26.5'
+node_modules/undici-types/dispatcher.d.ts
+  Imported via './dispatcher' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/fetch.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/client.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via "./dispatcher" from file 'node_modules/undici-types/global-dispatcher.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via "./dispatcher" from file 'node_modules/undici-types/pool.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via "./dispatcher" from file 'node_modules/undici-types/handlers.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/balanced-pool.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via "./dispatcher" from file 'node_modules/undici-types/agent.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/mock-client.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/mock-agent.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/mock-interceptor.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/mock-pool.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/proxy-agent.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/api.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via "./dispatcher" from file 'node_modules/undici-types/diagnostics-channel.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/websocket.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via './dispatcher' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+  Imported via "./dispatcher" from file 'node_modules/undici-types/interceptors.d.ts' with packageId 'undici-types/dispatcher.d.ts@5.26.5'
+node_modules/undici-types/global-dispatcher.d.ts
+  Imported via './global-dispatcher' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/global-dispatcher.d.ts@5.26.5'
+  Imported via './global-dispatcher' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/global-dispatcher.d.ts@5.26.5'
+  Imported via './global-dispatcher' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/global-dispatcher.d.ts@5.26.5'
+node_modules/undici-types/global-origin.d.ts
+  Imported via './global-origin' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/global-origin.d.ts@5.26.5'
+node_modules/undici-types/pool-stats.d.ts
+  Imported via './pool-stats' from file 'node_modules/undici-types/pool.d.ts' with packageId 'undici-types/pool-stats.d.ts@5.26.5'
+node_modules/undici-types/pool.d.ts
+  Imported via './pool' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/pool.d.ts@5.26.5'
+  Imported via "./pool" from file 'node_modules/undici-types/pool-stats.d.ts' with packageId 'undici-types/pool.d.ts@5.26.5'
+  Imported via './pool' from file 'node_modules/undici-types/balanced-pool.d.ts' with packageId 'undici-types/pool.d.ts@5.26.5'
+  Imported via './pool' from file 'node_modules/undici-types/agent.d.ts' with packageId 'undici-types/pool.d.ts@5.26.5'
+  Imported via './pool' from file 'node_modules/undici-types/mock-pool.d.ts' with packageId 'undici-types/pool.d.ts@5.26.5'
+  Imported via './pool' from file 'node_modules/undici-types/proxy-agent.d.ts' with packageId 'undici-types/pool.d.ts@5.26.5'
+  Imported via './pool' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/pool.d.ts@5.26.5'
+node_modules/undici-types/handlers.d.ts
+  Imported via './handlers' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/handlers.d.ts@5.26.5'
+  Imported via './handlers' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/handlers.d.ts@5.26.5'
+  Imported via './handlers' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/handlers.d.ts@5.26.5'
+node_modules/undici-types/balanced-pool.d.ts
+  Imported via './balanced-pool' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/balanced-pool.d.ts@5.26.5'
+  Imported via './balanced-pool' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/balanced-pool.d.ts@5.26.5'
+node_modules/undici-types/agent.d.ts
+  Imported via './agent' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/agent.d.ts@5.26.5'
+  Imported via './agent' from file 'node_modules/undici-types/mock-agent.d.ts' with packageId 'undici-types/agent.d.ts@5.26.5'
+  Imported via './agent' from file 'node_modules/undici-types/proxy-agent.d.ts' with packageId 'undici-types/agent.d.ts@5.26.5'
+  Imported via './agent' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/agent.d.ts@5.26.5'
+node_modules/undici-types/mock-interceptor.d.ts
+  Imported via './mock-interceptor' from file 'node_modules/undici-types/mock-agent.d.ts' with packageId 'undici-types/mock-interceptor.d.ts@5.26.5'
+  Imported via './mock-interceptor' from file 'node_modules/undici-types/mock-client.d.ts' with packageId 'undici-types/mock-interceptor.d.ts@5.26.5'
+  Imported via './mock-interceptor' from file 'node_modules/undici-types/mock-pool.d.ts' with packageId 'undici-types/mock-interceptor.d.ts@5.26.5'
+  Imported via './mock-interceptor' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-interceptor.d.ts@5.26.5'
+node_modules/undici-types/mock-agent.d.ts
+  Imported via './mock-agent' from file 'node_modules/undici-types/mock-client.d.ts' with packageId 'undici-types/mock-agent.d.ts@5.26.5'
+  Imported via './mock-agent' from file 'node_modules/undici-types/mock-pool.d.ts' with packageId 'undici-types/mock-agent.d.ts@5.26.5'
+  Imported via './mock-agent' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-agent.d.ts@5.26.5'
+  Imported via './mock-agent' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-agent.d.ts@5.26.5'
+node_modules/undici-types/mock-client.d.ts
+  Imported via './mock-client' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-client.d.ts@5.26.5'
+  Imported via './mock-client' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-client.d.ts@5.26.5'
+node_modules/undici-types/mock-pool.d.ts
+  Imported via './mock-pool' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-pool.d.ts@5.26.5'
+  Imported via './mock-pool' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-pool.d.ts@5.26.5'
+node_modules/undici-types/mock-errors.d.ts
+  Imported via './mock-errors' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-errors.d.ts@5.26.5'
+  Imported via './mock-errors' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/mock-errors.d.ts@5.26.5'
+node_modules/undici-types/proxy-agent.d.ts
+  Imported via './proxy-agent' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/proxy-agent.d.ts@5.26.5'
+node_modules/undici-types/api.d.ts
+  Imported via './api' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/api.d.ts@5.26.5'
+  Imported via './api' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/api.d.ts@5.26.5'
+  Imported via './api' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/api.d.ts@5.26.5'
+  Imported via './api' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/api.d.ts@5.26.5'
+  Imported via './api' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/api.d.ts@5.26.5'
+  Imported via './api' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/api.d.ts@5.26.5'
+node_modules/undici-types/cookies.d.ts
+  Imported via './cookies' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/cookies.d.ts@5.26.5'
+node_modules/undici-types/patch.d.ts
+  Imported via './patch' from file 'node_modules/undici-types/filereader.d.ts' with packageId 'undici-types/patch.d.ts@5.26.5'
+  Imported via './patch' from file 'node_modules/undici-types/websocket.d.ts' with packageId 'undici-types/patch.d.ts@5.26.5'
+node_modules/undici-types/filereader.d.ts
+  Imported via './filereader' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/filereader.d.ts@5.26.5'
+  Imported via './filereader' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/filereader.d.ts@5.26.5'
+node_modules/undici-types/diagnostics-channel.d.ts
+  Imported via './diagnostics-channel' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/diagnostics-channel.d.ts@5.26.5'
+node_modules/undici-types/websocket.d.ts
+  Imported via './websocket' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/websocket.d.ts@5.26.5'
+node_modules/undici-types/content-type.d.ts
+  Imported via './content-type' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/content-type.d.ts@5.26.5'
+node_modules/undici-types/cache.d.ts
+  Imported via './cache' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/cache.d.ts@5.26.5'
+  Imported via './cache' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/cache.d.ts@5.26.5'
+node_modules/undici-types/interceptors.d.ts
+  Imported via './interceptors' from file 'node_modules/undici-types/index.d.ts' with packageId 'undici-types/interceptors.d.ts@5.26.5'
+node_modules/undici-types/index.d.ts
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+  Imported via "undici-types" from file 'node_modules/@types/node/globals.d.ts' with packageId 'undici-types/index.d.ts@5.26.5'
+node_modules/@types/node/globals.d.ts
+  Referenced via 'globals.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/async_hooks.d.ts
+  Referenced via 'async_hooks.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/buffer.d.ts
+  Referenced via 'buffer.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/child_process.d.ts
+  Referenced via 'child_process.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/cluster.d.ts
+  Referenced via 'cluster.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/console.d.ts
+  Referenced via 'console.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/constants.d.ts
+  Referenced via 'constants.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/crypto.d.ts
+  Referenced via 'crypto.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/dgram.d.ts
+  Referenced via 'dgram.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/diagnostics_channel.d.ts
+  Referenced via 'diagnostics_channel.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/dns.d.ts
+  Referenced via 'dns.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/dns/promises.d.ts
+  Referenced via 'dns/promises.d.ts' from file 'node_modules/@types/node/index.d.ts'
+  Referenced via 'dns/promises.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/domain.d.ts
+  Referenced via 'domain.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/dom-events.d.ts
+  Referenced via 'dom-events.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/events.d.ts
+  Referenced via 'events.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/fs.d.ts
+  Referenced via 'fs.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/fs/promises.d.ts
+  Referenced via 'fs/promises.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/http.d.ts
+  Referenced via 'http.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/http2.d.ts
+  Referenced via 'http2.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/https.d.ts
+  Referenced via 'https.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/inspector.d.ts
+  Referenced via 'inspector.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/module.d.ts
+  Referenced via 'module.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/net.d.ts
+  Referenced via 'net.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/os.d.ts
+  Referenced via 'os.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/path.d.ts
+  Referenced via 'path.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/perf_hooks.d.ts
+  Referenced via 'perf_hooks.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/process.d.ts
+  Referenced via 'process.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/punycode.d.ts
+  Referenced via 'punycode.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/querystring.d.ts
+  Referenced via 'querystring.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/readline.d.ts
+  Referenced via 'readline.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/readline/promises.d.ts
+  Referenced via 'readline/promises.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/repl.d.ts
+  Referenced via 'repl.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/sea.d.ts
+  Referenced via 'sea.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/stream.d.ts
+  Referenced via 'stream.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/stream/promises.d.ts
+  Referenced via 'stream/promises.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/stream/consumers.d.ts
+  Referenced via 'stream/consumers.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/stream/web.d.ts
+  Referenced via 'stream/web.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/string_decoder.d.ts
+  Referenced via 'string_decoder.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/test.d.ts
+  Referenced via 'test.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/timers.d.ts
+  Referenced via 'timers.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/timers/promises.d.ts
+  Referenced via 'timers/promises.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/tls.d.ts
+  Referenced via 'tls.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/trace_events.d.ts
+  Referenced via 'trace_events.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/tty.d.ts
+  Referenced via 'tty.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/url.d.ts
+  Referenced via 'url.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/util.d.ts
+  Referenced via 'util.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/v8.d.ts
+  Referenced via 'v8.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/vm.d.ts
+  Referenced via 'vm.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/wasi.d.ts
+  Referenced via 'wasi.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/worker_threads.d.ts
+  Referenced via 'worker_threads.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/zlib.d.ts
+  Referenced via 'zlib.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/globals.global.d.ts
+  Referenced via 'globals.global.d.ts' from file 'node_modules/@types/node/index.d.ts'
+node_modules/@types/node/index.d.ts
+  Type library referenced via 'node' from file 'node_modules/@puppeteer/browsers/lib/cjs/launch.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/undici-types/formdata.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/undici-types/file.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/undici-types/fetch.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/undici-types/cookies.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/undici-types/filereader.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/undici-types/patch.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/undici-types/websocket.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/undici-types/content-type.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/@puppeteer/browsers/lib/cjs/launch.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/@puppeteer/browsers/lib/cjs/CLI.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/@types/ws/index.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/@types/websocket/index.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+  Entry point for implicit type library 'node' with packageId '@types/node/index.d.ts@20.14.9'
+  Type library referenced via 'node' from file 'node_modules/@types/yauzl/index.d.ts' with packageId '@types/node/index.d.ts@20.14.9'
+node_modules/@puppeteer/browsers/lib/cjs/browser-data/types.d.ts
+  Imported via './types.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/chrome-headless-shell.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/types.d.ts@2.3.0'
+  Imported via './types.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/chrome.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/types.d.ts@2.3.0'
+  Imported via './types.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/chromedriver.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/types.d.ts@2.3.0'
+  Imported via './types.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/chromium.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/types.d.ts@2.3.0'
+  Imported via './types.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/firefox.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/types.d.ts@2.3.0'
+  Imported via './types.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/types.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/browser-data/chrome.d.ts
+  Imported via './chrome.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/chrome-headless-shell.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/chrome.d.ts@2.3.0'
+  Imported via './chrome.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/chrome.d.ts@2.3.0'
+  Imported via './chrome.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/chromedriver.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/chrome.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/browser-data/chrome-headless-shell.d.ts
+  Imported via './chrome-headless-shell.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/chrome-headless-shell.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/browser-data/chromedriver.d.ts
+  Imported via './chromedriver.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/chromedriver.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/browser-data/chromium.d.ts
+  Imported via './chromium.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/chromium.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/browser-data/firefox.d.ts
+  Imported via './firefox.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/firefox.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts
+  Imported via './browser-data/browser-data.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/launch.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts@2.3.0'
+  Imported via './browser-data/browser-data.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/install.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts@2.3.0'
+  Imported via './browser-data/browser-data.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/Cache.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts@2.3.0'
+  Imported via './browser-data/browser-data.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/detectPlatform.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts@2.3.0'
+  Imported via './browser-data/browser-data.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts@2.3.0'
+  Imported via './browser-data/browser-data.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts@2.3.0'
+  Imported via './browser-data/browser-data.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/CLI.d.ts' with packageId '@puppeteer/browsers/lib/cjs/browser-data/browser-data.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/launch.d.ts
+  Imported via './launch.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/launch.d.ts@2.3.0'
+  Imported via './launch.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/launch.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/Cache.d.ts
+  Imported via './Cache.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/install.d.ts' with packageId '@puppeteer/browsers/lib/cjs/Cache.d.ts@2.3.0'
+  Imported via './Cache.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/Cache.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/install.d.ts
+  Imported via './install.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/install.d.ts@2.3.0'
+  Imported via './install.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/install.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/detectPlatform.d.ts
+  Imported via './detectPlatform.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/detectPlatform.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/CLI.d.ts
+  Imported via './CLI.js' from file 'node_modules/@puppeteer/browsers/lib/cjs/main.d.ts' with packageId '@puppeteer/browsers/lib/cjs/CLI.d.ts@2.3.0'
+node_modules/@puppeteer/browsers/lib/cjs/main.d.ts
+  Imported via '@puppeteer/browsers' from file 'src/bidiServer/BrowserInstance.ts' with packageId '@puppeteer/browsers/lib/cjs/main.d.ts@2.3.0'
+node_modules/@types/ms/index.d.ts
+  Imported via "ms" from file 'node_modules/@types/debug/index.d.ts' with packageId '@types/ms/index.d.ts@0.7.31'
+  Entry point for implicit type library 'ms' with packageId '@types/ms/index.d.ts@0.7.31'
+node_modules/@types/debug/index.d.ts
+  Imported via 'debug' from file 'src/bidiServer/BrowserInstance.ts' with packageId '@types/debug/index.d.ts@4.1.12'
+  Imported via 'debug' from file 'src/bidiServer/MapperCdpConnection.ts' with packageId '@types/debug/index.d.ts@4.1.12'
+  Imported via 'debug' from file 'src/bidiServer/WebSocketServer.ts' with packageId '@types/debug/index.d.ts@4.1.12'
+  Entry point for implicit type library 'debug' with packageId '@types/debug/index.d.ts@4.1.12'
+node_modules/@types/ws/index.d.ts
+  Imported via 'ws' from file 'src/bidiServer/BrowserInstance.ts' with packageId '@types/ws/index.d.ts@8.5.12'
+  Imported via 'ws' from file 'lib/cjs/utils/WebsocketTransport.d.ts' with packageId '@types/ws/index.d.ts@8.5.12'
+  Entry point for implicit type library 'ws' with packageId '@types/ws/index.d.ts@8.5.12'
+lib/cjs/utils/WebsocketTransport.d.ts
+  Imported via '../utils/WebsocketTransport.js' from file 'src/bidiServer/BrowserInstance.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/WebsocketTransport.ts'
+src/bidiServer/SimpleTransport.ts
+  Imported via './SimpleTransport.js' from file 'src/bidiServer/MapperCdpConnection.ts'
+  Imported via './SimpleTransport.js' from file 'src/bidiServer/BrowserInstance.ts'
+  Matched by default include pattern '**/*'
+src/bidiServer/MapperCdpConnection.ts
+  Imported via './MapperCdpConnection.js' from file 'src/bidiServer/BrowserInstance.ts'
+  Matched by default include pattern '**/*'
+src/bidiServer/reader.ts
+  Imported via './reader.js' from file 'src/bidiServer/BrowserInstance.ts'
+  Matched by default include pattern '**/*'
+src/bidiServer/BrowserInstance.ts
+  Matched by default include pattern '**/*'
+  Imported via './BrowserInstance.js' from file 'src/bidiServer/WebSocketServer.ts'
+node_modules/@types/websocket/index.d.ts
+  Imported via 'websocket' from file 'src/bidiServer/WebSocketServer.ts' with packageId '@types/websocket/index.d.ts@1.0.10'
+  Entry point for implicit type library 'websocket' with packageId '@types/websocket/index.d.ts@1.0.10'
+lib/cjs/utils/uuid.d.ts
+  Imported via '../utils/uuid.js' from file 'src/bidiServer/WebSocketServer.ts'
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/uuid.ts'
+src/bidiServer/WebSocketServer.ts
+  Matched by default include pattern '**/*'
+  Imported via './WebSocketServer.js' from file 'src/bidiServer/index.ts'
+node_modules/@types/yargs-parser/index.d.ts
+  Imported via "yargs-parser" from file 'node_modules/@types/yargs/index.d.ts' with packageId '@types/yargs-parser/index.d.ts@21.0.3'
+  Imported via "yargs-parser" from file 'node_modules/@types/yargs/helpers.d.ts' with packageId '@types/yargs-parser/index.d.ts@21.0.3'
+  Entry point for implicit type library 'yargs-parser' with packageId '@types/yargs-parser/index.d.ts@21.0.3'
+node_modules/@types/yargs/index.d.ts
+  Imported via 'yargs' from file 'src/bidiServer/index.ts' with packageId '@types/yargs/index.d.ts@17.0.32'
+  Entry point for implicit type library 'yargs' with packageId '@types/yargs/index.d.ts@17.0.32'
+node_modules/@types/yargs/helpers.d.ts
+  Imported via 'yargs/helpers' from file 'src/bidiServer/index.ts' with packageId '@types/yargs/helpers.d.ts@17.0.32'
+src/bidiServer/index.ts
+  Matched by default include pattern '**/*'
+lib/cjs/bidiTab/BidiParser.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiTab/BidiParser.ts'
+lib/cjs/bidiTab/Transport.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiTab/Transport.ts'
+lib/cjs/bidiTab/bidiTab.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiTab/bidiTab.ts'
+lib/cjs/bidiTab/mapperTabPage.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/bidiTab/mapperTabPage.ts'
+lib/cjs/cdp/CdpClient.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/cdp/CdpClient.spec.ts'
+lib/cjs/cdp/CdpConnection.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/cdp/CdpConnection.spec.ts'
+lib/cjs/cdp/cdpMessage.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/cdp/cdpMessage.ts'
+lib/cjs/protocol/ErrorResponse.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol/ErrorResponse.spec.ts'
+node_modules/zod/lib/helpers/typeAliases.d.ts
+  Imported via "./helpers/typeAliases" from file 'node_modules/zod/lib/ZodError.d.ts' with packageId 'zod/lib/helpers/typeAliases.d.ts@3.23.8'
+  Imported via "./helpers/typeAliases" from file 'node_modules/zod/lib/external.d.ts' with packageId 'zod/lib/helpers/typeAliases.d.ts@3.23.8'
+  Imported via "./helpers/typeAliases" from file 'node_modules/zod/lib/types.d.ts' with packageId 'zod/lib/helpers/typeAliases.d.ts@3.23.8'
+node_modules/zod/lib/helpers/util.d.ts
+  Imported via "./helpers/util" from file 'node_modules/zod/lib/ZodError.d.ts' with packageId 'zod/lib/helpers/util.d.ts@3.23.8'
+  Imported via "./util" from file 'node_modules/zod/lib/helpers/parseUtil.d.ts' with packageId 'zod/lib/helpers/util.d.ts@3.23.8'
+  Imported via "./helpers/util" from file 'node_modules/zod/lib/external.d.ts' with packageId 'zod/lib/helpers/util.d.ts@3.23.8'
+  Imported via "./helpers/util" from file 'node_modules/zod/lib/types.d.ts' with packageId 'zod/lib/helpers/util.d.ts@3.23.8'
+node_modules/zod/lib/ZodError.d.ts
+  Imported via "../ZodError" from file 'node_modules/zod/lib/locales/en.d.ts' with packageId 'zod/lib/ZodError.d.ts@3.23.8'
+  Imported via "./ZodError" from file 'node_modules/zod/lib/errors.d.ts' with packageId 'zod/lib/ZodError.d.ts@3.23.8'
+  Imported via "../ZodError" from file 'node_modules/zod/lib/helpers/parseUtil.d.ts' with packageId 'zod/lib/ZodError.d.ts@3.23.8'
+  Imported via "./ZodError" from file 'node_modules/zod/lib/types.d.ts' with packageId 'zod/lib/ZodError.d.ts@3.23.8'
+  Imported via "./ZodError" from file 'node_modules/zod/lib/external.d.ts' with packageId 'zod/lib/ZodError.d.ts@3.23.8'
+node_modules/zod/lib/locales/en.d.ts
+  Imported via "./locales/en" from file 'node_modules/zod/lib/errors.d.ts' with packageId 'zod/lib/locales/en.d.ts@3.23.8'
+node_modules/zod/lib/errors.d.ts
+  Imported via "./errors" from file 'node_modules/zod/lib/external.d.ts' with packageId 'zod/lib/errors.d.ts@3.23.8'
+node_modules/zod/lib/helpers/parseUtil.d.ts
+  Imported via "./helpers/parseUtil" from file 'node_modules/zod/lib/external.d.ts' with packageId 'zod/lib/helpers/parseUtil.d.ts@3.23.8'
+  Imported via "./helpers/parseUtil" from file 'node_modules/zod/lib/types.d.ts' with packageId 'zod/lib/helpers/parseUtil.d.ts@3.23.8'
+node_modules/zod/lib/helpers/enumUtil.d.ts
+  Imported via "./helpers/enumUtil" from file 'node_modules/zod/lib/types.d.ts' with packageId 'zod/lib/helpers/enumUtil.d.ts@3.23.8'
+node_modules/zod/lib/helpers/errorUtil.d.ts
+  Imported via "./helpers/errorUtil" from file 'node_modules/zod/lib/types.d.ts' with packageId 'zod/lib/helpers/errorUtil.d.ts@3.23.8'
+node_modules/zod/lib/helpers/partialUtil.d.ts
+  Imported via "./helpers/partialUtil" from file 'node_modules/zod/lib/types.d.ts' with packageId 'zod/lib/helpers/partialUtil.d.ts@3.23.8'
+node_modules/zod/lib/types.d.ts
+  Imported via "./types" from file 'node_modules/zod/lib/external.d.ts' with packageId 'zod/lib/types.d.ts@3.23.8'
+node_modules/zod/lib/external.d.ts
+  Imported via "./external" from file 'node_modules/zod/lib/index.d.ts' with packageId 'zod/lib/external.d.ts@3.23.8'
+  Imported via "./external" from file 'node_modules/zod/lib/index.d.ts' with packageId 'zod/lib/external.d.ts@3.23.8'
+node_modules/zod/lib/index.d.ts
+  Imported via "./lib" from file 'node_modules/zod/index.d.ts'
+  Imported via "." from file 'node_modules/zod/lib/ZodError.d.ts'
+  Imported via "../index" from file 'node_modules/zod/lib/helpers/partialUtil.d.ts' with packageId 'zod/lib/index.d.ts@3.23.8'
+node_modules/zod/index.d.ts
+  Imported via 'zod' from file 'lib/cjs/protocol-parser/protocol-parser.d.ts' with packageId 'zod/index.d.ts@3.23.8'
+  Imported via 'zod' from file 'lib/cjs/protocol-parser/generated/webdriver-bidi-permissions.d.ts' with packageId 'zod/index.d.ts@3.23.8'
+  Imported via 'zod' from file 'lib/cjs/protocol-parser/generated/webdriver-bidi.d.ts' with packageId 'zod/index.d.ts@3.23.8'
+lib/cjs/protocol-parser/protocol-parser.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol-parser/protocol-parser.ts'
+lib/cjs/protocol-parser/generated/webdriver-bidi-permissions.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol-parser/generated/webdriver-bidi-permissions.ts'
+lib/cjs/protocol-parser/generated/webdriver-bidi.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/protocol-parser/generated/webdriver-bidi.ts'
+lib/cjs/utils/Base64.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/Base64.spec.ts'
+lib/cjs/utils/Base64.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/Base64.ts'
+lib/cjs/utils/Buffer.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/Buffer.spec.ts'
+lib/cjs/utils/Buffer.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/Buffer.ts'
+lib/cjs/utils/CdpErrorConstants.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/CdpErrorConstants.ts'
+lib/cjs/utils/DefaultMap.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/DefaultMap.spec.ts'
+lib/cjs/utils/DefaultMap.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/DefaultMap.ts'
+lib/cjs/utils/Deferred.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/Deferred.spec.ts'
+lib/cjs/utils/DistinctValues.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/DistinctValues.spec.ts'
+lib/cjs/utils/DistinctValues.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/DistinctValues.ts'
+lib/cjs/utils/EventEmitter.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/EventEmitter.spec.ts'
+lib/cjs/utils/GraphemeTools.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/GraphemeTools.spec.ts'
+lib/cjs/utils/GraphemeTools.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/GraphemeTools.ts'
+lib/cjs/utils/IdWrapper.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/IdWrapper.spec.ts'
+lib/cjs/utils/IdWrapper.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/IdWrapper.ts'
+lib/cjs/utils/Mutex.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/Mutex.spec.ts'
+lib/cjs/utils/ProcessingQueue.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/ProcessingQueue.spec.ts'
+lib/cjs/utils/ProcessingQueue.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/ProcessingQueue.ts'
+lib/cjs/utils/UrlPattern.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/UrlPattern.spec.ts'
+node_modules/urlpattern-polyfill/dist/types.d.ts
+  Imported via "./types.js" from file 'node_modules/urlpattern-polyfill/dist/index.d.ts' with packageId 'urlpattern-polyfill/dist/types.d.ts@10.0.0'
+  Imported via "./types.js" from file 'node_modules/urlpattern-polyfill/dist/index.d.ts' with packageId 'urlpattern-polyfill/dist/types.d.ts@10.0.0'
+node_modules/urlpattern-polyfill/dist/index.d.ts
+  Imported via 'urlpattern-polyfill' from file 'lib/cjs/utils/UrlPattern.d.ts' with packageId 'urlpattern-polyfill/dist/index.d.ts@10.0.0'
+lib/cjs/utils/UrlPattern.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/UrlPattern.ts'
+lib/cjs/utils/assert.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/assert.spec.ts'
+lib/cjs/utils/assert.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/assert.ts'
+node_modules/@types/sinonjs__fake-timers/index.d.ts
+  Imported via "@sinonjs/fake-timers" from file 'node_modules/@types/sinon/index.d.ts' with packageId '@types/sinonjs__fake-timers/index.d.ts@8.1.2'
+  Entry point for implicit type library 'sinonjs__fake-timers' with packageId '@types/sinonjs__fake-timers/index.d.ts@8.1.2'
+node_modules/@types/sinon/index.d.ts
+  Imported via 'sinon' from file 'lib/cjs/utils/transportStub.spec.d.ts' with packageId '@types/sinon/index.d.ts@17.0.3'
+  Entry point for implicit type library 'sinon' with packageId '@types/sinon/index.d.ts@17.0.3'
+lib/cjs/utils/transportStub.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/transportStub.spec.ts'
+lib/cjs/utils/unitConversions.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/unitConversions.spec.ts'
+lib/cjs/utils/unitConversions.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/unitConversions.ts'
+lib/cjs/utils/uuid.spec.d.ts
+  Matched by default include pattern '**/*'
+  File is output of project reference source 'src/utils/uuid.spec.ts'
+node_modules/@types/chai/index.d.ts
+  Entry point for implicit type library 'chai' with packageId '@types/chai/index.d.ts@4.3.11'
+  Type library referenced via 'chai' from file 'node_modules/@types/chai-as-promised/index.d.ts' with packageId '@types/chai/index.d.ts@4.3.11'
+node_modules/@types/chai-as-promised/index.d.ts
+  Entry point for implicit type library 'chai-as-promised' with packageId '@types/chai-as-promised/index.d.ts@7.1.8'
+node_modules/@types/estree/index.d.ts
+  Entry point for implicit type library 'estree' with packageId '@types/estree/index.d.ts@1.0.5'
+node_modules/@types/http-cache-semantics/index.d.ts
+  Entry point for implicit type library 'http-cache-semantics' with packageId '@types/http-cache-semantics/index.d.ts@4.0.4'
+node_modules/@types/json-schema/index.d.ts
+  Entry point for implicit type library 'json-schema' with packageId '@types/json-schema/index.d.ts@7.0.15'
+node_modules/@types/json5/index.d.ts
+  Entry point for implicit type library 'json5' with packageId '@types/json5/index.d.ts@0.0.29'
+node_modules/@types/minimist/index.d.ts
+  Entry point for implicit type library 'minimist' with packageId '@types/minimist/index.d.ts@1.2.2'
+node_modules/@types/mocha/index.d.ts
+  Entry point for implicit type library 'mocha' with packageId '@types/mocha/index.d.ts@10.0.7'
+node_modules/@types/normalize-package-data/index.d.ts
+  Entry point for implicit type library 'normalize-package-data' with packageId '@types/normalize-package-data/index.d.ts@2.4.1'
+node_modules/@types/resolve/index.d.ts
+  Entry point for implicit type library 'resolve' with packageId '@types/resolve/index.d.ts@1.20.2'
+node_modules/@types/semver/classes/semver.d.ts
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/parse.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/valid.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/inc.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/diff.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/major.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/minor.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/patch.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/prerelease.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/compare.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/rcompare.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/compare-loose.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/compare-build.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/sort.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/rsort.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/gt.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/lt.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/eq.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/neq.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/gte.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/lte.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/cmp.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/coerce.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "./semver" from file 'node_modules/@types/semver/classes/comparator.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "./semver" from file 'node_modules/@types/semver/classes/range.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/functions/satisfies.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/ranges/max-satisfying.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/ranges/min-satisfying.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/ranges/min-version.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/ranges/outside.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/ranges/gtr.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "../classes/semver" from file 'node_modules/@types/semver/ranges/ltr.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+  Imported via "./classes/semver" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/classes/semver.d.ts@7.5.8'
+node_modules/@types/semver/functions/parse.d.ts
+  Imported via "./functions/parse" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/parse.d.ts@7.5.8'
+node_modules/@types/semver/functions/valid.d.ts
+  Imported via "./functions/valid" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/valid.d.ts@7.5.8'
+node_modules/@types/semver/functions/clean.d.ts
+  Imported via "./functions/clean" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/clean.d.ts@7.5.8'
+node_modules/@types/semver/functions/inc.d.ts
+  Imported via "./functions/inc" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/inc.d.ts@7.5.8'
+node_modules/@types/semver/functions/diff.d.ts
+  Imported via "./functions/diff" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/diff.d.ts@7.5.8'
+node_modules/@types/semver/functions/major.d.ts
+  Imported via "./functions/major" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/major.d.ts@7.5.8'
+node_modules/@types/semver/functions/minor.d.ts
+  Imported via "./functions/minor" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/minor.d.ts@7.5.8'
+node_modules/@types/semver/functions/patch.d.ts
+  Imported via "./functions/patch" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/patch.d.ts@7.5.8'
+node_modules/@types/semver/functions/prerelease.d.ts
+  Imported via "./functions/prerelease" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/prerelease.d.ts@7.5.8'
+node_modules/@types/semver/functions/compare.d.ts
+  Imported via "./functions/compare" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/compare.d.ts@7.5.8'
+node_modules/@types/semver/functions/rcompare.d.ts
+  Imported via "./functions/rcompare" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/rcompare.d.ts@7.5.8'
+node_modules/@types/semver/functions/compare-loose.d.ts
+  Imported via "./functions/compare-loose" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/compare-loose.d.ts@7.5.8'
+node_modules/@types/semver/functions/compare-build.d.ts
+  Imported via "./functions/compare-build" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/compare-build.d.ts@7.5.8'
+node_modules/@types/semver/functions/sort.d.ts
+  Imported via "./functions/sort" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/sort.d.ts@7.5.8'
+node_modules/@types/semver/functions/rsort.d.ts
+  Imported via "./functions/rsort" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/rsort.d.ts@7.5.8'
+node_modules/@types/semver/functions/gt.d.ts
+  Imported via "./functions/gt" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/gt.d.ts@7.5.8'
+node_modules/@types/semver/functions/lt.d.ts
+  Imported via "./functions/lt" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/lt.d.ts@7.5.8'
+node_modules/@types/semver/functions/eq.d.ts
+  Imported via "./functions/eq" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/eq.d.ts@7.5.8'
+node_modules/@types/semver/functions/neq.d.ts
+  Imported via "./functions/neq" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/neq.d.ts@7.5.8'
+node_modules/@types/semver/functions/gte.d.ts
+  Imported via "./functions/gte" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/gte.d.ts@7.5.8'
+node_modules/@types/semver/functions/lte.d.ts
+  Imported via "./functions/lte" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/lte.d.ts@7.5.8'
+node_modules/@types/semver/functions/cmp.d.ts
+  Imported via "./functions/cmp" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/cmp.d.ts@7.5.8'
+node_modules/@types/semver/functions/coerce.d.ts
+  Imported via "./functions/coerce" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/coerce.d.ts@7.5.8'
+node_modules/@types/semver/classes/comparator.d.ts
+  Imported via "./comparator" from file 'node_modules/@types/semver/classes/range.d.ts' with packageId '@types/semver/classes/comparator.d.ts@7.5.8'
+  Imported via "./classes/comparator" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/classes/comparator.d.ts@7.5.8'
+node_modules/@types/semver/classes/range.d.ts
+  Imported via "../classes/range" from file 'node_modules/@types/semver/functions/satisfies.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/max-satisfying.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/min-satisfying.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/to-comparators.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/min-version.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/valid.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/outside.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/gtr.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/ltr.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/intersects.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/simplify.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "../classes/range" from file 'node_modules/@types/semver/ranges/subset.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+  Imported via "./classes/range" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/classes/range.d.ts@7.5.8'
+node_modules/@types/semver/functions/satisfies.d.ts
+  Imported via "./functions/satisfies" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/functions/satisfies.d.ts@7.5.8'
+node_modules/@types/semver/ranges/max-satisfying.d.ts
+  Imported via "./ranges/max-satisfying" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/max-satisfying.d.ts@7.5.8'
+node_modules/@types/semver/ranges/min-satisfying.d.ts
+  Imported via "./ranges/min-satisfying" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/min-satisfying.d.ts@7.5.8'
+node_modules/@types/semver/ranges/to-comparators.d.ts
+  Imported via "./ranges/to-comparators" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/to-comparators.d.ts@7.5.8'
+node_modules/@types/semver/ranges/min-version.d.ts
+  Imported via "./ranges/min-version" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/min-version.d.ts@7.5.8'
+node_modules/@types/semver/ranges/valid.d.ts
+  Imported via "./ranges/valid" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/valid.d.ts@7.5.8'
+node_modules/@types/semver/ranges/outside.d.ts
+  Imported via "./ranges/outside" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/outside.d.ts@7.5.8'
+node_modules/@types/semver/ranges/gtr.d.ts
+  Imported via "./ranges/gtr" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/gtr.d.ts@7.5.8'
+node_modules/@types/semver/ranges/ltr.d.ts
+  Imported via "./ranges/ltr" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/ltr.d.ts@7.5.8'
+node_modules/@types/semver/ranges/intersects.d.ts
+  Imported via "./ranges/intersects" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/intersects.d.ts@7.5.8'
+node_modules/@types/semver/ranges/simplify.d.ts
+  Imported via "./ranges/simplify" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/simplify.d.ts@7.5.8'
+node_modules/@types/semver/ranges/subset.d.ts
+  Imported via "./ranges/subset" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/ranges/subset.d.ts@7.5.8'
+node_modules/@types/semver/internals/identifiers.d.ts
+  Imported via "./internals/identifiers" from file 'node_modules/@types/semver/index.d.ts' with packageId '@types/semver/internals/identifiers.d.ts@7.5.8'
+node_modules/@types/semver/index.d.ts
+  Entry point for implicit type library 'semver' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/classes/semver.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/parse.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/valid.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/clean.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/inc.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/diff.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/major.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/minor.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/patch.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/prerelease.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/compare.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/rcompare.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/compare-build.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/sort.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/rsort.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/gt.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/lt.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/eq.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/neq.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/gte.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/lte.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/cmp.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/coerce.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/classes/range.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/classes/comparator.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/functions/satisfies.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/max-satisfying.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/min-satisfying.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/to-comparators.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/min-version.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/valid.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/outside.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/gtr.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/ltr.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/intersects.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/simplify.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+  Imported via "../index" from file 'node_modules/@types/semver/ranges/subset.d.ts' with packageId '@types/semver/index.d.ts@7.5.8'
+node_modules/@types/which/index.d.ts
+  Entry point for implicit type library 'which' with packageId '@types/which/index.d.ts@2.0.2'
+node_modules/@types/yauzl/index.d.ts
+  Entry point for implicit type library 'yauzl' with packageId '@types/yauzl/index.d.ts@2.10.0'

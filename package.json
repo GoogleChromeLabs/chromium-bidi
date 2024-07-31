@@ -91,7 +91,7 @@
         "src/**/*.ts"
       ],
       "output": [
-        "lib/esm/**"
+        "lib/**"
       ]
     },
     "unit": {
@@ -190,5 +190,6 @@
     "mitt": "3.0.1",
     "urlpattern-polyfill": "10.0.0",
     "zod": "3.23.8"
-  }
+  },
+  "type": "module"
 }
