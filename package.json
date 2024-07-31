@@ -53,12 +53,11 @@
         "tsc"
       ],
       "files": [
-        "lib/esm/",
+        "lib/esm/bidiMapper/",
         "rollup.config.mjs"
       ],
       "output": [
-        "lib/iife/mapperTab.js",
-        "lib/cjs/"
+        "lib/iife/mapperTab.js"
       ]
     },
     "server": {
@@ -68,7 +67,7 @@
       ],
       "service": {
         "readyWhen": {
-          "lineMatches": "(BiDi server|ChromeDriver) was started successfully\\."
+          "lineMatches": "(BiDi server|ChromeDriver) was started successfully"
         }
       },
       "dependencies": [
