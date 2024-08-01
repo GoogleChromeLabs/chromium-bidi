@@ -42,6 +42,7 @@ type Session = {
 type SessionOptions = {
   readonly chromeOptions: ChromeOptions;
   readonly verbose: boolean;
+  readonly sessionNewBody: string;
 };
 
 export class WebSocketServer {
@@ -138,6 +139,7 @@ export class WebSocketServer {
         sessionOptions: {
           chromeOptions: this.#getChromeOptions(jsonBody.capabilities),
           verbose: this.#verbose,
+          sessionNewBody: `{"id":0,"method":"session.new","params":${body.toString()}}`,
         },
       };
       this.#sessions.set(sessionId, session);
@@ -297,6 +299,7 @@ export class WebSocketServer {
               parsedCommandData.params?.capabilities
             ),
             verbose: this.#verbose,
+            sessionNewBody: plainCommandData,
           };
 
           const browserInstance = await this.#launchBrowserInstance(
@@ -322,9 +325,6 @@ export class WebSocketServer {
           );
           return;
         }
-
-        const browserInstance = await session.browserInstancePromise;
-        await browserInstance!.bidiSession().sendCommand(plainCommandData);
         return;
       }
 
@@ -454,7 +454,12 @@ export class WebSocketServer {
       this.#sendClientMessageString(message, connection);
     });
 
+    await browserInstance
+      .bidiSession()
+      .sendCommand(sessionOptions.sessionNewBody);
+
     debugInfo('Browser is launched!');
+
     return browserInstance;
   }
 
