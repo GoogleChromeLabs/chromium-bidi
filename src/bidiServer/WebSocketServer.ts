@@ -305,7 +305,8 @@ export class WebSocketServer {
 
           const browserInstance = await this.#launchBrowserInstance(
             connection,
-            sessionOptions
+            sessionOptions,
+            true
           );
 
           const sessionId = uuidv4();
@@ -442,7 +443,8 @@ export class WebSocketServer {
 
   async #launchBrowserInstance(
     connection: websocket.connection,
-    sessionOptions: SessionOptions
+    sessionOptions: SessionOptions,
+    passSessionNewThrough = false
   ): Promise<BrowserInstance> {
     debugInfo('Scheduling browser launch...');
     const browserInstance = await BrowserInstance.run(
@@ -453,7 +455,8 @@ export class WebSocketServer {
     const body = JSON.parse(sessionOptions.sessionNewBody);
     const id = body.id;
     const deferred = new Deferred<void>();
-    // Forward messages from BiDi Mapper to the client unconditionally.
+    // Forward messages from BiDi Mapper to the client unless it is an
+    // internal session.new.
     browserInstance.bidiSession().on('message', (message) => {
       if (
         message.includes(`"id":${id}`) // &&
@@ -461,7 +464,9 @@ export class WebSocketServer {
       ) {
         debugInfo('Receiving session.new response from mapper', message);
         deferred.resolve();
-        return;
+        if (!passSessionNewThrough) {
+          return;
+        }
       }
       this.#sendClientMessageString(message, connection);
     });
