@@ -90,7 +90,7 @@ if (RUN_TESTS === 'true' && !CHROMEDRIVER_BIN) {
 }
 
 // Whether to fail when 0 test are run or not
-const FAIL_NO_TEST = process.env.FAIL_NO_TEST || 'false';
+const FAIL_NO_TEST = process.env.FAIL_NO_TEST || 'true';
 
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
@@ -263,6 +263,11 @@ if (RUN_TESTS === 'true') {
     output += data.toString();
   });
 
+  wptRun.on('error', () => {
+    runResult = {status: 1, output};
+    resolver();
+  });
+
   wptRun.on('exit', (status) => {
     runResult = {status, output};
     resolver();
@@ -298,10 +303,12 @@ if (
 let exitCode = 0;
 if ((runResult?.status ?? 0) !== 0) {
   if (
-    FAIL_NO_TEST === 'true' ||
-    !runResult.output
-      .toString()
-      .includes('Unable to find any tests at the path')
+    !(
+      FAIL_NO_TEST === 'false' &&
+      runResult.output
+        .toString()
+        .includes('Unable to find any tests at the path')
+    )
   ) {
     log('WPT test run failed');
     exitCode = runResult.status;
