@@ -454,30 +454,30 @@ export class WebSocketServer {
 
     const body = JSON.parse(sessionOptions.sessionNewBody);
     const id = body.id;
-    const deferred = new Deferred<void>();
-    // Forward messages from BiDi Mapper to the client unless it is an
-    // internal session.new.
-    browserInstance.bidiSession().on('message', (message) => {
-      if (
-        message.includes(`"id":${id}`) // &&
-        // message.includes('"method":"session.new"')
-      ) {
+    const sessionCreated = new Deferred<void>();
+    const sessionResponseListener = (message: string) => {
+      const jsonMessage = JSON.parse(message);
+      if (jsonMessage['id'] === id) {
         debugInfo('Receiving session.new response from mapper', message);
-        deferred.resolve();
-        if (!passSessionNewThrough) {
-          return;
+        sessionCreated.resolve();
+        if (passSessionNewThrough) {
+          this.#sendClientMessageString(message, connection);
         }
       }
-      this.#sendClientMessageString(message, connection);
-    });
+    };
 
+    browserInstance.bidiSession().on('message', sessionResponseListener);
     debugInfo('Sending session.new to mapper', sessionOptions.sessionNewBody);
-
     await browserInstance
       .bidiSession()
       .sendCommand(sessionOptions.sessionNewBody);
+    await sessionCreated;
+    browserInstance.bidiSession().off('message', sessionResponseListener);
 
-    await deferred;
+    // Forward messages from BiDi Mapper to the client unconditionally.
+    browserInstance.bidiSession().on('message', (message) => {
+      this.#sendClientMessageString(message, connection);
+    });
 
     debugInfo('Browser is launched!');
 
