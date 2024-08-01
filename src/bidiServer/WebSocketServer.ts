@@ -20,6 +20,7 @@ import debug from 'debug';
 import * as websocket from 'websocket';
 
 import {ErrorCode, type Session} from '../protocol/protocol.js';
+import {Deferred} from '../utils/Deferred.js';
 import {uuidv4} from '../utils/uuid.js';
 
 import {BrowserInstance, type ChromeOptions} from './BrowserInstance.js';
@@ -449,14 +450,29 @@ export class WebSocketServer {
       sessionOptions.verbose
     );
 
+    const body = JSON.parse(sessionOptions.sessionNewBody);
+    const id = body.id;
+    const deferred = new Deferred<void>();
     // Forward messages from BiDi Mapper to the client unconditionally.
     browserInstance.bidiSession().on('message', (message) => {
+      if (
+        message.includes(`"id":${id}`) // &&
+        // message.includes('"method":"session.new"')
+      ) {
+        debugInfo('Receiving session.new response from mapper', message);
+        deferred.resolve();
+        return;
+      }
       this.#sendClientMessageString(message, connection);
     });
+
+    debugInfo('Sending session.new to mapper', sessionOptions.sessionNewBody);
 
     await browserInstance
       .bidiSession()
       .sendCommand(sessionOptions.sessionNewBody);
+
+    await deferred;
 
     debugInfo('Browser is launched!');
 
