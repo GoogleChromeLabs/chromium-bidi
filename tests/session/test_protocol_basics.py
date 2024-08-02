@@ -55,7 +55,7 @@ async def test_invalid_json(websocket):
         "error": "invalid argument",
         "message": ANY_STR
     }
-    assert "Cannot parse data as JSON" in resp.message
+    assert "Cannot parse data as JSON" in resp['message']
 
 
 @pytest.mark.asyncio
