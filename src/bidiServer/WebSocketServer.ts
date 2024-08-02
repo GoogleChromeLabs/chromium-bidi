@@ -275,7 +275,7 @@ export class WebSocketServer {
           connection,
           {},
           ErrorCode.InvalidArgument,
-          `Cannot parse data as JSON ${error}`
+          `Cannot parse data as JSON, ${error}`
         );
         return;
       }

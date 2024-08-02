@@ -188,7 +188,7 @@ export class ChannelProxy {
         );
 
         if (message.exceptionDetails) {
-          throw new Error('Loop failed', {
+          throw new Error('Runtime.callFunctionOn in ChannelProxy', {
             cause: message.exceptionDetails,
           });
         }
