@@ -188,7 +188,9 @@ export class ChannelProxy {
         );
 
         if (message.exceptionDetails) {
-          throw message.exceptionDetails;
+          throw new Error('Loop failed', {
+            cause: message.exceptionDetails,
+          });
         }
 
         for (const browsingContext of realm.associatedBrowsingContexts) {
