@@ -110,6 +110,8 @@ export class NetworkRequest {
 
   waitNextPhase = new Deferred<void>();
 
+  blockedBy?: Record<Network.InterceptPhase, Set<Network.Intercept>>;
+
   constructor(
     id: Network.Request,
     eventManager: EventManager,
@@ -327,7 +329,7 @@ export class NetworkRequest {
     this.waitNextPhase = new Deferred();
   }
 
-  #interceptsInPhase(phase: Network.InterceptPhase) {
+  #interceptsInPhase(phase: Network.InterceptPhase): Set<Network.Intercept> {
     if (!this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
       return new Set();
     }
@@ -336,7 +338,7 @@ export class NetworkRequest {
   }
 
   #isBlockedInPhase(phase: Network.InterceptPhase) {
-    return this.#interceptsInPhase(phase).size > 0;
+    return this.blockedBy?.[phase].size ?? 0 > 0;
   }
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent) {
@@ -355,6 +357,8 @@ export class NetworkRequest {
       hasFailed?: boolean;
     } = {}
   ) {
+    this.#updateBlocked();
+
     const requestExtraInfoCompleted =
       // Flush redirects
       options.wasRedirected ||
@@ -419,6 +423,24 @@ export class NetworkRequest {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
       this.#networkStorage.deleteRequest(this.id);
     }
+  }
+
+  #updateBlocked() {
+    if (this.blockedBy) {
+      return;
+    }
+
+    this.blockedBy = {
+      beforeRequestSent: this.#interceptsInPhase(
+        Network.InterceptPhase.BeforeRequestSent
+      ),
+      responseStarted: this.#interceptsInPhase(
+        Network.InterceptPhase.ResponseStarted
+      ),
+      authRequired: this.#interceptsInPhase(
+        Network.InterceptPhase.AuthRequired
+      ),
+    };
   }
 
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
@@ -767,11 +789,10 @@ export class NetworkRequest {
       isBlocked: false,
     };
 
-    if (phase) {
-      const blockedBy = this.#interceptsInPhase(phase);
-      interceptProps.isBlocked = blockedBy.size > 0;
+    if (phase && this.blockedBy?.[phase]) {
+      interceptProps.isBlocked = this.blockedBy[phase].size > 0;
       if (interceptProps.isBlocked) {
-        interceptProps.intercepts = [...blockedBy] as [
+        interceptProps.intercepts = [...this.blockedBy[phase]] as [
           Network.Intercept,
           ...Network.Intercept[],
         ];
