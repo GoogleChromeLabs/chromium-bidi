@@ -80,11 +80,6 @@ export class BrowsingContextImpl {
   readonly #logger?: LoggerFn;
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
-  // The URL of the navigation that is currently in progress. A workaround of the CDP
-  // lacking URL for the pending navigation events, e.g. `Page.frameStartedLoading`.
-  // Set on `Page.navigate`, `Page.reload` commands and on deprecated CDP event
-  // `Page.frameScheduledNavigation`.
-  #pendingNavigationUrl: string | undefined;
   #virtualNavigationId: string = uuidv4();
 
   #originalOpener?: string;
@@ -391,7 +386,6 @@ export class BrowsingContextImpl {
         return;
       }
       this.#url = params.frame.url + (params.frame.urlFragment ?? '');
-      this.#pendingNavigationUrl = undefined;
 
       // At the point the page is initialized, all the nested iframes from the
       // previous page are detached and realms are destroyed.
@@ -403,7 +397,6 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
-      this.#pendingNavigationUrl = undefined;
       const timestamp = BrowsingContextImpl.getTimestamp();
       this.#url = params.url;
       this.#navigation.withinDocument.resolve();
@@ -423,7 +416,7 @@ export class BrowsingContextImpl {
       );
     });
 
-    this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
+    this.#cdpTarget.cdpClient.on('Page.frameRequestedNavigation', (params) => {
       if (this.id !== params.frameId) {
         return;
       }
@@ -437,23 +430,11 @@ export class BrowsingContextImpl {
             context: this.id,
             navigation: this.#virtualNavigationId,
             timestamp: BrowsingContextImpl.getTimestamp(),
-            // The URL of the navigation that is currently in progress. Although the URL
-            // is not yet known in case of user-initiated navigations, it is possible to
-            // provide the URL in case of BiDi-initiated navigations.
-            // TODO: provide proper URL in case of user-initiated navigations.
-            url: this.#pendingNavigationUrl ?? 'UNKNOWN',
+            url: params.url,
           },
         },
         this.id
       );
-    });
-
-    // TODO: don't use deprecated `Page.frameScheduledNavigation` event.
-    this.#cdpTarget.cdpClient.on('Page.frameScheduledNavigation', (params) => {
-      if (this.id !== params.frameId) {
-        return;
-      }
-      this.#pendingNavigationUrl = params.url;
     });
 
     this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
@@ -800,12 +781,6 @@ export class BrowsingContextImpl {
 
     await this.targetUnblockedOrThrow();
 
-    // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
-    // event.
-    // TODO: detect navigation start not from CDP. Check if
-    //  `Page.frameRequestedNavigation` can be used for this purpose.
-    this.#pendingNavigationUrl = url;
-
     // TODO: handle loading errors.
     const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.navigate',
@@ -816,8 +791,6 @@ export class BrowsingContextImpl {
     );
 
     if (cdpNavigateResult.errorText) {
-      // If navigation failed, no pending navigation is left.
-      this.#pendingNavigationUrl = undefined;
       this.#eventManager.registerEvent(
         {
           type: 'event',
@@ -834,6 +807,24 @@ export class BrowsingContextImpl {
 
       throw new UnknownErrorException(cdpNavigateResult.errorText);
     }
+
+    // If navigation initiated via command, there will be no
+    // `Page.frameRequestedNavigation` event, so generate the virtual navigation and emit
+    // `NavigationStarted` event here.
+    this.#virtualNavigationId = uuidv4();
+    this.#eventManager.registerEvent(
+      {
+        type: 'event',
+        method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+        params: {
+          context: this.id,
+          navigation: this.#virtualNavigationId,
+          timestamp: BrowsingContextImpl.getTimestamp(),
+          url,
+        },
+      },
+      this.id
+    );
 
     this.#documentChanged(cdpNavigateResult.loaderId);
 
