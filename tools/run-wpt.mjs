@@ -207,9 +207,7 @@ if (RUN_TESTS === 'true') {
     }
 
     const headlessSuffix = HEADLESS === 'true' ? '-headless' : '';
-    const timestamp = process.env.CI
-      ? ''
-      : `-${new Date().toISOString().replace(/[:]/g, '-')}`;
+    const timestamp = `-${new Date().toISOString().replace(/[:]/g, '-')}`;
     const chromeDriverLogName = `${CHROMEDRIVER_LOG_NAME}${headlessSuffix}${timestamp}.log`;
     const chromeDriverLogs = join('logs', chromeDriverLogName);
 
