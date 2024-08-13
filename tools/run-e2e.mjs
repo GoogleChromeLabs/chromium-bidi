@@ -52,7 +52,7 @@ async function matchLine(subprocess) {
     resolver = resolve;
     rejecter = (error) => {
       // Kill the process if we fail for any reason
-      subprocess.kill('SIGKILL');
+      subprocess.kill();
       reject(error);
     };
   });
@@ -199,11 +199,11 @@ if (e2eProcess.stdout) {
 }
 
 e2eProcess.on('error', () => {
-  serverProcess.kill('SIGKILL');
+  serverProcess.kill();
   process.exit(1);
 });
 
 e2eProcess.on('exit', (status) => {
-  serverProcess.kill('SIGKILL');
+  // serverProcess.kill();
   process.exit(status ?? 0);
 });

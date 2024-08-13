@@ -36,7 +36,7 @@ if (subprocess.stdout) {
 }
 
 subprocess.on('error', () => {
-  subprocess.kill('SIGKILL');
+  subprocess.kill();
   process.exit(1);
 });
 
