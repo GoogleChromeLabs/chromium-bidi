@@ -341,13 +341,15 @@ export function bidiBodySizeFromCdpPostDataEntries(
   return size;
 }
 
-export function getTiming(timing: number | undefined): number {
-  if (!timing) {
-    return 0;
-  }
-  if (timing < 0) {
-    return 0;
-  }
+export function getTiming(_timing: number | undefined): number {
+  return -1;
 
-  return timing;
+  // if (!timing) {
+  //   return 0;
+  // }
+  // if (timing < 0) {
+  //   return 0;
+  // }
+
+  // return timing;
 }
