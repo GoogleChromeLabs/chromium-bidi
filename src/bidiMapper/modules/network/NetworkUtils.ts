@@ -342,12 +342,12 @@ export function bidiBodySizeFromCdpPostDataEntries(
 }
 
 export function getTiming(timing: number | undefined): number {
-  if (!timing) {
-    return 0;
-  }
-  if (timing < 0) {
-    return 0;
-  }
+  // if (!timing) {
+  //   return 0;
+  // }
+  // if (timing < 0) {
+  //   return 0;
+  // }
 
-  return timing;
+  return `${timing}` as any;
 }
