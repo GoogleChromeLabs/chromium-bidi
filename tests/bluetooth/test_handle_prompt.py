@@ -14,14 +14,15 @@
 #  limitations under the License.
 
 import pytest
-from test_helpers import execute_command, goto_url, wait_for_event, subscribe
+from test_helpers import execute_command, goto_url, subscribe, wait_for_event
 
 
 @pytest.mark.asyncio
 async def test_bluetooth_handle_prompt(websocket, context_id):
     await subscribe(websocket, ["bluetooth"])
 
-    await goto_url(websocket, context_id, "http://127.0.0.1:8080/deviceRequest.html")
+    await goto_url(websocket, context_id,
+                   "http://127.0.0.1:8080/deviceRequest.html")
 
     # await execute_command(
     #   websocket, {

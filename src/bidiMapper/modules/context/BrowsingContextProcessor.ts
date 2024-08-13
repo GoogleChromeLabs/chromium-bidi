@@ -26,37 +26,22 @@ import {
   NoSuchAlertException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
-<<<<<<< HEAD
-=======
-import {LogType, type LoggerFn} from '../../../utils/log.js';
-import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
-import type {NetworkStorage} from '../network/NetworkStorage.js';
-import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
-import type {Realm} from '../script/Realm.js';
-import type {RealmStorage} from '../script/RealmStorage.js';
-import {WorkerRealm, type WorkerRealmType} from '../script/WorkerRealm.js';
->>>>>>> 91be1069 (feat: implement bluetooth event)
 import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
-import { BluetoothProcessor } from '../bluetooth/BluetoothProcessor.js';
 
 export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #eventManager: EventManager;
-  readonly #bluetoothProcessor: BluetoothProcessor;
-
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
-    bluetoothProcessor: BluetoothProcessor,
     eventManager: EventManager
   ) {
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#bluetoothProcessor = bluetoothProcessor;
     this.#eventManager = eventManager;
     this.#eventManager.addSubscribeHook(
       ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
@@ -327,151 +312,6 @@ export class BrowsingContextProcessor {
         },
         context.id
       );
-<<<<<<< HEAD
-=======
-    }
-  }
-
-  #handleFrameDetachedEvent(params: Protocol.Page.FrameDetachedEvent) {
-    // In case of OOPiF no need in deleting BrowsingContext.
-    if (params.reason === 'swap') {
-      return;
-    }
-    this.#browsingContextStorage.findContext(params.frameId)?.dispose();
-  }
-
-  #handleAttachedToTargetEvent(
-    params: Protocol.Target.AttachedToTargetEvent,
-    parentSessionCdpClient: CdpClient
-  ) {
-    const {sessionId, targetInfo} = params;
-    const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
-
-    this.#logger?.(
-      LogType.debugInfo,
-      'AttachedToTarget event received:',
-      params
-    );
-
-    switch (targetInfo.type) {
-      case 'page':
-      case 'iframe': {
-        if (targetInfo.targetId === this.#selfTargetId) {
-          break;
-        }
-
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-        const maybeContext = this.#browsingContextStorage.findContext(
-          targetInfo.targetId
-        );
-        if (maybeContext) {
-          // OOPiF.
-          maybeContext.updateCdpTarget(cdpTarget);
-        } else {
-          // New context.
-          BrowsingContextImpl.create(
-            cdpTarget,
-            this.#realmStorage,
-            targetInfo.targetId,
-            null,
-            targetInfo.browserContextId &&
-              targetInfo.browserContextId !== this.#defaultUserContextId
-              ? targetInfo.browserContextId
-              : 'default',
-            this.#eventManager,
-            this.#browsingContextStorage,
-            this.#logger
-          );
-        }
-        return;
-      }
-      case 'service_worker':
-      case 'worker': {
-        const realm = this.#realmStorage.findRealm({
-          cdpSessionId: parentSessionCdpClient.sessionId,
-        });
-        // If there is no browsing context, this worker is already terminated.
-        if (!realm) {
-          break;
-        }
-
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-        this.#handleWorkerTarget(
-          cdpToBidiTargetTypes[targetInfo.type],
-          cdpTarget,
-          realm
-        );
-        return;
-      }
-      // In CDP, we only emit shared workers on the browser and not the set of
-      // frames that use the shared worker. If we change this in the future to
-      // behave like service workers (emits on both browser and frame targets),
-      // we can remove this block and merge service workers with the above one.
-      case 'shared_worker': {
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-        this.#handleWorkerTarget(
-          cdpToBidiTargetTypes[targetInfo.type],
-          cdpTarget
-        );
-        return;
-      }
-    }
-
-    // DevTools or some other not supported by BiDi target. Just release
-    // debugger and ignore them.
-    targetCdpClient
-      .sendCommand('Runtime.runIfWaitingForDebugger')
-      .then(() =>
-        parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
-      )
-      .catch((error) => this.#logger?.(LogType.debugError, error));
-  }
-
-  #createCdpTarget(
-    targetCdpClient: CdpClient,
-    targetInfo: Protocol.Target.TargetInfo
-  ) {
-    this.#setEventListeners(targetCdpClient);
-
-    const target = CdpTarget.create(
-      targetInfo.targetId,
-      targetCdpClient,
-      this.#browserCdpClient,
-      this.#realmStorage,
-      this.#eventManager,
-      this.#preloadScriptStorage,
-      this.#networkStorage,
-      this.#acceptInsecureCerts,
-      this.#logger
-    );
-
-    this.#networkStorage.onCdpTargetCreated(target);
-    this.#bluetoothProcessor.onCdpTargetCreated(target);
-
-    return target;
-  }
-
-  #workers = new Map<string, Realm>();
-  #handleWorkerTarget(
-    realmType: WorkerRealmType,
-    cdpTarget: CdpTarget,
-    ownerRealm?: Realm
-  ) {
-    cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
-      const {uniqueId, id, origin} = params.context;
-      const workerRealm = new WorkerRealm(
-        cdpTarget.cdpClient,
-        this.#eventManager,
-        id,
-        this.#logger,
-        serializeOrigin(origin),
-        ownerRealm ? [ownerRealm] : [],
-        uniqueId,
-        this.#realmStorage,
-        realmType
-      );
-      this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
->>>>>>> 91be1069 (feat: implement bluetooth event)
     });
     return Promise.resolve();
   }
