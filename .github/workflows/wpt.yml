@@ -252,8 +252,7 @@ jobs:
       - name: Replace expectations with the updated ones.
         # Remove the actual expectations and replace them with the updated ones.
         run: |
-          rm -rf wpt-metadata/
-          mkdir wpt-metadata
+          rm -rf wpt-metadata/chromedriver wpt-metadata/mapper
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
