@@ -27,6 +27,7 @@ import {
   createBiDiServerProcess,
   parseCommandLineArgs,
   createLogFile,
+  log,
 } from './bidi-server.mjs';
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 // Changing the current work directory to the package directory.
@@ -49,7 +50,11 @@ async function matchLine(process) {
   let rejecter;
   const promise = new Promise((resolve, reject) => {
     resolver = resolve;
-    rejecter = reject;
+    rejecter = (error) => {
+      // Kill the process if we fail for any reason
+      process.kill('SIGKILL');
+      reject(error);
+    };
   });
   setTimeout(() => rejecter('Timeout after 10 sec'), 10_000);
   let stdout = '';
@@ -140,10 +145,8 @@ if (serverProcess.stdout) {
 }
 
 await matchLine(serverProcess).catch((error) => {
-  // eslint-disable-next-line no-console
-  console.log('Could not match line exiting...');
-  // eslint-disable-next-line no-console
-  console.error(error);
+  log('Could not match line exiting...');
+  log(error);
   process.exit(1);
 });
 
@@ -195,7 +198,12 @@ if (e2eProcess.stdout) {
   e2eProcess.stdout.pipe(addPrefix()).pipe(syncFileStreams);
 }
 
+e2eProcess.on('error', () => {
+  serverProcess.kill('SIGKILL');
+  process.exit(1);
+});
+
 e2eProcess.on('exit', (status) => {
-  serverProcess.kill();
+  serverProcess.kill('SIGKILL');
   process.exit(status ?? 0);
 });
