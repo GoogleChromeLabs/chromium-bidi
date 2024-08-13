@@ -33,6 +33,7 @@ import {WorkerRealm, type WorkerRealmType} from '../script/WorkerRealm.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import {CdpTarget} from './CdpTarget.js';
+import {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 
 const cdpToBidiTargetTypes = {
   service_worker: 'service-worker',
@@ -49,6 +50,7 @@ export class CdpTargetManager {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
+  readonly #bluetoothProcessor: BluetoothProcessor;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
@@ -64,6 +66,7 @@ export class CdpTargetManager {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     networkStorage: NetworkStorage,
+    bluetoothProcessor: BluetoothProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
     unhandledPromptBehavior?: Session.UserPromptHandler,
@@ -77,6 +80,7 @@ export class CdpTargetManager {
     this.#browsingContextStorage = browsingContextStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
+    this.#bluetoothProcessor = bluetoothProcessor;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
     this.#unhandledPromptBehavior = unhandledPromptBehavior;
@@ -288,6 +292,7 @@ export class CdpTargetManager {
     );
 
     this.#networkStorage.onCdpTargetCreated(target);
+    this.#bluetoothProcessor.onCdpTargetCreated(target);
 
     return target;
   }

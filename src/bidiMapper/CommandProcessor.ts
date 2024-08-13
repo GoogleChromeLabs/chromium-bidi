@@ -84,6 +84,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     networkStorage: NetworkStorage,
+    bluetoothProcessor: BluetoothProcessor,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     initConnection: (options: MapperOptions) => Promise<void>,
     logger?: LoggerFn
@@ -92,16 +93,13 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#parser = parser;
     this.#logger = logger;
 
+    this.#bluetoothProcessor = bluetoothProcessor;
+
     // keep-sorted start block=yes
-    this.#bluetoothProcessor = new BluetoothProcessor(
-      eventManager,
-      browsingContextStorage
-    );
     this.#browserProcessor = new BrowserProcessor(browserCdpClient);
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       browserCdpClient,
       browsingContextStorage,
-      this.#bluetoothProcessor,
       eventManager
     );
     this.#cdpProcessor = new CdpProcessor(
