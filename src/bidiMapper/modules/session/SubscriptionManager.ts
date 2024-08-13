@@ -250,9 +250,11 @@ export class SubscriptionManager {
           )
           .flat();
       case ChromiumBidi.BiDiModule.Bluetooth:
-        return Object.values(ChromiumBidi.Bluetooth.EventNames).map((specificEvent) =>
-          this.subscribe(specificEvent, contextId, channel)
-        ).flat();
+        return Object.values(ChromiumBidi.Bluetooth.EventNames)
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          )
+          .flat();
       default:
       // Intentionally left empty.
     }
