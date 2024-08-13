@@ -50,11 +50,7 @@ async function matchLine(subprocess) {
   let rejecter;
   const promise = new Promise((resolve, reject) => {
     resolver = resolve;
-    rejecter = (error) => {
-      // Kill the process if we fail for any reason
-      subprocess.kill();
-      reject(error);
-    };
+    rejecter = reject;
   });
   setTimeout(() => rejecter('Timeout after 10 sec'), 10_000);
   let stdout = '';
@@ -145,6 +141,7 @@ if (serverProcess.stdout) {
 }
 
 await matchLine(serverProcess).catch((error) => {
+  serverProcess.kill();
   log('Could not match line exiting...');
   log(error);
   process.exit(1);
@@ -204,6 +201,6 @@ e2eProcess.on('error', () => {
 });
 
 e2eProcess.on('exit', (status) => {
-  // serverProcess.kill();
+  serverProcess.kill();
   process.exit(status ?? 0);
 });
