@@ -17,7 +17,6 @@ wptreport*.json
 .eslintcache
 .nyc_output*
 .wireit/
-MANIFEST.json
 coverage/
 *.cddl
 wpt-metadata/mapper/headful/webdriver/tests/bidi/

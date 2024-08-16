@@ -38,6 +38,8 @@ const getLogger = (type: LogPrefix) => {
   }
   return logger;
 };
+const MAX_SW_TARGET_RETRIES = 3;
+const RETRY_TIMEOUT_MS = 25;
 
 export class MapperServerCdpConnection {
   #cdpConnection: MapperCdpConnection;
@@ -142,44 +144,76 @@ export class MapperServerCdpConnection {
     debugInternal('Initializing Mapper.');
 
     const browserClient = await cdpConnection.createBrowserSession();
+    
+    let mapperWorkerTargetId: string | null = null;
+      
+    // Command extension to open an offscreen page.
+    for (let i = 0; i < MAX_SW_TARGET_RETRIES; i++) {
+      await new Promise((resolve) => setTimeout(resolve, RETRY_TIMEOUT_MS));
+      let targets = (await cdpConnection.sendCommand(
+        'Target.getTargets',
+        {}
+      )) as Protocol.Target.GetTargetsResponse;
+      const mapperWorkerTarget = targets.targetInfos.filter(
+        (target) => target.type === 'service_worker'
+      )[0];
+      if (mapperWorkerTarget !== undefined) {
+        mapperWorkerTargetId = mapperWorkerTarget.targetId;
+        break;
+      }
+    }
 
-    // Run mapper in the first open tab.
+    if (mapperWorkerTargetId === null) {
+      throw new Error("Mapper extension did not start");
+    }
+
+    const {sessionId: mapperWorkerSessionId} = await browserClient.sendCommand(
+      'Target.attachToTarget',
+      {targetId: mapperWorkerTargetId, flatten: true}
+    );
+    const mapperWorkerCdpClient = cdpConnection.getCdpClient(mapperWorkerSessionId);
+    // `chrome.offscreen` is not immidiately available in the SW context. Evaluate a dummy expression to
+    // wait for it.
+    // TODO: Find a better way to wait for when `chrome.offscreen` becomes available.
+    await mapperWorkerCdpClient.sendCommand('Runtime.evaluate', {
+      expression: 
+        "console.log(chrome.offscreen)",
+    });
+    const res = await mapperWorkerCdpClient.sendCommand('Runtime.evaluate', {
+      expression: 
+        "chrome.offscreen.createDocument({" +
+            "url: chrome.runtime.getURL('hello.html')," +
+            "reasons: ['CLIPBOARD']," +
+            "justification: 'a context to load the mapper script to'," +
+        "})",
+      awaitPromise: true,
+      userGesture: true,
+    });
+    // Run mapper in the opened offscreen page.
     const targets = (await cdpConnection.sendCommand(
       'Target.getTargets',
       {}
     )) as Protocol.Target.GetTargetsResponse;
     const mapperTabTargetId = targets.targetInfos.filter(
-      (target) => target.type === 'page'
+      (target) => target.type === 'page' && target.url.startsWith("chrome-extension://")
     )[0]!.targetId;
 
     const {sessionId: mapperSessionId} = await browserClient.sendCommand(
       'Target.attachToTarget',
       {targetId: mapperTabTargetId, flatten: true}
     );
-
+   
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
-
-    // Click on the body to interact with the page in order to "beforeunload" being
-    // triggered when the tab is closed.
-    await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: 'document.body.click()',
-      userGesture: true,
-    });
-
-    // Create and activate new tab with a blank page.
-    await browserClient.sendCommand('Target.createTarget', {
-      url: 'about:blank',
-    });
 
     const bidiSession = new SimpleTransport(
       async (message) => await this.#sendMessage(mapperCdpClient, message)
     );
 
-    // Process responses from the mapper tab.
+    // Process responses from the mapper page.
     mapperCdpClient.on('Runtime.bindingCalled', (params) =>
       this.#onBindingCalled(params, bidiSession)
     );
-    // Forward console messages from the mapper tab.
+    // Forward console messages from the mapper page.
     mapperCdpClient.on('Runtime.consoleAPICalled', this.#onConsoleAPICalled);
     // Catch unhandled exceptions in the mapper.
     mapperCdpClient.on(
@@ -205,7 +239,7 @@ export class MapperServerCdpConnection {
       });
     }
 
-    // Evaluate Mapper Tab sources in the tab.
+    // Evaluate Mapper sources on the offscreen page.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: mapperTabSource,
     });

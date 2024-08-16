@@ -19,6 +19,7 @@ import path from 'path';
 import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import license from 'rollup-plugin-license';
+import copy from 'rollup-plugin-copy'
 
 export default {
   input: 'lib/cjs/bidiTab/bidiTab.js',
@@ -71,5 +72,10 @@ export default {
       // without webcrypto exposes globally.
       ignore: ['crypto'],
     }),
+    copy({
+      targets: [
+        { src: 'src/extension/*', dest: 'lib/extension' },
+      ]
+    })
   ],
 };
