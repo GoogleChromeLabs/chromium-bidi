@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.5](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.4...chromium-bidi-v0.6.5) (2024-08-21)
+
+
+### Bug Fixes
+
+* emit realm events when subscribing ([#2486](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2486)) ([5980d74](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5980d74c23a6650375f3f9db27a733c5e578649c))
+
 ## [0.6.4](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.3...chromium-bidi-v0.6.4) (2024-08-05)
 
 
