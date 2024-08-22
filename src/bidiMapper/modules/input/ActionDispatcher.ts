@@ -410,6 +410,8 @@ export class ActionDispatcher {
             );
             break;
           case Input.PointerType.Pen:
+            // Even if the pressed size is 0, we still need to send the event, as pen can
+            // hover over.
             // TODO: Implement width and height when available.
             await this.#context.cdpTarget.cdpClient.sendCommand(
               'Input.dispatchMouseEvent',
