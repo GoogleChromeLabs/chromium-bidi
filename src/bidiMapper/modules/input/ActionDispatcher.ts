@@ -410,29 +410,25 @@ export class ActionDispatcher {
             );
             break;
           case Input.PointerType.Pen:
-            if (source.pressed.size !== 0) {
-              // TODO: Implement width and height when available.
-              await this.#context.cdpTarget.cdpClient.sendCommand(
-                'Input.dispatchMouseEvent',
-                {
-                  type: 'mouseMoved',
-                  x,
-                  y,
-                  modifiers,
-                  clickCount: 0,
-                  button: getCdpButton(
-                    source.pressed.values().next().value ?? 5
-                  ),
-                  buttons: source.buttons,
-                  pointerType,
-                  tangentialPressure,
-                  tiltX,
-                  tiltY,
-                  twist,
-                  force: pressure,
-                }
-              );
-            }
+            // TODO: Implement width and height when available.
+            await this.#context.cdpTarget.cdpClient.sendCommand(
+              'Input.dispatchMouseEvent',
+              {
+                type: 'mouseMoved',
+                x,
+                y,
+                modifiers,
+                clickCount: 0,
+                button: getCdpButton(source.pressed.values().next().value ?? 5),
+                buttons: source.buttons,
+                pointerType,
+                tangentialPressure,
+                tiltX,
+                tiltY,
+                twist,
+                force: pressure,
+              }
+            );
             break;
           case Input.PointerType.Touch:
             if (source.pressed.size !== 0) {
