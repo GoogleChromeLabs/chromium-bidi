@@ -110,8 +110,6 @@ export class NetworkRequest {
 
   waitNextPhase = new Deferred<void>();
 
-  blockedBy?: Record<Network.InterceptPhase, Set<Network.Intercept>>;
-
   constructor(
     id: Network.Request,
     eventManager: EventManager,
@@ -357,8 +355,6 @@ export class NetworkRequest {
       hasFailed?: boolean;
     } = {}
   ) {
-    this.#updateBlocked();
-
     const requestExtraInfoCompleted =
       // Flush redirects
       options.wasRedirected ||
@@ -425,12 +421,13 @@ export class NetworkRequest {
     }
   }
 
-  #updateBlocked() {
-    if (this.blockedBy) {
-      return;
+  #blockedBy?: Record<Network.InterceptPhase, Set<Network.Intercept>>;
+  get blockedBy(): Record<Network.InterceptPhase, Set<Network.Intercept>> {
+    if (this.#blockedBy) {
+      return this.#blockedBy;
     }
 
-    this.blockedBy = {
+    this.#blockedBy = {
       beforeRequestSent: this.#interceptsInPhase(
         Network.InterceptPhase.BeforeRequestSent
       ),
@@ -441,6 +438,8 @@ export class NetworkRequest {
         Network.InterceptPhase.AuthRequired
       ),
     };
+
+    return this.#blockedBy;
   }
 
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
