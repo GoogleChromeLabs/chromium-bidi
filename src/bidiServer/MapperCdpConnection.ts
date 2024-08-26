@@ -38,7 +38,7 @@ const getLogger = (type: LogPrefix) => {
   }
   return logger;
 };
-const MAX_SW_TARGET_RETRIES = 3;
+const MAX_SW_TARGET_RETRIES = 30000;
 const RETRY_TIMEOUT_MS = 25;
 
 export class MapperServerCdpConnection {
