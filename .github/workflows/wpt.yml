@@ -73,7 +73,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.1
+      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
       - name: Install and build npm dependencies
         run: npm ci
       - name: Setup dirs
@@ -162,7 +162,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.1
+      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
       - name: Install and build npm dependencies
         run: npm ci
       - name: Setup dirs
@@ -291,7 +291,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
-      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.1
+      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
       - name: Install and build npm dependencies
         run: npm ci
       - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
