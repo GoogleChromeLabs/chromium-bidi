@@ -471,6 +471,22 @@ Changes that need to be cherry-picked into the release branch should be marked
 as patches. Either major or minor version bumps are not allowed on the release
 branch.
 
+Example workflow:
+
+```mermaid
+gitGraph
+       commit id: "feat: featA"
+       commit id: "release: v0.5.0"
+       branch release/m129
+       checkout main
+       commit id: "feat: roll Chrome to M130 from 129"
+       commit id: "release: v0.6.0"
+       commit id: "fix: for m129"
+       checkout release/m129
+       cherry-pick id: "fix: for m129"
+       commit id: "release: v0.5.1 "
+```
+
 Currently, the releases from release branches are not automated.
 
 #### Automatic release
