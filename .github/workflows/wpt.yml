@@ -16,6 +16,15 @@ on:
   push:
     branches: 'main'
   pull_request:
+    types:
+      # These are the defaults. See
+      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+      - opened
+      - reopened
+      - synchronize
+
+      # Used for `update-expectations`
+      - labeled
   workflow_dispatch:
     inputs:
       tests:
