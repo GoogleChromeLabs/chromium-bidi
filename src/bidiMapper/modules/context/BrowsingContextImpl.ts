@@ -1530,7 +1530,12 @@ export class BrowsingContextImpl {
                 }
               }
 
-              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              startNodes =
+                startNodes.length > 0
+                  ? startNodes
+                  : Array.from(document.documentElement.children).filter(
+                      (c) => c instanceof HTMLElement
+                    );
               collect(startNodes, {
                 role,
                 name,
