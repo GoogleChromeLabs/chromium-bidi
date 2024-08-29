@@ -15,7 +15,7 @@
 import re
 
 import pytest
-from test_helpers import ANY_SHARED_ID, execute_command, goto_url
+from test_helpers import ANY_SHARED_ID, AnyExtending, execute_command, goto_url
 
 
 @pytest.mark.parametrize('locator', [
@@ -143,3 +143,27 @@ async def test_locate_nodes_locator_invalid(websocket, context_id, html,
                     'locator': locator
                 }
             })
+
+
+# https://github.com/GoogleChromeLabs/chromium-bidi/issues/2539
+@pytest.mark.asyncio
+async def test_locate_nodes_css_wildcard_locator(websocket, context_id, html):
+    await goto_url(websocket, context_id, html('<div>foobarBARbaz</div>'))
+
+    resp = await execute_command(
+        websocket, {
+            'method': 'browsingContext.locateNodes',
+            'params': {
+                'context': context_id,
+                'locator': {
+                    'type': 'css',
+                    'value': '*'
+                }
+            }
+        })
+
+    assert resp == {
+        "nodes": [AnyExtending({
+            'type': 'node',
+        })]
+    }
