@@ -20,6 +20,7 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {CdpConnection} from '../../../cdp/CdpConnection.js';
 import type {Browser, Session} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
+import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 import {
   BrowsingContextImpl,
   serializeOrigin,
@@ -33,7 +34,6 @@ import {WorkerRealm, type WorkerRealmType} from '../script/WorkerRealm.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import {CdpTarget} from './CdpTarget.js';
-import {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 
 const cdpToBidiTargetTypes = {
   service_worker: 'service-worker',

@@ -14,27 +14,25 @@
 #  limitations under the License.
 
 import pytest
-from test_helpers import (execute_command, goto_url, subscribe, wait_for_event,
-                          send_JSON_command)
+from test_helpers import (execute_command, goto_url, send_JSON_command,
+                          subscribe, wait_for_event)
+
 
 @pytest.mark.asyncio
-async def test_bluetooth_handle_prompt(websocket, get_cdp_session_id, context_id, html):
+async def test_bluetooth_handle_prompt(websocket, context_id, html):
     await subscribe(websocket, ["bluetooth"])
 
     url = html(
         "<div>"
-            '<a href="#" id="bluetooth" target="_blank">bluetooth</a>'
-            "<script>"
-                'var options = {filters: [{name:"SomeDevice"}]};'
-                "document.getElementById('bluetooth').addEventListener('click', () => {"
-                    "navigator.bluetooth.requestDevice(options);"
-                "});"
-            "</script>"
-        "</div>"
-        )
+        '<a href="#" id="bluetooth" target="_blank">bluetooth</a>'
+        "<script>"
+        'var options = {filters: [{name:"SomeDevice"}]};'
+        "document.getElementById('bluetooth').addEventListener('click', () => {"
+        "navigator.bluetooth.requestDevice(options);"
+        "});"
+        "</script>"
+        "</div>")
     await goto_url(websocket, context_id, url)
-
-    session_id = await get_cdp_session_id(context_id)
 
     # Enable BT emulation.
     await execute_command(
@@ -59,9 +57,8 @@ async def test_bluetooth_handle_prompt(websocket, get_cdp_session_id, context_id
                     "address": fake_device_address,
                     "name": "SomeDevice",
                     "manufacturerData": [],
-                    "knownServiceUuids": [
-                        "12345678-1234-5678-9abc-def123456789",
-                    ],
+                    "knownServiceUuids":
+                        ["12345678-1234-5678-9abc-def123456789", ],
                 }
             }
         })
