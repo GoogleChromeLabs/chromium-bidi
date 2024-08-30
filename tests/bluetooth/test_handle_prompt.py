@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 import pytest
-from test_helpers import (goto_url, subscribe, wait_for_event,
+from test_helpers import (execute_command, goto_url, subscribe, wait_for_event,
                           send_JSON_command)
 
 @pytest.mark.asyncio
@@ -37,7 +37,7 @@ async def test_bluetooth_handle_prompt(websocket, get_cdp_session_id, context_id
     session_id = await get_cdp_session_id(context_id)
 
     # Enable BT emulation.
-    await send_JSON_command(
+    await execute_command(
         websocket, {
             "method": "cdp.sendCommand",
             "params": {
@@ -50,7 +50,7 @@ async def test_bluetooth_handle_prompt(websocket, get_cdp_session_id, context_id
 
     # Create a fake BT device.
     fake_device_address = "09:09:09:09:09:09"
-    await send_JSON_command(
+    await execute_command(
         websocket, {
             "method": "cdp.sendCommand",
             "params": {
