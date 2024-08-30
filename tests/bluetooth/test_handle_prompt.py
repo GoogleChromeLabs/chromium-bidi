@@ -14,29 +14,69 @@
 #  limitations under the License.
 
 import pytest
-from test_helpers import execute_command, goto_url, subscribe, wait_for_event
-
+from test_helpers import (goto_url, subscribe, wait_for_event,
+                          send_JSON_command)
 
 @pytest.mark.asyncio
-async def test_bluetooth_handle_prompt(websocket, context_id):
+async def test_bluetooth_handle_prompt(websocket, get_cdp_session_id, context_id, html):
     await subscribe(websocket, ["bluetooth"])
 
-    await goto_url(websocket, context_id,
-                   "http://127.0.0.1:8080/deviceRequest.html")
+    url = html(
+        "<div>"
+            '<a href="#" id="bluetooth" target="_blank">bluetooth</a>'
+            "<script>"
+                'var options = {filters: [{name:"SomeDevice"}]};'
+                "document.getElementById('bluetooth').addEventListener('click', () => {"
+                    "navigator.bluetooth.requestDevice(options);"
+                "});"
+            "</script>"
+        "</div>"
+        )
+    await goto_url(websocket, context_id, url)
 
-    # await execute_command(
-    #   websocket, {
-    #       "method": "script.callFunction",
-    #       "params": {
-    #           "functionDeclaration": """() => {
-    #               document.querySelector("#bluetooth").click();
-    #             }""",
-    #           "target": {
-    #               "context": context_id
-    #           },
-    #           "awaitPromise": True,
-    #           "userActivation": True
-    #       }
-    #   })
+    session_id = await get_cdp_session_id(context_id)
+
+    # Enable BT emulation.
+    await send_JSON_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "method": "BluetoothEmulation.enable",
+                "params": {
+                    "state": 'powered-on',
+                }
+            }
+        })
+
+    # Create a fake BT device.
+    fake_device_address = "09:09:09:09:09:09"
+    await send_JSON_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "method": "BluetoothEmulation.simulatePreconnectedPeripheral",
+                "params": {
+                    "address": fake_device_address,
+                    "name": "SomeDevice",
+                    "manufacturerData": [],
+                    "knownServiceUuids": [
+                        "12345678-1234-5678-9abc-def123456789",
+                    ],
+                }
+            }
+        })
+
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'document.querySelector("#bluetooth").click();',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
 
     await wait_for_event(websocket, "bluetooth.requestDevicePromptOpened")
