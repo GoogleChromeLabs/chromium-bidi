@@ -211,7 +211,7 @@ export class BrowsingContextImpl {
     return this.#navigationId;
   }
 
-  dispose() {
+  dispose(emitContextDestroyed: boolean) {
     this.#deleteAllChildren();
 
     this.#realmStorage.deleteRealms({
@@ -226,14 +226,16 @@ export class BrowsingContextImpl {
     // Fail all ongoing navigations.
     this.#failLifecycleIfNotFinished();
 
-    this.#eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
-        params: this.serializeToBidiValue(),
-      },
-      this.id
-    );
+    if (emitContextDestroyed) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+          params: this.serializeToBidiValue(),
+        },
+        this.id
+      );
+    }
     this.#browsingContextStorage.deleteContextById(this.id);
   }
 
@@ -308,7 +310,7 @@ export class BrowsingContextImpl {
   }
 
   #deleteAllChildren() {
-    this.directChildren.map((child) => child.dispose());
+    this.directChildren.map((child) => child.dispose(false));
   }
 
   get cdpTarget(): CdpTarget {
