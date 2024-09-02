@@ -19,6 +19,12 @@ from test_helpers import (execute_command, goto_url, send_JSON_command,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    "goog:chromeOptions": {
+        "args": ["--enable-features=WebBluetooth"]
+    }
+}],
+                         indirect=True)
 async def test_bluetooth_handle_prompt(websocket, context_id, html):
     await subscribe(websocket, ["bluetooth"])
 
