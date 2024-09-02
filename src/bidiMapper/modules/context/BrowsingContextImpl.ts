@@ -822,16 +822,43 @@ export class BrowsingContextImpl {
     const navigationId = uuidv4();
     this.#pendingNavigationId = navigationId;
 
-    const cdpNavigatePromise = this.#cdpTarget.cdpClient.sendCommand(
-      'Page.navigate',
-      {
-        url,
-        frameId: this.id,
+    // Navigate and wait for the result. If the navigation fails, the error event is
+    // emitted and the promise is rejected.
+    const cdpNavigatePromise = (async () => {
+      const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
+        'Page.navigate',
+        {
+          url,
+          frameId: this.id,
+        }
+      );
+
+      if (cdpNavigateResult.errorText) {
+        // If navigation failed, no pending navigation is left.
+        this.#pendingNavigationUrl = undefined;
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+            params: {
+              context: this.id,
+              navigation: navigationId,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url,
+            },
+          },
+          this.id
+        );
+
+        throw new UnknownErrorException(cdpNavigateResult.errorText);
       }
-    );
+
+      this.#documentChanged(cdpNavigateResult.loaderId);
+      return cdpNavigateResult;
+    })();
 
     if (wait === BrowsingContext.ReadinessState.None) {
-      // Do not wait for the navigation to finish.
+      // Do not wait for the result of the navigation promise.
       return {
         navigation: navigationId,
         url,
@@ -839,28 +866,6 @@ export class BrowsingContextImpl {
     }
 
     const cdpNavigateResult = await cdpNavigatePromise;
-
-    if (cdpNavigateResult.errorText) {
-      // If navigation failed, no pending navigation is left.
-      this.#pendingNavigationUrl = undefined;
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-          params: {
-            context: this.id,
-            navigation: navigationId,
-            timestamp: BrowsingContextImpl.getTimestamp(),
-            url,
-          },
-        },
-        this.id
-      );
-
-      throw new UnknownErrorException(cdpNavigateResult.errorText);
-    }
-
-    this.#documentChanged(cdpNavigateResult.loaderId);
 
     switch (wait) {
       case BrowsingContext.ReadinessState.Interactive:
