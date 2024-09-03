@@ -95,6 +95,7 @@ export class BrowsingContextImpl {
   // `None`, the command result should have `navigation` value, but mapper does not have
   // it yet. This value will be set to `navigationId` after next .
   #pendingNavigationId: string | undefined;
+  #pendingNavigation: Deferred<void> | undefined;
 
   #originalOpener?: string;
 
@@ -212,6 +213,9 @@ export class BrowsingContextImpl {
   }
 
   dispose(emitContextDestroyed: boolean) {
+    this.#pendingNavigation?.reject(
+      new UnknownErrorException('navigation canceled by context disposal')
+    );
     this.#deleteAllChildren();
 
     this.#realmStorage.deleteRealms({
@@ -815,6 +819,13 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
+    if (this.#pendingNavigation !== undefined) {
+      this.#pendingNavigation.reject(
+        new UnknownErrorException(
+          'navigation canceled be concurrent navigation'
+        )
+      );
+    }
     await this.targetUnblockedOrThrow();
 
     // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
@@ -822,9 +833,9 @@ export class BrowsingContextImpl {
     // TODO: detect navigation start not from CDP. Check if
     //  `Page.frameRequestedNavigation` can be used for this purpose.
     this.#pendingNavigationUrl = url;
-
     const navigationId = uuidv4();
     this.#pendingNavigationId = navigationId;
+    this.#pendingNavigation = new Deferred<void>();
 
     // Navigate and wait for the result. If the navigation fails, the error event is
     // emitted and the promise is rejected.
@@ -863,6 +874,9 @@ export class BrowsingContextImpl {
 
     if (wait === BrowsingContext.ReadinessState.None) {
       // Do not wait for the result of the navigation promise.
+      this.#pendingNavigation.resolve();
+      this.#pendingNavigation = undefined;
+
       return {
         navigation: navigationId,
         url,
@@ -871,25 +885,15 @@ export class BrowsingContextImpl {
 
     const cdpNavigateResult = await cdpNavigatePromise;
 
-    switch (wait) {
-      case BrowsingContext.ReadinessState.Interactive:
-        // No `loaderId` means same-document navigation.
-        if (cdpNavigateResult.loaderId === undefined) {
-          await this.#navigation.withinDocument;
-        } else {
-          await this.#lifecycle.DOMContentLoaded;
-        }
-        break;
-      case BrowsingContext.ReadinessState.Complete:
-        // No `loaderId` means same-document navigation.
-        if (cdpNavigateResult.loaderId === undefined) {
-          await this.#navigation.withinDocument;
-        } else {
-          await this.#lifecycle.load;
-        }
-        break;
-    }
+    // Wait for either the navigation is finished or canceled by another navigation.
+    await Promise.race([
+      // No `loaderId` means same-document navigation.
+      this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
+      this.#pendingNavigation,
+    ]);
 
+    this.#pendingNavigation.resolve();
+    this.#pendingNavigation = undefined;
     return {
       navigation: navigationId,
       // Url can change due to redirect get the latest one.
@@ -897,6 +901,27 @@ export class BrowsingContextImpl {
     };
   }
 
+  async #waitNavigation(
+    wait: BrowsingContext.ReadinessState,
+    withinDocument: boolean
+  ) {
+    if (withinDocument) {
+      await this.#navigation.withinDocument;
+      return;
+    }
+    switch (wait) {
+      case BrowsingContext.ReadinessState.None:
+        return;
+      case BrowsingContext.ReadinessState.Interactive:
+        await this.#lifecycle.DOMContentLoaded;
+        return;
+      case BrowsingContext.ReadinessState.Complete:
+        await this.#lifecycle.load;
+        return;
+    }
+  }
+
+  // TODO: support concurrent navigations analogous to `navigate`.
   async reload(
     ignoreCache: boolean,
     wait: BrowsingContext.ReadinessState
