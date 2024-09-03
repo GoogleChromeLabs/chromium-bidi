@@ -769,9 +769,6 @@ export class BrowsingContextImpl {
     this.#loaderId = loaderId;
     // Delete all child iframes and notify about top level destruction.
     this.#deleteAllChildren(true);
-    return;
-
-    //
   }
 
   #resetLifecycleIfFinished() {
