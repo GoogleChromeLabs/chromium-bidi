@@ -95,7 +95,9 @@ export class BrowsingContextImpl {
   // `None`, the command result should have `navigation` value, but mapper does not have
   // it yet. This value will be set to `navigationId` after next .
   #pendingNavigationId: string | undefined;
-  #pendingNavigation: Deferred<void> | undefined;
+  // Set if there is a pending navigation initiated by `BrowsingContext.navigate` command.
+  // The promise is resolved when the navigation is finished or rejected when canceled.
+  #pendingCommandNavigation: Deferred<void> | undefined;
 
   #originalOpener?: string;
 
@@ -213,7 +215,7 @@ export class BrowsingContextImpl {
   }
 
   dispose(emitContextDestroyed: boolean) {
-    this.#pendingNavigation?.reject(
+    this.#pendingCommandNavigation?.reject(
       new UnknownErrorException('navigation canceled by context disposal')
     );
     this.#deleteAllChildren();
@@ -472,6 +474,12 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
+      // If there is a pending navigation, reject it.
+      this.#pendingCommandNavigation?.reject(
+        new UnknownErrorException(
+          `navigation canceled, as new navigation is requested by ${params.reason}`
+        )
+      );
       this.#pendingNavigationUrl = params.url;
     });
 
@@ -819,13 +827,9 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
-    if (this.#pendingNavigation !== undefined) {
-      this.#pendingNavigation.reject(
-        new UnknownErrorException(
-          'navigation canceled be concurrent navigation'
-        )
-      );
-    }
+    this.#pendingCommandNavigation?.reject(
+      new UnknownErrorException('navigation canceled by concurrent navigation')
+    );
     await this.targetUnblockedOrThrow();
 
     // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
@@ -835,7 +839,7 @@ export class BrowsingContextImpl {
     this.#pendingNavigationUrl = url;
     const navigationId = uuidv4();
     this.#pendingNavigationId = navigationId;
-    this.#pendingNavigation = new Deferred<void>();
+    this.#pendingCommandNavigation = new Deferred<void>();
 
     // Navigate and wait for the result. If the navigation fails, the error event is
     // emitted and the promise is rejected.
@@ -874,8 +878,8 @@ export class BrowsingContextImpl {
 
     if (wait === BrowsingContext.ReadinessState.None) {
       // Do not wait for the result of the navigation promise.
-      this.#pendingNavigation.resolve();
-      this.#pendingNavigation = undefined;
+      this.#pendingCommandNavigation.resolve();
+      this.#pendingCommandNavigation = undefined;
 
       return {
         navigation: navigationId,
@@ -889,11 +893,12 @@ export class BrowsingContextImpl {
     await Promise.race([
       // No `loaderId` means same-document navigation.
       this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
-      this.#pendingNavigation,
+      // Throw an error if the navigation is canceled.
+      this.#pendingCommandNavigation,
     ]);
 
-    this.#pendingNavigation.resolve();
-    this.#pendingNavigation = undefined;
+    this.#pendingCommandNavigation.resolve();
+    this.#pendingCommandNavigation = undefined;
     return {
       navigation: navigationId,
       // Url can change due to redirect get the latest one.
