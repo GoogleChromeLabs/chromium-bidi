@@ -192,6 +192,35 @@ export class BrowsingContextImpl {
       ChromiumBidi.BrowsingContext.EventNames.ContextCreated
     );
 
+    // Emulate initial navigation started event for about:blank.
+    eventManager.registerPromiseEvent(
+      context.targetUnblockedOrThrow().then(
+        () => {
+          return {
+            kind: 'success',
+            value: {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+              params: {
+                context: context.id,
+                navigation: context.#navigationId,
+                timestamp: BrowsingContextImpl.getTimestamp(),
+                url: 'about:blank',
+              },
+            },
+          };
+        },
+        (error) => {
+          return {
+            kind: 'error',
+            error,
+          };
+        }
+      ),
+      context.id,
+      ChromiumBidi.BrowsingContext.EventNames.NavigationStarted
+    );
+
     return context;
   }
 
