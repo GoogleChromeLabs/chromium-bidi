@@ -147,7 +147,7 @@ export class CdpTargetManager {
     if (params.reason === 'swap') {
       return;
     }
-    this.#browsingContextStorage.findContext(params.frameId)?.dispose(false);
+    this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
   }
 
   #handleFrameSubtreeWillBeDetached(
