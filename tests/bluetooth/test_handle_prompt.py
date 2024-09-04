@@ -93,7 +93,7 @@ async def test_bluetooth_handle_prompt(websocket, context_id, html):
         'params': {
             'context': context_id,
             'devices': [{
-                'id': '09:09:09:09:09:09'
+                'id': fake_device_address
             }],
         }
     })
