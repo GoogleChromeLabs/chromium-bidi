@@ -95,9 +95,13 @@ export class BrowsingContextImpl {
   // `None`, the command result should have `navigation` value, but mapper does not have
   // it yet. This value will be set to `navigationId` after next .
   #pendingNavigationId: string | undefined;
-  // Set if there is a pending navigation initiated by `BrowsingContext.navigate` command.
-  // The promise is resolved when the navigation is finished or rejected when canceled.
+  // Set on `BrowsingContext.navigate` command. Used later on `Page.frameStartedLoading`
+  // event handler to set `currentNavigation`. Required fail the navigation command if
+  // the navigation is canceled.
   #pendingCommandNavigation: Deferred<void> | undefined;
+  // Set on navigation is started. Rejected if another navigation is started before the
+  // current one is finished.
+  #currentNavigation: Deferred<void> | undefined;
 
   #originalOpener?: string;
 
@@ -215,7 +219,7 @@ export class BrowsingContextImpl {
   }
 
   dispose(emitContextDestroyed: boolean) {
-    this.#pendingCommandNavigation?.reject(
+    this.#currentNavigation?.reject(
       new UnknownErrorException('navigation canceled by context disposal')
     );
     this.#deleteAllChildren();
@@ -441,7 +445,51 @@ export class BrowsingContextImpl {
       }
       // Use `pendingNavigationId` if navigation initiated by BiDi
       // `BrowsingContext.navigate` or generate a new navigation id.
-      this.#navigationId = this.#pendingNavigationId ?? uuidv4();
+      const navigationId = this.#pendingNavigationId ?? uuidv4();
+      this.#navigationId = navigationId;
+
+      // If there is a pending navigation, reject it.
+      if (this.#currentNavigation !== undefined) {
+        if (this.#currentNavigation.isFinished) {
+          this.#logger?.(
+            LogType.debugError,
+            'Unexpectedly, ongoing navigation is finished'
+          );
+        } else {
+          this.#currentNavigation.reject(
+            new UnknownErrorException('navigation canceled by new navigation')
+          );
+        }
+      }
+
+      // The navigation can be initiated either by the BiDi `BrowsingContext.navigate`
+      // command, or by browser itself. If initiated by the command, its deferred should
+      // be used, so that the command fail if the navigation is canceled.
+      this.#currentNavigation =
+        this.#pendingCommandNavigation ?? new Deferred();
+
+      // Set navigation rejection handler to emit `navigationFailed` event if the
+      // navigation fails.
+      this.#currentNavigation?.catch((error) => {
+        this.#logger?.(LogType.debugError, `Navigation failed: ${error}`);
+        this.#pendingNavigationId = undefined;
+        this.#currentNavigation = undefined;
+
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+            params: {
+              context: this.id,
+              navigation: navigationId,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url: this.#pendingNavigationUrl ?? 'UNKNOWN',
+            },
+          },
+          this.id
+        );
+      });
+
       this.#pendingNavigationId = undefined;
       this.#eventManager.registerEvent(
         {
@@ -449,7 +497,7 @@ export class BrowsingContextImpl {
           method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           params: {
             context: this.id,
-            navigation: this.#navigationId,
+            navigation: navigationId,
             timestamp: BrowsingContextImpl.getTimestamp(),
             // The URL of the navigation that is currently in progress. Although the URL
             // is not yet known in case of user-initiated navigations, it is possible to
@@ -475,7 +523,7 @@ export class BrowsingContextImpl {
         return;
       }
       // If there is a pending navigation, reject it.
-      this.#pendingCommandNavigation?.reject(
+      this.#currentNavigation?.reject(
         new UnknownErrorException(
           `navigation canceled, as new navigation is requested by ${params.reason}`
         )
@@ -545,6 +593,8 @@ export class BrowsingContextImpl {
             this.id
           );
           this.#lifecycle.load.resolve();
+          this.#currentNavigation?.resolve();
+          this.#currentNavigation = undefined;
           break;
       }
     });
@@ -827,9 +877,6 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
-    this.#pendingCommandNavigation?.reject(
-      new UnknownErrorException('navigation canceled by concurrent navigation')
-    );
     await this.targetUnblockedOrThrow();
 
     // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
@@ -839,7 +886,6 @@ export class BrowsingContextImpl {
     this.#pendingNavigationUrl = url;
     const navigationId = uuidv4();
     this.#pendingNavigationId = navigationId;
-    this.#pendingCommandNavigation = new Deferred<void>();
 
     // Navigate and wait for the result. If the navigation fails, the error event is
     // emitted and the promise is rejected.
@@ -877,10 +923,6 @@ export class BrowsingContextImpl {
     })();
 
     if (wait === BrowsingContext.ReadinessState.None) {
-      // Do not wait for the result of the navigation promise.
-      this.#pendingCommandNavigation.resolve();
-      this.#pendingCommandNavigation = undefined;
-
       return {
         navigation: navigationId,
         url,
@@ -888,6 +930,7 @@ export class BrowsingContextImpl {
     }
 
     const cdpNavigateResult = await cdpNavigatePromise;
+    this.#pendingCommandNavigation = new Deferred<void>();
 
     // Wait for either the navigation is finished or canceled by another navigation.
     await Promise.race([
@@ -897,7 +940,7 @@ export class BrowsingContextImpl {
       this.#pendingCommandNavigation,
     ]);
 
-    this.#pendingCommandNavigation.resolve();
+    // The command is finished, so the pending navigation is not needed anymore.
     this.#pendingCommandNavigation = undefined;
     return {
       navigation: navigationId,
