@@ -101,6 +101,7 @@ export interface BidiCommandParameterParser {
   parseRemoveInterceptParams(
     params: unknown
   ): Network.RemoveInterceptParameters;
+  parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters;
   // keep-sorted end block=yes
 
   // Script domain
