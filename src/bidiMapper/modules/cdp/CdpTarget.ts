@@ -280,9 +280,9 @@ export class CdpTarget {
     this.#networkDomainEnabled = enabled;
     try {
       await Promise.all([
-        this.#cdpClient.sendCommand(
-          enabled ? 'Network.enable' : 'Network.disable'
-        ),
+        this.#cdpClient
+          .sendCommand(enabled ? 'Network.enable' : 'Network.disable')
+          .then(async () => await this.toggleSetCacheDisabled()),
         this.toggleFetchIfNeeded(),
       ]);
     } catch (err) {
@@ -296,7 +296,10 @@ export class CdpTarget {
       this.#networkStorage.defaultCacheBehavior === 'bypass';
     const cacheDisabled = disable ?? defaultCacheDisabled;
 
-    if (this.#cacheDisableState === cacheDisabled) {
+    if (
+      !this.#networkDomainEnabled ||
+      this.#cacheDisableState === cacheDisabled
+    ) {
       return;
     }
     this.#cacheDisableState = cacheDisabled;
