@@ -242,9 +242,9 @@ export class NetworkRequest {
   /** Returns the HTTP status code associated with this request if any. */
   get #statusCode(): number | undefined {
     return (
-      this.#response.paused?.responseStatusCode ??
+      this.#response.info?.status ??
       this.#response.extraInfo?.statusCode ??
-      this.#response.info?.status
+      this.#response.paused?.responseStatusCode
     );
   }
 
@@ -629,7 +629,7 @@ export class NetworkRequest {
       await this.#continueResponse({
         responseCode: overrides.statusCode,
         responsePhrase: overrides.reasonPhrase,
-        responseHeaders,
+        responseHeaders: responseHeaders ?? [],
       });
     }
   }
