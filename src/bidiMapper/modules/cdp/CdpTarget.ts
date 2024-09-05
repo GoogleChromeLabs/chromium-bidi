@@ -48,6 +48,7 @@ export class CdpTarget {
   readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
   readonly #logger: LoggerFn | undefined;
 
+  #cacheDisableState = false;
   #networkDomainEnabled = false;
   #fetchDomainStages = {
     request: false,
@@ -288,6 +289,20 @@ export class CdpTarget {
       this.#logger?.(LogType.debugError, err);
       this.#networkDomainEnabled = !enabled;
     }
+  }
+
+  async toggleSetCacheDisabled(disable?: boolean) {
+    const defaultCacheDisabled =
+      this.#networkStorage.defaultCacheBehavior === 'bypass';
+    const cacheDisabled = disable ?? defaultCacheDisabled;
+
+    if (this.#cacheDisableState === cacheDisabled) {
+      return;
+    }
+    this.#cacheDisableState = cacheDisabled;
+    await this.#cdpClient.sendCommand('Network.setCacheDisabled', {
+      cacheDisabled,
+    });
   }
 
   async toggleDeviceAccessIfNeeded(): Promise<void> {
