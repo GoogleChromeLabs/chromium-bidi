@@ -36,6 +36,7 @@ import {getMapperTabSource} from './reader.js';
 import type {SimpleTransport} from './SimpleTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
+const pathToExtension = path.join(__dirname, '../../extension');
 
 export type ChromeOptions = {
   chromeArgs: string[];
@@ -80,6 +81,7 @@ export class BrowserInstance {
       '--remote-debugging-port=9222',
       '--use-mock-keychain',
       `--user-data-dir=${profileDir}`,
+      `--load-extension=${pathToExtension}`,
       // keep-sorted end
       ...chromeOptions.chromeArgs,
       'about:blank',
