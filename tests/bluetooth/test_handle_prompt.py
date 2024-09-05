@@ -37,7 +37,11 @@ HTML_SINGLE_PERIPHERAL = """
     }
 }],
                          indirect=True)
-async def test_bluetooth_handle_prompt(websocket, context_id, html):
+async def test_bluetooth_handle_prompt(websocket, context_id, html,
+                                       test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support Bluetooth")
+
     await subscribe(websocket, ['bluetooth'])
 
     url = html(HTML_SINGLE_PERIPHERAL)
