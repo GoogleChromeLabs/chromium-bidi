@@ -328,9 +328,8 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     channel: BidiPlusChannel
   ): EventWrapper[] {
     const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
-    const lastSentMapKey = EventManager.#getMapKey(eventName, contextId);
     const lastSentMessageId =
-      this.#lastMessageSent.get(lastSentMapKey)?.get(channel) ?? -Infinity;
+      this.#lastMessageSent.get(bufferMapKey)?.get(channel) ?? -Infinity;
 
     const result: EventWrapper[] =
       this.#eventBuffers
