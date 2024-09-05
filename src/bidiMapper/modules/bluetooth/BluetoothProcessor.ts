@@ -16,7 +16,7 @@
  */
 
 import type {Bluetooth, EmptyResult} from '../../../protocol/protocol.js';
-import {CdpTarget} from '../cdp/CdpTarget.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
