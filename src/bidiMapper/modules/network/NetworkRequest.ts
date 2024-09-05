@@ -627,9 +627,12 @@ export class NetworkRequest {
         cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
 
       await this.#continueResponse({
-        responseCode: overrides.statusCode,
-        responsePhrase: overrides.reasonPhrase,
-        responseHeaders: responseHeaders ?? [],
+        responseCode:
+          overrides.statusCode ?? this.#response.paused?.responseStatusCode,
+        responsePhrase:
+          overrides.reasonPhrase ?? this.#response.paused?.responseStatusText,
+        responseHeaders:
+          responseHeaders ?? this.#response.paused?.responseHeaders,
       });
     }
   }
