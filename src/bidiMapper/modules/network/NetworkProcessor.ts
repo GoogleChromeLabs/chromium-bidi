@@ -20,7 +20,9 @@ import {
   type EmptyResult,
   NoSuchRequestException,
   InvalidArgumentException,
+  UnknownErrorException,
 } from '../../../protocol/protocol.js';
+import {URLPattern} from '../../../utils/UrlPattern.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
@@ -185,6 +187,15 @@ export class NetworkProcessor {
     );
 
     return {};
+  }
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async setCacheBehavior(
+    _params: Network.SetCacheBehaviorParameters
+  ): Promise<EmptyResult> {
+    throw new UnknownErrorException(
+      "Method 'network.setCacheBehavior' is not implemented."
+    );
   }
 
   #getRequestOrFail(id: Network.Request): NetworkRequest {

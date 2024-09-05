@@ -20,6 +20,7 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {CdpConnection} from '../../../cdp/CdpConnection.js';
 import type {Browser, Session} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
+import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 import {
   BrowsingContextImpl,
   serializeOrigin,
@@ -49,6 +50,7 @@ export class CdpTargetManager {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
+  readonly #bluetoothProcessor: BluetoothProcessor;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
@@ -64,6 +66,7 @@ export class CdpTargetManager {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     networkStorage: NetworkStorage,
+    bluetoothProcessor: BluetoothProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
     unhandledPromptBehavior?: Session.UserPromptHandler,
@@ -77,6 +80,7 @@ export class CdpTargetManager {
     this.#browsingContextStorage = browsingContextStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
+    this.#bluetoothProcessor = bluetoothProcessor;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
     this.#unhandledPromptBehavior = unhandledPromptBehavior;
@@ -113,6 +117,10 @@ export class CdpTargetManager {
       'Page.frameDetached',
       this.#handleFrameDetachedEvent.bind(this)
     );
+    cdpClient.on(
+      'Page.frameSubtreeWillBeDetached',
+      this.#handleFrameSubtreeWillBeDetached.bind(this)
+    );
   }
 
   #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
@@ -143,7 +151,13 @@ export class CdpTargetManager {
     if (params.reason === 'swap') {
       return;
     }
-    this.#browsingContextStorage.findContext(params.frameId)?.dispose();
+    this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
+  }
+
+  #handleFrameSubtreeWillBeDetached(
+    params: Protocol.Page.FrameSubtreeWillBeDetachedEvent
+  ) {
+    this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
   }
 
   #handleAttachedToTargetEvent(
@@ -288,6 +302,7 @@ export class CdpTargetManager {
     );
 
     this.#networkStorage.onCdpTargetCreated(target);
+    this.#bluetoothProcessor.onCdpTargetCreated(target);
 
     return target;
   }
@@ -327,7 +342,7 @@ export class CdpTargetManager {
     const context =
       this.#browsingContextStorage.findContextBySession(sessionId);
     if (context) {
-      context.dispose();
+      context.dispose(true);
       return;
     }
 

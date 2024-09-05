@@ -25,11 +25,21 @@ import type {
   Session,
   Storage,
   Permissions,
+  Bluetooth,
 } from '../protocol/protocol.js';
 
 import type {BidiCommandParameterParser} from './BidiParser.js';
 
 export class BidiNoOpParser implements BidiCommandParameterParser {
+  // Bluetooth domain
+  // keep-sorted start block=yes
+  parseHandleRequestDevicePromptParams(
+    params: unknown
+  ): Bluetooth.HandleRequestDevicePromptParameters {
+    return params as Bluetooth.HandleRequestDevicePromptParameters;
+  }
+  // keep-sorted end
+
   // Browser domain
   // keep-sorted start block=yes
   parseRemoveUserContextParams(
@@ -173,6 +183,9 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     params: unknown
   ): Network.RemoveInterceptParameters {
     return params as Network.RemoveInterceptParameters;
+  }
+  parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters {
+    return params as Network.SetCacheBehaviorParameters;
   }
   // keep-sorted end
 
