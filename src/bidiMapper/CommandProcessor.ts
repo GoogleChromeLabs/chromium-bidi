@@ -31,7 +31,7 @@ import type {Result} from '../utils/result.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {MapperOptions} from './BidiServer.js';
-import type {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor';
+import type {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
