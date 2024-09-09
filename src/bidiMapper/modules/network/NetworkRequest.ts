@@ -644,7 +644,7 @@ export class NetworkRequest {
 
       this.#responseOverrides = {
         statusCode: overrides.statusCode,
-        headers: overrides.headers,
+        headers: overrideHeaders,
       };
     }
   }
