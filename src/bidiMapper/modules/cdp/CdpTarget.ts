@@ -310,9 +310,21 @@ export class CdpTarget {
 
   async toggleDeviceAccessIfNeeded(): Promise<void> {
     const enabled = this.isSubscribedTo(BiDiModule.Bluetooth);
-    await this.#cdpClient.sendCommand(
-      enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
-    );
+    try {
+      await this.#cdpClient.sendCommand(
+        enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
+      );
+    } catch (err) {
+      // Heuristic to detect if the error is due to unsubscribing from the event, and the
+      // session being closed. If so, ignore the error.
+      if (
+        !enabled &&
+        ((err as any)?.error?.code !== -32001 ||
+          (err as any)?.error?.message !== 'Session with given id not found.')
+      ) {
+        throw err;
+      }
+    }
     return;
   }
 
