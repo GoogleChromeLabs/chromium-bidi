@@ -564,7 +564,10 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
 @pytest.mark.asyncio
 async def test_unsubscribe_from_detached_target(websocket, context_id,
                                                 read_sorted_messages):
-    events = ['bluetooth', 'browsingContext', 'log', 'network', 'script']
+    events = [
+        'bluetooth', 'browser', 'browsingContext', 'cdp', 'input', 'log',
+        'network', 'script', 'session'
+    ]
 
     await subscribe(websocket, events)
 
