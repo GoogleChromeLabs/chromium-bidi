@@ -317,10 +317,10 @@ export class CdpTarget {
     } catch (err) {
       // Heuristic to detect if the error is due to unsubscribing from the event, and the
       // session being closed. If so, ignore the error.
+      const error = err as {code?: unknown; message?: unknown};
       if (
-        !enabled &&
-        ((err as any)?.error?.code !== -32001 ||
-          (err as any)?.error?.message !== 'Session with given id not found.')
+        error.code !== -32001 ||
+        error.message !== 'Session with given id not found.'
       ) {
         throw err;
       }
