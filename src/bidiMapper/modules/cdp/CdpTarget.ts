@@ -48,6 +48,7 @@ export class CdpTarget {
   readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
   readonly #logger: LoggerFn | undefined;
 
+  #deviceAccessEnabled = false;
   #cacheDisableState = false;
   #networkDomainEnabled = false;
   #fetchDomainStages = {
@@ -295,25 +296,39 @@ export class CdpTarget {
     const defaultCacheDisabled =
       this.#networkStorage.defaultCacheBehavior === 'bypass';
     const cacheDisabled = disable ?? defaultCacheDisabled;
-
     if (
       !this.#networkDomainEnabled ||
       this.#cacheDisableState === cacheDisabled
     ) {
       return;
     }
+
     this.#cacheDisableState = cacheDisabled;
-    await this.#cdpClient.sendCommand('Network.setCacheDisabled', {
-      cacheDisabled,
-    });
+    try {
+      await this.#cdpClient.sendCommand('Network.setCacheDisabled', {
+        cacheDisabled,
+      });
+    } catch (error) {
+      this.#logger?.(LogType.debugError, error);
+      this.#cacheDisableState = !cacheDisabled;
+    }
   }
 
   async toggleDeviceAccessIfNeeded(): Promise<void> {
     const enabled = this.isSubscribedTo(BiDiModule.Bluetooth);
-    await this.#cdpClient.sendCommand(
-      enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
-    );
-    return;
+    if (this.#deviceAccessEnabled === enabled) {
+      return;
+    }
+
+    this.#deviceAccessEnabled = enabled;
+    try {
+      await this.#cdpClient.sendCommand(
+        enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
+      );
+    } catch (err) {
+      this.#logger?.(LogType.debugError, err);
+      this.#deviceAccessEnabled = !enabled;
+    }
   }
 
   #setEventListeners() {
