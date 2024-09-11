@@ -564,13 +564,12 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
 @pytest.mark.asyncio
 async def test_unsubscribe_from_detached_target(websocket, context_id,
                                                 read_sorted_messages):
-    # events = ["log.entryAdded", "bluetooth", "network"]
     events = [
         'bluetooth', 'browser', 'browsingContext', 'cdp', 'input', 'log',
         'network', 'script', 'session'
     ]
 
-    await subscribe(websocket, events, [context_id])
+    await subscribe(websocket, events)
 
     close_command_id = await send_JSON_command(websocket, {
         "method": "browsingContext.close",
@@ -579,14 +578,12 @@ async def test_unsubscribe_from_detached_target(websocket, context_id,
         }
     })
 
-    unsubscribe_command_id = await send_JSON_command(
-        websocket, {
-            "method": "session.unsubscribe",
-            "params": {
-                "events": events,
-                "contexts": [context_id]
-            }
-        })
+    unsubscribe_command_id = await send_JSON_command(websocket, {
+        "method": "session.unsubscribe",
+        "params": {
+            "events": events
+        }
+    })
 
     # Read only command responses ignoring events previously subscribed.
     [close_command_response, unsubscribe_command_response
