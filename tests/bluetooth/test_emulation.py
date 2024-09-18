@@ -52,3 +52,43 @@ async def test_bluetooth_simulate_adapter(websocket, context_id, html):
             }
         })
 
+    # Create a fake BT device.
+    fake_device_address = '09:09:09:09:09:09'
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulatePreconnectedPeripheral',
+            'params': {
+                'context': context_id,
+                'address': fake_device_address,
+                'name': 'SomeDevice',
+                'manufacturerData': [],
+                'knownServiceUuids':
+                    ['12345678-1234-5678-9abc-def123456789', ],
+            }
+        })
+
+    # await send_JSON_command(
+    #     websocket, {
+    #         'method': 'script.evaluate',
+    #         'params': {
+    #             'expression': 'document.querySelector("#bluetooth").click();',
+    #             'awaitPromise': True,
+    #             'target': {
+    #                 'context': context_id,
+    #             },
+    #             'userActivation': True
+    #         }
+    #     })
+
+    # response = await wait_for_event(websocket,
+    #                                 'bluetooth.requestDevicePromptOpened')
+    # assert response == AnyExtending({
+    #     'type': 'event',
+    #     'method': 'bluetooth.requestDevicePromptOpened',
+    #     'params': {
+    #         'context': context_id,
+    #         'devices': [{
+    #             'id': fake_device_address
+    #         }],
+    #     }
+    # })

@@ -33,6 +33,18 @@ export namespace Bluetooth {
 export namespace Bluetooth {
   export type RequestDevicePrompt = string;
   export type AdapterState = 'powered-on' | 'powered-off' | 'absent';
+  export type ManufacturerData = {
+    /**
+     * Company identifier
+     * https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml
+     * https://usb.org/developers
+     */
+    key: number;
+    /**
+     * Manufacturer-specific data (Encoded as a base64 string when passed over JSON)
+     */
+    data: string;
+}
 }
 export namespace Bluetooth {
   export type HandleRequestDevicePrompt = {
@@ -50,6 +62,21 @@ export namespace Bluetooth {
   export type SimulateAdapterParameters = {
     context: string;
     state: Bluetooth.AdapterState;
+  };
+}
+export namespace Bluetooth {
+  export type SimulatePreconnectedPeripheral = {
+    method: 'bluetooth.simulatePreconnectedPeripheral';
+    params: Bluetooth.SimulatePreconnectedPeripheralParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulatePreconnectedPeripheralParameters = {
+    context: string;
+    address: string;
+    name: string;
+    manufacturerData: Bluetooth.ManufacturerData[];
+    knownServiceUuids: string[];
   };
 }
 export namespace Bluetooth {

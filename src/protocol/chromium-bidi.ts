@@ -113,6 +113,9 @@ export type Command = (
   | ({
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiBluetooth.Bluetooth.SimulateAdapter)
+  | ({
+      id: WebDriverBidi.JsUint;
+    } & WebDriverBidiBluetooth.Bluetooth.SimulatePreconnectedPeripheral)
 ) & {
   channel?: WebDriverBidi.Script.Channel;
 };

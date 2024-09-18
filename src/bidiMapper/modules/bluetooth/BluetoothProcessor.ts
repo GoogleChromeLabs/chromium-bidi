@@ -45,6 +45,22 @@ export class BluetoothProcessor {
     return {};
   }
 
+  async simulatePreconnectedPeripheral(
+    params: Bluetooth.SimulatePreconnectedPeripheralParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.simulatePreconnectedPeripheral',
+      {
+        address: params.address,
+        name: params.name,
+        knownServiceUuids: params.knownServiceUuids,
+        manufacturerData: params.manufacturerData,
+      }
+    );
+    return {};
+  }
+
   onCdpTargetCreated(cdpTarget: CdpTarget) {
     cdpTarget.cdpClient.on('DeviceAccess.deviceRequestPrompted', (event) => {
       this.#eventManager.registerEvent(
