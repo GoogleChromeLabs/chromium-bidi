@@ -148,6 +148,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#bluetoothProcessor.handleRequestDevicePrompt(
           this.#parser.parseHandleRequestDevicePromptParams(command.params)
         );
+      case 'bluetooth.simulateAdapter':
+        return await this.#bluetoothProcessor.simulateAdapter(command.params);
       // keep-sorted end
 
       // Browser domain

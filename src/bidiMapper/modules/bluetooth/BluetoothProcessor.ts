@@ -32,6 +32,19 @@ export class BluetoothProcessor {
     this.#browsingContextStorage = browsingContextStorage;
   }
 
+  async simulateAdapter(
+    params: Bluetooth.SimulateAdapterParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.enable',
+      {
+        state: params.state,
+      }
+    );
+    return {};
+  }
+
   onCdpTargetCreated(cdpTarget: CdpTarget) {
     cdpTarget.cdpClient.on('DeviceAccess.deviceRequestPrompted', (event) => {
       this.#eventManager.registerEvent(

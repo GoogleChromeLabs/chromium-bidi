@@ -32,11 +32,24 @@ export namespace Bluetooth {
 }
 export namespace Bluetooth {
   export type RequestDevicePrompt = string;
+  export type AdapterState = 'powered-on' | 'powered-off' | 'absent';
 }
 export namespace Bluetooth {
   export type HandleRequestDevicePrompt = {
     method: 'bluetooth.handleRequestDevicePrompt';
     params: Bluetooth.HandleRequestDevicePromptParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdapter = {
+    method: 'bluetooth.simulateAdapter';
+    params: Bluetooth.SimulateAdapterParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdapterParameters = {
+    context: string;
+    state: Bluetooth.AdapterState;
   };
 }
 export namespace Bluetooth {

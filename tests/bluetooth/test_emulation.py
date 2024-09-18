@@ -1,0 +1,54 @@
+#  Copyright 2024 Google LLC.
+#  Copyright (c) Microsoft Corporation.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+import pytest
+from test_helpers import (AnyExtending, execute_command, goto_url,
+                          send_JSON_command, subscribe, wait_for_event)
+
+HTML_SINGLE_PERIPHERAL = """
+<div>
+    <a href="#" id="bluetooth" target="_blank">bluetooth</a>
+    <script>
+        var options = {filters: [{name:"SomeDevice"}]};
+        document.getElementById('bluetooth').addEventListener('click', () => {
+        navigator.bluetooth.requestDevice(options);
+    });
+    </script>
+</div>
+"""
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'goog:chromeOptions': {
+        'args': ['--enable-features=WebBluetooth']
+    }
+}],
+                         indirect=True)
+async def test_bluetooth_simulate_adapter(websocket, context_id, html):
+    await subscribe(websocket, ['bluetooth'])
+
+    url = html(HTML_SINGLE_PERIPHERAL)
+    await goto_url(websocket, context_id, url)
+
+    # Simulate a Bluetooth adapter.
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateAdapter',
+            'params': {
+                'context': context_id,
+                'state': 'powered-on',
+            }
+        })
+

@@ -110,6 +110,9 @@ export type Command = (
       // not re-define it. Therefore, it's not part of generated types.
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePrompt)
+  | ({
+      id: WebDriverBidi.JsUint;
+    } & WebDriverBidiBluetooth.Bluetooth.SimulateAdapter)
 ) & {
   channel?: WebDriverBidi.Script.Channel;
 };
