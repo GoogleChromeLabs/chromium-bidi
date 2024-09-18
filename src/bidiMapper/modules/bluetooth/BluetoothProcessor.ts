@@ -61,6 +61,19 @@ export class BluetoothProcessor {
     return {};
   }
 
+  async simulateAdvertisement(
+    params: Bluetooth.SimulateAdvertisementParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.simulateAdvertisement',
+      {
+        entry: params.entry,
+      }
+    );
+    return {};
+  }
+
   onCdpTargetCreated(cdpTarget: CdpTarget) {
     cdpTarget.cdpClient.on('DeviceAccess.deviceRequestPrompted', (event) => {
       this.#eventManager.registerEvent(

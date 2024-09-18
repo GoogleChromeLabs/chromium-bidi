@@ -44,7 +44,29 @@ export namespace Bluetooth {
      * Manufacturer-specific data (Encoded as a base64 string when passed over JSON)
      */
     data: string;
-}
+  }
+  export type ScanRecord = {
+    name?: string;
+    uuids?: string[];
+    /**
+     * Stores the external appearance description of the device.
+     */
+    appearance?: number;
+    /**
+     * Stores the transmission power of a broadcasting device.
+     */
+    txPower?: number;
+    /**
+     * Key is the company identifier and the value is an array of bytes of
+     * manufacturer specific data.
+     */
+    manufacturerData?: Bluetooth.ManufacturerData[];
+  }
+  export type ScanEntry = {
+    deviceAddress: string;
+    rssi: number;
+    scanRecord: Bluetooth.ScanRecord;
+  }
 }
 export namespace Bluetooth {
   export type HandleRequestDevicePrompt = {
@@ -62,6 +84,18 @@ export namespace Bluetooth {
   export type SimulateAdapterParameters = {
     context: string;
     state: Bluetooth.AdapterState;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdvertisement = {
+    method: 'bluetooth.simulateAdvertisement';
+    params: Bluetooth.SimulateAdvertisementParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdvertisementParameters = {
+    context: string;
+    entry: Bluetooth.ScanEntry;
   };
 }
 export namespace Bluetooth {

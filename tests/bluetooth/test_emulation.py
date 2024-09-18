@@ -67,28 +67,28 @@ async def test_bluetooth_simulate_adapter(websocket, context_id, html):
             }
         })
 
-    # await send_JSON_command(
-    #     websocket, {
-    #         'method': 'script.evaluate',
-    #         'params': {
-    #             'expression': 'document.querySelector("#bluetooth").click();',
-    #             'awaitPromise': True,
-    #             'target': {
-    #                 'context': context_id,
-    #             },
-    #             'userActivation': True
-    #         }
-    #     })
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'document.querySelector("#bluetooth").click();',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
 
-    # response = await wait_for_event(websocket,
-    #                                 'bluetooth.requestDevicePromptOpened')
-    # assert response == AnyExtending({
-    #     'type': 'event',
-    #     'method': 'bluetooth.requestDevicePromptOpened',
-    #     'params': {
-    #         'context': context_id,
-    #         'devices': [{
-    #             'id': fake_device_address
-    #         }],
-    #     }
-    # })
+    response = await wait_for_event(websocket,
+                                    'bluetooth.requestDevicePromptOpened')
+    assert response == AnyExtending({
+        'type': 'event',
+        'method': 'bluetooth.requestDevicePromptOpened',
+        'params': {
+            'context': context_id,
+            'devices': [{
+                'id': fake_device_address
+            }],
+        }
+    })
