@@ -60,7 +60,6 @@ async def setup_device(websocket, context_id):
         })
 
 
-
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
     'goog:chromeOptions': {
