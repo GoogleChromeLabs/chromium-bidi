@@ -111,12 +111,18 @@ export type Command = (
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePrompt)
   | ({
+      // id is defined by the main WebDriver BiDi spec and extension specs do
+      // not re-define it. Therefore, it's not part of generated types.
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiBluetooth.Bluetooth.SimulateAdapter)
   | ({
+      // id is defined by the main WebDriver BiDi spec and extension specs do
+      // not re-define it. Therefore, it's not part of generated types.
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiBluetooth.Bluetooth.SimulatePreconnectedPeripheral)
   | ({
+      // id is defined by the main WebDriver BiDi spec and extension specs do
+      // not re-define it. Therefore, it's not part of generated types.
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisement)
 ) & {

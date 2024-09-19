@@ -68,7 +68,7 @@ export class BluetoothProcessor {
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.simulateAdvertisement',
       {
-        entry: params.entry,
+        entry: params.scanEntry,
       }
     );
     return {};
