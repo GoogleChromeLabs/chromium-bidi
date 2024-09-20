@@ -1,54 +1,54 @@
 version: 2
 updates:
-  - package-ecosystem: gitsubmodule
-    directory: /
+  - package-ecosystem: 'gitsubmodule'
+    directory: '/'
     schedule:
-      interval: daily
+      interval: 'daily'
       time: '05:00'
-      timezone: Europe/Berlin
+      timezone: 'Europe/Berlin'
     open-pull-requests-limit: 1
     labels:
       - 'dependencies'
       - 'submodules'
 
-  - package-ecosystem: github-actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+      time: '05:00'
+      timezone: 'Europe/Berlin'
+    groups:
+      all:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'pip'
+    directory: 'examples/'
+    schedule:
+      interval: 'monthly'
+    groups:
+      all:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'pip'
+    directory: 'tests/'
+    schedule:
+      interval: 'monthly'
+      time: '05:00'
+      timezone: 'Europe/Berlin'
+    groups:
+      all:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'npm'
     directory: /
     schedule:
-      interval: monthly
-      time: '05:00'
-      timezone: Europe/Berlin
-    groups:
-      all:
-        patterns:
-          - '*'
-
-  - package-ecosystem: pip
-    directory: examples/
-    schedule:
-      interval: monthly
-    groups:
-      all:
-        patterns:
-          - '*'
-
-  - package-ecosystem: pip
-    directory: tests/
-    schedule:
-      interval: monthly
-      time: '05:00'
-      timezone: Europe/Berlin
-    groups:
-      all:
-        patterns:
-          - '*'
-
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
+      interval: 'weekly'
       day: 'sunday'
       time: '05:00'
-      timezone: Europe/Berlin
+      timezone: 'Europe/Berlin'
     groups:
       all:
         patterns:
@@ -57,7 +57,7 @@ updates:
     ignore:
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
-      - dependency-name: devtools-protocol
-      - dependency-name: chai
+      - dependency-name: 'devtools-protocol'
+      - dependency-name: 'chai'
         versions: ['>=5.0.0']
         update-types: ['version-update:semver-major']
