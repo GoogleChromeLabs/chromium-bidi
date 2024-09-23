@@ -153,14 +153,6 @@ export class LogManager {
 
   #initializeEntryAddedEventListener() {
     this.#cdpTarget.cdpClient.on('Runtime.consoleAPICalled', (params) => {
-      if (
-        this.#cdpTarget.isSubscribedTo(
-          ChromiumBidi.Log.EventNames.LogEntryAdded
-        )
-      ) {
-        return;
-      }
-
       // Try to find realm by `cdpSessionId` and `executionContextId`,
       // if provided.
       const realm: Realm | undefined = this.#realmStorage.findRealm({
