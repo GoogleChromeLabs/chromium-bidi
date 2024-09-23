@@ -54,6 +54,21 @@ function getLogLevel(consoleApiType: string): Log.Level {
   return Log.Level.Info;
 }
 
+function getLogMethod(consoleApiType: string): string {
+  switch (consoleApiType) {
+    case 'warning':
+      return 'warn';
+    case 'startGroup':
+      return 'group';
+    case 'startGroupCollapsed':
+      return 'groupCollapsed';
+    case 'endGroup':
+      return 'groupEnd';
+  }
+
+  return consoleApiType;
+}
+
 export class LogManager {
   readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
@@ -138,6 +153,14 @@ export class LogManager {
 
   #initializeEntryAddedEventListener() {
     this.#cdpTarget.cdpClient.on('Runtime.consoleAPICalled', (params) => {
+      if (
+        this.#cdpTarget.isSubscribedTo(
+          ChromiumBidi.Log.EventNames.LogEntryAdded
+        )
+      ) {
+        return;
+      }
+
       // Try to find realm by `cdpSessionId` and `executionContextId`,
       // if provided.
       const realm: Realm | undefined = this.#realmStorage.findRealm({
@@ -169,8 +192,7 @@ export class LogManager {
                   timestamp: Math.round(params.timestamp),
                   stackTrace: getBidiStackTrace(params.stackTrace),
                   type: 'console',
-                  // Console method is `warn`, not `warning`.
-                  method: params.type === 'warning' ? 'warn' : params.type,
+                  method: getLogMethod(params.type),
                   args,
                 },
               },
