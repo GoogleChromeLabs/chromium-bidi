@@ -619,7 +619,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
 }, {
     'acceptInsecureCerts': False
 }],
-    indirect=True)
+                         indirect=True)
 async def test_browsingContext_acceptInsecureCertsCapability_respected(
         websocket, context_id, url_bad_ssl, capabilities):
     async def navigate():
