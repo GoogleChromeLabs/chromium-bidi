@@ -162,6 +162,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#browserProcessor.removeUserContext(
           this.#parser.parseRemoveUserContextParams(command.params)
         );
+      case 'browser.getClientWindows':
+      case 'browser.setClientWindowState':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`
+        );
       // keep-sorted end
 
       // Browsing Context domain
