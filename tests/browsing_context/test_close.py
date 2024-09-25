@@ -58,7 +58,7 @@ async def test_browsingContext_close(websocket, context_id):
         'beforeUnload': 'ignore'
     }
 }],
-                         indirect=True)
+    indirect=True)
 @pytest.mark.parametrize("accept", [True, False])
 async def test_browsingContext_close_prompt(websocket, context_id, html,
                                             accept):
@@ -141,6 +141,7 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
                 'context': context_id,
                 'children': None,
                 'originalOpener': None,
+                'clientWindow': ANY_STR,
                 'parent': None,
                 # Url-encoded `url`.
                 'url': ANY_STR,
@@ -173,7 +174,7 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
         'beforeUnload': 'ignore'
     }
 }],
-                         indirect=True)
+    indirect=True)
 @pytest.mark.parametrize("accept", [True, False])
 async def test_browsingContext_navigate_prompt(websocket, context_id, html,
                                                accept):

@@ -239,7 +239,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
             "parent": None,
             "url": url_with_hash_1,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -256,7 +257,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
             "parent": None,
             "url": url_with_hash_2,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -283,7 +285,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "parent": None,
             "url": url_with_hash_1,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -299,7 +302,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "parent": None,
             "url": url_with_hash_2,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -322,7 +326,8 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
             "parent": None,
             "url": url_with_hash_1,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     }
 
@@ -614,7 +619,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
 }, {
     'acceptInsecureCerts': False
 }],
-                         indirect=True)
+    indirect=True)
 async def test_browsingContext_acceptInsecureCertsCapability_respected(
         websocket, context_id, url_bad_ssl, capabilities):
     async def navigate():
