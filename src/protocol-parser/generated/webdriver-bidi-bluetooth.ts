@@ -30,13 +30,11 @@ export namespace Bluetooth {
   export const BluetoothServiceUuidSchema = z.lazy(() => z.string());
 }
 export namespace Bluetooth {
-  export const BluetoothManufacturerDataMapSchema = z.lazy(() =>
-    z.array(
-      z.object({
-        key: z.number().int().nonnegative(),
-        data: z.string(),
-      })
-    )
+  export const BluetoothManufacturerDataSchema = z.lazy(() =>
+    z.object({
+      key: z.number().int().nonnegative(),
+      data: z.string(),
+    })
   );
 }
 export namespace Bluetooth {
@@ -59,7 +57,9 @@ export namespace Bluetooth {
       name: z.string().optional(),
       uuids: z.array(Bluetooth.BluetoothServiceUuidSchema).optional(),
       appearance: z.number().optional(),
-      manufacturerData: Bluetooth.BluetoothManufacturerDataMapSchema.optional(),
+      manufacturerData: z
+        .array(Bluetooth.BluetoothManufacturerDataSchema)
+        .optional(),
     })
   );
 }
@@ -131,7 +131,7 @@ export namespace Bluetooth {
       context: z.string(),
       address: z.string(),
       name: z.string(),
-      manufacturerData: Bluetooth.BluetoothManufacturerDataMapSchema,
+      manufacturerData: z.array(Bluetooth.BluetoothManufacturerDataSchema),
       knownServiceUuids: z.array(Bluetooth.BluetoothServiceUuidSchema),
     })
   );

@@ -25,12 +25,10 @@ export namespace Bluetooth {
   export type BluetoothServiceUuid = string;
 }
 export namespace Bluetooth {
-  export type BluetoothManufacturerDataMap = [
-    ...{
-      key: number;
-      data: string;
-    }[],
-  ];
+  export type BluetoothManufacturerData = {
+    key: number;
+    data: string;
+  };
 }
 export namespace Bluetooth {
   export type RequestDevice = string;
@@ -49,7 +47,7 @@ export namespace Bluetooth {
     name?: string;
     uuids?: [...Bluetooth.BluetoothServiceUuid[]];
     appearance?: number;
-    manufacturerData?: Bluetooth.BluetoothManufacturerDataMap;
+    manufacturerData?: [...Bluetooth.BluetoothManufacturerData[]];
   };
 }
 export namespace Bluetooth {
@@ -101,7 +99,7 @@ export namespace Bluetooth {
     context: string;
     address: string;
     name: string;
-    manufacturerData: Bluetooth.BluetoothManufacturerDataMap;
+    manufacturerData: [...Bluetooth.BluetoothManufacturerData[]];
     knownServiceUuids: [...Bluetooth.BluetoothServiceUuid[]];
   };
 }
