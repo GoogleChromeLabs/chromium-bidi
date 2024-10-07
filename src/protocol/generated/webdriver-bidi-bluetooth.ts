@@ -27,7 +27,7 @@ export namespace Bluetooth {
 export namespace Bluetooth {
   export type BluetoothManufacturerData = {
     key: number;
-    data: string;
+    data: Uint8Array;
   };
 }
 export namespace Bluetooth {
