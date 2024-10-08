@@ -199,6 +199,21 @@ export class CdpTargetManager {
     }
 
     switch (targetInfo.type) {
+      case 'tab':
+        if (this.#selfTargetId === targetInfo.targetId) {
+          void detach();
+          return;
+        }
+        // Tab targets are required only to handle page targets beneath them.
+        targetCdpClient.on('Target.attachedToTarget', (params) => {
+          this.#handleAttachedToTargetEvent(params, targetCdpClient);
+        });
+        void targetCdpClient.sendCommand('Target.setAutoAttach', {
+          autoAttach: true,
+          waitForDebuggerOnStart: true,
+          flatten: true,
+        });
+        return;
       case 'page':
       case 'iframe': {
         if (this.#selfTargetId === targetInfo.targetId) {

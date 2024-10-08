@@ -147,6 +147,15 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           autoAttach: true,
           waitForDebuggerOnStart: true,
           flatten: true,
+          // Browser session should attach to tab instead of the page, so that
+          // prerendering is not blocked.
+          filter: [
+            {
+              type: 'page',
+              exclude: true,
+            },
+            {},
+          ],
         });
 
         await this.#topLevelContextsLoaded();
