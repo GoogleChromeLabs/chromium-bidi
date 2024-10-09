@@ -349,7 +349,7 @@ export class CdpTarget {
     return (
       error.code === -32001 &&
       error.message === 'Session with given id not found.'
-    );
+    ) || this.#cdpClient.isCloseError(err);
   }
 
   #setEventListeners() {
