@@ -270,7 +270,7 @@ export class BrowsingContextProcessor {
         if (params.promptUnload) {
           await context.close();
         } else {
-        await parentCdpClient.sendCommand('Target.closeTarget', {
+          await parentCdpClient.sendCommand('Target.closeTarget', {
             targetId: params.context,
           });
         }
