@@ -167,7 +167,7 @@ export class MapperCdpConnection implements CdpConnection {
         }
         // Reject all the pending commands for the detached session.
         for (const callback of this.#commandCallbacks.values()) {
-          if (callback.sessionId === message.sessionId) {
+          if (callback.sessionId === sessionId) {
             callback.reject(callback.error);
           }
         }
