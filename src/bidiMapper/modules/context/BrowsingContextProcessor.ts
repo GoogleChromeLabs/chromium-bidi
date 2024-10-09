@@ -130,13 +130,16 @@ export class BrowsingContextProcessor {
       throw err;
     }
 
+    // Wait for the new target to be attached and to be added to the browsing context
+    // storage.
+    const context = await this.#browsingContextStorage.waitForContext(
+      result.targetId
+    );
     // Wait for the new tab to be loaded to avoid race conditions in the
     // `browsingContext` events, when the `browsingContext.domContentLoaded` and
     // `browsingContext.load` events from the initial `about:blank` navigation
     // are emitted after the next navigation is started.
     // Details: https://github.com/web-platform-tests/wpt/issues/35846
-    const contextId = result.targetId;
-    const context = this.#browsingContextStorage.getContext(contextId);
     await context.lifecycleLoaded();
 
     return {context: context.id};
