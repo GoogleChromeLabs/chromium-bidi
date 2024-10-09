@@ -42,7 +42,6 @@ const cdpToBidiTargetTypes = {
 } as const;
 
 export class CdpTargetManager {
-  readonly #browserCdpClient: CdpClient;
   readonly #cdpConnection: CdpConnection;
   readonly #targetKeysToBeIgnoredByAutoAttach = new Set<string>();
   readonly #selfTargetId: string;
@@ -73,7 +72,6 @@ export class CdpTargetManager {
     logger?: LoggerFn
   ) {
     this.#cdpConnection = cdpConnection;
-    this.#browserCdpClient = browserCdpClient;
     this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
@@ -181,26 +179,25 @@ export class CdpTargetManager {
     if (this.#selfTargetId === targetInfo.targetId) {
       void detach();
       return;
-    } else {
-      // Service workers are special case because they attach to the
-      // browser target and the page target (so twice per worker) during
-      // the regular auto-attach and might hang if the CDP session on
-      // the browser level is not detached. The logic to detach the
-      // right session is handled in the switch below.
-      const targetKey =
-        targetInfo.type === 'service_worker'
-          ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
-          : targetInfo.targetId;
-
-      // Mapper generally only needs one session per target. If we
-      // receive additional auto-attached sessions, that is very likely
-      // coming from custom CDP sessions.
-      if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
-        // Return to leave the session untouched.
-        return;
-      }
-      this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
     }
+    // Service workers are special case because they attach to the
+    // browser target and the page target (so twice per worker) during
+    // the regular auto-attach and might hang if the CDP session on
+    // the browser level is not detached. The logic to detach the
+    // right session is handled in the switch below.
+    const targetKey =
+      targetInfo.type === 'service_worker'
+        ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
+        : targetInfo.targetId;
+
+    // Mapper generally only needs one session per target. If we
+    // receive additional auto-attached sessions, that is very likely
+    // coming from custom CDP sessions.
+    if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
+      // Return to leave the session untouched.
+      return;
+    }
+    this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
 
     switch (targetInfo.type) {
       case 'tab':
@@ -215,7 +212,11 @@ export class CdpTargetManager {
         return;
       case 'page':
       case 'iframe': {
-        const cdpTarget = this.#createCdpTarget(targetCdpClient,  parentSessionCdpClient, targetInfo);
+        const cdpTarget = this.#createCdpTarget(
+          targetCdpClient,
+          parentSessionCdpClient,
+          targetInfo
+        );
         const maybeContext = this.#browsingContextStorage.findContext(
           targetInfo.targetId
         );
@@ -264,7 +265,11 @@ export class CdpTargetManager {
           return;
         }
 
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo);
+        const cdpTarget = this.#createCdpTarget(
+          targetCdpClient,
+          parentSessionCdpClient,
+          targetInfo
+        );
         this.#handleWorkerTarget(
           cdpToBidiTargetTypes[targetInfo.type],
           cdpTarget,
@@ -277,7 +282,11 @@ export class CdpTargetManager {
       // behave like service workers (emits on both browser and frame targets),
       // we can remove this block and merge service workers with the above one.
       case 'shared_worker': {
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo);
+        const cdpTarget = this.#createCdpTarget(
+          targetCdpClient,
+          parentSessionCdpClient,
+          targetInfo
+        );
         this.#handleWorkerTarget(
           cdpToBidiTargetTypes[targetInfo.type],
           cdpTarget
