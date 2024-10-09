@@ -204,11 +204,15 @@ export class CdpTargetManager {
         // Tab targets are required only to handle page targets beneath them.
         this.#setEventListeners(targetCdpClient);
 
-        void targetCdpClient.sendCommand('Target.setAutoAttach', {
-          autoAttach: true,
-          waitForDebuggerOnStart: true,
-          flatten: true,
-        });
+        // Auto-attach to the page target and resume the tab target.
+        void (async () => {
+          await targetCdpClient.sendCommand('Target.setAutoAttach', {
+            autoAttach: true,
+            waitForDebuggerOnStart: true,
+            flatten: true,
+          });
+          await targetCdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
+        })();
         return;
       case 'page':
       case 'iframe': {
