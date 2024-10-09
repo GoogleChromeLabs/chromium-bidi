@@ -248,30 +248,28 @@ export class BrowsingContextProcessor {
         `Non top-level browsing context ${context.id} cannot be closed.`
       );
     }
-
+    // Parent session of a page target session can be a `browser` or a `tab` session.
+    const parentCdpClient = context.cdpTarget.parentCdpClient;
     try {
       const detachedFromTargetPromise = new Promise<void>((resolve) => {
         const onContextDestroyed = (
           event: Protocol.Target.DetachedFromTargetEvent
         ) => {
           if (event.targetId === params.context) {
-            this.#browserCdpClient.off(
+            parentCdpClient.off(
               'Target.detachedFromTarget',
               onContextDestroyed
             );
             resolve();
           }
         };
-        this.#browserCdpClient.on(
-          'Target.detachedFromTarget',
-          onContextDestroyed
-        );
+        parentCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
       });
 
       if (params.promptUnload) {
         await context.close();
       } else {
-        await this.#browserCdpClient.sendCommand('Target.closeTarget', {
+        await parentCdpClient.sendCommand('Target.closeTarget', {
           targetId: params.context,
         });
       }
