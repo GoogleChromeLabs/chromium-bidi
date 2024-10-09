@@ -266,10 +266,14 @@ export class BrowsingContextProcessor {
         parentCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
       });
 
+      // No need in waiting for the result of the command. The BiDi command will be
+      // finished once `detachedFromTargetPromise` is resolved. However, the command
+      // may have never been finished if the parent session is destroyed, e.g. if it was
+      // a tab target session and the last page was closed.
       if (params.promptUnload) {
-        await context.close();
+        void context.close();
       } else {
-        await parentCdpClient.sendCommand('Target.closeTarget', {
+        void parentCdpClient.sendCommand('Target.closeTarget', {
           targetId: params.context,
         });
       }

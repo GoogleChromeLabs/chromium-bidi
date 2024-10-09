@@ -173,6 +173,8 @@ export class CdpTarget {
         }),
         this.#initAndEvaluatePreloadScripts(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+        // Resume tab execution as well if it was paused by the debugger.
+        this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
         this.toggleDeviceAccessIfNeeded(),
       ]);
     } catch (error: any) {
