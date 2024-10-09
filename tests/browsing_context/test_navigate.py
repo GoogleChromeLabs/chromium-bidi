@@ -645,7 +645,11 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
 
 
 @pytest.mark.asyncio
-async def test_speculationrules_prerender(websocket, context_id, html):
+async def test_speculationrules_prerender(websocket, context_id, html,
+                                          test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support prerendering")
+
     await subscribe(websocket, ["browsingContext.contextCreated"])
 
     url_to_be_pre_rendered = html("<h2>test</h2>")
