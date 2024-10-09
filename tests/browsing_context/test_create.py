@@ -240,7 +240,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
         'method': 'browsingContext.contextCreated',
         'params': {
             'context': ANY_STR,
-            'url': 'about:blank',
+            'url': url_example,
             'clientWindow': ANY_STR,
             'children': None,
             'parent': None,
