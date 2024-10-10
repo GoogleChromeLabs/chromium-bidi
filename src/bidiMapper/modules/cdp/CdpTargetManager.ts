@@ -42,7 +42,6 @@ const cdpToBidiTargetTypes = {
 } as const;
 
 export class CdpTargetManager {
-  readonly #browserCdpClient: CdpClient;
   readonly #cdpConnection: CdpConnection;
   readonly #targetKeysToBeIgnoredByAutoAttach = new Set<string>();
   readonly #selfTargetId: string;
@@ -73,7 +72,6 @@ export class CdpTargetManager {
     logger?: LoggerFn
   ) {
     this.#cdpConnection = cdpConnection;
-    this.#browserCdpClient = browserCdpClient;
     this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
@@ -177,36 +175,53 @@ export class CdpTargetManager {
         .catch((error) => this.#logger?.(LogType.debugError, error));
     };
 
-    if (this.#selfTargetId !== targetInfo.targetId) {
-      // Service workers are special case because they attach to the
-      // browser target and the page target (so twice per worker) during
-      // the regular auto-attach and might hang if the CDP session on
-      // the browser level is not detached. The logic to detach the
-      // right session is handled in the switch below.
-      const targetKey =
-        targetInfo.type === 'service_worker'
-          ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
-          : targetInfo.targetId;
-
-      // Mapper generally only needs one session per target. If we
-      // receive additional auto-attached sessions, that is very likely
-      // coming from custom CDP sessions.
-      if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
-        // Return to leave the session untouched.
-        return;
-      }
-      this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
+    // Do not attach to the Mapper target.
+    if (this.#selfTargetId === targetInfo.targetId) {
+      void detach();
+      return;
     }
+    // Service workers are special case because they attach to the
+    // browser target and the page target (so twice per worker) during
+    // the regular auto-attach and might hang if the CDP session on
+    // the browser level is not detached. The logic to detach the
+    // right session is handled in the switch below.
+    const targetKey =
+      targetInfo.type === 'service_worker'
+        ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
+        : targetInfo.targetId;
+
+    // Mapper generally only needs one session per target. If we
+    // receive additional auto-attached sessions, that is very likely
+    // coming from custom CDP sessions.
+    if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
+      // Return to leave the session untouched.
+      return;
+    }
+    this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
 
     switch (targetInfo.type) {
+      case 'tab':
+        // Tab targets are required only to handle page targets beneath them.
+        this.#setEventListeners(targetCdpClient);
+
+        // Auto-attach to the page target and resume the tab target. No need in resuming
+        // tab target debugger, as it should preserve the page target debugger state, and
+        // will be resumed by the page target.
+        void (async () => {
+          await targetCdpClient.sendCommand('Target.setAutoAttach', {
+            autoAttach: true,
+            waitForDebuggerOnStart: true,
+            flatten: true,
+          });
+        })();
+        return;
       case 'page':
       case 'iframe': {
-        if (this.#selfTargetId === targetInfo.targetId) {
-          void detach();
-          return;
-        }
-
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+        const cdpTarget = this.#createCdpTarget(
+          targetCdpClient,
+          parentSessionCdpClient,
+          targetInfo
+        );
         const maybeContext = this.#browsingContextStorage.findContext(
           targetInfo.targetId
         );
@@ -255,7 +270,11 @@ export class CdpTargetManager {
           return;
         }
 
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+        const cdpTarget = this.#createCdpTarget(
+          targetCdpClient,
+          parentSessionCdpClient,
+          targetInfo
+        );
         this.#handleWorkerTarget(
           cdpToBidiTargetTypes[targetInfo.type],
           cdpTarget,
@@ -268,7 +287,11 @@ export class CdpTargetManager {
       // behave like service workers (emits on both browser and frame targets),
       // we can remove this block and merge service workers with the above one.
       case 'shared_worker': {
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+        const cdpTarget = this.#createCdpTarget(
+          targetCdpClient,
+          parentSessionCdpClient,
+          targetInfo
+        );
         this.#handleWorkerTarget(
           cdpToBidiTargetTypes[targetInfo.type],
           cdpTarget
@@ -284,6 +307,7 @@ export class CdpTargetManager {
 
   #createCdpTarget(
     targetCdpClient: CdpClient,
+    parentCdpClient: CdpClient,
     targetInfo: Protocol.Target.TargetInfo
   ) {
     this.#setEventListeners(targetCdpClient);
@@ -291,7 +315,7 @@ export class CdpTargetManager {
     const target = CdpTarget.create(
       targetInfo.targetId,
       targetCdpClient,
-      this.#browserCdpClient,
+      parentCdpClient,
       this.#realmStorage,
       this.#eventManager,
       this.#preloadScriptStorage,

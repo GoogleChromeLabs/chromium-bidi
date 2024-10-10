@@ -33,10 +33,11 @@ import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
+// TODO: rename to CdpPageTarget.
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
-  readonly #browserCdpClient: CdpClient;
+  readonly #parentCdpClient: CdpClient;
   readonly #realmStorage: RealmStorage;
   readonly #eventManager: EventManager;
 
@@ -60,7 +61,7 @@ export class CdpTarget {
   static create(
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
-    browserCdpClient: CdpClient,
+    parentCdpClient: CdpClient,
     realmStorage: RealmStorage,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
@@ -72,7 +73,7 @@ export class CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
       cdpClient,
-      browserCdpClient,
+      parentCdpClient,
       eventManager,
       realmStorage,
       preloadScriptStorage,
@@ -96,7 +97,7 @@ export class CdpTarget {
   constructor(
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
-    browserCdpClient: CdpClient,
+    parentCdpClient: CdpClient,
     eventManager: EventManager,
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
@@ -107,7 +108,7 @@ export class CdpTarget {
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
-    this.#browserCdpClient = browserCdpClient;
+    this.#parentCdpClient = parentCdpClient;
     this.#eventManager = eventManager;
     this.#realmStorage = realmStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
@@ -130,8 +131,8 @@ export class CdpTarget {
     return this.#cdpClient;
   }
 
-  get browserCdpClient(): CdpClient {
-    return this.#browserCdpClient;
+  get parentCdpClient(): CdpClient {
+    return this.#parentCdpClient;
   }
 
   /** Needed for CDP escape path. */
@@ -172,6 +173,8 @@ export class CdpTarget {
         }),
         this.#initAndEvaluatePreloadScripts(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+        // Resume tab execution as well if it was paused by the debugger.
+        this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
         this.toggleDeviceAccessIfNeeded(),
       ]);
     } catch (error: any) {
