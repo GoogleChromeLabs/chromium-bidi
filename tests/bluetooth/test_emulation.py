@@ -46,19 +46,21 @@ async def setup_device(websocket, context_id):
 
     # Create a fake BT device.
     fake_device_address = '09:09:09:09:09:09'
-    await execute_command(
+    response = await execute_command(
         websocket, {
             'method': 'bluetooth.simulatePreconnectedPeripheral',
             'params': {
                 'context': context_id,
                 'address': fake_device_address,
                 'name': 'SomeDevice',
-                'manufacturerData': [],
+                'manufacturerData': [{
+                    'key': 17,
+                    'data': 'AP8BAX8=',
+                }],
                 'knownServiceUuids':
                     ['12345678-1234-5678-9abc-def123456789', ],
             }
         })
-
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
