@@ -182,12 +182,10 @@ export class CdpTarget {
           .sendCommand('Page.setPrerenderingAllowed', {
             isAllowed: !this.#prerenderingDisabled,
           })
-          .catch((error: any) => {
+          .catch(() => {
             // Ignore CDP errors, as it is not supported by iframe targets or prerendered
-            // pages.
-            if (error?.code !== -32000) {
-              throw error;
-            }
+            // pages. Generic catch, as the error can vary between CdpClient
+            // implementations: Tab vs Puppeteer.
           }),
         this.toggleNetworkIfNeeded(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
