@@ -231,6 +231,13 @@ export class CdpTargetManager {
           // OOPiF.
           maybeContext.updateCdpTarget(cdpTarget);
         } else {
+          const maybeParentId =
+            targetInfo.type === 'iframe'
+              ? this.#findFrameParentId(
+                  targetInfo,
+                  parentSessionCdpClient.sessionId
+                )
+              : undefined;
           const userContext =
             targetInfo.browserContextId &&
             targetInfo.browserContextId !== this.#defaultUserContextId
@@ -239,7 +246,7 @@ export class CdpTargetManager {
           // New context.
           BrowsingContextImpl.create(
             targetInfo.targetId,
-            null,
+            maybeParentId ?? null,
             userContext,
             cdpTarget,
             this.#eventManager,
@@ -305,6 +312,22 @@ export class CdpTargetManager {
     // DevTools or some other not supported by BiDi target. Just release
     // debugger and ignore them.
     void detach();
+  }
+
+  /** Try to find the parent browsing context ID for the given attached target. */
+  #findFrameParentId(
+    targetInfo: Protocol.Target.TargetInfo,
+    parentSessionId: Protocol.Target.SessionID | undefined
+  ): string | undefined {
+    const parentId = targetInfo.openerFrameId ?? targetInfo.openerId;
+    if (parentId !== undefined) {
+      return parentId;
+    }
+    if (parentSessionId !== undefined) {
+      return this.#browsingContextStorage.findContextBySession(parentSessionId)
+        ?.id;
+    }
+    return undefined;
   }
 
   #createCdpTarget(
