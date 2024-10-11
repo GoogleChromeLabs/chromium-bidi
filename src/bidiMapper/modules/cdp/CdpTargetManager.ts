@@ -206,9 +206,9 @@ export class CdpTargetManager {
         // Tab targets are required only to handle page targets beneath them.
         this.#setEventListeners(targetCdpClient);
 
-        // Auto-attach to the page target and resume the tab target. No need in resuming
-        // tab target debugger, as it should preserve the page target debugger state, and
-        // will be resumed by the page target.
+        // Auto-attach to the page target. No need in resuming tab target debugger, as it
+        // should preserve the page target debugger state, and will be resumed by the page
+        // target.
         void (async () => {
           await targetCdpClient.sendCommand('Target.setAutoAttach', {
             autoAttach: true,
