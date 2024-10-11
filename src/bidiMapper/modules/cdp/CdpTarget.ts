@@ -183,8 +183,8 @@ export class CdpTarget {
             isAllowed: !this.#prerenderingDisabled,
           })
           .catch(() => {
-            // Ignore CDP errors, as it is not supported by iframe targets or prerendered
-            // pages. Generic catch, as the error can vary between CdpClient
+            // Ignore CDP errors, as the command is not supported by iframe targets or
+            // prerendered pages. Generic catch, as the error can vary between CdpClient
             // implementations: Tab vs Puppeteer.
           }),
         this.toggleNetworkIfNeeded(),
