@@ -41,6 +41,8 @@ const cdpToBidiTargetTypes = {
   worker: 'dedicated-worker',
 } as const;
 
+const clientToInfo = new WeakMap<CdpClient, Protocol.Target.TargetInfo>();
+
 export class CdpTargetManager {
   readonly #browserCdpClient: CdpClient;
   readonly #cdpConnection: CdpConnection;
@@ -206,6 +208,8 @@ export class CdpTargetManager {
         // Tab targets are required only to handle page targets beneath them.
         this.#setEventListeners(targetCdpClient);
 
+        clientToInfo.set(targetCdpClient, targetInfo);
+
         // Auto-attach to the page target and resume the tab target. No need in resuming
         // tab target debugger, as it should preserve the page target debugger state, and
         // will be resumed by the page target.
@@ -236,6 +240,16 @@ export class CdpTargetManager {
             targetInfo.browserContextId !== this.#defaultUserContextId
               ? targetInfo.browserContextId
               : 'default';
+          
+          let url = 'about:blank';
+          if (targetInfo.url) {
+            url = targetInfo.url;
+          }
+          const parent = clientToInfo.get(parentSessionCdpClient);
+          if (parent?.url) {
+            url = parent.url;
+          }
+
           // New context.
           BrowsingContextImpl.create(
             targetInfo.targetId,
@@ -253,7 +267,7 @@ export class CdpTargetManager {
             // "7.3.2.1 Creating browsing contexts".
             // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
             // TODO: check who to deal with non-null creator and its `creatorOrigin`.
-            targetInfo.url === '' ? 'about:blank' : targetInfo.url,
+            url,
             targetInfo.openerFrameId ?? targetInfo.openerId,
             this.#unhandledPromptBehavior,
             this.#logger
