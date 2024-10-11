@@ -33,10 +33,10 @@ import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
-// TODO: rename to CdpPageTarget.
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
+  readonly #browserCdpClient: CdpClient;
   readonly #parentCdpClient: CdpClient;
   readonly #realmStorage: RealmStorage;
   readonly #eventManager: EventManager;
@@ -61,6 +61,7 @@ export class CdpTarget {
   static create(
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
+    browserCdpClient: CdpClient,
     parentCdpClient: CdpClient,
     realmStorage: RealmStorage,
     eventManager: EventManager,
@@ -73,6 +74,7 @@ export class CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
       cdpClient,
+      browserCdpClient,
       parentCdpClient,
       eventManager,
       realmStorage,
@@ -97,6 +99,7 @@ export class CdpTarget {
   constructor(
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
+    browserCdpClient: CdpClient,
     parentCdpClient: CdpClient,
     eventManager: EventManager,
     realmStorage: RealmStorage,
@@ -108,6 +111,7 @@ export class CdpTarget {
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
+    this.#browserCdpClient = browserCdpClient;
     this.#parentCdpClient = parentCdpClient;
     this.#eventManager = eventManager;
     this.#realmStorage = realmStorage;
@@ -133,6 +137,10 @@ export class CdpTarget {
 
   get parentCdpClient(): CdpClient {
     return this.#parentCdpClient;
+  }
+
+  get browserCdpClient(): CdpClient {
+    return this.#browserCdpClient;
   }
 
   /** Needed for CDP escape path. */

@@ -42,6 +42,7 @@ const cdpToBidiTargetTypes = {
 } as const;
 
 export class CdpTargetManager {
+  readonly #browserCdpClient: CdpClient;
   readonly #cdpConnection: CdpConnection;
   readonly #targetKeysToBeIgnoredByAutoAttach = new Set<string>();
   readonly #selfTargetId: string;
@@ -72,6 +73,7 @@ export class CdpTargetManager {
     logger?: LoggerFn
   ) {
     this.#cdpConnection = cdpConnection;
+    this.#browserCdpClient = browserCdpClient;
     this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
@@ -315,6 +317,7 @@ export class CdpTargetManager {
     const target = CdpTarget.create(
       targetInfo.targetId,
       targetCdpClient,
+      this.#browserCdpClient,
       parentCdpClient,
       this.#realmStorage,
       this.#eventManager,
