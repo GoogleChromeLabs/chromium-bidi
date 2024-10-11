@@ -57,6 +57,7 @@ export class CdpTargetManager {
   readonly #defaultUserContextId: Browser.UserContext;
   readonly #logger?: LoggerFn;
   readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
+  readonly #prerenderingDisabled: boolean;
 
   constructor(
     cdpConnection: CdpConnection,
@@ -69,6 +70,7 @@ export class CdpTargetManager {
     bluetoothProcessor: BluetoothProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
+    prerenderingDisabled: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ) {
@@ -83,6 +85,7 @@ export class CdpTargetManager {
     this.#bluetoothProcessor = bluetoothProcessor;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
+    this.#prerenderingDisabled = prerenderingDisabled;
     this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
 
@@ -351,6 +354,7 @@ export class CdpTargetManager {
       this.#preloadScriptStorage,
       this.#browsingContextStorage,
       this.#networkStorage,
+      this.#prerenderingDisabled,
       this.#unhandledPromptBehavior,
       this.#logger
     );

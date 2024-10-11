@@ -43,6 +43,7 @@ export class CdpTarget {
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #prerenderingDisabled: boolean;
   readonly #networkStorage: NetworkStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
@@ -68,6 +69,7 @@ export class CdpTarget {
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
+    prerenderingDisabled: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ): CdpTarget {
@@ -81,6 +83,7 @@ export class CdpTarget {
       preloadScriptStorage,
       browsingContextStorage,
       networkStorage,
+      prerenderingDisabled,
       unhandledPromptBehavior,
       logger
     );
@@ -106,6 +109,7 @@ export class CdpTarget {
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
+    prerenderingDisabled: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ) {
@@ -118,6 +122,7 @@ export class CdpTarget {
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#prerenderingDisabled = prerenderingDisabled;
     this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
   }
@@ -172,6 +177,15 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Runtime.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
+        }),
+        this.#cdpClient.sendCommand('Page.setPrerenderingAllowed', {
+          isAllowed: !this.#prerenderingDisabled,
+        }).catch((error: any) => {
+          // Ignore CDP errors, as it is not supported by iframe targets or prerendered
+          // pages.
+          if (error?.code !== -32000) {
+            throw error;
+          }
         }),
         this.toggleNetworkIfNeeded(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {

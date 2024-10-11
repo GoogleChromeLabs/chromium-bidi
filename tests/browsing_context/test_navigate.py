@@ -645,6 +645,10 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{}, {
+    'goog:prerenderingDisabled': False
+}],
+                         indirect=True)
 async def test_speculationrules_prerender(websocket, context_id, html,
                                           test_headless_mode):
     if test_headless_mode == "old":
@@ -672,13 +676,10 @@ async def test_speculationrules_prerender(websocket, context_id, html,
             'method': "browsingContext.navigate",
             'params': {
                 'url': url_initiating_prerendering,
-                'wait': 'none',
+                'wait': 'complete',
                 'context': context_id
             }
         })
-
-    print(f"url_initiating_prerendering: {url_initiating_prerendering}")
-    print(f"url_to_be_pre_rendered: {url_to_be_pre_rendered}")
 
     response = await read_JSON_message(websocket)
     assert response == AnyExtending({'id': command_id, 'type': 'success'})
@@ -689,3 +690,52 @@ async def test_speculationrules_prerender(websocket, context_id, html,
         'method': 'browsingContext.contextCreated',
         'type': 'event'
     })
+
+    response = await execute_command(websocket, {
+        'method': "browsingContext.getTree",
+        'params': {}
+    })
+    assert len(response["contexts"]) == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'goog:prerenderingDisabled': True
+}],
+                         indirect=True)
+async def test_speculationrules_disable_prerender(websocket, context_id, html):
+    await subscribe(websocket, ["browsingContext.contextCreated"])
+
+    url_to_be_pre_rendered = html("<h2>test</h2>")
+    url_initiating_prerendering = html(f"""
+        <script type="speculationrules">
+        {{
+            "prerender": [
+                {{
+                    "source": "list",
+                    "urls": ["{url_to_be_pre_rendered}"],
+                    "eagerness": "immediate"
+                }}
+            ]
+        }}
+        </script>
+        """)
+
+    command_id = await send_JSON_command(
+        websocket, {
+            'method': "browsingContext.navigate",
+            'params': {
+                'url': url_initiating_prerendering,
+                'wait': 'complete',
+                'context': context_id
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({'id': command_id, 'type': 'success'})
+
+    response = await execute_command(websocket, {
+        'method': "browsingContext.getTree",
+        'params': {}
+    })
+    assert len(response["contexts"]) == 1
