@@ -178,15 +178,17 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
         }),
-        this.#cdpClient.sendCommand('Page.setPrerenderingAllowed', {
-          isAllowed: !this.#prerenderingDisabled,
-        }).catch((error: any) => {
-          // Ignore CDP errors, as it is not supported by iframe targets or prerendered
-          // pages.
-          if (error?.code !== -32000) {
-            throw error;
-          }
-        }),
+        this.#cdpClient
+          .sendCommand('Page.setPrerenderingAllowed', {
+            isAllowed: !this.#prerenderingDisabled,
+          })
+          .catch((error: any) => {
+            // Ignore CDP errors, as it is not supported by iframe targets or prerendered
+            // pages.
+            if (error?.code !== -32000) {
+              throw error;
+            }
+          }),
         this.toggleNetworkIfNeeded(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,

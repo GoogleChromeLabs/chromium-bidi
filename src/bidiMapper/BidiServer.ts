@@ -45,7 +45,7 @@ type BidiServerEvent = {
 export type MapperOptions = {
   acceptInsecureCerts?: boolean;
   unhandledPromptBehavior?: Session.UserPromptHandler;
-  "goog:prerenderingDisabled"?: boolean;
+  'goog:prerenderingDisabled'?: boolean;
 };
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
