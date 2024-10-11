@@ -183,7 +183,7 @@ export class BrowsingContextImpl {
                 // between the page target is attached and unblocked, as the page is not
                 // fully paused in MPArch session (https://crbug.com/372842894).
                 // TODO: remove once https://crbug.com/372842894 is addressed.
-                url
+                url,
               },
             },
           };
