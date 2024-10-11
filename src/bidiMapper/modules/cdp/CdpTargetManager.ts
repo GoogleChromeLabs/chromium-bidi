@@ -231,13 +231,12 @@ export class CdpTargetManager {
           // OOPiF.
           maybeContext.updateCdpTarget(cdpTarget);
         } else {
-          const maybeParentId =
-            targetInfo.type === 'iframe'
-              ? this.#findFrameParentId(
-                  targetInfo,
-                  parentSessionCdpClient.sessionId
-                )
-              : undefined;
+          // If attaching to existing browser instance, there could be OOPiF targets. This
+          // case is handled by the `findFrameParentId` method.
+          const parentId = this.#findFrameParentId(
+            targetInfo,
+            parentSessionCdpClient.sessionId
+          );
           const userContext =
             targetInfo.browserContextId &&
             targetInfo.browserContextId !== this.#defaultUserContextId
@@ -246,7 +245,7 @@ export class CdpTargetManager {
           // New context.
           BrowsingContextImpl.create(
             targetInfo.targetId,
-            maybeParentId ?? null,
+            parentId,
             userContext,
             cdpTarget,
             this.#eventManager,
@@ -318,16 +317,21 @@ export class CdpTargetManager {
   #findFrameParentId(
     targetInfo: Protocol.Target.TargetInfo,
     parentSessionId: Protocol.Target.SessionID | undefined
-  ): string | undefined {
+  ): string | null {
+    if (targetInfo.type !== 'iframe') {
+      return null;
+    }
     const parentId = targetInfo.openerFrameId ?? targetInfo.openerId;
     if (parentId !== undefined) {
       return parentId;
     }
     if (parentSessionId !== undefined) {
-      return this.#browsingContextStorage.findContextBySession(parentSessionId)
-        ?.id;
+      return (
+        this.#browsingContextStorage.findContextBySession(parentSessionId)
+          ?.id ?? null
+      );
     }
-    return undefined;
+    return null;
   }
 
   #createCdpTarget(
