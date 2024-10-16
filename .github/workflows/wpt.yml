@@ -260,6 +260,8 @@ jobs:
         run: |
           rm -rf wpt-metadata/chromedriver wpt-metadata/mapper
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
+      - name: git diff
+        run: git diff
       - name: Create git patch
         # Git patch to update the expectations. Helpful for manual update when
         # "Create Pull Request" step fails.
