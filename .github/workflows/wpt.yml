@@ -260,6 +260,18 @@ jobs:
         run: |
           rm -rf wpt-metadata/chromedriver wpt-metadata/mapper
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
+      - name: Create git patch
+        # Git patch to update the expectations. Helpful for manual update when
+        # "Create Pull Request" step fails.
+        run: |
+          mkdir -p ./git.patch
+          git diff > ./update-wpt-metadata.patch
+      - name: Upload git patch
+        if: success()
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: update-wpt-metadata.patch
+          path: ./update-wpt-metadata.patch
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f # v7.0.5
         with:
