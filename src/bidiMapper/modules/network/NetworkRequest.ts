@@ -733,7 +733,7 @@ export class NetworkRequest {
   }
 
   dispose() {
-    this.waitNextPhase.reject(new Error());
+    this.waitNextPhase.reject(new Error('waitNextPhase disposed'));
   }
 
   async #continueWithAuth(

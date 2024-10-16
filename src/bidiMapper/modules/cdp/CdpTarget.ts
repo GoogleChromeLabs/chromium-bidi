@@ -302,6 +302,12 @@ export class CdpTarget {
         blockedRequest.map((request) => request.waitNextPhase)
       )
         .then(async () => {
+          const blockedRequest = this.#networkStorage
+            .getRequestsByTarget(this)
+            .filter((request) => request.interceptPhase);
+          if (blockedRequest.length) {
+            return await this.toggleFetchIfNeeded();
+          }
           return await this.#cdpClient.sendCommand('Fetch.disable');
         })
         .catch((error) => {
