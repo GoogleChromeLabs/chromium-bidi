@@ -299,7 +299,7 @@ export class CdpTarget {
         .getRequestsByTarget(this)
         .filter((request) => request.interceptPhase);
       void Promise.allSettled(
-        blockedRequest.map((request) => request.waitNextPhase)
+        blockedRequest.map((request) => request.waitNextPhase),
       )
         .then(async () => {
           const blockedRequest = this.#networkStorage
@@ -426,7 +426,7 @@ export class CdpTarget {
     this.#networkDomainEnabled = enable;
     try {
       await this.#cdpClient.sendCommand(
-        enable ? 'Network.enable' : 'Network.disable'
+        enable ? 'Network.enable' : 'Network.disable',
       );
     } catch {
       this.#networkDomainEnabled = !enable;
@@ -496,7 +496,7 @@ export class CdpTarget {
       LogType.debugInfo,
       'Toggle Network',
       `Fetch (${fetchEnable}) ${fetchChanged}`,
-      `Network (${networkEnable}) ${networkChanged}`
+      `Network (${networkEnable}) ${networkChanged}`,
     );
 
     if (networkEnable && networkChanged) {
