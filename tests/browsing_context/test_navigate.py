@@ -19,6 +19,25 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           read_JSON_message, send_JSON_command, subscribe)
 
 
+@pytest.mark.xfail(
+    reason="https://github.com/GoogleChromeLabs/chromium-bidi/issues/2709")
+@pytest.mark.asyncio
+async def test_browsingContext_navigateWaitInteractive_redirect(
+        websocket, context_id, html, url_example):
+
+    url = html(f"<script>window.location='{url_example}';</script>")
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "interactive",
+                "context": context_id
+            }
+        })
+
+
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitNone_navigated(
         websocket, context_id, html):
