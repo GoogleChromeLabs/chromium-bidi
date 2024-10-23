@@ -90,6 +90,19 @@ describe('NetworkUtils', () => {
     });
   });
 
+  describe('matchUrlPattern', () => {
+    it('works', () => {
+      networkUtils.matchUrlPattern(
+        {
+          type: 'string',
+          pattern:
+            'https://web-platform.test:8443/webdriver/tests/support/inline.py?doc=%3C%21doctype+html%3E%0A%3Cmeta+charset%3DUTF-8%3E%0A%3Cdiv+id%3D%27from-initial%27%3Einitial%3C%2Fdiv%3E&mime=text%2Fhtml&charset=UTF-8',
+        },
+        'https://web-platform.test:8443/webdriver/tests/support/inline.py?doc=%3C%21doctype+html%3E%0A%3Cmeta+charset%3DUTF-8%3E%0A%3Cdiv+id%3D%27from-initial%27%3Einitial%3C%2Fdiv%3E&mime=text%2Fhtml&charset=UTF-8'
+      );
+    });
+  });
+
   describe('should convert Bidi network headers to CDP network headers', () => {
     it('undefined', () => {
       const cdpNetworkHeaders =
