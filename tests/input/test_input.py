@@ -608,7 +608,6 @@ async def test_click_iframe_context(websocket, context_id, html, same_origin,
 
     await wait_for_event(websocket, "log.entryAdded")
 
-    # [_, mousedown_console_event] = await read_sorted_messages(2)
     [mousedown_console_event] = await read_sorted_messages(1)
     assert mousedown_console_event == AnyExtending({
         "method": "log.entryAdded",
