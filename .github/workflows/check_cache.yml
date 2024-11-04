@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   cache-browser-binaries:
-    uses: ./.github/common/cache-browser-binaries.yml
+    uses: ./.github/common/cache-browser-binaries.yml@f1009ed9
   e2e-required:
     name: '[Required] e2e sink'
     needs: [e2e]
