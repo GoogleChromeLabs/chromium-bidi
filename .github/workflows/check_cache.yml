@@ -70,45 +70,22 @@ jobs:
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         with:
           path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}
+      - name: ls cache
+        run: ls ~/.cache/chromium-bidi
       - name: Install pinned browser
         id: browser
         run: node tools/install-browser.mjs --github
-      - name: Set up Python
-        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
-        with:
-          python-version: '3.11'
-          cache: pipenv
-      - name: Install pipenv
-        run: pip install pipenv
-      - name: Install python dependencies
-        run: pipenv install
-      - name: Run E2E tests
-        if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
-        timeout-minutes: 20
-        run: >
-          xvfb-run --auto-servernum
-          npm run e2e:${{ matrix.head }}
-          --
-          --this-chunk=${{ matrix.this_chunk }}
-          --total-chunks=${{ matrix.total_chunks }}
-        env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          VERBOSE: ${{ github.event.inputs.verbose }}
-      - name: Run E2E tests
-        if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
-        timeout-minutes: 20
-        run: >
-          npm run e2e:${{ matrix.head }}
-          --
-          --this-chunk=${{ matrix.this_chunk }}
-          --total-chunks=${{ matrix.total_chunks }}
-        env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          VERBOSE: ${{ github.event.inputs.verbose }}
-      - name: Upload artifacts
-        if: always()
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        with:
-          name: ${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-artifacts
-          path: logs
+      - name: Install pinned chrome
+        id: chrome
+        run: node tools/install-browser.mjs ~/.cache/chromium-bidi --github
+      - name: Install pinned chrome headless shell
+        id: headless-shell
+        run: node tools/install-browser.mjs ~/.cache/chromium-bidi --chrome-headless-shell --github
+      - name: ls cache
+        run: ls ~/.cache/chromium-bidi
+      - name: paths
+        run: |
+          echo "browser: ${{ steps.browser.outputs.executablePath }}"
+          echo "chrome: ${{ steps.chrome.outputs.executablePath }}"
+          echo "headless-shell: ${{ steps.headless-shell.outputs.executablePath }}"
