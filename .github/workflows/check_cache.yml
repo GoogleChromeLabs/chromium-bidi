@@ -29,6 +29,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  prepare-cache:
+    uses: ./.github/workflows/install.yml
   e2e-required:
     name: '[Required] e2e sink'
     needs: [e2e]
@@ -39,7 +41,7 @@ jobs:
         run: 'exit 1'
       - run: 'exit 0'
   e2e:
-    uses: .github/workflows/install.yml
+    needs: [prepare-cache]
     name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.os }}-${{ matrix.head }}
     strategy:
       fail-fast: false
