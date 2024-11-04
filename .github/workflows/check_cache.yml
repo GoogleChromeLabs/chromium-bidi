@@ -75,7 +75,7 @@ jobs:
           path: ~/.cache/chromium-bidi
           key: ${{ runner.os }}-prepared-cache-${{ hashFiles('.browser') }}
       - name: ls cache
-        run: find ~ -maxdepth 1 -type d -name ".cache/chromium-bidi" -exec ls {} \;
+        run: find ~/ -maxdepth 1 -type d -name ".cache" -exec ls {}/chromium-bidi \;
       - name: Install pinned browser
         id: browser
         run: node tools/install-browser.mjs --github
