@@ -2,7 +2,6 @@ on: workflow_call
 jobs:
   cache-browser-binaries:
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-13]
     runs-on: ${{ matrix.os }}
@@ -21,15 +20,15 @@ jobs:
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         with:
           path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-prepared-cache-${{ hashFiles('.browser') }}
+          key: ${{ runner.os }}-prepared-cache-2-${{ hashFiles('.browser') }}
       - name: ls cache
         run: find ~/ -maxdepth 1 -type d -name ".cache" -exec ls {}/chromium-bidi \;
       - name: Install pinned chrome
-        run: node tools/install-browser.mjs
+        run: DEBUG=* VERBOSE=true node tools/install-browser.mjs
       - name: Install pinned chrome headless shell
-        run: node tools/install-browser.mjs --chrome-headless-shell
+        run: DEBUG=* VERBOSE=true node tools/install-browser.mjs --chrome-headless-shell
       - name: Install pinned chromedriver
-        run: node tools/install-browser.mjs --chromedriver
+        run: DEBUG=* VERBOSE=true node tools/install-browser.mjs --chromedriver
       - name: ls cache
         run: ls ~/.cache/chromium-bidi
       - name: paths
