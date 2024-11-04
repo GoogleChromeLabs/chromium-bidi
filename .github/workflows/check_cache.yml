@@ -73,7 +73,7 @@ jobs:
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         with:
           path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}
+          key: ${{ runner.os }}-prepared-cache-${{ hashFiles('.browser') }}
       - name: ls cache
         run: find ~ -maxdepth 1 -type d -name ".cache/chromium-bidi" -exec ls {} \;
       - name: Install pinned browser
