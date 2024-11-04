@@ -69,7 +69,7 @@ jobs:
       - name: ls cache
         run: find ~/ -maxdepth 1 -type d -name ".cache" -exec ls {}/chromium-bidi \;
       - name: Setup cache for browser binaries
-        uses: ./.github/workflows/cache-browser-binaries.yml
+        uses: ./cache-browser-binaries.yml
       - name: ls cache
         run: find ~/ -maxdepth 1 -type d -name ".cache" -exec ls {}/chromium-bidi \;
       - name: Install pinned browser
