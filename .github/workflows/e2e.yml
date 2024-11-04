@@ -79,7 +79,6 @@ jobs:
       - name: Install headless shell
         run: node tools/install-browser.mjs --chrome-headless-shell
       - name: Get chrome path
-        if: matrix.head != 'old-headless'
         id: browser
         run: |
           if [[ ${{ matrix.head }} != 'old-headless' ]]; then
