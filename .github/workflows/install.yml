@@ -1,0 +1,41 @@
+on: workflow_call
+jobs:
+  cache_browser:
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(#876): Add Windows CI.
+        # TODO(#2154): Use macos-latest once Python setup supports mac arm64.
+        os: [ubuntu-latest, macos-13]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - uses: google/wireit@83d7f8bed70b7bcfc40f4b9f54f4b7485753991b # setup-github-actions-caching/v2.0.1
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Setup cache for browser binaries
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+        with:
+          path: ~/.cache/chromium-bidi
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}
+      - name: ls cache
+        run: find ~ -maxdepth 1 -type d -name ".cache/chromium-bidi" -exec ls {} \;
+      - name: Install pinned chrome
+        run: node tools/install-browser.mjs
+      - name: Install pinned chrome headless shell
+        run: node tools/install-browser.mjs --chrome-headless-shell
+      - name: Install pinned chromedriver
+        run: node tools/install-browser.mjs --chromedriver
+      - name: ls cache
+        run: ls ~/.cache/chromium-bidi
+      - name: paths
+        run: |
+          echo "browser: ${{ steps.browser.outputs.executablePath }}"
+          echo "chrome: ${{ steps.chrome.outputs.executablePath }}"
+          echo "headless-shell: ${{ steps.headless-shell.outputs.executablePath }}"

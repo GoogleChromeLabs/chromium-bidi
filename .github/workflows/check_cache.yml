@@ -39,6 +39,7 @@ jobs:
         run: 'exit 1'
       - run: 'exit 0'
   e2e:
+    uses: .github/workflows/install.yml
     name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.os }}-${{ matrix.head }}
     strategy:
       fail-fast: false
