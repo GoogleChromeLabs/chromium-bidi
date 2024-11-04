@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   cache-browser-binaries:
-    uses: ./.github/common/cache-browser-binaries/action.yml
+    uses: ./.github/common/cache-browser-binaries.yml
   e2e-required:
     name: '[Required] e2e sink'
     needs: [e2e]
@@ -74,8 +74,8 @@ jobs:
       - name: Setup cache for browser binaries
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         with:
-          path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-prepared-cache-${{ hashFiles('.browser') }}
+          path: ~/.cache/chromium-bidi/chrome
+          key: ${{ runner.os }}-chrome-${{ hashFiles('.browser') }}
       - name: ls cache
         run: find ~/ -maxdepth 1 -type d -name ".cache" -exec ls {}/chromium-bidi \;
       - name: Install pinned browser
