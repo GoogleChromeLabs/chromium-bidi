@@ -81,11 +81,12 @@ jobs:
       - name: Get chrome path
         if: matrix.head != 'old-headless'
         id: browser
-        run: node tools/install-browser.mjs --github
-      - name: Get headless shell path
-        if: matrix.head == 'old-headless'
-        id: browser
-        run: node tools/install-browser.mjs --chrome-headless-shell --github
+        run: |
+          if [[ ${{ matrix.head }} != 'old-headless' ]]; then
+            node tools/install-browser.mjs --github
+          else
+            node tools/install-browser.mjs --chrome-headless-shell --github
+          fi
       - name: Set up Python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:

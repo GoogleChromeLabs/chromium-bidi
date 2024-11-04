@@ -38,7 +38,7 @@ jobs:
         with:
           path: ~/.cache/chromium-bidi
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
-    # Install chrome, chromedriver and headless shell is required to keep them cached.
+      # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install chrome
         run: node tools/install-browser.mjs
       - name: Install chromedriver
