@@ -110,6 +110,8 @@ jobs:
       - name: Install headless shell
         run: node tools/install-browser.mjs --chrome-headless-shell
       - name: Get chrome path
+        id: browser
+        run: node tools/install-browser.mjs --github
       - name: Run WPT tests
         timeout-minutes: 60
         run: >
