@@ -18,8 +18,8 @@ runs:
       if: inputs.working-directory != 'false'
       working-directory: inputs.working-directory
       shell: bash
-      run: node tools/install-browser.mjs -all
+      run: node tools/install-browser.mjs --all
     - name: Install all chrome binaries if needed
       if: inputs.working-directory == 'false'
       shell: bash
-      run: node tools/install-browser.mjs -all
+      run: node tools/install-browser.mjs --all

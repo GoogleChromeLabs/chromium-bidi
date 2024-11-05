@@ -52,14 +52,14 @@ import {setOutput, setFailed} from '@actions/core';
 import {install, computeExecutablePath} from '@puppeteer/browsers';
 
 const GITHUB_SHELL_ARG = '--github';
+const ALL_ARG = '--all';
 const CHROME_ARG = '--chrome';
 const CHROME_DRIVER_ARG = '--chromedriver';
-const ALL_ARG = '--all';
 const CHROME_HEADLESS_SHELL_ARG = '--chrome-headless-shell';
 const PRODUCT_ARGUMENTS = [
+  ALL_ARG,
   CHROME_ARG,
   CHROME_DRIVER_ARG,
-  ALL_ARG,
   CHROME_HEADLESS_SHELL_ARG,
 ];
 
