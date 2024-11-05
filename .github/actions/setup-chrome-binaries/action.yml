@@ -12,7 +12,7 @@ runs:
       uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
       with:
         path: ~/.cache/chromium-bidi
-        key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}
+        key: ${{ runner.os }}-browser-binaries-${{ hashFiles('.browser') }}
     - name: Install all chrome binaries if needed
       # Run in a custom working directory if required.
       if: inputs.working-directory != 'false'
