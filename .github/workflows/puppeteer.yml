@@ -69,7 +69,7 @@ jobs:
           rm packages/puppeteer-core/node_modules/chromium-bidi -r
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
-        uses: ./.github/actions/setup-chrome-binaries
+        uses: ./bidi/.github/actions/setup-chrome-binaries
         with:
           working-directory: bidi
       - name: Install pinned browser
