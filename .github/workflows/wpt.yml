@@ -97,21 +97,12 @@ jobs:
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
-      - name: Setup cache for browser binaries
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        with:
-          path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
       # Install chrome, chromedriver and headless shell is required to keep them cached.
-      - name: Install chrome
-        run: node tools/install-browser.mjs
-      - name: Install chromedriver
-        run: node tools/install-browser.mjs --chromedriver
-      - name: Install headless shell
-        run: node tools/install-browser.mjs --chrome-headless-shell
+      - name: Install all chrome binaries if needed
+        uses: ./.github/actions/setup-chrome-binaries
       - name: Get chrome path
         id: browser
-        run: node tools/install-browser.mjs --github
+        run: node tools/install-browser.mjs --chrome --github
       - name: Run WPT tests
         timeout-minutes: 60
         run: >
