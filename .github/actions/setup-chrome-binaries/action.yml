@@ -13,10 +13,15 @@ runs:
       with:
         path: ~/.cache/chromium-bidi
         key: ${{ runner.os }}-browser-binaries-${{ hashFiles('.browser') }}
+
+    - name: Install all chrome binaries if needed
+      shell: bash
+      run: echo ${{ inputs.working-directory }}
+
     - name: Install all chrome binaries if needed
       # Run in a custom working directory if required.
       if: inputs.working-directory != 'false'
-      working-directory: inputs.working-directory
+      working-directory: ${{inputs.working-directory}}
       shell: bash
       run: node tools/install-browser.mjs --all
     - name: Install all chrome binaries if needed
