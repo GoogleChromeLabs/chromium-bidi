@@ -56,11 +56,12 @@ const ALL_ARG = '--all';
 const CHROME_ARG = '--chrome';
 const CHROME_DRIVER_ARG = '--chromedriver';
 const CHROME_HEADLESS_SHELL_ARG = '--chrome-headless-shell';
-const PRODUCT_ARGUMENTS = [
+const ARGUMENTS = [
   ALL_ARG,
   CHROME_ARG,
   CHROME_DRIVER_ARG,
   CHROME_HEADLESS_SHELL_ARG,
+  GITHUB_SHELL_ARG,
 ];
 
 /**
@@ -96,7 +97,7 @@ try {
   const browserSpec = (await readFile('.browser', 'utf-8')).trim();
 
   let cacheDir = resolve(homedir(), '.cache', 'chromium-bidi');
-  if (!PRODUCT_ARGUMENTS.includes(process.argv[2])) {
+  if (!ARGUMENTS.includes(process.argv[2])) {
     cacheDir = process.argv[2];
   }
 
