@@ -97,7 +97,7 @@ try {
   const browserSpec = (await readFile('.browser', 'utf-8')).trim();
 
   let cacheDir = resolve(homedir(), '.cache', 'chromium-bidi');
-  if (!ARGUMENTS.includes(process.argv[2])) {
+  if (process.argv[2] && !ARGUMENTS.includes(process.argv[2])) {
     cacheDir = process.argv[2];
   }
 
@@ -121,7 +121,7 @@ try {
     }),
   );
 
-  console.log(paths);
+  console.log(paths.join('\n'));
   if (process.argv.includes(GITHUB_SHELL_ARG)) {
     if (paths.length === 1) {
       setOutput('executablePath', paths[0]);
