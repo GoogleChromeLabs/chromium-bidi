@@ -47,6 +47,3 @@ jobs:
         run: >
           xvfb-run --auto-servernum
           node tests_external/selenium.mjs
-        env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          CHROMEDRIVER_BIN: ${{ steps.driver.outputs.executablePath }}

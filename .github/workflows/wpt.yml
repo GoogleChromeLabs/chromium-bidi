@@ -100,16 +100,12 @@ jobs:
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
         uses: ./.github/actions/setup-chrome-binaries
-      - name: Get chrome path
-        id: browser
-        run: node tools/install-browser.mjs --chrome --github
       - name: Run WPT tests
         timeout-minutes: 60
         run: >
           xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           THIS_CHUNK: ${{ matrix.this_chunk }}
@@ -123,7 +119,6 @@ jobs:
           xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/interop/${{ github.event.inputs.tests }}"
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
           CHROMEDRIVER_LOG_NAME: 'chromedriver-interop'
           THIS_CHUNK: ${{ matrix.this_chunk }}

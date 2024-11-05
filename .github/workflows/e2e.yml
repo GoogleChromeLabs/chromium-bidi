@@ -69,14 +69,6 @@ jobs:
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
         uses: ./.github/actions/setup-chrome-binaries
-      - name: Get chrome path
-        id: browser
-        run: |
-          if [[ ${{ matrix.head }} != 'old-headless' ]]; then
-            node tools/install-browser.mjs --github
-          else
-            node tools/install-browser.mjs --chrome-headless-shell --github
-          fi
       - name: Set up Python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
@@ -96,7 +88,6 @@ jobs:
           --this-chunk=${{ matrix.this_chunk }}
           --total-chunks=${{ matrix.total_chunks }}
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
@@ -107,7 +98,6 @@ jobs:
           --this-chunk=${{ matrix.this_chunk }}
           --total-chunks=${{ matrix.total_chunks }}
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Upload artifacts
         if: always()
