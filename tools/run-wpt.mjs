@@ -192,7 +192,6 @@ if (RUN_TESTS === 'true') {
       // TODO: switch to new headless.
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/949.
       // For nodejs mapper runner supports only old headless.
-      wptRunArgs.push('--binary-arg=--headless=old');
       wptRunArgs.push('--binary-arg=--hide-scrollbars');
       wptRunArgs.push('--binary-arg=--mute-audio');
     } else {
