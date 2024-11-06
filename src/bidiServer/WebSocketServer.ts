@@ -247,6 +247,10 @@ export class WebSocketServer {
     }
 
     connection.on('message', async (message) => {
+      // If session exists, wait for the browser instance to be launched before processing
+      // BiDi commands.
+      await session?.browserInstancePromise;
+
       // If type is not text, return error.
       if (message.type !== 'utf8') {
         this.#respondWithError(
