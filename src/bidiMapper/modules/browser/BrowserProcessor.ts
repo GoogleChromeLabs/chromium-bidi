@@ -113,7 +113,7 @@ export class BrowserProcessor {
       {targetId},
     );
     return {
-      // `activate` is not supported in CDP yet.
+      // `active` is not supported in CDP yet.
       active: false,
       clientWindow: `${windowInfo.windowId}`,
       state: windowInfo.bounds.windowState ?? 'normal',
