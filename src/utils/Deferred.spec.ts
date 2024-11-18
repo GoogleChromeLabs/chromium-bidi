@@ -47,7 +47,7 @@ describe('Deferred', () => {
 
       expect(deferred.isFinished).to.be.false;
 
-      deferred.reject('some error');
+      deferred.reject(new Error('some error'));
       expect(deferred.isFinished).to.be.true;
 
       await expect(deferredThen).to.eventually.be.rejectedWith('some error');

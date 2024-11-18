@@ -520,7 +520,7 @@ export class BrowsingContextImpl {
           this.id,
         );
         this.#pendingCommandNavigation.reject(
-          ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+          new UnknownErrorException('navigation aborted'),
         );
         this.#pendingCommandNavigation = undefined;
       }
