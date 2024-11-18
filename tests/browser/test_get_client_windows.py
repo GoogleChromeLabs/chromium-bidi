@@ -42,7 +42,11 @@ async def test_browser_get_client_windows_single_tab(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_browser_get_client_windows_two_tabs(websocket, context_id,
-                                                   create_context):
+                                                   create_context,
+                                                   test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("In old headless mode, each tab is in a separate window")
+
     await create_context(context_type='tab')
 
     resp = await execute_command(websocket, {
