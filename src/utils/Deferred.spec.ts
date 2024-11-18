@@ -51,7 +51,12 @@ describe('Deferred', () => {
       expect(deferred.isFinished).to.be.true;
 
       await expect(deferredThen).to.eventually.be.rejectedWith('some error');
-      await expect(deferredCatch).to.eventually.equal('some error');
+      await deferredCatch;
+      await expect(deferredCatch).to.eventually.be.an.instanceOf(Error);
+      await expect(deferredCatch).to.eventually.have.property(
+        'message',
+        'some error',
+      );
     });
 
     it('finally', async () => {
