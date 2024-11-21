@@ -200,7 +200,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("type", ["window", "tab"])
-async def test_browsingContext_create_withUserContext_eventsEmitted(
+async def test_browsingContext_create_withUserContext(
         websocket, type, assert_no_more_messages, read_sorted_messages):
     result = await execute_command(websocket, {
         "method": "browser.createUserContext",
