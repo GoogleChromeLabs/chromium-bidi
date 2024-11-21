@@ -58,7 +58,7 @@ async def test_browsingContext_create_eventsEmitted(websocket,
         }
     } == context_created_event
 
-    await assert_no_more_messages(timeout=1.0)
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
@@ -195,7 +195,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
         }
     ]
 
-    await assert_no_more_messages(timeout=1.0)
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
@@ -240,7 +240,7 @@ async def test_browsingContext_create_withUserContext_eventsEmitted(
         }
     ]
 
-    await assert_no_more_messages(timeout=1.0)
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio

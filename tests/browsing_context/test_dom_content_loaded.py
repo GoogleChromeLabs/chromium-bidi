@@ -39,7 +39,7 @@ async def test_browsingContext_domContentLoaded_create_notReceived(
         'type': 'success',
     }
 
-    await assert_no_more_messages(timeout=1.0)
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
@@ -80,4 +80,4 @@ async def test_browsingContext_domContentLoaded_navigate_received(
         },
     ]
 
-    await assert_no_more_messages(timeout=1.0)
+    await assert_no_more_messages()
