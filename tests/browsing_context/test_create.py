@@ -101,9 +101,6 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 @pytest.mark.asyncio
 async def test_browsingContext_create_noNavigationEventsEmitted(
         websocket, context_id, read_sorted_messages):
-    pytest.xfail(
-        "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2793")
-
     await subscribe(websocket, [
         "browsingContext.contextCreated", "browsingContext.domContentLoaded",
         "browsingContext.load", "browsingContext.navigationStarted"
@@ -129,7 +126,7 @@ async def test_browsingContext_create_noNavigationEventsEmitted(
             'children': None,
             'clientWindow': '',
             'context': ANY_STR,
-            'originalOpener': context_id,
+            'originalOpener': None,
             'parent': None,
             'url': 'about:blank',
             'userContext': 'default',
