@@ -55,6 +55,8 @@ export class BrowsingContextImpl {
    * If null, this is a top-level context.
    */
   #parentId: BrowsingContext.BrowsingContext | null = null;
+  /** Flags if the initial navigation to `about:blank` is in progress. */
+  #initialNavigation = true;
 
   /** Direct children browsing contexts. */
   readonly #children = new Set<BrowsingContext.BrowsingContext>();
@@ -558,36 +560,45 @@ export class BrowsingContextImpl {
 
       switch (params.name) {
         case 'DOMContentLoaded':
-          this.#eventManager.registerEvent(
-            {
-              type: 'event',
-              method: ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-              params: {
-                context: this.id,
-                navigation: this.#navigationId,
-                timestamp,
-                url: this.#url,
+          if (!this.#initialNavigation) {
+            // Do not emit for the initial navigation.
+            this.#eventManager.registerEvent(
+              {
+                type: 'event',
+                method:
+                  ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+                params: {
+                  context: this.id,
+                  navigation: this.#navigationId,
+                  timestamp,
+                  url: this.#url,
+                },
               },
-            },
-            this.id,
-          );
+              this.id,
+            );
+          }
           this.#lifecycle.DOMContentLoaded.resolve();
           break;
 
         case 'load':
-          this.#eventManager.registerEvent(
-            {
-              type: 'event',
-              method: ChromiumBidi.BrowsingContext.EventNames.Load,
-              params: {
-                context: this.id,
-                navigation: this.#navigationId,
-                timestamp,
-                url: this.#url,
+          if (!this.#initialNavigation) {
+            // Do not emit for the initial navigation.
+            this.#eventManager.registerEvent(
+              {
+                type: 'event',
+                method: ChromiumBidi.BrowsingContext.EventNames.Load,
+                params: {
+                  context: this.id,
+                  navigation: this.#navigationId,
+                  timestamp,
+                  url: this.#url,
+                },
               },
-            },
-            this.id,
-          );
+              this.id,
+            );
+          }
+          // The initial navigation is finished.
+          this.#initialNavigation = false;
           this.#lifecycle.load.resolve();
           break;
       }
