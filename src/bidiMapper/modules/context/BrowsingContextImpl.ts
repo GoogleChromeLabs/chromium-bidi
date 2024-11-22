@@ -546,7 +546,7 @@ export class BrowsingContextImpl {
         this.#pendingCommandNavigation = undefined;
         this.#navigationInitiatedByCommand = false;
       }
-      if (urlMatchesAboutBlank(params.url)) {
+      if (!urlMatchesAboutBlank(params.url)) {
         // If the url does not match about:blank, do not consider it is an initial
         // navigation and emit all the required events.
         // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2793.
