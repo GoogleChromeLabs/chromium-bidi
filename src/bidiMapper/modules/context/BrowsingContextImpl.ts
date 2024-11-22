@@ -414,25 +414,6 @@ export class BrowsingContextImpl {
   onTargetInfoChanged(params: Protocol.Target.TargetInfoChangedEvent) {
     this.#url = params.targetInfo.url;
   }
-
-  #emitNavigationStarted(url: string) {
-    this.#navigationId = this.#pendingNavigationId ?? uuidv4();
-    this.#pendingNavigationId = undefined;
-    this.#eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-        params: {
-          context: this.id,
-          navigation: this.#navigationId,
-          timestamp: BrowsingContextImpl.getTimestamp(),
-          url,
-        },
-      },
-      this.id,
-    );
-  }
-
   #initListeners() {
     this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
       if (this.id !== params.frame.id) {
@@ -493,23 +474,33 @@ export class BrowsingContextImpl {
         return;
       }
 
-      if (!this.#navigationInitiatedByCommand) {
-        // In case of the navigation is not initiated by `browsingContext.navigate` or
-        // `browsingContext.reload` commands, the `Page.frameRequestedNavigation` is
-        // emitted, which means the `NavigationStarted` is already emitted as well.
-        return;
+      if (this.#navigationInitiatedByCommand) {
+        // In case of the navigation is initiated by `browsingContext.navigate` or
+        // `browsingContext.reload` commands, the `Page.frameRequestedNavigation` is not
+        // emitted, which means the `NavigationStarted` is not emitted.
+        // TODO: consider emit it right after the CDP command `navigate` or `reload` is finished.
+
+        // The URL of the navigation that is currently in progress. Although the URL
+        // is not yet known in case of user-initiated navigations, it is possible to
+        // provide the URL in case of BiDi-initiated navigations.
+        // TODO: provide proper URL in case of user-initiated navigations.
+        const url = this.#pendingNavigationUrl ?? 'UNKNOWN';
+        this.#navigationId = this.#pendingNavigationId ?? uuidv4();
+        this.#pendingNavigationId = undefined;
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+            params: {
+              context: this.id,
+              navigation: this.#navigationId,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url,
+            },
+          },
+          this.id,
+        );
       }
-
-      // The `Page.frameRequestedNavigation` is not emitted, as the navigation was
-      // initiated by `browsingContext.navigate` command. This means the
-      // `NavigationStarted` event should be emitted now.
-
-      // The URL of the navigation that is currently in progress. Although the URL
-      // is not yet known in case of user-initiated navigations, it is possible to
-      // provide the URL in case of BiDi-initiated navigations.
-      // TODO: provide proper URL in case of user-initiated navigations.
-      const url = this.#pendingNavigationUrl ?? 'UNKNOWN';
-      this.#emitNavigationStarted(url);
     });
 
     // TODO: don't use deprecated `Page.frameScheduledNavigation` event.
@@ -555,7 +546,21 @@ export class BrowsingContextImpl {
 
       if (!this.#initialNavigation) {
         // Do not emit the event for the initial navigation to `about:blank`.
-        this.#emitNavigationStarted(params.url);
+        this.#navigationId = this.#pendingNavigationId ?? uuidv4();
+        this.#pendingNavigationId = undefined;
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+            params: {
+              context: this.id,
+              navigation: this.#navigationId,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url: params.url,
+            },
+          },
+          this.id,
+        );
       }
 
       this.#pendingNavigationUrl = params.url;
