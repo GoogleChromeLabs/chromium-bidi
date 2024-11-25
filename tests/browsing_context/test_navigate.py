@@ -794,7 +794,10 @@ async def test_speculationrules_disable_prerender(websocket, context_id, html):
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigate_beforePrevisousNavigationEnded(
-        websocket, context_id, url_hang_forever, url_example):
+        websocket, context_id, read_sorted_messages, url_hang_forever,
+        url_example):
+    await subscribe(websocket, ["browsingContext.navigationAborted"])
+
     first_navigation_command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -815,9 +818,8 @@ async def test_browsingContext_navigate_beforePrevisousNavigationEnded(
             }
         })
 
-    first_navigation_result = read_JSON_message(websocket)
-    second_navigatin_result = read_JSON_message(websocket)
-    assert [first_navigation_result, second_navigatin_result] == [
+    messages = await read_sorted_messages(3)
+    assert messages == [
         {
             'id': first_navigation_command_id,
             'result': {
@@ -834,4 +836,18 @@ async def test_browsingContext_navigate_beforePrevisousNavigationEnded(
             },
             'type': 'success',
         },
+        {
+            'method': 'browsingContext.navigationAborted',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_hang_forever,
+            },
+            'type': 'event',
+        },
     ]
+
+    # Assert the first navigation aborted.
+    assert messages[0]['result']['navigation'] == messages[2]['params'][
+        'navigation']

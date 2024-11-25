@@ -518,19 +518,6 @@ export class BrowsingContextImpl {
 
       if (this.#pendingCommandNavigation !== undefined) {
         // The pending navigation was aborted by the new one.
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-            params: {
-              context: this.id,
-              navigation: this.#navigationId,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url: this.#url,
-            },
-          },
-          this.id,
-        );
         this.#pendingCommandNavigation.reject(
           new UnknownErrorException('navigation aborted'),
         );
@@ -919,7 +906,7 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
-    // Previous navigaiton should be aborted.
+    // Previous navigation should be aborted.
     this.#pendingCommandNavigation?.reject(
       new UnknownErrorException('navigation aborted'),
     );
@@ -949,20 +936,6 @@ export class BrowsingContextImpl {
       if (cdpNavigateResult.errorText) {
         // If navigation failed, no pending navigation is left.
         this.#pendingNavigationUrl = undefined;
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-            params: {
-              context: this.id,
-              navigation: navigationId,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url,
-            },
-          },
-          this.id,
-        );
-
         throw new UnknownErrorException(cdpNavigateResult.errorText);
       }
 
@@ -996,7 +969,34 @@ export class BrowsingContextImpl {
       // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
       if (e.message === 'navigation aborted') {
         navigationAborted = true;
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+            params: {
+              context: this.id,
+              navigation: navigationId,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url,
+            },
+          },
+          this.id,
+        );
       } else {
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+            params: {
+              context: this.id,
+              navigation: navigationId,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url,
+            },
+          },
+          this.id,
+        );
+
         throw e;
       }
     });
