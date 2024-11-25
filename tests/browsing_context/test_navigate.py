@@ -576,52 +576,6 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigate_beforePrevisousNavigationEnded(
-        websocket, context_id, read_sorted_messages, url_hang_forever,
-        url_example):
-    first_navigation_command_id = await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "context": context_id,
-                "url": url_hang_forever,
-                "wait": "complete",
-            }
-        })
-
-    second_navigation_command_id = await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "context": context_id,
-                "url": url_example,
-                "wait": "complete",
-            }
-        })
-
-    [first_navigation_result,
-     second_navigatin_result] = await read_sorted_messages(2)
-    assert [first_navigation_result, second_navigatin_result] == [
-        {
-            'id': first_navigation_command_id,
-            'result': {
-                'navigation': ANY_UUID,
-                'url': url_hang_forever,
-            },
-            'type': 'success',
-        },
-        {
-            'id': second_navigation_command_id,
-            'result': {
-                'navigation': ANY_UUID,
-                'url': url_example,
-            },
-            'type': 'success',
-        },
-    ]
-
-
-@pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_sameDocumentNavigation(
         websocket, context_id, url_base):
     await subscribe(
@@ -836,3 +790,48 @@ async def test_speculationrules_disable_prerender(websocket, context_id, html):
         'params': {}
     })
     assert len(response["contexts"]) == 1
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigate_beforePrevisousNavigationEnded(
+        websocket, context_id, url_hang_forever, url_example):
+    first_navigation_command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url_hang_forever,
+                "wait": "complete",
+            }
+        })
+
+    second_navigation_command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url_example,
+                "wait": "complete",
+            }
+        })
+
+    first_navigation_result = read_JSON_message(websocket)
+    second_navigatin_result = read_JSON_message(websocket)
+    assert [first_navigation_result, second_navigatin_result] == [
+        {
+            'id': first_navigation_command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_hang_forever,
+            },
+            'type': 'success',
+        },
+        {
+            'id': second_navigation_command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_example,
+            },
+            'type': 'success',
+        },
+    ]

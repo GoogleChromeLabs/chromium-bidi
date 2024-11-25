@@ -919,6 +919,7 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
+    // Previous navigaiton should be aborted.
     this.#pendingCommandNavigation?.reject(
       new UnknownErrorException('navigation aborted'),
     );
@@ -946,23 +947,6 @@ export class BrowsingContextImpl {
       );
 
       if (cdpNavigateResult.errorText) {
-        if (cdpNavigateResult.errorText === `net::ERR_ABORTED`) {
-          this.#eventManager.registerEvent(
-            {
-              type: 'event',
-              method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-              params: {
-                context: this.id,
-                navigation: navigationId,
-                timestamp: BrowsingContextImpl.getTimestamp(),
-                url,
-              },
-            },
-            this.id,
-          );
-
-          throw new UnknownErrorException('navigation aborted');
-        }
         // If navigation failed, no pending navigation is left.
         this.#pendingNavigationUrl = undefined;
         this.#eventManager.registerEvent(
@@ -997,13 +981,13 @@ export class BrowsingContextImpl {
       };
     }
 
+    // Required to provide url in the result.
     let navigationAborted = false;
-
     // Wait for either the navigation is finished or canceled by another navigation.
     await Promise.race([
       // No `loaderId` means same-document navigation.
-      cdpNavigatePromise.then((cdpNavigationResult) =>
-        this.#waitNavigation(wait, cdpNavigationResult.loaderId === undefined),
+      cdpNavigatePromise.then((cdpNavigateResult) =>
+        this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
       ),
       // Throw an error if the navigation is canceled.
       this.#pendingCommandNavigation,
@@ -1023,8 +1007,8 @@ export class BrowsingContextImpl {
     this.#pendingCommandNavigation = undefined;
     return {
       navigation: navigationId,
-      // Url can change due to redirect. Get the latest one. If the navigation was
-      // aborted, return the requested one.
+      // Url can change due to redirect, so in case of successful navigation, return the
+      // latest one. If the navigation was aborted, return the original one.
       url: navigationAborted ? url : this.#url,
     };
   }
