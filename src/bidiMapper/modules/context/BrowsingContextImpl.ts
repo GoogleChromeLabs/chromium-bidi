@@ -920,7 +920,7 @@ export class BrowsingContextImpl {
     }
 
     this.#pendingCommandNavigation?.reject(
-      new UnknownErrorException('navigation canceled by concurrent navigation'),
+      new UnknownErrorException('navigation aborted'),
     );
     await this.targetUnblockedOrThrow();
 
@@ -946,6 +946,23 @@ export class BrowsingContextImpl {
       );
 
       if (cdpNavigateResult.errorText) {
+        if (cdpNavigateResult.errorText === `net::ERR_ABORTED`) {
+          this.#eventManager.registerEvent(
+            {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+              params: {
+                context: this.id,
+                navigation: navigationId,
+                timestamp: BrowsingContextImpl.getTimestamp(),
+                url,
+              },
+            },
+            this.id,
+          );
+
+          throw new UnknownErrorException('navigation aborted');
+        }
         // If navigation failed, no pending navigation is left.
         this.#pendingNavigationUrl = undefined;
         this.#eventManager.registerEvent(
@@ -980,18 +997,22 @@ export class BrowsingContextImpl {
       };
     }
 
-    const cdpNavigateResult = await cdpNavigatePromise;
+    let navigationAborted = false;
 
     // Wait for either the navigation is finished or canceled by another navigation.
     await Promise.race([
       // No `loaderId` means same-document navigation.
-      this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
+      cdpNavigatePromise.then((cdpNavigationResult) =>
+        this.#waitNavigation(wait, cdpNavigationResult.loaderId === undefined),
+      ),
       // Throw an error if the navigation is canceled.
       this.#pendingCommandNavigation,
     ]).catch((e) => {
       // Aborting navigation should not fail the original navigation command for now.
       // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-      if (e.message !== 'navigation aborted') {
+      if (e.message === 'navigation aborted') {
+        navigationAborted = true;
+      } else {
         throw e;
       }
     });
@@ -1002,8 +1023,9 @@ export class BrowsingContextImpl {
     this.#pendingCommandNavigation = undefined;
     return {
       navigation: navigationId,
-      // Url can change due to redirect. Get the latest one.
-      url: this.#url,
+      // Url can change due to redirect. Get the latest one. If the navigation was
+      // aborted, return the requested one.
+      url: navigationAborted ? url : this.#url,
     };
   }
 
