@@ -226,7 +226,7 @@ export class BrowsingContextImpl {
   }
 
   get navigationId(): string {
-    return this.#lastNavigation.navigationId ?? 'UNKNOWN';
+    return this.#lastNavigation.navigationId;
   }
 
   dispose(emitContextDestroyed: boolean) {
@@ -447,6 +447,7 @@ export class BrowsingContextImpl {
         return;
       }
       const timestamp = BrowsingContextImpl.getTimestamp();
+      this.#url = params.url;
       this.#lastNavigation.url = params.url;
       this.#navigation.withinDocument.resolve();
 
@@ -457,7 +458,7 @@ export class BrowsingContextImpl {
             method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
             params: {
               context: this.id,
-              navigation: this.#lastNavigation.navigationId ?? 'UNKNOWN',
+              navigation: this.#lastNavigation.navigationId,
               timestamp,
               url: this.#url,
             },
@@ -585,7 +586,7 @@ export class BrowsingContextImpl {
                   ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
                 params: {
                   context: this.id,
-                  navigation: this.#lastNavigation.navigationId ?? 'UNKNOWN',
+                  navigation: this.#lastNavigation.navigationId,
                   timestamp,
                   url: this.#url,
                 },
@@ -605,7 +606,7 @@ export class BrowsingContextImpl {
                 method: ChromiumBidi.BrowsingContext.EventNames.Load,
                 params: {
                   context: this.id,
-                  navigation: this.#lastNavigation.navigationId ?? 'UNKNOWN',
+                  navigation: this.#lastNavigation.navigationId,
                   timestamp,
                   url: this.#url,
                 },
