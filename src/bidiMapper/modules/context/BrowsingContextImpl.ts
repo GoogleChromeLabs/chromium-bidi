@@ -85,10 +85,7 @@ export class BrowsingContextImpl {
   #lifecycle = {
     DOMContentLoaded: new Deferred<void>(),
     load: new Deferred<void>(),
-  };
-
-  #navigation = {
-    withinDocument: new Deferred<void>(),
+    navigatedWithinDocument: new Deferred<void>(),
   };
 
   #url: string;
@@ -449,7 +446,7 @@ export class BrowsingContextImpl {
       const timestamp = BrowsingContextImpl.getTimestamp();
       this.#url = params.url;
       this.#lastNavigation.url = params.url;
-      this.#navigation.withinDocument.resolve();
+      this.#lifecycle.navigatedWithinDocument.resolve();
 
       if (params.navigationType === 'fragment') {
         this.#eventManager.registerEvent(
@@ -837,8 +834,8 @@ export class BrowsingContextImpl {
   #documentChanged(loaderId?: Protocol.Network.LoaderId) {
     if (loaderId === undefined || this.#loaderId === loaderId) {
       // Same document navigation. Document didn't change.
-      if (this.#navigation.withinDocument.isFinished) {
-        this.#navigation.withinDocument = new Deferred();
+      if (this.#lifecycle.navigatedWithinDocument.isFinished) {
+        this.#lifecycle.navigatedWithinDocument = new Deferred();
       } else {
         this.#logger?.(
           BrowsingContextImpl.LOGGER_PREFIX,
@@ -1002,7 +999,7 @@ export class BrowsingContextImpl {
     withinDocument: boolean,
   ) {
     if (withinDocument) {
-      await this.#navigation.withinDocument;
+      await this.#lifecycle.navigatedWithinDocument;
       return;
     }
     switch (wait) {
