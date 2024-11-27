@@ -44,7 +44,7 @@ async def test_print_top_level_context(websocket, context_id, html):
     except Exception as e:
         assert e.args[0] == {
             'error': 'unknown error',
-            'message': 'net::ERR_ABORTED'
+            'message': 'Navigation aborted'
         }
         pytest.xfail("PDF viewer not available in headless.")
 
