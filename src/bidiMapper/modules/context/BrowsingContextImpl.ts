@@ -35,7 +35,7 @@ import {Deferred} from '../../../utils/Deferred.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
-// import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers.js';
+import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
@@ -76,6 +76,14 @@ class NavigationState extends EventEmitter<NavigationEventType> {
     [ChromiumBidi.BrowsingContext.EventNames.NavigationAborted]: false,
     [ChromiumBidi.BrowsingContext.EventNames.NavigationFailed]: false,
     [ChromiumBidi.BrowsingContext.EventNames.NavigationStarted]: false,
+  };
+
+  // Tracks CDP events on the navigation. Used to distinguish new navigations from the
+  // initial one.
+  cdpStates = {
+    frameScheduledNavigation: false,
+    frameRequestedNavigation: false,
+    frameStartedLoading: false,
   };
 
   #completeAndNotify(stateName: NavigationEventName) {
@@ -250,6 +258,7 @@ class NavigationState extends EventEmitter<NavigationEventType> {
 }
 
 class NavigationTracker {
+  #initialNavigation: NavigationState;
   #currentNavigation: NavigationState;
   // changedDeferred = new Deferred<NavigationState>();
   readonly #eventManager: EventManager;
@@ -263,6 +272,7 @@ class NavigationTracker {
       this.#browsingContextId,
       'about:blank',
     );
+    this.#initialNavigation = this.#currentNavigation;
   }
 
   get navigationId(): string {
@@ -310,26 +320,56 @@ class NavigationTracker {
 
   frameStartedLoading(): void {
     this.#currentNavigation.markStarted();
+    this.#currentNavigation.cdpStates.frameStartedLoading = true;
   }
 
   frameScheduledNavigation(url: string): void {
-    if (this.#currentNavigation.isStarted()) {
-      const navigation = this.createNavigation(url);
-      navigation.markStarted();
+    // If `Page.frameScheduledNavigation` is not guaranteed to be emitted, but  if it
+    // does, it never goes before `Page.frameScheduledNavigation`.
+    // Signals that it's a new navigation:
+    // 1. The `Page.frameStartedLoading` was already emitted.
+    // 2. The `Page.frameScheduledNavigation` was already emitted.
+    // 3. The `Page.frameRequestedNavigation` was already emitted, which cannot happen
+    //    before `Page.frameScheduledNavigation`.
+    // 4. The current navigation is the initial one, and the URL does not match
+    //    `about:blank`.
+    const isNewNavigation =
+      this.#currentNavigation.cdpStates.frameStartedLoading ||
+      this.#currentNavigation.cdpStates.frameRequestedNavigation ||
+      this.#currentNavigation.cdpStates.frameScheduledNavigation ||
+      (this.#initialNavigation === this.#currentNavigation &&
+        !urlMatchesAboutBlank(url));
+
+    if (isNewNavigation) {
+      this.createNavigation(url);
     } else {
       this.#currentNavigation.url = url;
-      this.#currentNavigation.markStarted();
     }
+    this.#currentNavigation.markStarted();
+    this.#currentNavigation.cdpStates.frameScheduledNavigation = true;
   }
 
   frameRequestedNavigation = (url: string): void => {
-    if (this.#currentNavigation.isStarted()) {
-      const navigation = this.createNavigation(url);
-      navigation.markStarted();
+    // Signals that it's a new navigation:
+    // 1. The `Page.frameStartedLoading` was already emitted.
+    // 2. The `Page.frameRequestedNavigation` was already emitted. Note that having
+    //    `Page.frameScheduledNavigation` emitted at this point does not signal the new
+    //    navigation.
+    // 3. The current navigation is the initial one, and the URL does not match
+    //    `about:blank`.
+    const isNewNavigation =
+      this.#currentNavigation.cdpStates.frameStartedLoading ||
+      this.#currentNavigation.cdpStates.frameRequestedNavigation ||
+      (this.#initialNavigation === this.#currentNavigation &&
+        !urlMatchesAboutBlank(url));
+
+    if (isNewNavigation) {
+      this.createNavigation(url);
     } else {
       this.#currentNavigation.url = url;
-      this.#currentNavigation.markStarted();
     }
+    this.#currentNavigation.markStarted();
+    this.#currentNavigation.cdpStates.frameRequestedNavigation = true;
   };
 
   domContentLoaded(): void {
