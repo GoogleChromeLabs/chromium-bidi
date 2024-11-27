@@ -46,9 +46,9 @@ import type {EventManager} from '../session/EventManager.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 
 type NavigationEventName =
+// TODO: implement.
+// ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin|
   | ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded
-  // TODO: implement.
-  // ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin|
   | ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated
   | ChromiumBidi.BrowsingContext.EventNames.Load
   | ChromiumBidi.BrowsingContext.EventNames.NavigationAborted
@@ -67,17 +67,6 @@ enum NavigationWaitResult {
 }
 
 class NavigationState extends EventEmitter<NavigationEventType> {
-  #states: {[K in NavigationEventName]: boolean} = {
-    [ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded]: false,
-    // TODO: implement
-    // [ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin]: false,
-    [ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated]: false,
-    [ChromiumBidi.BrowsingContext.EventNames.Load]: false,
-    [ChromiumBidi.BrowsingContext.EventNames.NavigationAborted]: false,
-    [ChromiumBidi.BrowsingContext.EventNames.NavigationFailed]: false,
-    [ChromiumBidi.BrowsingContext.EventNames.NavigationStarted]: false,
-  };
-
   // Tracks CDP events on the navigation. Used to distinguish new navigations from the
   // initial one.
   cdpStates = {
@@ -86,96 +75,80 @@ class NavigationState extends EventEmitter<NavigationEventType> {
     frameStartedLoading: false,
   };
 
-  #completeAndNotify(stateName: NavigationEventName) {
-    if (!this.#states[stateName]) {
-      this.#states[stateName] = true;
-      this.emit(stateName, this.#navigationInfo());
-    }
+  // A map from event name to boolean. If an event is a key of the map, it should be
+  // emitted only once. The value indicates if the event has been already emitted.
+  #uniqueEventNameToIsSentMap = new Map<NavigationEventName, boolean>([
+    [ChromiumBidi.BrowsingContext.EventNames.NavigationStarted, false],
+    [ChromiumBidi.BrowsingContext.EventNames.NavigationAborted, false],
+    [ChromiumBidi.BrowsingContext.EventNames.NavigationFailed, false],
+  ]);
+  // A set of events to be ignored. Used for the initial navigation.
+  #ignoredEventSet: Set<NavigationEventName>;
+
+  readonly navigationId = uuidv4();
+  url: string;
+  readonly #browsingContextId: string;
+
+  constructor(
+    browsingContextId: string,
+    url: string,
+    isInitialNavigation: boolean = false,
+  ) {
+    super();
+    this.#browsingContextId = browsingContextId;
+    this.url = url;
+    this.#ignoredEventSet = new Set(
+      isInitialNavigation
+        ? [
+            ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+            ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+          ]
+        : [],
+    );
   }
 
-  #completeWithoutNotification(stateName: NavigationEventName) {
-    if (!this.#states[stateName]) {
-      this.#states[stateName] = true;
+  #navigationInfo(): BrowsingContext.NavigationInfo {
+    return {
+      context: this.#browsingContextId,
+      navigation: this.navigationId,
+      timestamp: BrowsingContextImpl.getTimestamp(),
+      url: this.url,
+    };
+  }
+
+  #notify(stateName: NavigationEventName) {
+    if (this.#ignoredEventSet.has(stateName)) return;
+
+    if (this.#uniqueEventNameToIsSentMap.get(stateName) !== true) {
+      this.emit(stateName, this.#navigationInfo());
+    }
+    if (this.#uniqueEventNameToIsSentMap.has(stateName)) {
+      this.#uniqueEventNameToIsSentMap.set(stateName, true);
     }
   }
 
   markStarted() {
-    this.#completeAndNotify(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-    );
+    this.#notify(ChromiumBidi.BrowsingContext.EventNames.NavigationStarted);
   }
 
   markFragmentNavigated() {
-    this.#completeAndNotify(
-      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.Load,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-    );
+    this.#notify(ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated);
   }
 
   markNavigationAborted() {
-    this.#completeAndNotify(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.Load,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-    );
+    this.#notify(ChromiumBidi.BrowsingContext.EventNames.NavigationAborted);
   }
 
   markNavigationFailed() {
-    this.#completeAndNotify(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.Load,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-    );
+    this.#notify(ChromiumBidi.BrowsingContext.EventNames.NavigationFailed);
   }
 
   markLoad() {
-    this.#completeAndNotify(ChromiumBidi.BrowsingContext.EventNames.Load);
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-    );
-    this.#completeWithoutNotification(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-    );
+    this.#notify(ChromiumBidi.BrowsingContext.EventNames.Load);
   }
 
   markDomContentLoaded() {
-    this.#completeAndNotify(
-      ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-    );
+    this.#notify(ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded);
   }
 
   #getReadinessStateEventName(
@@ -230,25 +203,6 @@ class NavigationState extends EventEmitter<NavigationEventType> {
       this.on('*', onEvent);
     });
   }
-
-  readonly navigationId = uuidv4();
-  url: string;
-  readonly #browsingContextId: string;
-
-  constructor(browsingContextId: string, url: string) {
-    super();
-    this.#browsingContextId = browsingContextId;
-    this.url = url;
-  }
-
-  #navigationInfo(): BrowsingContext.NavigationInfo {
-    return {
-      context: this.#browsingContextId,
-      navigation: this.navigationId,
-      timestamp: BrowsingContextImpl.getTimestamp(),
-      url: this.url,
-    };
-  }
 }
 
 class NavigationTracker {
@@ -262,11 +216,15 @@ class NavigationTracker {
     this.#eventManager = eventManager;
     this.#browsingContextId = browsingContextId;
     // Initial navigation.
-    this.#currentNavigation = new NavigationState(
+    const navigation = new NavigationState(
       this.#browsingContextId,
       'about:blank',
+      true,
     );
-    this.#initialNavigation = this.#currentNavigation;
+    this.#setEventListeners(navigation);
+
+    this.#currentNavigation = navigation;
+    this.#initialNavigation = navigation;
   }
 
   get navigationId(): string {
