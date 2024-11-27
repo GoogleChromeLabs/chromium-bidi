@@ -32,6 +32,7 @@ import {
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
+import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 // import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers.js';
@@ -44,96 +45,201 @@ import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 
-// enum NavigationStatus {
-//   NOT_STARTED = 'not started',
-//   COMPLETE = 'complete',
-//   CANCELED = 'canceled',
-//   PENDING = 'pending',
-// }
-//
-// enum NavigationResult {
-//   // DOWNLOAD_STARTED = "download started",
-//   FRAGMENT_NAVIGATED = 'fragment navigated',
-//   NAVIGATION_ABORTED = 'navigation aborted',
-//   NAVIGATION_FAILED = 'navigation failed',
-//   COMPLETE = 'complete',
-// }
+type NavigationEventName =
+  | ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded
+  // TODO: implement.
+  // ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin|
+  | ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated
+  | ChromiumBidi.BrowsingContext.EventNames.Load
+  | ChromiumBidi.BrowsingContext.EventNames.NavigationAborted
+  | ChromiumBidi.BrowsingContext.EventNames.NavigationFailed
+  | ChromiumBidi.BrowsingContext.EventNames.NavigationStarted;
 
-class NavigationState {
-  // resultDeferred = new Deferred<NavigationResult>();
-  startedDeferred = new Deferred<void>();
-  fragmentNavigatedDeferred = new Deferred<void>();
-  navigationAbortedDeferred = new Deferred<void>();
-  navigationFailedDeferred = new Deferred<void>();
-  loadDeferred = new Deferred<void>();
-  domContentLoadedDeferred = new Deferred<void>();
+type NavigationEventType = Record<
+  NavigationEventName,
+  BrowsingContext.NavigationInfo
+>;
+
+enum NavigationWaitResult {
+  SUCCESS = 'success',
+  FAILED = 'failed',
+  ABORTED = 'aborted',
+}
+
+class NavigationState extends EventEmitter<NavigationEventType> {
+  #states: {[K in NavigationEventName]: boolean} = {
+    [ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded]: false,
+    // TODO: implement
+    // [ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin]: false,
+    [ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated]: false,
+    [ChromiumBidi.BrowsingContext.EventNames.Load]: false,
+    [ChromiumBidi.BrowsingContext.EventNames.NavigationAborted]: false,
+    [ChromiumBidi.BrowsingContext.EventNames.NavigationFailed]: false,
+    [ChromiumBidi.BrowsingContext.EventNames.NavigationStarted]: false,
+  };
+
+  #completeAndNotify(stateName: NavigationEventName) {
+    if (!this.#states[stateName]) {
+      this.#states[stateName] = true;
+      this.emit(stateName, this.#navigationInfo());
+    }
+  }
+
+  #completeWithoutNotification(stateName: NavigationEventName) {
+    if (!this.#states[stateName]) {
+      this.#states[stateName] = true;
+    }
+  }
+
+  isStarted() {
+    return this.#states[
+      ChromiumBidi.BrowsingContext.EventNames.NavigationStarted
+    ];
+  }
+
+  markStarted() {
+    this.#completeAndNotify(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+    );
+  }
+
+  markFragmentNavigated() {
+    this.#completeAndNotify(
+      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.Load,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+    );
+  }
+
+  markNavigationAborted() {
+    this.#completeAndNotify(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.Load,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+    );
+  }
+
+  markNavigationFailed() {
+    this.#completeAndNotify(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.Load,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+    );
+  }
+
+  markLoad() {
+    this.#completeAndNotify(ChromiumBidi.BrowsingContext.EventNames.Load);
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+    );
+    this.#completeWithoutNotification(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+    );
+  }
+
+  markDomContentLoaded() {
+    this.#completeAndNotify(
+      ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+    );
+  }
+
+  #getReadinessStateEventName(
+    readinessState: BrowsingContext.ReadinessState,
+  ): NavigationEventName | null {
+    switch (readinessState) {
+      case BrowsingContext.ReadinessState.None:
+        return null;
+      case BrowsingContext.ReadinessState.Interactive:
+        return ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded;
+      case BrowsingContext.ReadinessState.Complete:
+        return ChromiumBidi.BrowsingContext.EventNames.Load;
+    }
+  }
+
+  wait(
+    readinessState: BrowsingContext.ReadinessState,
+  ): Promise<NavigationWaitResult> {
+    const expectedEventName = this.#getReadinessStateEventName(readinessState);
+    if (expectedEventName === null) {
+      return Promise.resolve(NavigationWaitResult.SUCCESS);
+    }
+
+    return new Promise((resolve) => {
+      const onEvent = (eventName: NavigationEventName) => {
+        switch (eventName) {
+          case ChromiumBidi.BrowsingContext.EventNames.NavigationStarted:
+            // Nothing to do.
+            break;
+          case ChromiumBidi.BrowsingContext.EventNames.NavigationFailed:
+            resolve(NavigationWaitResult.FAILED);
+            this.off('*', onEvent);
+            break;
+          case ChromiumBidi.BrowsingContext.EventNames.NavigationAborted:
+            resolve(NavigationWaitResult.ABORTED);
+            this.off('*', onEvent);
+            break;
+          case ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated:
+            resolve(NavigationWaitResult.SUCCESS);
+            this.off('*', onEvent);
+            break;
+          case ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded:
+          case ChromiumBidi.BrowsingContext.EventNames.Load:
+            if (expectedEventName === eventName) {
+              resolve(NavigationWaitResult.SUCCESS);
+              this.off('*', onEvent);
+            }
+            break;
+        }
+      };
+
+      this.on('*', onEvent);
+    });
+  }
 
   readonly navigationId = uuidv4();
   url: string;
-  // status: NavigationStatus = NavigationStatus.NOT_STARTED;
   readonly #browsingContextId: string;
 
   constructor(browsingContextId: string, url: string) {
+    super();
     this.#browsingContextId = browsingContextId;
     this.url = url;
-
-    void this.fragmentNavigatedDeferred.then(() => {
-      this.navigationAbortedDeferred.reject(new Error('fragment navigated'));
-      this.navigationFailedDeferred.reject(new Error('fragment navigated'));
-      this.loadDeferred.reject(new Error('fragment navigated'));
-      this.domContentLoadedDeferred.reject(new Error('fragment navigated'));
-      // this.resultDeferred.resolve(NavigationResult.FRAGMENT_NAVIGATED)
-    });
-
-    void this.navigationAbortedDeferred.then(() => {
-      this.fragmentNavigatedDeferred.reject(new Error('navigation aborted'));
-      this.navigationFailedDeferred.reject(new Error('navigation aborted'));
-      this.loadDeferred.reject(new Error('navigation aborted'));
-      this.domContentLoadedDeferred.reject(new Error('navigation aborted'));
-      // this.resultDeferred.resolve(NavigationResult.NAVIGATION_ABORTED)
-    });
-
-    void this.navigationFailedDeferred.then(() => {
-      this.fragmentNavigatedDeferred.reject(new Error('navigation failed'));
-      this.navigationAbortedDeferred.reject(new Error('navigation failed'));
-      this.loadDeferred.reject(new Error('navigation failed'));
-      this.domContentLoadedDeferred.reject(new Error('navigation failed'));
-      // this.resultDeferred.resolve(NavigationResult.NAVIGATION_FAILED)
-    });
-
-    void this.loadDeferred.then(() => {
-      this.fragmentNavigatedDeferred.reject(new Error('load'));
-      this.navigationAbortedDeferred.reject(new Error('load'));
-      this.navigationFailedDeferred.reject(new Error('load'));
-      // this.resultDeferred.resolve(NavigationResult.COMPLETE)
-    });
   }
 
-  domContentLoaded() {
-    this.domContentLoadedDeferred.resolve();
-  }
-
-  load() {
-    this.loadDeferred.resolve();
-  }
-
-  started() {
-    this.startedDeferred.resolve();
-  }
-
-  fragmentNavigated() {
-    this.fragmentNavigatedDeferred.resolve();
-  }
-
-  fail() {
-    this.navigationFailedDeferred.resolve();
-  }
-
-  abort() {
-    this.navigationAbortedDeferred.resolve();
-  }
-
-  navigationInfo(): BrowsingContext.NavigationInfo {
+  #navigationInfo(): BrowsingContext.NavigationInfo {
     return {
       context: this.#browsingContextId,
       navigation: this.navigationId,
@@ -164,80 +270,27 @@ class NavigationTracker {
   }
 
   dispose() {
-    this.#currentNavigation.abort();
+    this.#currentNavigation.markNavigationAborted();
   }
 
   createNavigation(url: string): NavigationState {
     if (this.#currentNavigation !== undefined) {
-      this.#currentNavigation.abort();
+      this.#currentNavigation.markNavigationAborted();
     }
     const navigation = new NavigationState(this.#browsingContextId, url);
-
     this.#setEventListeners(navigation);
 
     this.#currentNavigation = navigation;
-    // this.changedDeferred.resolve(this.#currentNavigation);
-    // this.changedDeferred = new Deferred();
     return navigation;
   }
 
   #setEventListeners(navigation: NavigationState) {
-    void navigation.startedDeferred.then(() => {
+    navigation.on('*', (name, data) => {
       this.#eventManager.registerEvent(
         {
           type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-          params: navigation.navigationInfo(),
-        },
-        this.#browsingContextId,
-      );
-    });
-    void navigation.fragmentNavigatedDeferred.then(() => {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-          params: navigation.navigationInfo(),
-        },
-        this.#browsingContextId,
-      );
-    });
-    void navigation.navigationAbortedDeferred.then(() => {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-          params: navigation.navigationInfo(),
-        },
-        this.#browsingContextId,
-      );
-    });
-    void navigation.navigationFailedDeferred.then(() => {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-          params: navigation.navigationInfo(),
-        },
-        this.#browsingContextId,
-      );
-    });
-    void navigation.loadDeferred.then(() => {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.Load,
-          params: navigation.navigationInfo(),
-        },
-        this.#browsingContextId,
-      );
-    });
-    void navigation.domContentLoadedDeferred.then(() => {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-          params: navigation.navigationInfo(),
+          method: name,
+          params: data,
         },
         this.#browsingContextId,
       );
@@ -251,38 +304,40 @@ class NavigationTracker {
   navigatedWithinDocument(url: string, navigationType: string): void {
     this.#currentNavigation.url = url;
     if (navigationType === 'fragment') {
-      this.#currentNavigation.fragmentNavigated();
+      this.#currentNavigation.markFragmentNavigated();
     }
   }
 
   frameStartedLoading(): void {
-    this.#currentNavigation.started();
+    this.#currentNavigation.markStarted();
   }
 
   frameScheduledNavigation(url: string): void {
-    if (this.#currentNavigation.startedDeferred.isFinished) {
-      this.createNavigation(url);
+    if (this.#currentNavigation.isStarted()) {
+      const navigation = this.createNavigation(url);
+      navigation.markStarted();
     } else {
       this.#currentNavigation.url = url;
-      this.#currentNavigation.startedDeferred.resolve();
+      this.#currentNavigation.markStarted();
     }
   }
 
   frameRequestedNavigation = (url: string): void => {
-    if (this.#currentNavigation.startedDeferred.isFinished) {
-      this.createNavigation(url);
+    if (this.#currentNavigation.isStarted()) {
+      const navigation = this.createNavigation(url);
+      navigation.markStarted();
     } else {
       this.#currentNavigation.url = url;
-      this.#currentNavigation.startedDeferred.resolve();
+      this.#currentNavigation.markStarted();
     }
   };
 
   domContentLoaded(): void {
-    this.#currentNavigation.domContentLoaded();
+    this.#currentNavigation.markDomContentLoaded();
   }
 
   load(): void {
-    this.#currentNavigation.load();
+    this.#currentNavigation.markLoad();
   }
 }
 
@@ -320,29 +375,7 @@ export class BrowsingContextImpl {
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
 
-  // // The URL of the navigation that is currently in progress. A workaround of the CDP
-  // // lacking URL for the pending navigation events, e.g. `Page.frameStartedLoading`.
-  // // Set on `Page.navigate`, `Page.reload` commands, on `Page.frameRequestedNavigation` or
-  // // on a deprecated `Page.frameScheduledNavigation` event. The latest is required as the
-  // // `Page.frameRequestedNavigation` event is not emitted for same-document navigations.
-  // #pendingNavigationUrl: string | undefined;
-  // // Navigation ID is required, as CDP `loaderId` cannot be mapped 1:1 to all the
-  // // navigations (e.g. same document navigations). Updated after each navigation,
-  // // including same-document ones.
-  // #navigationId: string = uuidv4();
-  // // When a new navigation is started via `BrowsingContext.navigate` with `wait` set to
-  // // `None`, the command result should have `navigation` value, but mapper does not have
-  // // it yet. This value will be set to `navigationId` after next .
-  // #pendingNavigationId: string | undefined;
-  // // Set if there is a pending navigation initiated by `BrowsingContext.navigate` command.
-  // // The promise is resolved when the navigation is finished or rejected when canceled.
-  // #pendingCommandNavigation: Deferred<void> | undefined;
-  // // Flags if the initial navigation to `about:blank` is in progress.
-  // #initialNavigation = true;
-  // // Flags if the navigation is initiated by `browsingContext.navigate` or
-  // // `browsingContext.reload` command.
-  // #navigationInitiatedByCommand = false;
-  //
+  // Keeps track of the current navigation.
   #navigationTracker: NavigationTracker;
 
   #originalOpener?: string;
@@ -748,8 +781,6 @@ export class BrowsingContextImpl {
         return;
       }
 
-      const timestamp = BrowsingContextImpl.getTimestamp();
-
       switch (params.name) {
         case 'DOMContentLoaded':
           this.#navigationTracker.domContentLoaded();
@@ -1023,6 +1054,47 @@ export class BrowsingContextImpl {
     }
   }
 
+  async #scheduleNavigation(
+    navigation: NavigationState,
+    url: string,
+  ): Promise<void> {
+    try {
+      const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
+        'Page.navigate',
+        {
+          url,
+          frameId: this.id,
+        },
+      );
+
+      if (cdpNavigateResult.errorText) {
+        if (cdpNavigateResult.errorText === 'net::ERR_ABORTED') {
+          this.#logger?.(
+            BrowsingContextImpl.LOGGER_PREFIX,
+            'cdp navigation aborted',
+          );
+
+          navigation.markNavigationAborted();
+          return;
+        }
+        this.#logger?.(
+          BrowsingContextImpl.LOGGER_PREFIX,
+          `cdp navigation failed: ${cdpNavigateResult.errorText}`,
+        );
+
+        navigation.markNavigationFailed();
+        return;
+      }
+    } catch {
+      this.#logger?.(
+        BrowsingContextImpl.LOGGER_PREFIX,
+        `cdp navigation crashed`,
+      );
+      navigation.markNavigationFailed();
+      return;
+    }
+  }
+
   async navigate(
     url: string,
     wait: BrowsingContext.ReadinessState,
@@ -1035,90 +1107,16 @@ export class BrowsingContextImpl {
 
     const navigation = this.#navigationTracker.createNavigation(url);
 
-    // Navigate and wait for the result. If the navigation fails, the error event is
-    // emitted and the promise is rejected.
-    const cdpNavigatePromise = (async () => {
-      const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
-        'Page.navigate',
-        {
-          url,
-          frameId: this.id,
-        },
-      );
-
-      if (cdpNavigateResult.errorText) {
-        navigation.fail();
-        throw new UnknownErrorException(cdpNavigateResult.errorText);
-      }
-
-      // this.#documentChanged(cdpNavigateResult.loaderId);
-      // return cdpNavigateResult;
-    })();
-
-    // if (wait === BrowsingContext.ReadinessState.None) {
-    //   return {
-    //     navigation: navigation.navigationId,
-    //     url,
-    //   };
-    // }
-
-    // const cdpNavigateResult = await cdpNavigatePromise;
-
-    try {
-      await this.#waitNavigation(cdpNavigatePromise, navigation, wait);
-    } catch (err) {
-      if ((err as Error).message === 'navigation aborted') {
-        // TODO extend with CDP-specific abort message.
-        navigation.abort();
-      } else {
-        navigation.fail();
-        throw err;
-      }
+    void this.#scheduleNavigation(navigation, url);
+    const navigationResult = await navigation.wait(wait);
+    if (navigationResult === NavigationWaitResult.FAILED) {
+      throw new UnknownErrorException('Navigation failed');
     }
-
-    // // Wait for either the navigation is finished or canceled by another navigation.
-    // await Promise.race([
-    //   this.#waitNavigation(cdpNavigatePromise, navigation, wait),
-    //   // Throw an error if the navigation is canceled.
-    //   navigation.resultDeferred,
-    // ]).catch((e) => {
-    //   // Aborting navigation should not fail the original navigation command for now.
-    //   // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-    //   if (e.message === 'navigation aborted') {
-    //     navigation.abort();
-    //   } else {
-    //     navigation.fail();
-    //     throw e;
-    //   }
-    // });
 
     return {
       navigation: navigation.navigationId,
-      // Url can change during navigation.
       url: navigation.url,
     };
-  }
-
-  async #waitNavigation(
-    cdpNavigatePromise: Promise<void>,
-    navigation: NavigationState,
-    wait: BrowsingContext.ReadinessState,
-  ) {
-    if (wait === BrowsingContext.ReadinessState.None) return;
-
-    // Navigation can fail.
-    await cdpNavigatePromise;
-    const conditions: Deferred<any>[] = [navigation.fragmentNavigatedDeferred];
-
-    switch (wait) {
-      case BrowsingContext.ReadinessState.Interactive:
-        conditions.push(navigation.domContentLoadedDeferred);
-        break;
-      case BrowsingContext.ReadinessState.Complete:
-        conditions.push(navigation.loadDeferred);
-        break;
-    }
-    await Promise.race(conditions);
   }
 
   // TODO: support concurrent navigations analogous to `navigate`.
