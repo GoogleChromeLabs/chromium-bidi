@@ -540,7 +540,9 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavigationEnded_navigationFailed(
-        websocket, context_id, read_sorted_messages, url_hang_forever):
+        websocket, context_id, read_sorted_messages, url_hang_forever,
+        assert_no_more_messages):
+    await subscribe(websocket, ["browsingContext"])
     navigate_command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -558,21 +560,118 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         }
     })
 
-    # Command result order is not guaranteed.
-    [navigation_command_result,
-     close_command_result] = await read_sorted_messages(2)
+    messages = await read_sorted_messages(5)
+    await assert_no_more_messages()
+    assert messages == [
+        {
+            'id': navigate_command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_hang_forever,
+            },
+            'type': 'success',
+        },
+        {
+            'id': close_command_id,
+            'result': {},
+            'type': 'success',
+        },
+        {
+            'method': 'browsingContext.contextDestroyed',
+            'params': {
+                'children': None,
+                'clientWindow': '',
+                'context': context_id,
+                'originalOpener': None,
+                'parent': None,
+                'url': 'about:blank',
+                'userContext': 'default',
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.navigationAborted',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_hang_forever,
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_hang_forever,
+            },
+            'type': 'event',
+        },
+    ]
 
-    assert navigation_command_result == AnyExtending({
-        'id': navigate_command_id,
-        'type': 'error',
-        'error': 'unknown error',
-        'message': 'navigation canceled by context disposal',
-    })
 
-    assert close_command_result == AnyExtending({
-        'id': close_command_id,
-        'type': 'success',
-    })
+@pytest.mark.asyncio
+async def test_browsingContext_navigationStarted_navigateBeforeNavigationEnded_navigationSucceeded(
+        websocket, context_id, read_sorted_messages, url_hang_forever,
+        url_example):
+    pytest.xfail("Not implemented yet")
+    await subscribe(websocket, ["browsingContext.navigationAborted"])
+
+    first_navigation_command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url_hang_forever,
+                "wait": "complete",
+            }
+        })
+
+    second_navigation_command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url_example,
+                "wait": "complete",
+            }
+        })
+
+    messages = await read_sorted_messages(3)
+    assert messages == [
+        {
+            'id': first_navigation_command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_hang_forever,
+            },
+            'type': 'success',
+        },
+        {
+            'id': second_navigation_command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_example,
+            },
+            'type': 'success',
+        },
+        {
+            'method': 'browsingContext.navigationAborted',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_hang_forever,
+            },
+            'type': 'event',
+        },
+    ]
+
+    # Assert the first navigation aborted.
+    assert messages[0]['result']['navigation'] == messages[2]['params'][
+        'navigation']
 
 
 @pytest.mark.asyncio

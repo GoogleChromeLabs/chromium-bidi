@@ -261,7 +261,7 @@ async def test_browsingContext_navigate_prompt(websocket, context_id, html,
             'stacktrace': ANY_STR,
             'type': 'error',
         })
-        # Navigation expected to fail.
+        # Handle prompt command expected to succeed.
         resp = await read_JSON_message(websocket)
         assert resp == {
             "type": "success",
