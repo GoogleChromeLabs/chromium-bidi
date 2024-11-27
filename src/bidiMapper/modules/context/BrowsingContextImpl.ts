@@ -35,7 +35,7 @@ import {Deferred} from '../../../utils/Deferred.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
-import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers';
+import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
@@ -97,12 +97,6 @@ class NavigationState extends EventEmitter<NavigationEventType> {
     if (!this.#states[stateName]) {
       this.#states[stateName] = true;
     }
-  }
-
-  isStarted() {
-    return this.#states[
-      ChromiumBidi.BrowsingContext.EventNames.NavigationStarted
-    ];
   }
 
   markStarted() {
@@ -324,8 +318,6 @@ class NavigationTracker {
   }
 
   frameScheduledNavigation(url: string): void {
-    // If `Page.frameScheduledNavigation` is not guaranteed to be emitted, but  if it
-    // does, it never goes before `Page.frameScheduledNavigation`.
     // Signals that it's a new navigation:
     // 1. The `Page.frameStartedLoading` was already emitted.
     // 2. The `Page.frameScheduledNavigation` was already emitted.
@@ -1152,6 +1144,9 @@ export class BrowsingContextImpl {
     if (navigationResult === NavigationWaitResult.FAILED) {
       throw new UnknownErrorException('Navigation failed');
     }
+    if (navigationResult === NavigationWaitResult.ABORTED) {
+      throw new UnknownErrorException('Navigation aborted');
+    }
 
     return {
       navigation: navigation.navigationId,
@@ -1503,6 +1498,7 @@ export class BrowsingContextImpl {
         `No history entry at delta ${delta}`,
       );
     }
+    this.#navigationTracker.createNavigation(entry.url);
     await this.#cdpTarget.cdpClient.sendCommand('Page.navigateToHistoryEntry', {
       entryId: entry.id,
     });

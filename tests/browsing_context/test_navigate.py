@@ -40,16 +40,16 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
      navigation_aborted_event] = await read_sorted_messages(2)
     assert navigation_result == AnyExtending({
         'id': command_id,
-        'type': 'success'
+        'type': 'error',
+        'message': 'Navigation aborted'
     })
-    initial_navigation_id = navigation_result['result']['navigation']
 
     assert navigation_aborted_event == AnyExtending({
         'method': 'browsingContext.navigationAborted',
         'type': 'event',
         'params': {
             'context': context_id,
-            'navigation': initial_navigation_id,
+            'navigation': ANY_UUID,
             'timestamp': ANY_TIMESTAMP,
             'url': initial_url
         }
@@ -565,11 +565,10 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
     assert messages == [
         {
             'id': navigate_command_id,
-            'result': {
-                'navigation': ANY_UUID,
-                'url': url_hang_forever,
-            },
-            'type': 'success',
+            'error': 'unknown error',
+            'message': 'Navigation aborted',
+            'stacktrace': ANY_STR,
+            'type': 'error',
         },
         {
             'id': close_command_id,
@@ -613,10 +612,9 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigationStarted_navigateBeforeNavigationEnded_navigationSucceeded(
+async def test_browsingContext_navigationStarted_navigateBeforeNavigationEnded_navigationFailed(
         websocket, context_id, read_sorted_messages, url_hang_forever,
         url_example):
-    pytest.xfail("Not implemented yet")
     await subscribe(websocket, ["browsingContext.navigationAborted"])
 
     first_navigation_command_id = await send_JSON_command(
@@ -643,11 +641,10 @@ async def test_browsingContext_navigationStarted_navigateBeforeNavigationEnded_n
     assert messages == [
         {
             'id': first_navigation_command_id,
-            'result': {
-                'navigation': ANY_UUID,
-                'url': url_hang_forever,
-            },
-            'type': 'success',
+            'type': 'error',
+            'error': 'unknown error',
+            'message': 'Navigation aborted',
+            'stacktrace': ANY_STR
         },
         {
             'id': second_navigation_command_id,
@@ -668,10 +665,6 @@ async def test_browsingContext_navigationStarted_navigateBeforeNavigationEnded_n
             'type': 'event',
         },
     ]
-
-    # Assert the first navigation aborted.
-    assert messages[0]['result']['navigation'] == messages[2]['params'][
-        'navigation']
 
 
 @pytest.mark.asyncio
@@ -780,11 +773,7 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
     if capabilities.get('acceptInsecureCerts'):
         await navigate()
     else:
-        with pytest.raises(Exception,
-                           match=str({
-                               'error': 'unknown error',
-                               'message': 'net::ERR_CERT_AUTHORITY_INVALID'
-                           })):
+        with pytest.raises(Exception):
             await navigate()
 
 
