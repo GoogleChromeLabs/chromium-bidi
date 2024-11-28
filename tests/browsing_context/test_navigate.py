@@ -685,7 +685,7 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
         with pytest.raises(Exception,
                            match=str({
                                'error': 'unknown error',
-                               'message': 'net::ERR_CERT_AUTHORITY_INVALID'
+                               'message': 'navigation failed'
                            })):
             await navigate()
 

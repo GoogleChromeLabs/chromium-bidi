@@ -260,10 +260,6 @@ export class BrowsingContextImpl {
     load: new Deferred<void>(),
   };
 
-  #navigation = {
-    withinDocument: new Deferred<void>(),
-  };
-
   #url: string;
   readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
@@ -623,7 +619,6 @@ export class BrowsingContextImpl {
       }
       const timestamp = BrowsingContextImpl.getTimestamp();
       this.#url = params.url;
-      this.#navigation.withinDocument.resolve();
       this.#navigationTracker.navigatedWithinDocument(
         params.url,
         params.navigationType,
@@ -968,14 +963,6 @@ export class BrowsingContextImpl {
   #documentChanged(loaderId?: Protocol.Network.LoaderId) {
     if (loaderId === undefined || this.#loaderId === loaderId) {
       // Same document navigation. Document didn't change.
-      if (this.#navigation.withinDocument.isFinished) {
-        this.#navigation.withinDocument = new Deferred();
-      } else {
-        this.#logger?.(
-          BrowsingContextImpl.LOGGER_PREFIX,
-          'Document changed (navigatedWithinDocument)',
-        );
-      }
       return;
     }
 
@@ -1046,26 +1033,14 @@ export class BrowsingContextImpl {
       );
 
       if (cdpNavigateResult.errorText) {
-        // If navigation failed, no pending navigation is left.
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-            params: {
-              context: this.id,
-              navigation: navigation.navigationId,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url,
-            },
-          },
-          this.id,
-        );
-
-        throw new UnknownErrorException(cdpNavigateResult.errorText);
+        if (cdpNavigateResult.errorText === 'net::ERR_ABORTED') {
+          navigation.markNavigationAborted();
+        } else {
+          navigation.markNavigationFailed();
+        }
       }
 
       this.#documentChanged(cdpNavigateResult.loaderId);
-      return cdpNavigateResult;
     })();
 
     if (wait === BrowsingContext.ReadinessState.None) {
