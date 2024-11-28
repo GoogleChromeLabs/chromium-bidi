@@ -20,7 +20,7 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigateWaitInteractive_redirect(
+async def test_browsingContext_navigateWaitInteractive_redirect_navigaionFailed(
         websocket, context_id, html, url_example, read_sorted_messages):
     await subscribe(websocket, ["browsingContext.navigationAborted"])
 
@@ -39,17 +39,18 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
     [navigation_result,
      navigation_aborted_event] = await read_sorted_messages(2)
     assert navigation_result == AnyExtending({
+        'error': 'unknown error',
         'id': command_id,
-        'type': 'success'
+        'message': 'navigation aborted',
+        'stacktrace': ANY_STR,
+        'type': 'error',
     })
-    initial_navigation_id = navigation_result['result']['navigation']
-
     assert navigation_aborted_event == AnyExtending({
         'method': 'browsingContext.navigationAborted',
         'type': 'event',
         'params': {
             'context': context_id,
-            'navigation': initial_navigation_id,
+            'navigation': ANY_UUID,
             'timestamp': ANY_TIMESTAMP,
             'url': initial_url
         }
@@ -566,7 +567,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': navigate_command_id,
         'type': 'error',
         'error': 'unknown error',
-        'message': 'navigation canceled by context disposal',
+        'message': 'navigation aborted',
     })
 
     assert close_command_result == AnyExtending({

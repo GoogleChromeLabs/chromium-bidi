@@ -110,7 +110,6 @@ class NavigationState {
 class NavigationTracker {
   #initialNavigation: NavigationState;
   #currentNavigation: NavigationState;
-  // changedDeferred = new Deferred<NavigationState>();
   readonly #eventManager: EventManager;
   readonly #browsingContextId: string;
 
@@ -276,9 +275,6 @@ export class BrowsingContextImpl {
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
 
-  // Set if there is a pending navigation initiated by `BrowsingContext.navigate` command.
-  // The promise is resolved when the navigation is finished or rejected when canceled.
-  #pendingCommandNavigation: Deferred<void> | undefined;
   // Flags if the initial navigation to `about:blank` is in progress.
   #initialNavigation = true;
 
@@ -407,9 +403,7 @@ export class BrowsingContextImpl {
   }
 
   dispose(emitContextDestroyed: boolean) {
-    this.#pendingCommandNavigation?.reject(
-      new UnknownErrorException('navigation canceled by context disposal'),
-    );
+    this.#navigationTracker.dispose();
     this.#deleteAllChildren();
 
     this.#realmStorage.deleteRealms({
@@ -675,13 +669,6 @@ export class BrowsingContextImpl {
 
       this.#navigationTracker.frameRequestedNavigation(params.url);
 
-      if (this.#pendingCommandNavigation !== undefined) {
-        // The pending navigation was aborted by the new one.
-        this.#pendingCommandNavigation.reject(
-          new UnknownErrorException('navigation aborted'),
-        );
-        this.#pendingCommandNavigation = undefined;
-      }
       if (!urlMatchesAboutBlank(params.url)) {
         // If the url does not match about:blank, do not consider it is an initial
         // navigation and emit all the required events.
@@ -1043,12 +1030,7 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
-    this.#pendingCommandNavigation?.reject(
-      new UnknownErrorException('navigation canceled by concurrent navigation'),
-    );
     await this.targetUnblockedOrThrow();
-
-    this.#pendingCommandNavigation = new Deferred<void>();
 
     const navigation = this.#navigationTracker.createNavigation(url);
 
@@ -1087,24 +1069,21 @@ export class BrowsingContextImpl {
     })();
 
     if (wait === BrowsingContext.ReadinessState.None) {
-      // Do not wait for the result of the navigation promise.
-      this.#pendingCommandNavigation?.resolve();
-      this.#pendingCommandNavigation = undefined;
-
       return {
         navigation: navigation.navigationId,
         url: navigation.url,
       };
     }
 
-    const cdpNavigateResult = await cdpNavigatePromise;
+    await cdpNavigatePromise;
 
     // Wait for either the navigation is finished or canceled by another navigation.
-    await Promise.race([
-      // No `loaderId` means same-document navigation.
-      this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
+    const result = await Promise.race([
+      this.#waitNavigation(wait).then(() => {
+        return 'finished';
+      }),
       // Throw an error if the navigation is canceled.
-      this.#pendingCommandNavigation,
+      navigation.finished,
     ]).catch((e) => {
       // Aborting navigation should not fail the original navigation command for now.
       // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
@@ -1113,24 +1092,20 @@ export class BrowsingContextImpl {
       }
     });
 
-    // `#pendingCommandNavigation` can be already rejected and set to undefined.
-    this.#pendingCommandNavigation?.resolve();
-    this.#pendingCommandNavigation = undefined;
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed)
+      throw new UnknownErrorException('navigation failed');
+
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted)
+      throw new UnknownErrorException('navigation aborted');
+
     return {
       navigation: navigation.navigationId,
       // Url can change due to redirect. Get the latest one.
-      url: this.#url,
+      url: navigation.url,
     };
   }
 
-  async #waitNavigation(
-    wait: BrowsingContext.ReadinessState,
-    withinDocument: boolean,
-  ) {
-    if (withinDocument) {
-      await this.#navigation.withinDocument;
-      return;
-    }
+  async #waitNavigation(wait: BrowsingContext.ReadinessState) {
     switch (wait) {
       case BrowsingContext.ReadinessState.None:
         return;
