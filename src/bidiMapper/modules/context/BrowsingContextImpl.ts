@@ -108,7 +108,7 @@ class NavigationState {
 }
 
 class NavigationTracker {
-  #initialNavigation: NavigationState;
+  #initialNavigation = true;
   #currentNavigation: NavigationState;
   readonly #eventManager: EventManager;
   readonly #browsingContextId: string;
@@ -121,7 +121,6 @@ class NavigationTracker {
       this.#browsingContextId,
       'about:blank',
     );
-    this.#initialNavigation = this.#currentNavigation;
   }
 
   get navigationId(): string {
@@ -133,6 +132,7 @@ class NavigationTracker {
   }
 
   createNavigation(url: string): NavigationState {
+    this.#initialNavigation = false;
     if (this.#currentNavigation !== undefined) {
       this.#currentNavigation.markNavigationAborted();
     }
@@ -157,18 +157,14 @@ class NavigationTracker {
     });
 
     void navigation.finished.then((eventName: NavigationEventName) => {
-      if (
-        eventName === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted
-      ) {
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: eventName,
-            params: navigation.navigationInfo(),
-          },
-          this.#browsingContextId,
-        );
-      }
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: eventName,
+          params: navigation.navigationInfo(),
+        },
+        this.#browsingContextId,
+      );
       return;
     });
   }
@@ -201,8 +197,7 @@ class NavigationTracker {
       this.#currentNavigation.cdpStates.frameStartedLoading ||
       this.#currentNavigation.cdpStates.frameRequestedNavigation ||
       this.#currentNavigation.cdpStates.frameScheduledNavigation ||
-      (this.#initialNavigation === this.#currentNavigation &&
-        !urlMatchesAboutBlank(url));
+      (this.#initialNavigation && !urlMatchesAboutBlank(url));
 
     if (isNewNavigation) {
       this.createNavigation(url);
@@ -224,8 +219,7 @@ class NavigationTracker {
     const isNewNavigation =
       this.#currentNavigation.cdpStates.frameStartedLoading ||
       this.#currentNavigation.cdpStates.frameRequestedNavigation ||
-      (this.#initialNavigation === this.#currentNavigation &&
-        !urlMatchesAboutBlank(url));
+      (this.#initialNavigation && !urlMatchesAboutBlank(url));
 
     if (isNewNavigation) {
       this.createNavigation(url);
@@ -617,28 +611,11 @@ export class BrowsingContextImpl {
         );
         return;
       }
-      const timestamp = BrowsingContextImpl.getTimestamp();
       this.#url = params.url;
       this.#navigationTracker.navigatedWithinDocument(
         params.url,
         params.navigationType,
       );
-
-      if (params.navigationType === 'fragment') {
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-            params: {
-              context: this.id,
-              navigation: this.#navigationTracker.navigationId,
-              timestamp,
-              url: this.#url,
-            },
-          },
-          this.id,
-        );
-      }
     });
 
     this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
@@ -1033,11 +1010,8 @@ export class BrowsingContextImpl {
       );
 
       if (cdpNavigateResult.errorText) {
-        if (cdpNavigateResult.errorText === 'net::ERR_ABORTED') {
-          navigation.markNavigationAborted();
-        } else {
-          navigation.markNavigationFailed();
-        }
+        navigation.markNavigationFailed();
+        return;
       }
 
       this.#documentChanged(cdpNavigateResult.loaderId);
@@ -1050,34 +1024,24 @@ export class BrowsingContextImpl {
       };
     }
 
-
-
     await cdpNavigatePromise;
 
-    // Wait for either the navigation is finished or canceled by another navigation.
-    const result = await Promise.race([
-      this.#waitNavigation(wait).then(() => {
-        return 'finished';
-      }),
-      // Throw an error if the navigation is canceled.
+    // Wait for either the wait condition or navigation is finished.
+    const result: NavigationEventName | void = await Promise.race([
+      this.#waitNavigation(wait),
       navigation.finished,
-    ]).catch((e) => {
-      // Aborting navigation should not fail the original navigation command for now.
-      // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-      if (e.message !== 'navigation aborted') {
-        throw e;
-      }
-    });
+    ]);
 
-    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed)
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed) {
       throw new UnknownErrorException('navigation failed');
+    }
 
-    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted)
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
       throw new UnknownErrorException('navigation aborted');
+    }
 
     return {
       navigation: navigation.navigationId,
-      // Url can change due to redirect. Get the latest one.
       url: navigation.url,
     };
   }
