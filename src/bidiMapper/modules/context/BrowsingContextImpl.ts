@@ -1050,6 +1050,8 @@ export class BrowsingContextImpl {
       };
     }
 
+
+
     await cdpNavigatePromise;
 
     // Wait for either the navigation is finished or canceled by another navigation.
