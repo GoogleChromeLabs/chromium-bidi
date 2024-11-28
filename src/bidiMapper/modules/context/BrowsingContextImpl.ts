@@ -157,16 +157,21 @@ class NavigationTracker {
       return;
     });
 
-    // navigation.finished.then((eventName: NavigationEventName) => {
-    //   this.#eventManager.registerEvent(
-    //     {
-    //       type: 'event',
-    //       method: eventName,
-    //       params: navigation.navigationInfo(),
-    //     },
-    //     this.#browsingContextId,
-    //   )
-    // })
+    void navigation.finished.then((eventName: NavigationEventName) => {
+      if (
+        eventName === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted
+      ) {
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: eventName,
+            params: navigation.navigationInfo(),
+          },
+          this.#browsingContextId,
+        );
+      }
+      return;
+    });
   }
 
   frameNavigated(url: string): void {
@@ -672,19 +677,6 @@ export class BrowsingContextImpl {
 
       if (this.#pendingCommandNavigation !== undefined) {
         // The pending navigation was aborted by the new one.
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-            params: {
-              context: this.id,
-              navigation: this.#navigationTracker.navigationId,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url: this.#url,
-            },
-          },
-          this.id,
-        );
         this.#pendingCommandNavigation.reject(
           new UnknownErrorException('navigation aborted'),
         );
