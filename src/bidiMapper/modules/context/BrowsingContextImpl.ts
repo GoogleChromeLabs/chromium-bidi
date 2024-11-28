@@ -157,18 +157,14 @@ class NavigationTracker {
     });
 
     void navigation.finished.then((eventName: NavigationEventName) => {
-      if (
-        eventName === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted
-      ) {
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: eventName,
-            params: navigation.navigationInfo(),
-          },
-          this.#browsingContextId,
-        );
-      }
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: eventName,
+          params: navigation.navigationInfo(),
+        },
+        this.#browsingContextId,
+      );
       return;
     });
   }
@@ -617,28 +613,11 @@ export class BrowsingContextImpl {
         );
         return;
       }
-      const timestamp = BrowsingContextImpl.getTimestamp();
       this.#url = params.url;
       this.#navigationTracker.navigatedWithinDocument(
         params.url,
         params.navigationType,
       );
-
-      if (params.navigationType === 'fragment') {
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-            params: {
-              context: this.id,
-              navigation: this.#navigationTracker.navigationId,
-              timestamp,
-              url: this.#url,
-            },
-          },
-          this.id,
-        );
-      }
     });
 
     this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
@@ -1038,6 +1017,7 @@ export class BrowsingContextImpl {
         } else {
           navigation.markNavigationFailed();
         }
+        return;
       }
 
       this.#documentChanged(cdpNavigateResult.loaderId);
@@ -1050,8 +1030,6 @@ export class BrowsingContextImpl {
       };
     }
 
-
-
     await cdpNavigatePromise;
 
     // Wait for either the navigation is finished or canceled by another navigation.
@@ -1061,19 +1039,15 @@ export class BrowsingContextImpl {
       }),
       // Throw an error if the navigation is canceled.
       navigation.finished,
-    ]).catch((e) => {
-      // Aborting navigation should not fail the original navigation command for now.
-      // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-      if (e.message !== 'navigation aborted') {
-        throw e;
-      }
-    });
+    ]);
 
-    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed)
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed) {
       throw new UnknownErrorException('navigation failed');
+    }
 
-    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted)
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
       throw new UnknownErrorException('navigation aborted');
+    }
 
     return {
       navigation: navigation.navigationId,
