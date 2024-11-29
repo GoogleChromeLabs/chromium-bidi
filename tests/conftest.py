@@ -298,6 +298,11 @@ def url_cacheable(local_server_http):
     return local_server_http.url_cacheable()
 
 
+def _sort_messages(messages):
+    messages.sort(key=lambda x: x["method"] if "method" in x else str(x["id"])
+                  if "id" in x else "")
+
+
 @pytest.fixture
 def read_sorted_messages(websocket):
     """Read the given number of messages from the websocket, and returns them
@@ -313,25 +318,41 @@ def read_sorted_messages(websocket):
                 if filter_lambda(message):
                     break
             messages.append(message)
-        messages.sort(key=lambda x: x["method"]
-                      if "method" in x else str(x["id"]) if "id" in x else "")
+        _sort_messages(messages)
         return messages
 
     return read_sorted_messages
 
 
 @pytest.fixture
+def assert_sorted_messages(websocket, read_sorted_messages,
+                           assert_no_more_messages):
+    """Read the given number of messages from the websocket, and returns them
+    in consistent order. Ignore messages that do not match the filter."""
+    async def assert_sorted_messages(expected_messages):
+        actual_messages = await read_sorted_messages(len(expected_messages))
+        await assert_no_more_messages()
+        assert actual_messages == expected_messages
+
+    return assert_sorted_messages
+
+
+@pytest.fixture
 def assert_no_more_messages(websocket):
     """Assert that there are no more messages on the websocket."""
     async def assert_no_more_messages():
+        unexpected_messages = []
         """ Walk through all the browsing contexts and evaluate an async script"""
         command_id = await send_JSON_command(websocket, {
             'method': 'browsingContext.getTree',
             'params': {}
         })
         message = await read_JSON_message(websocket)
-        if message != AnyExtending({'type': 'success', 'id': command_id}):
-            raise Exception(f"Unexpected message {message}")
+        while message != AnyExtending({'id': command_id}):
+            unexpected_messages.append(message)
+            message = await read_JSON_message(websocket)
+
+        assert message['type'] == 'success', 'Unexpected error'
 
         for context in message['result']['contexts']:
             command_id = await send_JSON_command(
@@ -346,8 +367,12 @@ def assert_no_more_messages(websocket):
                     }
                 })
             message = await read_JSON_message(websocket)
-            if message != AnyExtending({'type': 'success', 'id': command_id}):
-                raise Exception(f"Unexpected message {message}")
+            while message != AnyExtending({'id': command_id}):
+                unexpected_messages.append(message)
+                message = await read_JSON_message(websocket)
+
+        _sort_messages(unexpected_messages)
+        assert unexpected_messages == [], 'Unexpected messages'
 
     return assert_no_more_messages
 
