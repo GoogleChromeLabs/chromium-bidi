@@ -20,7 +20,7 @@ from test_helpers import AnyExtending, send_JSON_command, subscribe
 @pytest.mark.asyncio
 async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
                                                    url_example,
-                                                   assert_sorted_messages):
+      assert_only_messages):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html(f"<script>window.location='{url_example}';</script>")
@@ -35,7 +35,7 @@ async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
             }
         })
 
-    await assert_sorted_messages([
+    await assert_only_messages([
         AnyExtending({
             'id': command_id,
             'type': 'success',
@@ -85,7 +85,7 @@ async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
 
 @pytest.mark.asyncio
 async def test_navigate_scriptFragmentRedirect_checkEvents(
-        websocket, context_id, html, url_example, assert_sorted_messages):
+        websocket, context_id, html, url_example, assert_only_messages):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html("<script>window.location='#test';</script>")
@@ -101,7 +101,7 @@ async def test_navigate_scriptFragmentRedirect_checkEvents(
             }
         })
 
-    await assert_sorted_messages([
+    await assert_only_messages([
         AnyExtending({
             'id': command_id,
             'result': {
@@ -147,7 +147,7 @@ async def test_navigate_scriptFragmentRedirect_checkEvents(
 @pytest.mark.asyncio
 async def test_navigate_anotherNavigate_checkEvents(websocket, context_id,
                                                     url_example,
-                                                    assert_sorted_messages,
+      assert_only_messages,
                                                     url_hang_forever):
     await subscribe(websocket, ["browsingContext"])
 
@@ -171,7 +171,7 @@ async def test_navigate_anotherNavigate_checkEvents(websocket, context_id,
             }
         })
 
-    await assert_sorted_messages([
+    await assert_only_messages([
         AnyExtending({
             'error': 'unknown error',
             'id': first_navigation_command_id,

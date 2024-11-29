@@ -325,22 +325,31 @@ def read_sorted_messages(websocket):
 
 
 @pytest.fixture
-def assert_sorted_messages(websocket, read_sorted_messages,
-                           assert_no_more_messages):
-    """Read the given number of messages from the websocket, and returns them
-    in consistent order. Ignore messages that do not match the filter."""
-    async def assert_sorted_messages(expected_messages):
-        actual_messages = await read_sorted_messages(len(expected_messages))
-        await assert_no_more_messages()
+def assert_only_messages(websocket, read_sorted_messages,
+      get_other_messages):
+    """Asserts the expected messages match the sorted actual messages."""
+    async def assert_only_messages(expected_messages):
+        actual_messages = (await read_sorted_messages(
+            len(expected_messages))) + (await get_other_messages())
+        _sort_messages(actual_messages)
         assert actual_messages == expected_messages
 
-    return assert_sorted_messages
+    return assert_only_messages
 
 
 @pytest.fixture
-def assert_no_more_messages(websocket):
+def assert_no_more_messages(websocket, get_other_messages):
     """Assert that there are no more messages on the websocket."""
     async def assert_no_more_messages():
+        assert await get_other_messages() == [], 'Unexpected messages'
+
+    return assert_no_more_messages
+
+
+@pytest.fixture
+def get_other_messages(websocket):
+    """Assert that there are no more messages on the websocket."""
+    async def get_other_messages():
         unexpected_messages = []
         """ Walk through all the browsing contexts and evaluate an async script"""
         command_id = await send_JSON_command(websocket, {
@@ -371,10 +380,9 @@ def assert_no_more_messages(websocket):
                 unexpected_messages.append(message)
                 message = await read_JSON_message(websocket)
 
-        _sort_messages(unexpected_messages)
-        assert unexpected_messages == [], 'Unexpected messages'
+        return unexpected_messages
 
-    return assert_no_more_messages
+    return get_other_messages
 
 
 # TODO: Rewrite this fixture in terms of assert_no_events_in_queue.
