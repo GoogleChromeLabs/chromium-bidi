@@ -48,7 +48,8 @@ describe('Exception', () => {
     [ErrorCode.UnknownCommand]: undefined,
     [ErrorCode.UnknownError]: undefined,
     [ErrorCode.UnsupportedOperation]: undefined,
-
+    [ErrorCode.InvalidWebExtension]: undefined,
+    [ErrorCode.NoSuchWebExtension]: undefined,
     // keep-sorted end
   };
 
