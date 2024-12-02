@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -127,3 +127,45 @@ async def test_browsingContext_load_properNavigation(websocket, context_id,
         'navigation']
 
     await assert_no_more_messages()
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_load_documentWrite(websocket, context_id,
+                                                  url_example,
+                                                  read_sorted_messages,
+                                                  assert_no_more_messages):
+    await subscribe(websocket, "browsingContext.load")
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": """document.open(); document.write("<h1>Replaced</h1>"); document.close();""",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+                "userActivation": True
+            }
+        })
+
+    messages = await read_sorted_messages(2)
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'result': {
+                'type': 'success',
+            },
+            'type': 'success',
+        }),
+        {
+            'method': 'browsingContext.load',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': 'about:blank',
+            },
+            'type': 'event',
+        },
+    ]
