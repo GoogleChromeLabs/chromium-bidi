@@ -20,7 +20,8 @@ from test_helpers import AnyExtending, send_JSON_command, subscribe
 @pytest.mark.asyncio
 async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
                                                    url_example,
-      assert_only_messages):
+                                                   read_sorted_messages,
+                                                   assert_no_more_messages):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html(f"<script>window.location='{url_example}';</script>")
@@ -35,10 +36,15 @@ async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
             }
         })
 
-    await assert_only_messages([
+    messages = await read_sorted_messages(6)
+    await assert_no_more_messages()
+
+    assert messages == [
         AnyExtending({
+            'error': 'unknown error',
             'id': command_id,
-            'type': 'success',
+            'message': 'navigation aborted',
+            'type': 'error',
         }),
         AnyExtending({
             'method': 'browsingContext.domContentLoaded',
@@ -79,13 +85,14 @@ async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
                 'url': url_example,
             },
             'type': 'event',
-        }),
-    ])
+        })
+    ]
 
 
 @pytest.mark.asyncio
 async def test_navigate_scriptFragmentRedirect_checkEvents(
-        websocket, context_id, html, url_example, assert_only_messages):
+        websocket, context_id, html, url_example, read_sorted_messages,
+        assert_no_more_messages):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html("<script>window.location='#test';</script>")
@@ -101,7 +108,9 @@ async def test_navigate_scriptFragmentRedirect_checkEvents(
             }
         })
 
-    await assert_only_messages([
+    messages = await read_sorted_messages(5)
+    await assert_no_more_messages()
+    assert messages == [
         AnyExtending({
             'id': command_id,
             'result': {
@@ -140,14 +149,71 @@ async def test_navigate_scriptFragmentRedirect_checkEvents(
                 'url': initial_url,
             },
             'type': 'event',
+        })
+    ]
+
+
+@pytest.mark.asyncio
+async def test_nested_navigate_scriptFragmentRedirect_checkEvents(
+        websocket, iframe_id, html, url_example, read_sorted_messages,
+        assert_no_more_messages):
+    await subscribe(websocket, ["browsingContext"])
+
+    initial_url = html("<script>window.location='#test';</script>")
+    final_url = initial_url + "#test"
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": initial_url,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
+
+    messages = await read_sorted_messages(4)
+    await assert_no_more_messages()
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'result': {
+                'url': final_url,
+            },
+            'type': 'success',
         }),
-    ])
+        AnyExtending({
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': iframe_id,
+                'url': final_url,
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.load',
+            'params': {
+                'context': iframe_id,
+                'url': final_url,
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': iframe_id,
+                'url': initial_url,
+            },
+            'type': 'event',
+        }),
+    ]
 
 
 @pytest.mark.asyncio
 async def test_navigate_anotherNavigate_checkEvents(websocket, context_id,
                                                     url_example,
-      assert_only_messages,
+                                                    read_sorted_messages,
+                                                    assert_no_more_messages,
                                                     url_hang_forever):
     await subscribe(websocket, ["browsingContext"])
 
@@ -171,11 +237,13 @@ async def test_navigate_anotherNavigate_checkEvents(websocket, context_id,
             }
         })
 
-    await assert_only_messages([
+    messages = await read_sorted_messages(6)
+    await assert_no_more_messages()
+    assert messages == [
         AnyExtending({
             'error': 'unknown error',
             'id': first_navigation_command_id,
-            'message': 'net::ERR_ABORTED',
+            'message': 'navigation aborted',
             'type': 'error',
         }),
         AnyExtending({
@@ -202,7 +270,7 @@ async def test_navigate_anotherNavigate_checkEvents(websocket, context_id,
             'type': 'event',
         }),
         AnyExtending({
-            'method': 'browsingContext.navigationFailed',
+            'method': 'browsingContext.navigationAborted',
             'params': {
                 'context': context_id,
                 'url': url_hang_forever,
@@ -217,12 +285,4 @@ async def test_navigate_anotherNavigate_checkEvents(websocket, context_id,
             },
             'type': 'event',
         }),
-        AnyExtending({
-            'method': 'browsingContext.navigationStarted',
-            'params': {
-                'context': context_id,
-                'url': 'UNKNOWN',
-            },
-            'type': 'event',
-        })
-    ])
+    ]

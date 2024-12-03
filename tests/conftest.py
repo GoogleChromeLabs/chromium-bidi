@@ -325,19 +325,6 @@ def read_sorted_messages(websocket):
 
 
 @pytest.fixture
-def assert_only_messages(websocket, read_sorted_messages,
-      get_other_messages):
-    """Asserts the expected messages match the sorted actual messages."""
-    async def assert_only_messages(expected_messages):
-        actual_messages = (await read_sorted_messages(
-            len(expected_messages))) + (await get_other_messages())
-        _sort_messages(actual_messages)
-        assert actual_messages == expected_messages
-
-    return assert_only_messages
-
-
-@pytest.fixture
 def assert_no_more_messages(websocket, get_other_messages):
     """Assert that there are no more messages on the websocket."""
     async def assert_no_more_messages():

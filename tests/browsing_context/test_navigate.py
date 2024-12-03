@@ -372,11 +372,11 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_viaScript(
-        websocket, context_id, url_base):
+        websocket, context_id, url_base, read_sorted_messages):
     serialized_url = {"type": "string", "value": url_base}
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.callFunction",
             "params": {
@@ -391,18 +391,25 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            # TODO: Should report correct string
-            "url": ANY_STR,
+    messages = await read_sorted_messages(2)
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'result': {
+                'type': 'success',
+            },
+            'type': 'success',
+        }), {
+            'type': 'event',
+            "method": "browsingContext.navigationStarted",
+            "params": {
+                "context": context_id,
+                "navigation": ANY_UUID,
+                "timestamp": ANY_TIMESTAMP,
+                "url": url_base,
+            }
         }
-    }
+    ]
 
 
 @pytest.mark.asyncio
@@ -578,7 +585,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_sameDocumentNavigation(
-        websocket, context_id, url_base):
+        websocket, context_id, url_base, assert_no_more_messages):
     await subscribe(
         websocket,
         ["browsingContext.navigationStarted", "browsingContext.load"])
@@ -631,7 +638,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
     })
 
     # Make same-document navigation.
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
@@ -645,18 +652,14 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
 
     response = await read_JSON_message(websocket)
     assert response == AnyExtending({
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            "url": url_base + "#test",
-        }
+        'id': command_id,
+        'result': {
+            'type': 'success',
+        },
+        'type': 'success',
     })
 
-    new_navigation_id = response["params"]["navigation"]
-    assert new_navigation_id != navigation_id
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
