@@ -470,7 +470,7 @@ export class BrowsingContextImpl {
         return;
       }
 
-      this.#navigationTracker.requestWillBeSent();
+      this.#navigationTracker.requestWillBeSent(params.requestId);
     });
 
     this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {

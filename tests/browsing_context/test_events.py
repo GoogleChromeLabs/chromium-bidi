@@ -172,7 +172,7 @@ async def test_nested_navigate_scriptFragmentRedirect_checkEvents(
             }
         })
 
-    messages = await read_sorted_messages(4)
+    messages = await read_sorted_messages(5)
     await assert_no_more_messages()
     assert messages == [
         AnyExtending({
@@ -191,6 +191,13 @@ async def test_nested_navigate_scriptFragmentRedirect_checkEvents(
             'type': 'event',
         }),
         AnyExtending({
+            'method': 'browsingContext.fragmentNavigated',
+            'params': {
+                'context': iframe_id,
+                'url': final_url,
+            }
+        }),
+        AnyExtending({
             'method': 'browsingContext.load',
             'params': {
                 'context': iframe_id,
@@ -205,7 +212,7 @@ async def test_nested_navigate_scriptFragmentRedirect_checkEvents(
                 'url': initial_url,
             },
             'type': 'event',
-        }),
+        })
     ]
 
 

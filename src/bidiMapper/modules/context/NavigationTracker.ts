@@ -35,6 +35,7 @@ export type NavigationEventName =
 class NavigationState {
   started = new Deferred<void>();
   finished = new Deferred<NavigationEventName>();
+  cdpNetworkRequestId?: string;
 
   readonly navigationId = uuidv4();
   url: string;
@@ -156,7 +157,11 @@ export class NavigationTracker {
     }
   }
 
-  requestWillBeSent() {
+  requestWillBeSent(cdpNetworkRequestId: string) {
+    if (this.#currentNavigation.cdpNetworkRequestId === cdpNetworkRequestId) {
+      // The same request can be due to redirect. Ignore if so.
+      return;
+    }
     this.#currentNavigation.finished.resolve(
       ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
     );
@@ -171,6 +176,7 @@ export class NavigationTracker {
 
     this.#ongoingNavigation.started.resolve();
     this.#currentNavigation = this.#ongoingNavigation;
+    this.#currentNavigation.cdpNetworkRequestId = cdpNetworkRequestId;
     this.#ongoingNavigation = undefined;
   }
 
