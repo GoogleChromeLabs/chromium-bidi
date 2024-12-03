@@ -16,7 +16,7 @@
  */
 import {expect} from 'chai';
 
-import {getTimestamp} from './Time.js';
+import {getTimestamp} from './time.js';
 
 describe('getTimestamp', () => {
   it('should return a number', () => {

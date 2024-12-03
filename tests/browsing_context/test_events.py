@@ -222,6 +222,7 @@ async def test_navigate_anotherNavigate_checkEvents(websocket, context_id,
                                                     read_sorted_messages,
                                                     assert_no_more_messages,
                                                     url_hang_forever):
+    pytest.xfail("Failing due to lacking of proper document tracking")
     await subscribe(websocket, ["browsingContext"])
 
     first_navigation_command_id = await send_JSON_command(

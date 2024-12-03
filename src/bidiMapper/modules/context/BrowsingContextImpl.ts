@@ -33,7 +33,7 @@ import {
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
-import {getTimestamp} from '../../../utils/Time.js';
+import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
@@ -676,6 +676,11 @@ export class BrowsingContextImpl {
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
       const promptType = BrowsingContextImpl.#getPromptType(params.type);
+
+      if (promptType === BrowsingContext.UserPromptType.Beforeunload) {
+        // Hack.
+        this.#navigationTracker.beforeunload();
+      }
       // Set the last prompt type to provide it in closing event.
       this.#lastUserPromptType = promptType;
       const promptHandler = this.#getPromptHandler(promptType);

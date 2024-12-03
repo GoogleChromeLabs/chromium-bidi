@@ -22,7 +22,7 @@ import {
 } from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
-import {getTimestamp} from '../../../utils/Time.js';
+import {getTimestamp} from '../../../utils/time.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -36,6 +36,8 @@ class NavigationState {
   started = new Deferred<void>();
   finished = new Deferred<NavigationEventName>();
   cdpNetworkRequestId?: string;
+  // Hack.
+  startedByBeforeUnload = false;
 
   readonly navigationId = uuidv4();
   url: string;
@@ -157,9 +159,33 @@ export class NavigationTracker {
     }
   }
 
+  beforeunload() {
+    // Hack.
+    this.#currentNavigation.finished.resolve(
+      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+    );
+    if (this.#ongoingNavigation === undefined) {
+      // http://goto.google.com/webdriver:detect-navigation-started
+      this.#logger?.(
+        LogType.debugError,
+        'Unexpectedly unset ongoingNavigation on beforeunload',
+      );
+      return;
+    }
+
+    this.#ongoingNavigation.started.resolve();
+    this.#currentNavigation = this.#ongoingNavigation;
+    this.#currentNavigation.startedByBeforeUnload = true;
+    this.#ongoingNavigation = undefined;
+  }
+
   requestWillBeSent(cdpNetworkRequestId: string) {
     if (this.#currentNavigation.cdpNetworkRequestId === cdpNetworkRequestId) {
       // The same request can be due to redirect. Ignore if so.
+      return;
+    }
+    if (this.#currentNavigation.startedByBeforeUnload) {
+      // Hack.
       return;
     }
     this.#currentNavigation.finished.resolve(
