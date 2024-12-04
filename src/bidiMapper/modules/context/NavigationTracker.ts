@@ -46,6 +46,12 @@ class NavigationState {
   constructor(browsingContextId: string, url: string) {
     this.#browsingContextId = browsingContextId;
     this.url = url;
+    void this.finished.then(() => {
+      this.started.reject(
+        new Error('Navigation finished without being started'),
+      );
+      return;
+    });
   }
 
   navigationInfo(): BrowsingContext.NavigationInfo {
@@ -105,17 +111,22 @@ export class NavigationTracker {
   }
 
   #setEventListeners(navigation: NavigationState) {
-    void navigation.started.then(() => {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-          params: navigation.navigationInfo(),
-        },
-        this.#browsingContextId,
-      );
-      return;
-    });
+    void navigation.started
+      .then(() => {
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+            params: navigation.navigationInfo(),
+          },
+          this.#browsingContextId,
+        );
+        return;
+      })
+      .catch(() => {
+        // Navigation can be finished without being started in case of fragment navigation. Ignore.
+        return;
+      });
 
     void navigation.finished.then((eventName: NavigationEventName) => {
       if (

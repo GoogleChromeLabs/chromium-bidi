@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import AnyExtending, send_JSON_command, subscribe
+from test_helpers import AnyExtending, goto_url, send_JSON_command, subscribe
 
 
 @pytest.mark.asyncio
@@ -290,6 +290,179 @@ async def test_navigate_anotherNavigate_checkEvents(websocket, context_id,
             'params': {
                 'context': context_id,
                 'url': url_example,
+            },
+            'type': 'event',
+        }),
+    ]
+
+
+@pytest.mark.asyncio
+async def test_navigate_aboutBlank_checkEvents(websocket, context_id,
+                                               url_example,
+                                               read_sorted_messages,
+                                               assert_no_more_messages):
+
+    await goto_url(websocket, context_id, url_example)
+
+    await subscribe(websocket, ["browsingContext"])
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "about:blank",
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_sorted_messages(4)
+    await assert_no_more_messages()
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'result': {
+                'url': 'about:blank',
+            },
+            'type': 'success',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': context_id,
+                'url': 'about:blank',
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.load',
+            'params': {
+                'context': context_id,
+                'url': 'about:blank',
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': context_id,
+                'url': 'about:blank',
+            },
+            'type': 'event',
+        }),
+    ]
+
+
+@pytest.mark.asyncio
+async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_example,
+                                            read_sorted_messages,
+                                            assert_no_more_messages):
+
+    data_url = "data:text/html;,<h2>header</h2>"
+    await goto_url(websocket, context_id, url_example)
+
+    await subscribe(websocket, ["browsingContext"])
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": data_url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_sorted_messages(4)
+    await assert_no_more_messages()
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'result': {
+                'url': data_url,
+            },
+            'type': 'success',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': context_id,
+                'url': data_url,
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.load',
+            'params': {
+                'context': context_id,
+                'url': data_url,
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': context_id,
+                'url': data_url,
+            },
+            'type': 'event',
+        }),
+    ]
+
+
+@pytest.mark.asyncio
+async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
+                                                     url_example, html,
+                                                     read_sorted_messages,
+                                                     assert_no_more_messages):
+
+    await subscribe(websocket, ["browsingContext"])
+
+    about_blank_url = 'about:blank'
+    initial_url = html(
+        f"<script>window.location='{about_blank_url}';</script>")
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": initial_url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_sorted_messages(4)
+    await assert_no_more_messages()
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'result': {
+                'url': about_blank_url,
+            },
+            'type': 'success',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': context_id,
+                'url': about_blank_url,
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.load',
+            'params': {
+                'context': context_id,
+                'url': about_blank_url,
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': context_id,
+                'url': initial_url,
             },
             'type': 'event',
         }),

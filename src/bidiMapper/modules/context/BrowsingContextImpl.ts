@@ -846,6 +846,12 @@ export class BrowsingContextImpl {
         return;
       }
 
+      if (cdpNavigateResult.loaderId !== undefined) {
+        // If CDP navigation command finished with cross-document navigation, make sure
+        // the navigation was marked as started.
+        navigation.started.resolve();
+      }
+
       this.#documentChanged(cdpNavigateResult.loaderId);
     })();
 
