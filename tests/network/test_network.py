@@ -424,6 +424,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
 @pytest.mark.asyncio
 async def test_network_specific_context_subscription_does_not_enable_cdp_network_globally(
         websocket, context_id, create_context, url_base):
+    pytest.xfail("Network domain is enabled for navigation detection")
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     new_context_id = await create_context()

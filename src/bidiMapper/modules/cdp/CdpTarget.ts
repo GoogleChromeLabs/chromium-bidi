@@ -192,7 +192,11 @@ export class CdpTarget {
             // prerendered pages. Generic catch, as the error can vary between CdpClient
             // implementations: Tab vs Puppeteer.
           }),
-        this.toggleNetworkIfNeeded(),
+        // Enabling Network domain is required for navigation detection:
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
+        this.#cdpClient
+          .sendCommand('Network.enable')
+          .then(() => this.toggleExtendedNetworkIfNeeded()),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,
@@ -317,10 +321,10 @@ export class CdpTarget {
   }
 
   /**
-   * Toggles both Network and Fetch domains.
+   * Toggle Fetch domains and enable/disable network cache.
    */
-  async toggleNetworkIfNeeded(): Promise<void> {
-    const enabled = this.isSubscribedTo(BiDiModule.Network);
+  async toggleExtendedNetworkIfNeeded(): Promise<void> {
+    const enabled = true;
     if (enabled === this.#networkDomainEnabled) {
       return;
     }
@@ -328,9 +332,7 @@ export class CdpTarget {
     this.#networkDomainEnabled = enabled;
     try {
       await Promise.all([
-        this.#cdpClient
-          .sendCommand(enabled ? 'Network.enable' : 'Network.disable')
-          .then(async () => await this.toggleSetCacheDisabled()),
+        this.toggleSetCacheDisabled(),
         this.toggleFetchIfNeeded(),
       ]);
     } catch (err) {

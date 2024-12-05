@@ -33,9 +33,9 @@ import {
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
+import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers.js';
-import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -43,6 +43,10 @@ import {WindowRealm} from '../script/WindowRealm.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
+import {
+  type NavigationEventName,
+  NavigationTracker,
+} from './NavigationTracker.js';
 
 export class BrowsingContextImpl {
   static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
@@ -67,49 +71,25 @@ export class BrowsingContextImpl {
     load: new Deferred<void>(),
   };
 
-  #navigation = {
-    withinDocument: new Deferred<void>(),
-  };
-
   #url: string;
   readonly #eventManager: EventManager;
+  readonly #logger?: LoggerFn;
+  readonly #navigationTracker: NavigationTracker;
+  readonly #originalOpener?: string;
   readonly #realmStorage: RealmStorage;
-  #loaderId?: Protocol.Network.LoaderId;
+  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
+
   #cdpTarget: CdpTarget;
   // The deferred will be resolved when the default realm is created.
   #defaultRealmDeferred = new Deferred<Realm>();
-  readonly #logger?: LoggerFn;
+  // Flags if the initial navigation to `about:blank` is in progress.
+  #initialNavigation = true;
+  #loaderId?: Protocol.Network.LoaderId;
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
 
-  // The URL of the navigation that is currently in progress. A workaround of the CDP
-  // lacking URL for the pending navigation events, e.g. `Page.frameStartedLoading`.
-  // Set on `Page.navigate`, `Page.reload` commands, on `Page.frameRequestedNavigation` or
-  // on a deprecated `Page.frameScheduledNavigation` event. The latest is required as the
-  // `Page.frameRequestedNavigation` event is not emitted for same-document navigations.
-  #pendingNavigationUrl: string | undefined;
-  // Navigation ID is required, as CDP `loaderId` cannot be mapped 1:1 to all the
-  // navigations (e.g. same document navigations). Updated after each navigation,
-  // including same-document ones.
-  #navigationId: string = uuidv4();
-  // When a new navigation is started via `BrowsingContext.navigate` with `wait` set to
-  // `None`, the command result should have `navigation` value, but mapper does not have
-  // it yet. This value will be set to `navigationId` after next .
-  #pendingNavigationId: string | undefined;
-  // Set if there is a pending navigation initiated by `BrowsingContext.navigate` command.
-  // The promise is resolved when the navigation is finished or rejected when canceled.
-  #pendingCommandNavigation: Deferred<void> | undefined;
-  // Flags if the initial navigation to `about:blank` is in progress.
-  #initialNavigation = true;
-  // Flags if the navigation is initiated by `browsingContext.navigate` or
-  // `browsingContext.reload` command.
-  #navigationInitiatedByCommand = false;
-
-  #originalOpener?: string;
-
   // Set when the user prompt is opened. Required to provide the type in closing event.
   #lastUserPromptType?: BrowsingContext.UserPromptType;
-  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
 
   private constructor(
     id: BrowsingContext.BrowsingContext,
@@ -135,6 +115,7 @@ export class BrowsingContextImpl {
     this.#logger = logger;
     this.#url = url;
 
+    this.#navigationTracker = new NavigationTracker(eventManager, id, logger);
     this.#originalOpener = originalOpener;
   }
 
@@ -208,14 +189,6 @@ export class BrowsingContextImpl {
     return context;
   }
 
-  static getTimestamp(): number {
-    // `timestamp` from the event is MonotonicTime, not real time, so
-    // the best Mapper can do is to set the timestamp to the epoch time
-    // of the event arrived.
-    // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
-    return new Date().getTime();
-  }
-
   /**
    * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
    */
@@ -224,13 +197,11 @@ export class BrowsingContextImpl {
   }
 
   get navigationId(): string {
-    return this.#navigationId;
+    return this.#navigationTracker.navigationId;
   }
 
   dispose(emitContextDestroyed: boolean) {
-    this.#pendingCommandNavigation?.reject(
-      new UnknownErrorException('navigation canceled by context disposal'),
-    );
+    this.#navigationTracker.dispose();
     this.#deleteAllChildren();
 
     this.#realmStorage.deleteRealms({
@@ -419,8 +390,9 @@ export class BrowsingContextImpl {
       if (this.id !== params.frame.id) {
         return;
       }
-      this.#url = params.frame.url + (params.frame.urlFragment ?? '');
-      this.#pendingNavigationUrl = undefined;
+      const url = params.frame.url + (params.frame.urlFragment ?? '');
+      this.#url = url;
+      this.#navigationTracker.frameNavigated(url);
 
       // At the point the page is initialized, all the nested iframes from the
       // previous page are detached and realms are destroyed.
@@ -432,8 +404,12 @@ export class BrowsingContextImpl {
       if (this.id !== params.frameId) {
         return;
       }
+      this.#url = params.url;
+      this.#navigationTracker.navigatedWithinDocument(
+        params.url,
+        params.navigationType,
+      );
       if (params.navigationType === 'historyApi') {
-        this.#url = params.url;
         this.#eventManager.registerEvent(
           {
             type: 'event',
@@ -447,26 +423,6 @@ export class BrowsingContextImpl {
         );
         return;
       }
-      this.#pendingNavigationUrl = undefined;
-      const timestamp = BrowsingContextImpl.getTimestamp();
-      this.#url = params.url;
-      this.#navigation.withinDocument.resolve();
-
-      if (params.navigationType === 'fragment') {
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-            params: {
-              context: this.id,
-              navigation: this.#navigationId,
-              timestamp,
-              url: this.#url,
-            },
-          },
-          this.id,
-        );
-      }
     });
 
     this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
@@ -474,41 +430,7 @@ export class BrowsingContextImpl {
         return;
       }
 
-      if (this.#navigationInitiatedByCommand) {
-        // In case of the navigation is initiated by `browsingContext.navigate` or
-        // `browsingContext.reload` commands, the `Page.frameRequestedNavigation` is not
-        // emitted, which means the `NavigationStarted` is not emitted.
-        // TODO: consider emit it right after the CDP command `navigate` or `reload` is finished.
-
-        // The URL of the navigation that is currently in progress. Although the URL
-        // is not yet known in case of user-initiated navigations, it is possible to
-        // provide the URL in case of BiDi-initiated navigations.
-        // TODO: provide proper URL in case of user-initiated navigations.
-        const url = this.#pendingNavigationUrl ?? 'UNKNOWN';
-        this.#navigationId = this.#pendingNavigationId ?? uuidv4();
-        this.#pendingNavigationId = undefined;
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-            params: {
-              context: this.id,
-              navigation: this.#navigationId,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url,
-            },
-          },
-          this.id,
-        );
-      }
-    });
-
-    // TODO: don't use deprecated `Page.frameScheduledNavigation` event.
-    this.#cdpTarget.cdpClient.on('Page.frameScheduledNavigation', (params) => {
-      if (this.id !== params.frameId) {
-        return;
-      }
-      this.#pendingNavigationUrl = params.url;
+      this.#navigationTracker.frameStartedLoading();
     });
 
     this.#cdpTarget.cdpClient.on('Page.frameRequestedNavigation', (params) => {
@@ -516,54 +438,39 @@ export class BrowsingContextImpl {
         return;
       }
 
-      if (this.#pendingCommandNavigation !== undefined) {
-        // The pending navigation was aborted by the new one.
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-            params: {
-              context: this.id,
-              navigation: this.#navigationId,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url: this.#url,
-            },
-          },
-          this.id,
-        );
-        this.#pendingCommandNavigation.reject(
-          new UnknownErrorException('navigation aborted'),
-        );
-        this.#pendingCommandNavigation = undefined;
-        this.#navigationInitiatedByCommand = false;
-      }
+      this.#navigationTracker.frameRequestedNavigation(params.url);
+
       if (!urlMatchesAboutBlank(params.url)) {
         // If the url does not match about:blank, do not consider it is an initial
         // navigation and emit all the required events.
         // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2793.
         this.#initialNavigation = false;
       }
+    });
 
-      if (!this.#initialNavigation) {
-        // Do not emit the event for the initial navigation to `about:blank`.
-        this.#navigationId = this.#pendingNavigationId ?? uuidv4();
-        this.#pendingNavigationId = undefined;
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-            params: {
-              context: this.id,
-              navigation: this.#navigationId,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url: params.url,
-            },
-          },
-          this.id,
-        );
+    // Required to detect navigation started.
+    // http://goto.google.com/webdriver:detect-navigation-started
+    this.#cdpTarget.cdpClient.on('Network.requestWillBeSent', (params) => {
+      if (
+        this.isTopLevelContext() &&
+        params.frameId !== undefined &&
+        params.frameId !== this.id
+      ) {
+        // `Network.requestWillBeSent`'s frameId can be missing for top level browsing context.
+        return;
       }
 
-      this.#pendingNavigationUrl = params.url;
+      if (!this.isTopLevelContext() && params.frameId !== this.id) {
+        // Nested frame's event should have `frameId`.
+        return;
+      }
+
+      if (params.loaderId !== params.requestId) {
+        // Navigation requests have `loaderId` equals to `requestId`.
+        return;
+      }
+
+      this.#navigationTracker.requestWillBeSent(params.requestId);
     });
 
     this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
@@ -593,7 +500,7 @@ export class BrowsingContextImpl {
         return;
       }
 
-      const timestamp = BrowsingContextImpl.getTimestamp();
+      const timestamp = getTimestamp();
 
       switch (params.name) {
         case 'DOMContentLoaded':
@@ -606,7 +513,7 @@ export class BrowsingContextImpl {
                   ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
                 params: {
                   context: this.id,
-                  navigation: this.#navigationId,
+                  navigation: this.#navigationTracker.navigationId,
                   timestamp,
                   url: this.#url,
                 },
@@ -618,6 +525,8 @@ export class BrowsingContextImpl {
           break;
 
         case 'load':
+          this.#navigationTracker.lifecycleEventLoad();
+
           if (!this.#initialNavigation) {
             // Do not emit for the initial navigation.
             this.#eventManager.registerEvent(
@@ -626,7 +535,7 @@ export class BrowsingContextImpl {
                 method: ChromiumBidi.BrowsingContext.EventNames.Load,
                 params: {
                   context: this.id,
-                  navigation: this.#navigationId,
+                  navigation: this.#navigationTracker.navigationId,
                   timestamp,
                   url: this.#url,
                 },
@@ -767,6 +676,11 @@ export class BrowsingContextImpl {
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
       const promptType = BrowsingContextImpl.#getPromptType(params.type);
+
+      if (promptType === BrowsingContext.UserPromptType.Beforeunload) {
+        // Hack.
+        this.#navigationTracker.beforeunload();
+      }
       // Set the last prompt type to provide it in closing event.
       this.#lastUserPromptType = promptType;
       const promptHandler = this.#getPromptHandler(promptType);
@@ -857,14 +771,6 @@ export class BrowsingContextImpl {
   #documentChanged(loaderId?: Protocol.Network.LoaderId) {
     if (loaderId === undefined || this.#loaderId === loaderId) {
       // Same document navigation. Document didn't change.
-      if (this.#navigation.withinDocument.isFinished) {
-        this.#navigation.withinDocument = new Deferred();
-      } else {
-        this.#logger?.(
-          BrowsingContextImpl.LOGGER_PREFIX,
-          'Document changed (navigatedWithinDocument)',
-        );
-      }
       return;
     }
 
@@ -919,23 +825,11 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
-    this.#pendingCommandNavigation?.reject(
-      new UnknownErrorException('navigation canceled by concurrent navigation'),
-    );
     await this.targetUnblockedOrThrow();
 
-    // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
-    // event.
-    // TODO: detect navigation start not from CDP. Check if
-    //  `Page.frameRequestedNavigation` can be used for this purpose.
-    this.#pendingNavigationUrl = url;
-    const navigationId = uuidv4();
-    this.#pendingNavigationId = navigationId;
-    this.#pendingCommandNavigation = new Deferred<void>();
-    this.#navigationInitiatedByCommand = true;
+    const navigation = this.#navigationTracker.createOngoingNavigation(url);
 
-    // Navigate and wait for the result. If the navigation fails, the error event is
-    // emitted and the promise is rejected.
+    // Schedule CDP navigation command.
     const cdpNavigatePromise = (async () => {
       const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
         'Page.navigate',
@@ -946,82 +840,54 @@ export class BrowsingContextImpl {
       );
 
       if (cdpNavigateResult.errorText) {
-        // If navigation failed, no pending navigation is left.
-        this.#pendingNavigationUrl = undefined;
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-            params: {
-              context: this.id,
-              navigation: navigationId,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url,
-            },
-          },
-          this.id,
+        navigation.finished.resolve(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
         );
+        return;
+      }
 
-        throw new UnknownErrorException(cdpNavigateResult.errorText);
+      if (cdpNavigateResult.loaderId !== undefined) {
+        // If CDP navigation command finished with cross-document navigation, make sure
+        // the navigation was marked as started.
+        navigation.started.resolve();
       }
 
       this.#documentChanged(cdpNavigateResult.loaderId);
-      return cdpNavigateResult;
     })();
 
-    if (wait === BrowsingContext.ReadinessState.None) {
-      // Do not wait for the result of the navigation promise.
-      this.#pendingCommandNavigation?.resolve();
-      this.#pendingCommandNavigation = undefined;
+    // Wait for either the wait condition or navigation is finished.
+    const result: NavigationEventName | void = await Promise.race([
+      this.#waitNavigation(wait, cdpNavigatePromise),
+      navigation.finished,
+    ]);
 
-      return {
-        navigation: navigationId,
-        url,
-      };
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed) {
+      throw new UnknownErrorException('navigation failed');
     }
 
-    const cdpNavigateResult = await cdpNavigatePromise;
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
+      throw new UnknownErrorException('navigation aborted');
+    }
 
-    // Wait for either the navigation is finished or canceled by another navigation.
-    await Promise.race([
-      // No `loaderId` means same-document navigation.
-      this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
-      // Throw an error if the navigation is canceled.
-      this.#pendingCommandNavigation,
-    ]).catch((e) => {
-      // Aborting navigation should not fail the original navigation command for now.
-      // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-      if (e.message !== 'navigation aborted') {
-        throw e;
-      }
-    });
-
-    // `#pendingCommandNavigation` can be already rejected and set to undefined.
-    this.#pendingCommandNavigation?.resolve();
-    this.#navigationInitiatedByCommand = false;
-    this.#pendingCommandNavigation = undefined;
     return {
-      navigation: navigationId,
-      // Url can change due to redirect. Get the latest one.
-      url: this.#url,
+      navigation: navigation.navigationId,
+      url: navigation.url,
     };
   }
 
   async #waitNavigation(
     wait: BrowsingContext.ReadinessState,
-    withinDocument: boolean,
+    preconditionPromise: Promise<void>,
   ) {
-    if (withinDocument) {
-      await this.#navigation.withinDocument;
-      return;
-    }
     switch (wait) {
       case BrowsingContext.ReadinessState.None:
         return;
       case BrowsingContext.ReadinessState.Interactive:
+        await preconditionPromise;
         await this.#lifecycle.DOMContentLoaded;
         return;
       case BrowsingContext.ReadinessState.Complete:
+        await preconditionPromise;
         await this.#lifecycle.load;
         return;
     }
@@ -1036,26 +902,33 @@ export class BrowsingContextImpl {
 
     this.#resetLifecycleIfFinished();
 
-    this.#navigationInitiatedByCommand = true;
+    const navigation = this.#navigationTracker.createOngoingNavigation(
+      this.url,
+    );
 
-    await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
-      ignoreCache,
-    });
+    const cdpCommandPromise = this.#cdpTarget.cdpClient.sendCommand(
+      'Page.reload',
+      {
+        ignoreCache,
+      },
+    );
 
-    switch (wait) {
-      case BrowsingContext.ReadinessState.None:
-        break;
-      case BrowsingContext.ReadinessState.Interactive:
-        await this.#lifecycle.DOMContentLoaded;
-        break;
-      case BrowsingContext.ReadinessState.Complete:
-        await this.#lifecycle.load;
-        break;
+    const result: NavigationEventName | void = await Promise.race([
+      this.#waitNavigation(wait, cdpCommandPromise),
+      navigation.finished,
+    ]);
+
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed) {
+      throw new UnknownErrorException('navigation failed');
+    }
+
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
+      throw new UnknownErrorException('navigation aborted');
     }
 
     return {
-      navigation: this.#navigationId,
-      url: this.url,
+      navigation: navigation.navigationId,
+      url: navigation.url,
     };
   }
 
@@ -1374,7 +1247,7 @@ export class BrowsingContextImpl {
 
   async toggleModulesIfNeeded(): Promise<void> {
     await Promise.all([
-      this.#cdpTarget.toggleNetworkIfNeeded(),
+      this.#cdpTarget.toggleExtendedNetworkIfNeeded(),
       this.#cdpTarget.toggleDeviceAccessIfNeeded(),
     ]);
   }
