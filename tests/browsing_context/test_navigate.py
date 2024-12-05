@@ -20,7 +20,7 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigateWaitInteractive_redirect(
+async def test_browsingContext_navigateWaitInteractive_redirect_navigaionFailed(
         websocket, context_id, html, url_example, read_sorted_messages):
     await subscribe(websocket, ["browsingContext.navigationAborted"])
 
@@ -41,14 +41,13 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
                                           check_no_other_messages=True)
 
     assert messages == [
-        {
+        AnyExtending({
+            'error': 'unknown error',
             'id': command_id,
-            'result': {
-                'navigation': 'navigation_0',
-                'url': initial_url,
-            },
-            'type': 'success',
-        },
+            'message': 'navigation aborted',
+            'stacktrace': ANY_STR,
+            'type': 'error',
+        }),
         {
             'method': 'browsingContext.navigationAborted',
             'params': {
@@ -377,11 +376,11 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_viaScript(
-        websocket, context_id, url_base):
+        websocket, context_id, url_base, read_sorted_messages):
     serialized_url = {"type": "string", "value": url_base}
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.callFunction",
             "params": {
@@ -396,18 +395,25 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            # TODO: Should report correct string
-            "url": ANY_STR,
+    messages = await read_sorted_messages(2)
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'result': {
+                'type': 'success',
+            },
+            'type': 'success',
+        }), {
+            'type': 'event',
+            "method": "browsingContext.navigationStarted",
+            "params": {
+                "context": context_id,
+                "navigation": ANY_UUID,
+                "timestamp": ANY_TIMESTAMP,
+                "url": url_base,
+            }
         }
-    }
+    ]
 
 
 @pytest.mark.asyncio
@@ -587,7 +593,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': navigate_command_id,
         'type': 'error',
         'error': 'unknown error',
-        'message': 'navigation canceled by context disposal',
+        'message': 'navigation aborted',
     })
 
     assert close_command_result == AnyExtending({
@@ -598,7 +604,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_sameDocumentNavigation(
-        websocket, context_id, url_base):
+        websocket, context_id, url_base, assert_no_more_messages):
     await subscribe(
         websocket,
         ["browsingContext.navigationStarted", "browsingContext.load"])
@@ -651,7 +657,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
     })
 
     # Make same-document navigation.
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
@@ -665,18 +671,14 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
 
     response = await read_JSON_message(websocket)
     assert response == AnyExtending({
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            "url": url_base + "#test",
-        }
+        'id': command_id,
+        'result': {
+            'type': 'success',
+        },
+        'type': 'success',
     })
 
-    new_navigation_id = response["params"]["navigation"]
-    assert new_navigation_id != navigation_id
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
@@ -705,7 +707,7 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
         with pytest.raises(Exception,
                            match=str({
                                'error': 'unknown error',
-                               'message': 'net::ERR_CERT_AUTHORITY_INVALID'
+                               'message': 'navigation failed'
                            })):
             await navigate()
 

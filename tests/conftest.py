@@ -299,6 +299,11 @@ def url_cacheable(local_server_http):
     return local_server_http.url_cacheable()
 
 
+def _sort_messages(messages):
+    messages.sort(key=lambda x: x["method"] if "method" in x else str(x["id"])
+                  if "id" in x else "")
+
+
 @pytest.fixture
 def read_sorted_messages(websocket, read_all_messages):
     """
@@ -331,8 +336,8 @@ def read_sorted_messages(websocket, read_all_messages):
         if check_no_other_messages:
             messages = messages + await read_all_messages()
 
-        messages.sort(key=lambda x: x["method"]
-                      if "method" in x else str(x["id"]) if "id" in x else "")
+        _sort_messages(messages)
+
         # Stabilize some values through the messages.
         stabilize_key_values(messages, keys_to_stabilize)
 
@@ -358,9 +363,10 @@ def read_all_messages(websocket):
             'params': {}
         })
         message = await read_JSON_message(websocket)
-        if message != AnyExtending({'id': command_id}):
+        while message != AnyExtending({'id': command_id}):
             # Unexpected message. Add to the result list.
             messages.append(message)
+            message = await read_JSON_message(websocket)
         else:
             assert message == AnyExtending({
                 'type': 'success',
@@ -379,9 +385,11 @@ def read_all_messages(websocket):
                         }
                     })
                 message = await read_JSON_message(websocket)
-                if message != AnyExtending({'id': command_id}):
+                while message != AnyExtending({'id': command_id}):
                     # Ignore both success and failure command result.
                     messages.append(message)
+                    message = await read_JSON_message(websocket)
+
         return messages
 
     return read_all_messages
