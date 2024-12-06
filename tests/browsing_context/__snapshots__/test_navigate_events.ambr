@@ -1,0 +1,115 @@
+# serializer version: 1
+# name: test_navigate_aboutBlank_checkEvents
+  list([
+    dict({
+      'id': 'id_0',
+      'result': dict({
+        'navigation': 'navigation_0',
+        'url': 'url_0',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'context_0',
+        'navigation': 'navigation_0',
+        'url': 'url_0',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'context_0',
+        'navigation': 'navigation_0',
+        'url': 'url_0',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'context_0',
+        'navigation': 'navigation_0',
+        'url': 'url_0',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_navigate_dataUrl_checkEvents
+  list([
+    dict({
+      'id': 'id_0',
+      'result': dict({
+        'navigation': 'navigation_0',
+        'url': 'url_0',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'context_0',
+        'navigation': 'navigation_0',
+        'url': 'url_0',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'context_0',
+        'navigation': 'navigation_0',
+        'url': 'url_0',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'context_0',
+        'navigation': 'navigation_0',
+        'url': 'url_0',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'context_0',
+        'initiator': dict({
+          'type': 'other',
+        }),
+        'isBlocked': False,
+        'navigation': 'navigation_0',
+        'redirectCount': 0,
+        'request': 'request_0',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.responseCompleted',
+      'params': dict({
+        'context': 'context_0',
+        'isBlocked': False,
+        'navigation': 'navigation_0',
+        'redirectCount': 0,
+        'request': 'request_0',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.responseStarted',
+      'params': dict({
+        'context': 'context_0',
+        'isBlocked': False,
+        'navigation': 'navigation_0',
+        'redirectCount': 0,
+        'request': 'request_0',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
