@@ -1358,6 +1358,9 @@ export class BrowsingContextImpl {
       return;
     }
 
+    this.#resetLifecycleIfFinished();
+    this.#navigationInitiatedByCommand = true;
+
     const history = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.getNavigationHistory',
     );
