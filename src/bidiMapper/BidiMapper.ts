@@ -22,7 +22,7 @@
  */
 export {BidiServer, MapperOptions} from './BidiServer.js';
 export type {CdpConnection} from '../cdp/CdpConnection.js';
-export type {CdpClient} from '../cdp/CdpClient.js';
+export type {CdpClient, ExtendedCdpClient} from '../cdp/CdpClient.js';
 export {EventEmitter} from '../utils/EventEmitter.js';
 export type {BidiTransport} from './BidiTransport.js';
 export {OutgoingMessage} from './OutgoingMessage.js';

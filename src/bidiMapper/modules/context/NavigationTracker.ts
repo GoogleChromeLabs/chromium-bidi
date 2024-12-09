@@ -35,7 +35,7 @@ export type NavigationEventName =
 class NavigationState {
   started = new Deferred<void>();
   finished = new Deferred<NavigationEventName>();
-  cdpNetworkRequestId?: string;
+  loaderId?: string;
   // Hack.
   startedByBeforeUnload = false;
 
@@ -91,12 +91,16 @@ export class NavigationTracker {
   }
 
   dispose() {
+    this.#logger?.(LogType.debug, 'dispose');
+
     this.#currentNavigation.finished.resolve(
       ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
     );
   }
 
   createOngoingNavigation(url: string): NavigationState {
+    this.#logger?.(LogType.debug, 'createOngoingNavigation');
+
     if (this.#ongoingNavigation !== undefined) {
       this.#ongoingNavigation.finished.resolve(
         ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
@@ -113,6 +117,10 @@ export class NavigationTracker {
   #setEventListeners(navigation: NavigationState) {
     void navigation.started
       .then(() => {
+        this.#logger?.(
+          LogType.debug,
+          `Navigation ${navigation.navigationId} started`,
+        );
         this.#eventManager.registerEvent(
           {
             type: 'event',
@@ -129,6 +137,10 @@ export class NavigationTracker {
       });
 
     void navigation.finished.then((eventName: NavigationEventName) => {
+      this.#logger?.(
+        LogType.debug,
+        `Navigation ${navigation.navigationId} finished with ${eventName}`,
+      );
       if (
         [
           ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
@@ -151,12 +163,11 @@ export class NavigationTracker {
   }
 
   frameStartedLoading() {
-    if (this.#ongoingNavigation === undefined) {
-      this.#ongoingNavigation = this.createOngoingNavigation('UNKNOWN');
-    }
+    this.#logger?.(LogType.debug, 'Page.frameStartedLoading');
   }
 
   navigatedWithinDocument(url: string, navigationType: string) {
+    this.#logger?.(LogType.debug, 'Page.navigatedWithinDocument');
     this.#currentNavigation.url = url;
 
     if (navigationType === 'fragment') {
@@ -190,8 +201,10 @@ export class NavigationTracker {
     this.#ongoingNavigation = undefined;
   }
 
-  requestWillBeSent(cdpNetworkRequestId: string) {
-    if (this.#currentNavigation.cdpNetworkRequestId === cdpNetworkRequestId) {
+  frameStartedNavigating(loaderId: string) {
+    this.#logger?.(LogType.debug, `Page.frameStartedNavigating ${loaderId}`);
+
+    if (this.#currentNavigation.loaderId === loaderId) {
       // The same request can be due to redirect. Ignore if so.
       return;
     }
@@ -213,19 +226,26 @@ export class NavigationTracker {
 
     this.#ongoingNavigation.started.resolve();
     this.#currentNavigation = this.#ongoingNavigation;
-    this.#currentNavigation.cdpNetworkRequestId = cdpNetworkRequestId;
+    this.#currentNavigation.loaderId = loaderId;
     this.#ongoingNavigation = undefined;
   }
 
   frameNavigated(url: string) {
+    this.#logger?.(LogType.debug, `Page.frameNavigated ${url}`);
+    if (this.#ongoingNavigation !== undefined) {
+      // In some cases (`about:blank`) the `requestWillBeSent` is not emitted.
+      this.#currentNavigation = this.#ongoingNavigation;
+    }
     this.#currentNavigation.url = url;
   }
 
   frameRequestedNavigation(url: string) {
+    this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
     this.createOngoingNavigation(url);
   }
 
   lifecycleEventLoad() {
+    this.#logger?.(LogType.debug, 'Page.lifecycleEvent:load');
     this.#currentNavigation.finished.resolve(
       ChromiumBidi.BrowsingContext.EventNames.Load,
     );

@@ -17,7 +17,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CdpClient} from '../../../cdp/CdpClient.js';
+import type {ExtendedCdpClient} from '../../../cdp/CdpClient.js';
 import {
   NoSuchNodeException,
   UnknownErrorException,
@@ -42,7 +42,7 @@ export class WindowRealm extends Realm {
   constructor(
     browsingContextId: BrowsingContext.BrowsingContext,
     browsingContextStorage: BrowsingContextStorage,
-    cdpClient: CdpClient,
+    cdpClient: ExtendedCdpClient,
     eventManager: EventManager,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     logger: LoggerFn | undefined,

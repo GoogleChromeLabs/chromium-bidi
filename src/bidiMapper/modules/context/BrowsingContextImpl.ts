@@ -450,13 +450,14 @@ export class BrowsingContextImpl {
 
     // Required to detect navigation started.
     // http://goto.google.com/webdriver:detect-navigation-started
-    this.#cdpTarget.cdpClient.on('Network.requestWillBeSent', (params) => {
+    this.#cdpTarget.cdpClient.on('Page.frameStartedNavigating', (params) => {
       if (
         this.isTopLevelContext() &&
         params.frameId !== undefined &&
         params.frameId !== this.id
       ) {
-        // `Network.requestWillBeSent`'s frameId can be missing for top level browsing context.
+        // `Page.frameStartedNavigating` uses `Network.requestWillBeSent` and `frameId`
+        // can be missing for top level browsing context.
         return;
       }
 
@@ -465,12 +466,7 @@ export class BrowsingContextImpl {
         return;
       }
 
-      if (params.loaderId !== params.requestId) {
-        // Navigation requests have `loaderId` equals to `requestId`.
-        return;
-      }
-
-      this.#navigationTracker.requestWillBeSent(params.requestId);
+      this.#navigationTracker.frameStartedNavigating(params.loaderId);
     });
 
     this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
