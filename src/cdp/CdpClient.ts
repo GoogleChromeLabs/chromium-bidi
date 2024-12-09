@@ -17,6 +17,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import type {EventType} from 'mitt';
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 
@@ -26,10 +27,78 @@ export type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
 };
 
+/**
+ * Emulated CDP events. These events are not native to the CDP but are synthesized by the
+ * BiDi mapper for convenience and compatibility. They are intended to simplify handling
+ * certain scenarios.
+ */
+type EmulatedEvents = {
+  /**
+   * Emulated CDP event emitted right before the `Network.requestWillBeSent` event
+   * indicating that a new navigation is about to start.
+   *
+   * http://go/webdriver:detect-navigation-started#bookmark=id.64balpqrmadv
+   */
+  'Page.frameStartedNavigating': {
+    loaderId: Protocol.Network.LoaderId;
+    url: string;
+    // Frame id can be omitted for the top-level frame.
+    frameId?: Protocol.Page.FrameId;
+  };
+};
+
 /** A error that will be thrown if/when the connection is closed. */
 export class CloseError extends Error {}
 
-export interface CdpClient extends EventEmitter<CdpEvents> {
+/**
+ * CDP client with additional emulated events.
+ */
+export type ExtendedCdpClient = CdpClientBase<EmulatedEvents>;
+
+export class CdpClientWithEmulatedEventsWrapper
+  extends EventEmitter<EmulatedEvents & CdpEvents>
+  implements ExtendedCdpClient
+{
+  readonly #cdpClient: CdpClient;
+  constructor(cdpClient: CdpClient) {
+    super();
+    this.#cdpClient = cdpClient;
+    cdpClient.on('*', (event, params) => {
+      // We may encounter uses for EventEmitter other than CDP events,
+      // which we want to skip.
+      if (event === 'Network.requestWillBeSent') {
+        const eventParams = params as Protocol.Network.RequestWillBeSentEvent;
+        if (eventParams.loaderId === eventParams.requestId) {
+          this.emit('Page.frameStartedNavigating', {
+            loaderId: eventParams.loaderId,
+            url: eventParams.request.url,
+            frameId: eventParams.frameId,
+          });
+        }
+      }
+
+      this.emit(event, params);
+    });
+  }
+
+  get sessionId(): Protocol.Target.SessionID | undefined {
+    return this.#cdpClient.sessionId;
+  }
+
+  isCloseError(error: unknown): boolean {
+    return this.#cdpClient.isCloseError(error);
+  }
+
+  sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
+    method: CdpMethod,
+    params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0],
+  ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']> {
+    return this.#cdpClient.sendCommand(method, params);
+  }
+}
+
+interface CdpClientBase<CdpEventExtensions extends Record<EventType, unknown>>
+  extends EventEmitter<CdpEvents & CdpEventExtensions> {
   /** Unique session identifier. */
   sessionId: Protocol.Target.SessionID | undefined;
 
@@ -54,6 +123,8 @@ export interface CdpClient extends EventEmitter<CdpEvents> {
     params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0],
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']>;
 }
+
+export type CdpClient = CdpClientBase<CdpEvents>;
 
 /** Represents a high-level CDP connection to the browser. */
 export class MapperCdpClient

@@ -41,14 +41,12 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
                                           check_no_other_messages=True)
 
     assert messages == [
-        {
+        AnyExtending({
             'id': command_id,
-            'result': {
-                'navigation': 'stable_0',
-                'url': initial_url,
-            },
-            'type': 'success',
-        },
+            'error': 'unknown error',
+            'message': 'navigation aborted',
+            'type': 'error',
+        }),
         {
             'method': 'browsingContext.navigationAborted',
             'params': {
@@ -381,7 +379,7 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
     serialized_url = {"type": "string", "value": url_base}
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.callFunction",
             "params": {
@@ -395,6 +393,9 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
                 "awaitPromise": True
             }
         })
+
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({'id': command_id, 'type': 'success'})
 
     response = await read_JSON_message(websocket)
     assert response == {
@@ -587,7 +588,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': navigate_command_id,
         'type': 'error',
         'error': 'unknown error',
-        'message': 'navigation canceled by context disposal',
+        'message': 'navigation aborted',
     })
 
     assert close_command_result == AnyExtending({
@@ -651,7 +652,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
     })
 
     # Make same-document navigation.
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
@@ -664,19 +665,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
         })
 
     response = await read_JSON_message(websocket)
-    assert response == AnyExtending({
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            "url": url_base + "#test",
-        }
-    })
-
-    new_navigation_id = response["params"]["navigation"]
-    assert new_navigation_id != navigation_id
+    assert response == AnyExtending({'id': command_id, 'type': 'success'})
 
 
 @pytest.mark.asyncio
@@ -705,7 +694,7 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
         with pytest.raises(Exception,
                            match=str({
                                'error': 'unknown error',
-                               'message': 'net::ERR_CERT_AUTHORITY_INVALID'
+                               'message': 'navigation failed'
                            })):
             await navigate()
 

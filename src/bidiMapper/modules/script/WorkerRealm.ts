@@ -17,7 +17,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CdpClient} from '../../../cdp/CdpClient.js';
+import type {ExtendedCdpClient} from '../../../cdp/CdpClient.js';
 import type {Script} from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
@@ -38,7 +38,7 @@ export class WorkerRealm extends Realm {
   readonly #ownerRealms: Realm[];
 
   constructor(
-    cdpClient: CdpClient,
+    cdpClient: ExtendedCdpClient,
     eventManager: EventManager,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     logger: LoggerFn | undefined,

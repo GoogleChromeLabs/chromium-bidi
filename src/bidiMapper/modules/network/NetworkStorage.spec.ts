@@ -17,7 +17,7 @@
  */
 import {expect} from 'chai';
 
-import type {CdpClient} from '../../../cdp/CdpClient.js';
+import type {CdpClient, ExtendedCdpClient} from '../../../cdp/CdpClient.js';
 import {ChromiumBidi, Network} from '../../../protocol/protocol.js';
 import {ProcessingQueue} from '../../../utils/ProcessingQueue.js';
 import type {OutgoingMessage} from '../../OutgoingMessage.js';
@@ -48,7 +48,7 @@ describe('NetworkStorage', () => {
   ][] = [];
   let eventManager!: EventManager;
   let networkStorage!: NetworkStorage;
-  let cdpClient!: CdpClient;
+  let cdpClient!: ExtendedCdpClient;
   let processingQueue!: ProcessingQueue<OutgoingMessage>;
 
   // TODO: Better way of getting Events

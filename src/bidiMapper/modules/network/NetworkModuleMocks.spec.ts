@@ -21,6 +21,7 @@ import {
   CloseError,
   type CdpClient,
   type CdpEvents,
+  type ExtendedCdpClient,
 } from '../../../cdp/CdpClient.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
 
@@ -29,7 +30,7 @@ export class MockCdpNetworkEvents {
   static defaultFrameId = '099A5216AF03AAFEC988F214B024DF08';
   static defaultUrl = 'http://www.google.com';
 
-  cdpClient: CdpClient;
+  cdpClient: ExtendedCdpClient;
 
   url: string;
   requestId: string;
@@ -39,7 +40,7 @@ export class MockCdpNetworkEvents {
   private type: Protocol.Network.ResourceType;
 
   constructor(
-    cdpClient: CdpClient,
+    cdpClient: ExtendedCdpClient,
     {
       requestId,
       fetchId,

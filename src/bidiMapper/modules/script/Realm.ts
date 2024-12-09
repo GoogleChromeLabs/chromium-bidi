@@ -16,7 +16,7 @@
  */
 import {Protocol} from 'devtools-protocol';
 
-import type {CdpClient} from '../../../cdp/CdpClient.js';
+import type {ExtendedCdpClient} from '../../../cdp/CdpClient.js';
 import {
   ChromiumBidi,
   NoSuchHandleException,
@@ -32,7 +32,7 @@ import {ChannelProxy} from './ChannelProxy.js';
 import type {RealmStorage} from './RealmStorage.js';
 
 export abstract class Realm {
-  readonly #cdpClient: CdpClient;
+  readonly #cdpClient: ExtendedCdpClient;
   readonly #eventManager: EventManager;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #logger?: LoggerFn;
@@ -41,7 +41,7 @@ export abstract class Realm {
   readonly #realmStorage: RealmStorage;
 
   constructor(
-    cdpClient: CdpClient,
+    cdpClient: ExtendedCdpClient,
     eventManager: EventManager,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     logger: LoggerFn | undefined,
@@ -177,7 +177,7 @@ export abstract class Realm {
     };
   }
 
-  get cdpClient(): CdpClient {
+  get cdpClient(): ExtendedCdpClient {
     return this.#cdpClient;
   }
 

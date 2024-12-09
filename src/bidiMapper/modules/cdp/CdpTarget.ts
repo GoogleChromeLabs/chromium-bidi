@@ -17,7 +17,11 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import type {CdpClient} from '../../../cdp/CdpClient.js';
+import {
+  type CdpClient,
+  type ExtendedCdpClient,
+  CdpClientWithEmulatedEventsWrapper,
+} from '../../../cdp/CdpClient.js';
 import {BiDiModule} from '../../../protocol/chromium-bidi.js';
 import type {ChromiumBidi, Session} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
@@ -41,6 +45,7 @@ interface FetchStages {
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
+  readonly #extendedCdpClient: ExtendedCdpClient;
   readonly #browserCdpClient: CdpClient;
   readonly #parentCdpClient: CdpClient;
   readonly #realmStorage: RealmStorage;
@@ -120,6 +125,7 @@ export class CdpTarget {
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
+    this.#extendedCdpClient = new CdpClientWithEmulatedEventsWrapper(cdpClient);
     this.#browserCdpClient = browserCdpClient;
     this.#parentCdpClient = parentCdpClient;
     this.#eventManager = eventManager;
@@ -141,8 +147,8 @@ export class CdpTarget {
     return this.#id;
   }
 
-  get cdpClient(): CdpClient {
-    return this.#cdpClient;
+  get cdpClient(): ExtendedCdpClient {
+    return this.#extendedCdpClient;
   }
 
   get parentCdpClient(): CdpClient {
