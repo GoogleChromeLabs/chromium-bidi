@@ -154,6 +154,22 @@ export class MapperCdpConnection implements CdpConnection {
       const client = this.#sessionCdpClients.get(
         message.sessionId ?? undefined,
       );
+      if (message.method === 'Network.requestWillBeSent') {
+        /**
+         * Emulate CDP event 'Page.frameStartedNavigating' right before the
+         * `Network.requestWillBeSent`.
+         * http://go/webdriver:detect-navigation-started#bookmark=id.64balpqrmadv
+         */
+        const eventParams = message.params;
+        if (eventParams.loaderId === eventParams.requestId) {
+          client?.emit('Page.frameStartedNavigating', {
+            loaderId: eventParams.loaderId,
+            url: eventParams.request.url,
+            frameId: eventParams.frameId,
+          });
+        }
+      }
+
       client?.emit(message.method, message.params || {});
 
       // Update client map if a session is detached

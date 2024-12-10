@@ -19,8 +19,8 @@ from unittest.mock import ANY
 import pytest
 from anys import ANY_INT
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
-                          read_JSON_message, send_JSON_command, subscribe,
-                          wait_for_event)
+                          read_JSON_message, send_JSON_command,
+                          stabilize_key_values, subscribe, wait_for_event)
 
 
 # https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
@@ -217,3 +217,68 @@ async def test_cdp_no_extraneous_events(websocket, get_cdp_session_id,
         if event['method'].startswith(f"{cdp_prefix}cdp.") and event['params'][
                 'session'] == session_id:
             raise Exception("Unrelated CDP events detected")
+
+
+@pytest.mark.asyncio
+async def test_pageFrameStartedNavigating_emulatedEvent(
+        websocket, context_id, url_example, assert_no_more_messages):
+    """
+    Assert emulated `Page.frameStartedNavigating` event emitted before
+    `Network.requestWillBeSent`.
+    """
+
+    await subscribe(websocket, [
+        "goog:cdp.Page.frameStartedNavigating",
+        "goog:cdp.Network.requestWillBeSent"
+    ])
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_example,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    # Keep messages order.
+    messages = [await read_JSON_message(websocket) for _ in range(3)]
+    await assert_no_more_messages()
+
+    stabilize_key_values(messages, ["loaderId", "session"])
+    assert messages == [
+        AnyExtending({
+            'method': 'goog:cdp.Page.frameStartedNavigating',
+            'params': {
+                'event': 'Page.frameStartedNavigating',
+                'params': {
+                    'frameId': context_id,
+                    'loaderId': 'stable_0',
+                    'url': url_example,
+                },
+                'session': 'stable_1',
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'method': 'goog:cdp.Network.requestWillBeSent',
+            'params': {
+                'event': 'Network.requestWillBeSent',
+                'params': {
+                    'documentURL': url_example,
+                    'frameId': context_id,
+                    'loaderId': 'stable_0',
+                },
+                'session': 'stable_1',
+            },
+            'type': 'event',
+        }),
+        AnyExtending({
+            'id': command_id,
+            'result': {
+                'url': url_example,
+            },
+            'type': 'success',
+        })
+    ]

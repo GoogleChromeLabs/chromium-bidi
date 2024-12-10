@@ -21,12 +21,16 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 import {EventEmitter} from '../utils/EventEmitter.js';
 
 import type {MapperCdpConnection} from './CdpConnection.js';
+import type {EmulatedCdpMapping} from './EmulatedCdpMapping.js';
+
+// Combines actual and emulated CDP events.
+export type ExtendedCdpMapping = ProtocolMapping.Events & EmulatedCdpMapping;
 
 export type CdpEvents = {
-  [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
+  [Property in keyof ExtendedCdpMapping]: ExtendedCdpMapping[Property][0];
 };
 
-/** A error that will be thrown if/when the connection is closed. */
+/** An error that will be thrown if/when the connection is closed. */
 export class CloseError extends Error {}
 
 export interface CdpClient extends EventEmitter<CdpEvents> {

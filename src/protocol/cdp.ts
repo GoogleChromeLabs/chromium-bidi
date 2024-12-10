@@ -17,6 +17,7 @@
 import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
+import type {EmulatedCdpMapping} from './EmulatedCdpMapping.js';
 import type {
   BrowsingContext,
   JsUint,
@@ -113,25 +114,26 @@ export type Event = {
   type: 'event';
 } & EventData;
 
+// Combines actual and emulated CDP events.
+export type ExtendedCdpMapping = ProtocolMapping.Events & EmulatedCdpMapping;
+
 export type EventData =
-  | EventDataFor<keyof ProtocolMapping.Events>
-  | DeprecatedEventDataFor<keyof ProtocolMapping.Events>;
+  | EventDataFor<keyof ExtendedCdpMapping>
+  | DeprecatedEventDataFor<keyof ExtendedCdpMapping>;
 
-export type DeprecatedEventDataFor<
-  EventName extends keyof ProtocolMapping.Events,
-> = {
-  method: `cdp.${EventName}`;
-  params: EventParametersFor<EventName>;
-};
+export type DeprecatedEventDataFor<EventName extends keyof ExtendedCdpMapping> =
+  {
+    method: `cdp.${EventName}`;
+    params: EventParametersFor<EventName>;
+  };
 
-export type EventDataFor<EventName extends keyof ProtocolMapping.Events> = {
+export type EventDataFor<EventName extends keyof ExtendedCdpMapping> = {
   method: `goog:cdp.${EventName}`;
   params: EventParametersFor<EventName>;
 };
 
-export type EventParametersFor<EventName extends keyof ProtocolMapping.Events> =
-  {
-    event: EventName;
-    params: ProtocolMapping.Events[EventName][0];
-    session: Protocol.Target.SessionID;
-  };
+export type EventParametersFor<EventName extends keyof ExtendedCdpMapping> = {
+  event: EventName;
+  params: ExtendedCdpMapping[EventName][0];
+  session: Protocol.Target.SessionID;
+};
