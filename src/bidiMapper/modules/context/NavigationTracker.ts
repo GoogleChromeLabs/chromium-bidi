@@ -41,6 +41,8 @@ class NavigationState {
   started = new Deferred<void>();
   finished = new Deferred<NavigationEventName>();
   url: string;
+  startedByUnloadHandler = false;
+  startedNavigating = false;
 
   constructor(url: string, browsingContextId: string) {
     this.#browsingContextId = browsingContextId;
@@ -320,10 +322,21 @@ export class NavigationTracker {
   frameStartedNavigating(url: string, loaderId: string) {
     this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
 
+    if (
+      this.#currentNavigation.startedByUnloadHandler &&
+      !this.#currentNavigation.startedNavigating
+    ) {
+      // TODO
+      this.#currentNavigation.startedNavigating = true;
+      this.#currentNavigation.url = url;
+      return;
+    }
+
     if (this.#pendingNavigation === undefined) {
       this.createPendingNavigation(url);
     }
     this.#activatePendingNavigation();
+    this.#currentNavigation.startedNavigating = true;
     this.#currentNavigation.url = url;
   }
 
@@ -337,7 +350,7 @@ export class NavigationTracker {
       );
       return;
     }
-
     this.#activatePendingNavigation();
+    this.#currentNavigation.startedByUnloadHandler = true;
   }
 }
