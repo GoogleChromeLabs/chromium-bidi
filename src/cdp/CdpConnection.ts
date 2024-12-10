@@ -56,6 +56,7 @@ export class MapperCdpConnection implements CdpConnection {
   >();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #logger?: LoggerFn;
+  readonly #seenRequestWillBeSent = new Set<string>();
   #nextId = 0;
 
   constructor(transport: Transport, logger?: LoggerFn) {
@@ -162,11 +163,14 @@ export class MapperCdpConnection implements CdpConnection {
          */
         const eventParams = message.params;
         if (eventParams.loaderId === eventParams.requestId) {
-          client?.emit('Page.frameStartedNavigating', {
-            loaderId: eventParams.loaderId,
-            url: eventParams.request.url,
-            frameId: eventParams.frameId,
-          });
+          if (!this.#seenRequestWillBeSent.has(eventParams.requestId)) {
+            this.#seenRequestWillBeSent.add(eventParams.requestId);
+            client?.emit('Page.frameStartedNavigating', {
+              loaderId: eventParams.loaderId,
+              url: eventParams.request.url,
+              frameId: eventParams.frameId,
+            });
+          }
         }
       }
 
