@@ -266,6 +266,7 @@ export class NavigationTracker {
 
   lifecycleEventLoad() {
     this.#logger?.(LogType.debug, 'lifecycleEventLoad');
+    this.#initialNavigation = false;
     this.#currentNavigation.finished.resolve(
       ChromiumBidi.BrowsingContext.EventNames.Load,
     );
