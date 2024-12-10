@@ -642,6 +642,9 @@ export class BrowsingContextImpl {
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
       const promptType = BrowsingContextImpl.#getPromptType(params.type);
+      if (params.type === 'beforeunload') {
+        this.#navigationTracker.beforeunload();
+      }
       // Set the last prompt type to provide it in closing event.
       this.#lastUserPromptType = promptType;
       const promptHandler = this.#getPromptHandler(promptType);

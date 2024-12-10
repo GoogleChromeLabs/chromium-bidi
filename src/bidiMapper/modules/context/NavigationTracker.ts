@@ -274,7 +274,7 @@ export class NavigationTracker {
 
   failNavigation(navigation: NavigationState) {
     this.#logger?.(LogType.debug, 'failCommandNavigation');
-    this.#currentNavigation.finished.resolve(
+    navigation.finished.resolve(
       ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
     );
   }
@@ -297,39 +297,47 @@ export class NavigationTracker {
     }
   }
 
-  frameStartedNavigating(url: string, loaderId: string) {
-    this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
-
-    if (this.#pendingNavigation === undefined) {
-      // TODO: remove.
-      console.log(
-        `!!@@## Unexpectedly no pending navigation for  ${url}, ${loaderId}`,
-      );
-      this.#logger?.(
-        LogType.debugError,
-        `!!@@## Unexpectedly no pending navigation for  ${url}, ${loaderId}`,
-      );
-      this.createPendingNavigation(url);
-    }
-
-    this.#pendingNavigation!.started.resolve();
-    // TODO: check loader ID.
-    if (this.#currentNavigation !== this.#pendingNavigation) {
-      this.#currentNavigation.finished.resolve(
-        ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-      );
-      this.#initialNavigation = false;
-      this.#currentNavigation = this.#pendingNavigation!;
-      this.#pendingNavigation = undefined;
-    } else {
+  #activatePendingNavigation() {
+    if (this.#currentNavigation === this.#pendingNavigation) {
       // TODO: remove.
       console.log(`!!@@## Unexpectedly pending navigation is the current one`);
       this.#logger?.(
         LogType.debugError,
         `!!@@## Unexpectedly pending navigation is the current one`,
       );
+    } else {
+      this.#initialNavigation = false;
+
+      this.#currentNavigation.finished.resolve(
+        ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+      );
+      this.#currentNavigation = this.#pendingNavigation!;
+      this.#currentNavigation.started.resolve();
+      this.#pendingNavigation = undefined;
+    }
+  }
+
+  frameStartedNavigating(url: string, loaderId: string) {
+    this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
+
+    if (this.#pendingNavigation === undefined) {
+      this.createPendingNavigation(url);
+    }
+    this.#activatePendingNavigation();
+    this.#currentNavigation.url = url;
+  }
+
+  beforeunload() {
+    if (this.#pendingNavigation === undefined) {
+      // TODO: remove.
+      console.log(`!!@@## Unexpectedly no pending navigation on beforeunload`);
+      this.#logger?.(
+        LogType.debugError,
+        `!!@@## Unexpectedly no pending navigation on beforeunload`,
+      );
+      return;
     }
 
-    this.#currentNavigation.url = url;
+    this.#activatePendingNavigation();
   }
 }
