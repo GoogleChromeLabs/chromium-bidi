@@ -27,9 +27,9 @@ async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
                                                    url_example,
                                                    read_sorted_messages,
                                                    snapshot):
-    # pytest.xfail(
-    #     reason=  # noqa: E251. The line is too long.
-    #     "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
+    pytest.xfail(
+        reason=  # noqa: E251. The line is too long.
+        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
 
     await subscribe(websocket, ["browsingContext", "network"])
 
@@ -55,9 +55,9 @@ async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
 async def test_navigate_scriptFragmentRedirect_checkEvents(
         websocket, context_id, html, url_example, read_sorted_messages,
         snapshot):
-    # pytest.xfail(
-    #     reason=  # noqa: E251. The line is too long.
-    #     "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
+    pytest.xfail(
+        reason=  # noqa: E251. The line is too long.
+        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
 
     await subscribe(websocket, ["browsingContext", "network"])
 
@@ -83,9 +83,9 @@ async def test_navigate_scriptFragmentRedirect_checkEvents(
 async def test_nested_navigate_scriptFragmentRedirect_checkEvents(
         websocket, iframe_id, html, url_example, read_sorted_messages,
         snapshot):
-    # pytest.xfail(
-    #     reason=  # noqa: E251. The line is too long.
-    #     "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
+    pytest.xfail(
+        reason=  # noqa: E251. The line is too long.
+        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
 
     await subscribe(websocket, ["browsingContext", "network"])
 
@@ -160,9 +160,9 @@ async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
                                                      url_example, html,
                                                      read_sorted_messages,
                                                      snapshot):
-    # pytest.xfail(
-    #     reason=  # noqa: E251. The line is too long.
-    #     "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
+    pytest.xfail(
+        reason=  # noqa: E251. The line is too long.
+        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
 
     await subscribe(websocket, ["browsingContext", "network"])
 
