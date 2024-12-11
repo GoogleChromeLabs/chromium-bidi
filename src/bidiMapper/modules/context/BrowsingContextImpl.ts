@@ -395,6 +395,8 @@ export class BrowsingContextImpl {
       // previous page are detached and realms are destroyed.
       // Delete children from context.
       this.#deleteAllChildren();
+
+      this.#documentChanged(params.frame.loaderId);
     });
 
     this.#cdpTarget.on(TargetEvents.FrameStartedNavigating, (params) => {
