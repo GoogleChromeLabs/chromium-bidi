@@ -41,8 +41,7 @@ class NavigationState {
   started = new Deferred<void>();
   finished = new Deferred<NavigationEventName>();
   url: string;
-  startedByUnloadHandler = false;
-  startedNavigating = false;
+  loaderId?: string;
 
   constructor(url: string, browsingContextId: string) {
     this.#browsingContextId = browsingContextId;
@@ -68,7 +67,7 @@ class NavigationState {
 export class NavigationTracker {
   readonly #eventManager: EventManager;
   readonly #logger?: LoggerFn;
-  readonly #startedNavigatingLoaders = new Set<string>();
+  readonly #loaderIdToNavigationsMap = new Map<string, NavigationState>();
 
   readonly #browsingContextId: string;
   #currentNavigation: NavigationState;
@@ -105,7 +104,11 @@ export class NavigationTracker {
   }
 
   get currentNavigationId() {
-    return this.#currentNavigation.navigationId;
+    // TODO: what is expected here?
+    return (
+      this.#pendingNavigation?.navigationId ??
+      this.#currentNavigation.navigationId
+    );
   }
 
   get initialNavigation(): boolean {
@@ -176,7 +179,7 @@ export class NavigationTracker {
           LogType.debugError,
           `!!@@## Unexpectedly not started navigation ${navigation.navigationId} finished with ${eventName}`,
         );
-        // return;
+        return;
       }
 
       if (
@@ -213,14 +216,31 @@ export class NavigationTracker {
     this.#currentNavigation.url = url;
   }
 
-  frameNavigated(url: string) {
+  frameNavigated(url: string, loaderId: string) {
     this.#logger?.(LogType.debug, `Page.frameNavigated ${url}`);
-    this.#currentNavigation.url = url;
-    if (!this.#currentNavigation.started.isFinished) {
-      // Make sure the pending navigation is started, as `Page.frameStartedNavigating` is
-      // missing for `about:blank`.
-      this.#currentNavigation.started.resolve();
+
+    if (!this.#loaderIdToNavigationsMap.has(loaderId)) {
+      console.log(`!!@@## Unknown loader ${loaderId} is navigated`);
+      this.#logger?.(
+        LogType.debugError,
+        `!!@@## Unknown loader ${loaderId} is navigated`,
+      );
+      const navigation = this.#createNavigation(url);
+      this.#loaderIdToNavigationsMap.set(loaderId, navigation);
     }
+
+    const navigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
+    navigation.url = url;
+    // Make sure the pending navigation is started, as `Page.frameStartedNavigating` is
+    // missing for `about:blank`.
+    navigation.started.resolve();
+
+    if (navigation !== this.#currentNavigation) {
+      this.#currentNavigation.finished.resolve(
+        ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+      );
+    }
+    this.#currentNavigation = navigation;
   }
 
   navigatedWithinDocument(
@@ -232,33 +252,33 @@ export class NavigationTracker {
       `Page.navigatedWithinDocument ${url}, ${navigationType}`,
     );
 
+    // Current navigation URL should be updated.
     this.#currentNavigation.url = url;
 
     if (navigationType !== 'fragment') {
       return;
     }
 
-    this.#logger?.(
-      LogType.debug,
-      `pending navigation: ${this.#pendingNavigation?.navigationId}`,
-    );
-
-    // Create a new pending navigation if none exists.
-    const pendingNavigation =
-      this.#pendingNavigation ?? this.createPendingNavigation(url);
+    const fragmentNavigation =
+      this.#pendingNavigation !== undefined &&
+      this.#pendingNavigation.loaderId === undefined
+        ? this.#pendingNavigation
+        : this.#createNavigation(url);
 
     this.#logger?.(
       LogType.debug,
-      `pending navigation: ${pendingNavigation?.navigationId}`,
+      `fragmentNavigation: ${fragmentNavigation.navigationId}`,
     );
 
     // Finish ongoing navigation.
-    pendingNavigation.finished.resolve(
+    fragmentNavigation.finished.resolve(
       ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
     );
-    // Fragment navigation should not override the cross-document and cannot be the
-    // current one.
-    this.#pendingNavigation = undefined;
+
+    if (fragmentNavigation === this.#pendingNavigation) {
+      // If the pending navigation was created by navigation command and en
+      this.#pendingNavigation = undefined;
+    }
   }
 
   frameRequestedNavigation(url: string) {
@@ -267,12 +287,13 @@ export class NavigationTracker {
     this.createPendingNavigation(url);
   }
 
-  lifecycleEventLoad() {
+  lifecycleEventLoad(loaderId: string) {
     this.#logger?.(LogType.debug, 'lifecycleEventLoad');
     this.#initialNavigation = false;
-    this.#currentNavigation.finished.resolve(
-      ChromiumBidi.BrowsingContext.EventNames.Load,
-    );
+
+    this.#loaderIdToNavigationsMap
+      .get(loaderId)
+      ?.finished.resolve(ChromiumBidi.BrowsingContext.EventNames.Load);
   }
 
   failNavigation(navigation: NavigationState) {
@@ -288,6 +309,11 @@ export class NavigationTracker {
       `finishCommandNavigation ${navigation.navigationId}, ${loaderId}`,
     );
 
+    if (loaderId !== undefined) {
+      navigation.loaderId = loaderId;
+      this.#loaderIdToNavigationsMap.set(loaderId, navigation);
+    }
+
     if (this.#currentNavigation !== navigation && loaderId !== undefined) {
       // Missing loader ID means it's same-document navigation, so no need in starting or
       // updating the current navigation.
@@ -298,24 +324,8 @@ export class NavigationTracker {
       this.#initialNavigation = false;
       this.#currentNavigation = navigation;
     }
-  }
-
-  #activatePendingNavigation() {
-    if (this.#currentNavigation === this.#pendingNavigation) {
-      // TODO: remove.
-      console.log(`!!@@## Unexpectedly pending navigation is the current one`);
-      this.#logger?.(
-        LogType.debugError,
-        `!!@@## Unexpectedly pending navigation is the current one`,
-      );
-    } else {
-      this.#initialNavigation = false;
-
-      this.#currentNavigation.finished.resolve(
-        ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-      );
-      this.#currentNavigation = this.#pendingNavigation!;
-      this.#currentNavigation.started.resolve();
+    if (this.#pendingNavigation === navigation) {
+      // Reset pending navigation if needed.
       this.#pendingNavigation = undefined;
     }
   }
@@ -323,29 +333,25 @@ export class NavigationTracker {
   frameStartedNavigating(url: string, loaderId: string) {
     this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
 
-    if (this.#startedNavigatingLoaders.has(loaderId)) {
-      // The `frameStartedNavigating` can be duplicated due to its dependency on
-      // `Network.requestWillBeSent` event.
-      return;
-    }
-    this.#startedNavigatingLoaders.add(loaderId);
-
-    if (
-      this.#currentNavigation.startedByUnloadHandler &&
-      !this.#currentNavigation.startedNavigating
-    ) {
-      // TODO
-      this.#currentNavigation.startedNavigating = true;
-      this.#currentNavigation.url = url;
+    if (this.#loaderIdToNavigationsMap.has(loaderId)) {
+      // TODO: remove.
+      console.log(`!!@@## frameStartedNavigating again, ${loaderId}`);
+      this.#logger?.(
+        LogType.debugError,
+        `!!@@## frameStartedNavigating again, ${loaderId}`,
+      );
       return;
     }
 
     if (this.#pendingNavigation === undefined) {
       this.createPendingNavigation(url);
     }
-    this.#activatePendingNavigation();
-    this.#currentNavigation.startedNavigating = true;
-    this.#currentNavigation.url = url;
+
+    this.#pendingNavigation!.started.resolve();
+    this.#pendingNavigation!.url = url;
+
+    this.#pendingNavigation!.loaderId = loaderId;
+    this.#loaderIdToNavigationsMap.set(loaderId, this.#pendingNavigation!);
   }
 
   beforeunload() {
@@ -358,7 +364,6 @@ export class NavigationTracker {
       );
       return;
     }
-    this.#activatePendingNavigation();
-    this.#currentNavigation.startedByUnloadHandler = true;
+    this.#pendingNavigation.started.resolve();
   }
 }

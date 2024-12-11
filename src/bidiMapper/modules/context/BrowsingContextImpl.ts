@@ -388,6 +388,7 @@ export class BrowsingContextImpl {
       }
       this.#navigationTracker.frameNavigated(
         params.frame.url + (params.frame.urlFragment ?? ''),
+        params.frame.loaderId,
       );
 
       // At the point the page is initialized, all the nested iframes from the
@@ -516,7 +517,7 @@ export class BrowsingContextImpl {
             );
           }
           // The initial navigation is finished.
-          this.#navigationTracker.lifecycleEventLoad();
+          this.#navigationTracker.lifecycleEventLoad(params.loaderId);
           this.#lifecycle.load.resolve();
           break;
       }
