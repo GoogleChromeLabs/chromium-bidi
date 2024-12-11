@@ -328,8 +328,9 @@ export class NavigationTracker {
       this.#initialNavigation = false;
       this.#currentNavigation = navigation;
     }
-    if (this.#pendingNavigation === navigation) {
-      // Reset pending navigation if needed.
+    if (this.#pendingNavigation === navigation && loaderId !== undefined) {
+      // Reset pending navigation if needed. Required only in case of cross-document
+      // navigation.
       this.#pendingNavigation = undefined;
     }
   }
