@@ -382,6 +382,11 @@ export class BrowsingContextImpl {
   }
 
   #initListeners() {
+    this.#cdpTarget.cdpClient.on('Network.loadingFailed', (params) => {
+      // Detect navigation errors like `net::ERR_BLOCKED_BY_RESPONSE`.
+      this.#navigationTracker.networkLoadingFailed(params);
+    });
+
     this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
       if (this.id !== params.frame.id) {
         return;
@@ -389,6 +394,8 @@ export class BrowsingContextImpl {
       this.#navigationTracker.frameNavigated(
         params.frame.url + (params.frame.urlFragment ?? ''),
         params.frame.loaderId,
+        // `unreachableUrl` indicates if the navigation failed.
+        params.frame.unreachableUrl
       );
 
       // At the point the page is initialized, all the nested iframes from the
