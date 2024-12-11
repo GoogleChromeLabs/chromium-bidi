@@ -232,9 +232,6 @@ export class NavigationTracker {
 
     const navigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
     navigation.url = url;
-    // Make sure the pending navigation is started, as `Page.frameStartedNavigating` is
-    // missing for `about:blank`.
-    navigation.started.resolve();
 
     if (navigation !== this.#currentNavigation) {
       this.#currentNavigation.finished.resolve(
