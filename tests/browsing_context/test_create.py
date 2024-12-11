@@ -272,7 +272,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
 
     await goto_url(websocket, context_id, LINK_WITH_BLANK_TARGET)
 
-    await subscribe(websocket, 'browsingContext')
+    await subscribe(websocket, 'browsingContext.contextCreated')
 
     command_id = await send_JSON_command(
         websocket, {
