@@ -79,9 +79,6 @@
       'method': 'network.beforeRequestSent',
       'params': dict({
         'context': 'stable_3',
-        'initiator': dict({
-          'type': 'other',
-        }),
         'isBlocked': False,
         'navigation': 'stable_1',
         'redirectCount': 0,
