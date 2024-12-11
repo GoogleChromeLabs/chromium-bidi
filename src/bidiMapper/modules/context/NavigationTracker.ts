@@ -217,8 +217,19 @@ export class NavigationTracker {
     this.#currentNavigation.url = url;
   }
 
-  frameNavigated(url: string, loaderId: string) {
+  /**
+   * @param {string} unreachableUrl indicated the navigation is actually failed.
+   */
+  frameNavigated(url: string, loaderId: string, unreachableUrl?: string) {
     this.#logger?.(LogType.debug, `Page.frameNavigated ${url}`);
+
+    if (unreachableUrl!==undefined && !this.#loaderIdToNavigationsMap.has(loaderId)) {
+      // The navigation failed before started.
+      const navigation = this.#pendingNavigation ?? this.createPendingNavigation(unreachableUrl);
+      navigation.started.resolve();
+      navigation.finished.resolve(ChromiumBidi.BrowsingContext.EventNames.NavigationFailed)
+      return;
+    }
 
     if (!this.#loaderIdToNavigationsMap.has(loaderId)) {
       console.log(`!!@@## Unknown loader ${loaderId} is navigated`);
@@ -239,6 +250,9 @@ export class NavigationTracker {
       );
     }
     this.#currentNavigation = navigation;
+    if (this.#pendingNavigation === navigation) {
+      this.#pendingNavigation = undefined;
+    }
   }
 
   navigatedWithinDocument(
@@ -367,5 +381,14 @@ export class NavigationTracker {
       return;
     }
     this.#pendingNavigation.started.resolve();
+  }
+
+  networkLoadingFailed(params: Protocol.Network.LoadingFailedEvent) {
+    // If there is a navigation with the loaderId equals to the network request id, it
+    // means that the navigation failed.
+    if(this.#loaderIdToNavigationsMap.has(params.requestId)) {
+      const navigation = this.#loaderIdToNavigationsMap.get(params.requestId)!;
+      navigation.finished.resolve(ChromiumBidi.BrowsingContext.EventNames.NavigationFailed);
+    }
   }
 }
