@@ -21,6 +21,7 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {BiDiModule} from '../../../protocol/chromium-bidi.js';
 import type {ChromiumBidi, Session} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
+import {EventEmitter} from '../../../utils/EventEmitter.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
@@ -32,19 +33,8 @@ import type {ChannelProxy} from '../script/ChannelProxy.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
-import {EventEmitter} from '../../../utils/EventEmitter.js';
 
-export const enum TargetEvents {
-  FrameStartedNavigating = 'framestartednavigating',
-}
-
-type TargetEventMap = {
-  [TargetEvents.FrameStartedNavigating]: {
-    loaderId: string;
-    url: string;
-    frameId: string | undefined;
-  };
-};
+import {type TargetEventMap, TargetEvents} from './TargetEvents.js';
 
 interface FetchStages {
   request: boolean;
