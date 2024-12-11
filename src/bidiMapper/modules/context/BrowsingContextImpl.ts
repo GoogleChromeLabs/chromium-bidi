@@ -395,7 +395,7 @@ export class BrowsingContextImpl {
         params.frame.url + (params.frame.urlFragment ?? ''),
         params.frame.loaderId,
         // `unreachableUrl` indicates if the navigation failed.
-        params.frame.unreachableUrl
+        params.frame.unreachableUrl,
       );
 
       // At the point the page is initialized, all the nested iframes from the
@@ -413,11 +413,13 @@ export class BrowsingContextImpl {
         params,
       );
 
-      const relatedFrameIds = [
+      // The frame ID can be either a browsing context id, or not set in case of the frame
+      // is the top-level in the current CDP target.
+      const possibleFrameIds = [
         this.id,
         ...(this.cdpTarget.id === this.id ? [undefined] : []),
       ];
-      if (!relatedFrameIds.includes(params.frameId)) {
+      if (!possibleFrameIds.includes(params.frameId)) {
         return;
       }
 
@@ -488,7 +490,7 @@ export class BrowsingContextImpl {
 
       switch (params.name) {
         case 'DOMContentLoaded':
-          if (!this.#navigationTracker.initialNavigation) {
+          if (!this.#navigationTracker.isInitialNavigation) {
             // Do not emit for the initial navigation.
             this.#eventManager.registerEvent(
               {
@@ -509,7 +511,7 @@ export class BrowsingContextImpl {
           break;
 
         case 'load':
-          if (!this.#navigationTracker.initialNavigation) {
+          if (!this.#navigationTracker.isInitialNavigation) {
             // Do not emit for the initial navigation.
             this.#eventManager.registerEvent(
               {
@@ -526,7 +528,7 @@ export class BrowsingContextImpl {
             );
           }
           // The initial navigation is finished.
-          this.#navigationTracker.lifecycleEventLoad(params.loaderId);
+          this.#navigationTracker.loadPageEvent(params.loaderId);
           this.#lifecycle.load.resolve();
           break;
       }
@@ -845,24 +847,18 @@ export class BrowsingContextImpl {
       this.#waitNavigation(wait, cdpNavigatePromise),
       // Throw an error if the navigation is canceled.
       commandNavigation.finished,
-    ]).catch((e) => {
-      // Aborting navigation should not fail the original navigation command for now.
-      // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-      if (e.message !== 'navigation aborted') {
-        throw e;
-      }
-    });
+    ]);
 
     if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
       throw new UnknownErrorException('navigation aborted');
     }
     if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed) {
-      throw new UnknownErrorException('navigation aborted');
+      throw new UnknownErrorException('navigation failed');
     }
 
     return {
       navigation: commandNavigation.navigationId,
-      // Url can change due to redirect. Get the latest one.
+      // Url can change due to redirects. Get the one from commandNavigation.
       url: commandNavigation.url,
     };
   }
@@ -898,30 +894,32 @@ export class BrowsingContextImpl {
       this.#navigationTracker.url,
     );
 
-    await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
-      ignoreCache,
-    });
-
-    this.#navigationTracker.navigationCommandFinished(
-      commandNavigation,
-      // TODO
-      'UNKNOWN',
+    const cdpReloadPromise = this.#cdpTarget.cdpClient.sendCommand(
+      'Page.reload',
+      {
+        ignoreCache,
+      },
     );
 
-    switch (wait) {
-      case BrowsingContext.ReadinessState.None:
-        break;
-      case BrowsingContext.ReadinessState.Interactive:
-        await this.#lifecycle.DOMContentLoaded;
-        break;
-      case BrowsingContext.ReadinessState.Complete:
-        await this.#lifecycle.load;
-        break;
+    // Wait for either the navigation is finished or canceled by another navigation.
+    const result = await Promise.race([
+      // No `loaderId` means same-document navigation.
+      this.#waitNavigation(wait, cdpReloadPromise),
+      // Throw an error if the navigation is canceled.
+      commandNavigation.finished,
+    ]);
+
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
+      throw new UnknownErrorException('navigation aborted');
+    }
+    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed) {
+      throw new UnknownErrorException('navigation failed');
     }
 
     return {
       navigation: commandNavigation.navigationId,
-      url: this.url,
+      // Url can change due to redirects. Get the one from commandNavigation.
+      url: commandNavigation.url,
     };
   }
 
