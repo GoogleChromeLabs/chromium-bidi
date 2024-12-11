@@ -25,6 +25,7 @@ import {
 import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {getTimestamp} from '../../../utils/time.js';
+import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -283,6 +284,9 @@ export class NavigationTracker {
 
   frameRequestedNavigation(url: string) {
     this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
+    if (!urlMatchesAboutBlank(url)) {
+      this.#initialNavigation = false;
+    }
     // The page is about to navigate to the url.
     this.createPendingNavigation(url);
   }
