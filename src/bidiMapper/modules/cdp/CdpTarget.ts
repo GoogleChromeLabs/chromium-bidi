@@ -32,13 +32,27 @@ import type {ChannelProxy} from '../script/ChannelProxy.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
+import {EventEmitter} from '../../../utils/EventEmitter.js';
+
+export const enum TargetEvents {
+  FrameStartedNavigating = 'framestartednavigating',
+}
+
+type TargetEventMap = {
+  [TargetEvents.FrameStartedNavigating]: {
+    loaderId: string;
+    url: string;
+    frameId: string | undefined;
+  };
+};
 
 interface FetchStages {
   request: boolean;
   response: boolean;
   auth: boolean;
 }
-export class CdpTarget {
+
+export class CdpTarget extends EventEmitter<TargetEventMap> {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
@@ -57,8 +71,6 @@ export class CdpTarget {
 
   #deviceAccessEnabled = false;
   #cacheDisableState = false;
-  // Even though the CDP `Network` event should be always enabled, some additional domains
-  // can be or be not required.
   #fetchDomainStages: FetchStages = {
     request: false,
     response: false,
@@ -119,6 +131,7 @@ export class CdpTarget {
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
+    super();
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
@@ -394,6 +407,15 @@ export class CdpTarget {
   }
 
   #setEventListeners() {
+    this.#cdpClient.on('Network.requestWillBeSent', (eventParams) => {
+      if (eventParams.loaderId === eventParams.requestId) {
+        this.emit(TargetEvents.FrameStartedNavigating, {
+          loaderId: eventParams.loaderId,
+          url: eventParams.request.url,
+          frameId: eventParams.frameId,
+        });
+      }
+    });
     this.#cdpClient.on('*', (event, params) => {
       // We may encounter uses for EventEmitter other than CDP events,
       // which we want to skip.
