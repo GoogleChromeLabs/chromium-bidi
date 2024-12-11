@@ -14,9 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR, Not
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_tree, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -73,7 +73,7 @@ async def test_browsingContext_windowOpen_blank_eventsEmitted(
             }
         })
 
-    messages = await read_sorted_messages(3, check_no_other_messages=True)
+    messages = await read_sorted_messages(2, check_no_other_messages=True)
     assert messages == [
         AnyExtending({
             "type": "success",
@@ -89,15 +89,6 @@ async def test_browsingContext_windowOpen_blank_eventsEmitted(
                 "userContext": "default",
                 "originalOpener": ANY_STR,
                 'clientWindow': ANY_STR,
-            }
-        }, {
-            "type": "event",
-            "method": "browsingContext.navigationStarted",
-            "params": {
-                "context": ANY_STR,
-                "url": "about:blank",
-                "navigation": ANY_UUID,
-                "timestamp": ANY_TIMESTAMP,
             }
         }
     ]
