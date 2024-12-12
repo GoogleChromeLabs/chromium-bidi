@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from anys import ANY_STR, Not
+from anys import ANY_STR
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
                           get_tree, goto_url, read_JSON_message,
                           send_JSON_command, subscribe)
@@ -272,7 +272,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
 
     await goto_url(websocket, context_id, LINK_WITH_BLANK_TARGET)
 
-    await subscribe(websocket, 'browsingContext.contextCreated')
+    await subscribe(websocket, 'browsingContext')
 
     command_id = await send_JSON_command(
         websocket, {
@@ -287,7 +287,10 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             }
         })
 
-    messages = await read_sorted_messages(2, check_no_other_messages=True)
+    messages = await read_sorted_messages(
+        5,
+        check_no_other_messages=True,
+        keys_to_stabilize=['context', 'navigation'])
 
     assert messages == [
         AnyExtending({
@@ -297,7 +300,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             'type': 'event',
             'method': 'browsingContext.contextCreated',
             'params': {
-                'context': ANY_STR & Not(context_id),
+                'context': 'stable_0',
                 'url': 'about:blank',
                 'clientWindow': ANY_STR,
                 'children': None,
@@ -305,6 +308,33 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
                 'userContext': 'default',
                 'originalOpener': ANY_STR,
             }
+        }, {
+            'type': 'event',
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': 'stable_0',
+                'navigation': 'stable_1',
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_example,
+            },
+        }, {
+            'type': 'event',
+            'method': 'browsingContext.load',
+            'params': {
+                'context': 'stable_0',
+                'navigation': 'stable_1',
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_example,
+            },
+        }, {
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': 'stable_0',
+                'navigation': 'stable_1',
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_example,
+            },
+            'type': 'event',
         }
     ]
 

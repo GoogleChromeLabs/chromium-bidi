@@ -152,6 +152,9 @@ export class NavigationTracker {
    */
   createPendingNavigation(url: string): NavigationState {
     this.#logger?.(LogType.debug, 'createCommandNavigation');
+    if (!urlMatchesAboutBlank(url)) {
+      this.#isInitialNavigation = false;
+    }
 
     this.#pendingNavigation?.finished.resolve(
       new NavigationResult(
@@ -258,8 +261,12 @@ export class NavigationTracker {
     }
 
     if (!this.#loaderIdToNavigationsMap.has(loaderId)) {
-      // Unexpected situation, but no need in throwing exception.
       this.#logger?.(LogType.debug, `Unknown loader ${loaderId} navigated`);
+
+      if (this.isInitialNavigation && urlMatchesAboutBlank(url)) {
+        // Initial navigation should be ignored.
+        return;
+      }
 
       if (
         this.#pendingNavigation !== undefined &&
@@ -338,9 +345,6 @@ export class NavigationTracker {
 
   frameRequestedNavigation(url: string) {
     this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
-    if (!urlMatchesAboutBlank(url)) {
-      this.#isInitialNavigation = false;
-    }
     // The page is about to navigate to the url.
     this.createPendingNavigation(url);
   }
@@ -352,6 +356,7 @@ export class NavigationTracker {
    */
   loadPageEvent(loaderId: string) {
     this.#logger?.(LogType.debug, 'loadPageEvent');
+    // Even if it was an initial navigation, it is finished.
     this.#isInitialNavigation = false;
 
     this.#loaderIdToNavigationsMap
@@ -398,7 +403,6 @@ export class NavigationTracker {
     );
 
     navigation.started.resolve();
-    this.#isInitialNavigation = false;
     this.#currentNavigation = navigation;
 
     if (this.#pendingNavigation === navigation) {
