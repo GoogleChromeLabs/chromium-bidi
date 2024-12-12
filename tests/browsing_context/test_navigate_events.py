@@ -184,3 +184,48 @@ async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
                                           keys_to_stabilize=KEYS_TO_STABILIZE,
                                           check_no_other_messages=True)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
+
+
+@pytest.mark.asyncio
+async def test_aboutBlank_reload_checkEvents(websocket, context_id, html,
+                                             read_sorted_messages, snapshot):
+    about_blank_url = 'about:blank'
+    await goto_url(websocket, context_id, about_blank_url)
+
+    await subscribe(websocket, ["browsingContext"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_sorted_messages(4,
+                                          keys_to_stabilize=KEYS_TO_STABILIZE,
+                                          check_no_other_messages=True)
+    assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
+
+
+@pytest.mark.asyncio
+async def test_reload_checkEvents(websocket, context_id, url_example, html,
+                                  read_sorted_messages, snapshot):
+    await goto_url(websocket, context_id, url_example)
+
+    await subscribe(websocket, ["browsingContext"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_sorted_messages(4,
+                                          keys_to_stabilize=KEYS_TO_STABILIZE,
+                                          check_no_other_messages=True)
+    assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
