@@ -862,6 +862,8 @@ export class BrowsingContextImpl {
 
     if (result instanceof NavigationResult) {
       if (
+        // TODO: check after decision on the spec is done:
+        //  https://github.com/w3c/webdriver-bidi/issues/799.
         result.eventName === NavigationEventName.NavigationAborted ||
         result.eventName === NavigationEventName.NavigationFailed
       ) {
