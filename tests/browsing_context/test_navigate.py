@@ -717,7 +717,7 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
         assert resp == AnyExtending({
             'error': 'unknown error',
             'id': command_id,
-            'message': 'navigation aborted',
+            'message': 'navigation failed',
             'type': 'error',
         })
 
