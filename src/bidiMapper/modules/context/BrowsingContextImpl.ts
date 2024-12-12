@@ -43,7 +43,11 @@ import {WindowRealm} from '../script/WindowRealm.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
-import {NavigationTracker} from './NavigationTracker.js';
+import {
+  NavigationEventName,
+  NavigationResult,
+  NavigationTracker,
+} from './NavigationTracker.js';
 
 export class BrowsingContextImpl {
   static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
@@ -384,7 +388,11 @@ export class BrowsingContextImpl {
   #initListeners() {
     this.#cdpTarget.cdpClient.on('Network.loadingFailed', (params) => {
       // Detect navigation errors like `net::ERR_BLOCKED_BY_RESPONSE`.
-      this.#navigationTracker.networkLoadingFailed(params);
+      // Network related to navigation has request id equals to navigation's loader id.
+      this.#navigationTracker.networkLoadingFailed(
+        params.requestId,
+        params.errorText,
+      );
     });
 
     this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
@@ -822,7 +830,10 @@ export class BrowsingContextImpl {
 
       if (cdpNavigateResult.errorText) {
         // If navigation failed, no pending navigation is left.
-        this.#navigationTracker.failNavigation(commandNavigation);
+        this.#navigationTracker.failNavigation(
+          commandNavigation,
+          cdpNavigateResult.errorText,
+        );
         throw new UnknownErrorException(cdpNavigateResult.errorText);
       }
 
@@ -849,11 +860,13 @@ export class BrowsingContextImpl {
       commandNavigation.finished,
     ]);
 
-    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
-      throw new UnknownErrorException('navigation aborted');
-    }
-    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed) {
-      throw new UnknownErrorException('navigation failed');
+    if (result instanceof NavigationResult) {
+      if (
+        result.eventName === NavigationEventName.NavigationAborted ||
+        result.eventName === NavigationEventName.NavigationFailed
+      ) {
+        throw new UnknownErrorException(result.message ?? 'unknown exception');
+      }
     }
 
     return {
@@ -909,11 +922,13 @@ export class BrowsingContextImpl {
       commandNavigation.finished,
     ]);
 
-    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
-      throw new UnknownErrorException('navigation aborted');
-    }
-    if (result === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed) {
-      throw new UnknownErrorException('navigation failed');
+    if (result instanceof NavigationResult) {
+      if (
+        result.eventName === NavigationEventName.NavigationAborted ||
+        result.eventName === NavigationEventName.NavigationFailed
+      ) {
+        throw new UnknownErrorException(result.message ?? 'unknown exception');
+      }
     }
 
     return {
