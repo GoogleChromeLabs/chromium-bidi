@@ -257,7 +257,7 @@ async def test_browsingContext_navigate_prompt(websocket, context_id, html,
         assert resp == AnyExtending({
             'error': 'unknown error',
             'id': navigate_command_id,
-            'message': 'navigation failed',
+            'message': 'net::ERR_ABORTED',
             'stacktrace': ANY_STR,
             'type': 'error',
         })
