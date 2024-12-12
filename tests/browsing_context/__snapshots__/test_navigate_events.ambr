@@ -1,4 +1,43 @@
 # serializer version: 1
+# name: test_aboutBlank_reload_checkEvents
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
 # name: test_navigate_aboutBlank_checkEvents
   list([
     dict({
@@ -105,6 +144,45 @@
         'navigation': 'stable_1',
         'redirectCount': 0,
         'request': 'stable_5',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_reload_checkEvents
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
       }),
       'type': 'event',
     }),
