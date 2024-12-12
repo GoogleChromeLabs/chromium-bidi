@@ -238,13 +238,28 @@ export class NavigationTracker {
 
     if (!this.#loaderIdToNavigationsMap.has(loaderId)) {
       // Unexpected situation, but no need in throwing exception.
-      this.#logger?.(
-        LogType.debugError,
-        `Unknown loader ${loaderId} navigated`,
-      );
-      // Create a new navigation.
-      // TODO: check if it should reset pending navigation.
-      this.#loaderIdToNavigationsMap.set(loaderId, this.#createNavigation(url));
+      this.#logger?.(LogType.debug, `Unknown loader ${loaderId} navigated`);
+
+      if (
+        this.#pendingNavigation !== undefined &&
+        this.#pendingNavigation?.loaderId === undefined
+      ) {
+        // This can be a pending navigation to `about:blank` created by a command. Use the
+        // pending navigation in this case.
+        const navigation = this.#pendingNavigation;
+        navigation.started.resolve();
+        navigation.loaderId = loaderId;
+        this.#loaderIdToNavigationsMap.set(loaderId, navigation);
+      } else {
+        // Create a new pending started navigation and set its loader id.
+        const navigation = this.createPendingNavigation(url);
+        navigation.started.resolve();
+        navigation.loaderId = loaderId;
+        this.#loaderIdToNavigationsMap.set(
+          loaderId,
+          this.#createNavigation(url),
+        );
+      }
     }
 
     const navigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
