@@ -22,15 +22,18 @@ import sinon, {type SinonStubbedInstance} from 'sinon';
 import {ChromiumBidi} from '../../../protocol/protocol.js';
 import {EventManager} from '../session/EventManager.js';
 
-import {NavigationTracker} from './NavigationTracker.js';
+import {NavigationEventName, NavigationTracker} from './NavigationTracker.js';
 
-const BROWSING_CONTEXT_ID = 'browsingContextId';
-const SOME_URL = 'SOME_URL';
+// keep-sorted start block=yes
+const ANOTHER_LOADER_ID = 'ANOTHER_LOADER_ID';
 const ANOTHER_URL = 'ANOTHER_URL';
-const YET_ANOTHER_URL = 'YET_ANOTHER_URL';
+const BROWSING_CONTEXT_ID = 'browsingContextId';
+const ERROR_MESSAGE = 'ERROR_MESSAGE';
 const INITIAL_URL = 'INITIAL_URL';
 const LOADER_ID = 'LOADER_ID';
-const ANOTHER_LOADER_ID = 'ANOTHER_LOADER_ID';
+const SOME_URL = 'SOME_URL';
+const YET_ANOTHER_URL = 'YET_ANOTHER_URL';
+// keep-sorted end
 
 describe('NavigationTracker', () => {
   let navigationTracker: NavigationTracker;
@@ -103,8 +106,8 @@ describe('NavigationTracker', () => {
       );
       assert.isTrue(navigation.started.isFinished);
       assert.equal(
-        navigation.finished.result,
-        ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+        navigation.finished.result.eventName,
+        NavigationEventName.FragmentNavigated,
       );
       // Fragment navigation should not update the current navigation.
       assert.equal(navigationTracker.currentNavigationId, initialNavigationId);
@@ -162,8 +165,8 @@ describe('NavigationTracker', () => {
 
         await assertNoNavigationEvents();
         assert.equal(
-          navigation.finished.result,
-          ChromiumBidi.BrowsingContext.EventNames.Load,
+          navigation.finished.result.eventName,
+          NavigationEventName.Load,
         );
       });
     });
@@ -188,8 +191,8 @@ describe('NavigationTracker', () => {
 
       assert.isTrue(navigation.started.isFinished);
       assert.equal(
-        navigation.finished.result,
-        ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+        navigation.finished.result.eventName,
+        NavigationEventName.NavigationAborted,
       );
       assert.equal(navigationTracker.currentNavigationId, initialNavigationId);
       assert.equal(navigationTracker.url, INITIAL_URL);
@@ -205,7 +208,7 @@ describe('NavigationTracker', () => {
         ANOTHER_URL,
       );
 
-      navigationTracker.failNavigation(navigation);
+      navigationTracker.failNavigation(navigation, ERROR_MESSAGE);
 
       await assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
@@ -215,9 +218,10 @@ describe('NavigationTracker', () => {
 
       assert.isTrue(navigation.started.isFinished);
       assert.equal(
-        navigation.finished.result,
-        ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+        navigation.finished.result.eventName,
+        NavigationEventName.NavigationFailed,
       );
+      assert.equal(navigation.finished.result.message, ERROR_MESSAGE);
       assert.equal(
         navigationTracker.currentNavigationId,
         navigation.navigationId,
@@ -235,7 +239,7 @@ describe('NavigationTracker', () => {
         ANOTHER_URL,
       );
 
-      navigationTracker.networkLoadingFailed({requestId: LOADER_ID} as any);
+      navigationTracker.networkLoadingFailed(LOADER_ID, ERROR_MESSAGE);
 
       await assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
@@ -245,9 +249,10 @@ describe('NavigationTracker', () => {
 
       assert.isTrue(navigation.started.isFinished);
       assert.equal(
-        navigation.finished.result,
-        ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+        navigation.finished.result.eventName,
+        NavigationEventName.NavigationFailed,
       );
+      assert.equal(navigation.finished.result.message, ERROR_MESSAGE);
       assert.equal(
         navigationTracker.currentNavigationId,
         navigation.navigationId,
@@ -371,7 +376,7 @@ describe('NavigationTracker', () => {
           ANOTHER_URL,
         );
 
-        navigationTracker.networkLoadingFailed({requestId: LOADER_ID} as any);
+        navigationTracker.networkLoadingFailed(LOADER_ID, ERROR_MESSAGE);
 
         await assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
