@@ -108,14 +108,15 @@ export class NavigationTracker {
   }
 
   /**
-   * Returns current ongoing navigation. It can be either a pending navigation, or one is
-   * already navigated.
+   * Returns current started ongoing navigation. It can be either a started pending
+   * navigation, or one is already navigated.
    */
   get currentNavigationId() {
-    return (
-      this.#pendingNavigation?.navigationId ??
-      this.#currentNavigation.navigationId
-    );
+    if (this.#pendingNavigation?.loaderId !== undefined) {
+      return this.#pendingNavigation.navigationId;
+    }
+
+    return this.#currentNavigation.navigationId;
   }
 
   /**
