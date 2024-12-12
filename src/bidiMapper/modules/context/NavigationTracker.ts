@@ -29,18 +29,29 @@ import {urlMatchesAboutBlank} from '../../../utils/UrlHelpers.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {EventManager} from '../session/EventManager.js';
 
-export type NavigationEventName =
-  | ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated
-  | ChromiumBidi.BrowsingContext.EventNames.NavigationAborted
-  | ChromiumBidi.BrowsingContext.EventNames.NavigationFailed
-  | ChromiumBidi.BrowsingContext.EventNames.Load;
+export const enum NavigationEventName {
+  FragmentNavigated = ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+  NavigationAborted = ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+  NavigationFailed = ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+  Load = ChromiumBidi.BrowsingContext.EventNames.Load,
+}
+
+export class NavigationResult {
+  readonly eventName: NavigationEventName;
+  readonly message?: string;
+
+  constructor(eventName: NavigationEventName, message?: string) {
+    this.eventName = eventName;
+    this.message = message;
+  }
+}
 
 class NavigationState {
   readonly navigationId = uuidv4();
   readonly #browsingContextId: string;
 
   started = new Deferred<void>();
-  finished = new Deferred<NavigationEventName>();
+  finished = new Deferred<NavigationResult>();
   url: string;
   loaderId?: string;
 
@@ -143,7 +154,10 @@ export class NavigationTracker {
     this.#logger?.(LogType.debug, 'createCommandNavigation');
 
     this.#pendingNavigation?.finished.resolve(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+      new NavigationResult(
+        NavigationEventName.NavigationAborted,
+        'navigation canceled by concurrent navigation',
+      ),
     );
     const navigation = this.#createNavigation(url);
     this.#pendingNavigation = navigation;
@@ -172,23 +186,21 @@ export class NavigationTracker {
         return;
       });
 
-    void navigation.finished.then((eventName: NavigationEventName) => {
+    void navigation.finished.then((eventName: NavigationResult) => {
       this.#logger?.(
         LogType.debug,
-        `Navigation ${navigation.navigationId} finished with ${eventName}`,
+        `Navigation ${navigation.navigationId} finished with ${eventName.eventName}, ${eventName.message}`,
       );
 
       if (
-        eventName ===
-          ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated ||
-        eventName ===
-          ChromiumBidi.BrowsingContext.EventNames.NavigationAborted ||
-        eventName === ChromiumBidi.BrowsingContext.EventNames.NavigationFailed
+        eventName.eventName === NavigationEventName.FragmentNavigated ||
+        eventName.eventName === NavigationEventName.NavigationAborted ||
+        eventName.eventName === NavigationEventName.NavigationFailed
       ) {
         this.#eventManager.registerEvent(
           {
             type: 'event',
-            method: eventName,
+            method: eventName.eventName,
             params: navigation.navigationInfo(),
           },
           this.#browsingContextId,
@@ -201,11 +213,17 @@ export class NavigationTracker {
   dispose() {
     // TODO: check if it should be aborted or failed.
     this.#pendingNavigation?.finished.resolve(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+      new NavigationResult(
+        NavigationEventName.NavigationFailed,
+        'navigation canceled by context disposal',
+      ),
     );
     // TODO: check if it should be aborted or failed.
     this.#currentNavigation.finished.resolve(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+      new NavigationResult(
+        NavigationEventName.NavigationFailed,
+        'navigation canceled by context disposal',
+      ),
     );
   }
 
@@ -231,7 +249,10 @@ export class NavigationTracker {
         this.#pendingNavigation ?? this.createPendingNavigation(unreachableUrl);
       navigation.started.resolve();
       navigation.finished.resolve(
-        ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+        new NavigationResult(
+          NavigationEventName.NavigationFailed,
+          'the requested url is unreachable',
+        ),
       );
       return;
     }
@@ -267,7 +288,10 @@ export class NavigationTracker {
 
     if (navigation !== this.#currentNavigation) {
       this.#currentNavigation.finished.resolve(
-        ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+        new NavigationResult(
+          NavigationEventName.NavigationAborted,
+          'navigation canceled by concurrent navigation',
+        ),
       );
     }
     this.#currentNavigation = navigation;
@@ -304,7 +328,7 @@ export class NavigationTracker {
 
     // Finish ongoing navigation.
     fragmentNavigation.finished.resolve(
-      ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+      new NavigationResult(NavigationEventName.FragmentNavigated),
     );
 
     if (fragmentNavigation === this.#pendingNavigation) {
@@ -332,16 +356,16 @@ export class NavigationTracker {
 
     this.#loaderIdToNavigationsMap
       .get(loaderId)
-      ?.finished.resolve(ChromiumBidi.BrowsingContext.EventNames.Load);
+      ?.finished.resolve(new NavigationResult(NavigationEventName.Load));
   }
 
   /**
    * Fail navigation due to navigation command failed.
    */
-  failNavigation(navigation: NavigationState) {
+  failNavigation(navigation: NavigationState, errorText: string) {
     this.#logger?.(LogType.debug, 'failCommandNavigation');
     navigation.finished.resolve(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+      new NavigationResult(NavigationEventName.NavigationFailed, errorText),
     );
   }
 
@@ -366,10 +390,14 @@ export class NavigationTracker {
       return;
     }
 
-    navigation.started.resolve();
     this.#currentNavigation.finished.resolve(
-      ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+      new NavigationResult(
+        NavigationEventName.NavigationAborted,
+        'navigation canceled by concurrent navigation',
+      ),
     );
+
+    navigation.started.resolve();
     this.#isInitialNavigation = false;
     this.#currentNavigation = navigation;
 
@@ -423,11 +451,11 @@ export class NavigationTracker {
    * If there is a navigation with the loaderId equals to the network request id, it means
    * that the navigation failed.
    */
-  networkLoadingFailed(params: Protocol.Network.LoadingFailedEvent) {
-    if (this.#loaderIdToNavigationsMap.has(params.requestId)) {
-      const navigation = this.#loaderIdToNavigationsMap.get(params.requestId)!;
+  networkLoadingFailed(loaderId: string, errorText: string) {
+    if (this.#loaderIdToNavigationsMap.has(loaderId)) {
+      const navigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
       navigation.finished.resolve(
-        ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+        new NavigationResult(NavigationEventName.NavigationFailed, errorText),
       );
     }
   }
