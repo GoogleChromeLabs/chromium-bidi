@@ -44,7 +44,7 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
         AnyExtending({
             'id': command_id,
             'error': 'unknown error',
-            'message': 'navigation aborted',
+            'message': 'navigation canceled by concurrent navigation',
             'type': 'error',
         }),
         {
@@ -399,16 +399,14 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
         AnyExtending({
             'id': command_id,
             'type': 'success',
-        }),
-        {
+        }), {
             'type': 'event',
             "method": "browsingContext.navigationStarted",
             "params": {
                 "context": context_id,
                 "navigation": ANY_UUID,
                 "timestamp": ANY_TIMESTAMP,
-                # TODO: Should report correct string
-                "url": ANY_STR,
+                "url": url_base,
             }
         }
     ]
@@ -591,7 +589,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': navigate_command_id,
         'type': 'error',
         'error': 'unknown error',
-        'message': 'navigation aborted',
+        'message': 'net::ERR_ABORTED',
     })
 
     assert close_command_result == AnyExtending({
@@ -717,7 +715,7 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
         assert resp == AnyExtending({
             'error': 'unknown error',
             'id': command_id,
-            'message': 'navigation failed',
+            'message': 'net::ERR_CERT_AUTHORITY_INVALID',
             'type': 'error',
         })
 
