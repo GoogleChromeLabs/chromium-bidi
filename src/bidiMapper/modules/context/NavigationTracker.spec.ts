@@ -29,7 +29,7 @@ const ANOTHER_LOADER_ID = 'ANOTHER_LOADER_ID';
 const ANOTHER_URL = 'ANOTHER_URL';
 const BROWSING_CONTEXT_ID = 'browsingContextId';
 const ERROR_MESSAGE = 'ERROR_MESSAGE';
-const INITIAL_URL = 'INITIAL_URL';
+const INITIAL_URL = 'about:blank';
 const LOADER_ID = 'LOADER_ID';
 const SOME_URL = 'SOME_URL';
 const YET_ANOTHER_URL = 'YET_ANOTHER_URL';
@@ -41,7 +41,6 @@ describe('NavigationTracker', () => {
   let initialNavigationId: string;
 
   async function assertNoNavigationEvents() {
-    await new Promise((resolve) => setTimeout(resolve, 1));
     // `eventManager.registerEvent` is safe do be used unbound.
     // eslint-disable-next-line @typescript-eslint/unbound-method
     sinon.assert.notCalled(eventManager.registerEvent);
@@ -53,7 +52,6 @@ describe('NavigationTracker', () => {
     navigationId: string | sinon.SinonMatcher,
     url: string,
   ) {
-    await new Promise((resolve) => setTimeout(resolve, 1));
     sinon.assert.calledWith(
       // `eventManager.registerEvent` is safe do be used unbound.
       // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -92,8 +90,7 @@ describe('NavigationTracker', () => {
 
       // Assert navigation is not finished.
       await assertNoNavigationEvents();
-      assert.isFalse(navigation.started.isFinished);
-      assert.isFalse(navigation.finished.isFinished);
+
       // Fragment navigation should not update the current navigation.
       assert.equal(navigationTracker.currentNavigationId, initialNavigationId);
 
@@ -104,9 +101,8 @@ describe('NavigationTracker', () => {
         navigation.navigationId,
         SOME_URL,
       );
-      assert.isTrue(navigation.started.isFinished);
       assert.equal(
-        navigation.finished.result.eventName,
+        (await navigation.finished).eventName,
         NavigationEventName.FragmentNavigated,
       );
       // Fragment navigation should not update the current navigation.
@@ -119,8 +115,6 @@ describe('NavigationTracker', () => {
         const navigation = navigationTracker.createPendingNavigation(SOME_URL);
 
         await assertNoNavigationEvents();
-        assert.isFalse(navigation.started.isFinished);
-        assert.isFalse(navigation.finished.isFinished);
         assert.equal(navigation.url, SOME_URL);
         assert.equal(navigationTracker.url, INITIAL_URL);
         assert.equal(
@@ -135,8 +129,6 @@ describe('NavigationTracker', () => {
           navigation.navigationId,
           ANOTHER_URL,
         );
-        assert.isTrue(navigation.started.isFinished);
-        assert.isFalse(navigation.finished.isFinished);
         assert.equal(navigation.url, ANOTHER_URL);
         assert.equal(navigationTracker.url, INITIAL_URL);
         assert.equal(
@@ -147,8 +139,6 @@ describe('NavigationTracker', () => {
         navigationTracker.navigationCommandFinished(navigation, LOADER_ID);
 
         await assertNoNavigationEvents();
-        assert.isTrue(navigation.started.isFinished);
-        assert.isFalse(navigation.finished.isFinished);
         assert.equal(navigation.url, ANOTHER_URL);
         assert.equal(navigationTracker.url, ANOTHER_URL);
         assert.equal(
@@ -159,13 +149,12 @@ describe('NavigationTracker', () => {
         navigationTracker.loadPageEvent(ANOTHER_LOADER_ID);
 
         await assertNoNavigationEvents();
-        assert.isFalse(navigation.finished.isFinished);
 
         navigationTracker.loadPageEvent(LOADER_ID);
 
         await assertNoNavigationEvents();
         assert.equal(
-          navigation.finished.result.eventName,
+          (await navigation.finished).eventName,
           NavigationEventName.Load,
         );
       });
@@ -189,9 +178,8 @@ describe('NavigationTracker', () => {
         ANOTHER_URL,
       );
 
-      assert.isTrue(navigation.started.isFinished);
       assert.equal(
-        navigation.finished.result.eventName,
+        (await navigation.finished).eventName,
         NavigationEventName.NavigationAborted,
       );
       assert.equal(navigationTracker.currentNavigationId, initialNavigationId);
@@ -216,12 +204,11 @@ describe('NavigationTracker', () => {
         ANOTHER_URL,
       );
 
-      assert.isTrue(navigation.started.isFinished);
       assert.equal(
-        navigation.finished.result.eventName,
+        (await navigation.finished).eventName,
         NavigationEventName.NavigationFailed,
       );
-      assert.equal(navigation.finished.result.message, ERROR_MESSAGE);
+      assert.equal((await navigation.finished).message, ERROR_MESSAGE);
       assert.equal(
         navigationTracker.currentNavigationId,
         navigation.navigationId,
@@ -247,12 +234,11 @@ describe('NavigationTracker', () => {
         ANOTHER_URL,
       );
 
-      assert.isTrue(navigation.started.isFinished);
       assert.equal(
-        navigation.finished.result.eventName,
+        (await navigation.finished).eventName,
         NavigationEventName.NavigationFailed,
       );
-      assert.equal(navigation.finished.result.message, ERROR_MESSAGE);
+      assert.equal((await navigation.finished).message, ERROR_MESSAGE);
       assert.equal(
         navigationTracker.currentNavigationId,
         navigation.navigationId,

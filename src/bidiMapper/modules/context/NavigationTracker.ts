@@ -50,20 +50,27 @@ class NavigationState {
   readonly navigationId = uuidv4();
   readonly #browsingContextId: string;
 
-  started = new Deferred<void>();
-  finished = new Deferred<NavigationResult>();
+  #started = false;
+  #finished = new Deferred<NavigationResult>();
   url: string;
   loaderId?: string;
+  #isInitial: boolean;
+  #eventManager: EventManager;
 
-  constructor(url: string, browsingContextId: string) {
+  get finished(): Promise<NavigationResult> {
+    return this.#finished;
+  }
+
+  constructor(
+    url: string,
+    browsingContextId: string,
+    isInitial: boolean,
+    eventManager: EventManager,
+  ) {
     this.#browsingContextId = browsingContextId;
     this.url = url;
-    void this.finished.then(() => {
-      this.started.reject(
-        new Error('Navigation finished without being started'),
-      );
-      return;
-    });
+    this.#isInitial = isInitial;
+    this.#eventManager = eventManager;
   }
 
   navigationInfo(): BrowsingContext.NavigationInfo {
@@ -73,6 +80,41 @@ class NavigationState {
       timestamp: getTimestamp(),
       url: this.url,
     };
+  }
+
+  start() {
+    if (!this.#isInitial && !this.#started) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          params: this.navigationInfo(),
+        },
+        this.#browsingContextId,
+      );
+    }
+
+    this.#started = true;
+  }
+
+  finish(navigationResult: NavigationResult) {
+    this.#started = true;
+
+    if (
+      !this.#isInitial &&
+      !this.#finished.isFinished &&
+      navigationResult.eventName !== NavigationEventName.Load
+    ) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: navigationResult.eventName,
+          params: this.navigationInfo(),
+        },
+        this.#browsingContextId,
+      );
+    }
+    this.#finished.resolve(navigationResult);
   }
 }
 
@@ -109,13 +151,12 @@ export class NavigationTracker {
     this.#logger = logger;
 
     this.#isInitialNavigation = true;
-    this.#currentNavigation = new NavigationState(url, browsingContextId);
-  }
-
-  #createNavigation(url: string): NavigationState {
-    const navigation = new NavigationState(url, this.#browsingContextId);
-    this.#setListeners(navigation);
-    return navigation;
+    this.#currentNavigation = new NavigationState(
+      url,
+      browsingContextId,
+      urlMatchesAboutBlank(url),
+      this.#eventManager,
+    );
   }
 
   /**
@@ -150,79 +191,42 @@ export class NavigationTracker {
    * navigation started. Can be aborted, failed, fragment navigated, or became a current
    * navigation.
    */
-  createPendingNavigation(url: string): NavigationState {
+  createPendingNavigation(
+    url: string,
+    canBeInitialNavigation: boolean = false,
+  ): NavigationState {
     this.#logger?.(LogType.debug, 'createCommandNavigation');
-    if (!urlMatchesAboutBlank(url)) {
-      this.#isInitialNavigation = false;
-    }
+    this.#isInitialNavigation =
+      canBeInitialNavigation &&
+      this.#isInitialNavigation &&
+      urlMatchesAboutBlank(url);
 
-    this.#pendingNavigation?.finished.resolve(
+    this.#pendingNavigation?.finish(
       new NavigationResult(
         NavigationEventName.NavigationAborted,
         'navigation canceled by concurrent navigation',
       ),
     );
-    const navigation = this.#createNavigation(url);
+    const navigation = new NavigationState(
+      url,
+      this.#browsingContextId,
+      this.#isInitialNavigation,
+      this.#eventManager,
+    );
     this.#pendingNavigation = navigation;
     return navigation;
   }
 
-  #setListeners(navigation: NavigationState) {
-    void navigation.started
-      .then(() => {
-        this.#logger?.(
-          LogType.debug,
-          `Navigation ${navigation.navigationId} started`,
-        );
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-            params: navigation.navigationInfo(),
-          },
-          this.#browsingContextId,
-        );
-        return;
-      })
-      .catch(() => {
-        // Navigation can be finished without being started in case of fragment navigation. Ignore.
-        return;
-      });
-
-    void navigation.finished.then((eventName: NavigationResult) => {
-      this.#logger?.(
-        LogType.debug,
-        `Navigation ${navigation.navigationId} finished with ${eventName.eventName}, ${eventName.message}`,
-      );
-
-      if (
-        eventName.eventName === NavigationEventName.FragmentNavigated ||
-        eventName.eventName === NavigationEventName.NavigationAborted ||
-        eventName.eventName === NavigationEventName.NavigationFailed
-      ) {
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: eventName.eventName,
-            params: navigation.navigationInfo(),
-          },
-          this.#browsingContextId,
-        );
-      }
-      return;
-    });
-  }
-
   dispose() {
     // TODO: check if it should be aborted or failed.
-    this.#pendingNavigation?.finished.resolve(
+    this.#pendingNavigation?.finish(
       new NavigationResult(
         NavigationEventName.NavigationFailed,
         'navigation canceled by context disposal',
       ),
     );
     // TODO: check if it should be aborted or failed.
-    this.#currentNavigation.finished.resolve(
+    this.#currentNavigation.finish(
       new NavigationResult(
         NavigationEventName.NavigationFailed,
         'navigation canceled by context disposal',
@@ -234,6 +238,26 @@ export class NavigationTracker {
   onTargetInfoChanged(url: string) {
     this.#logger?.(LogType.debug, `onTargetInfoChanged ${url}`);
     this.#currentNavigation.url = url;
+  }
+
+  #getNavigationForFrameNavigated(
+    url: string,
+    loaderId: string,
+  ): NavigationState {
+    if (this.#loaderIdToNavigationsMap.has(loaderId)) {
+      return this.#loaderIdToNavigationsMap.get(loaderId)!;
+    }
+
+    if (
+      this.#pendingNavigation !== undefined &&
+      this.#pendingNavigation?.loaderId === undefined
+    ) {
+      // This can be a pending navigation to `about:blank` created by a command. Use the
+      // pending navigation in this case.
+      return this.#pendingNavigation;
+    }
+    // Create a new pending navigation.
+    return this.createPendingNavigation(url, true);
   }
 
   /**
@@ -249,9 +273,11 @@ export class NavigationTracker {
       // The navigation failed before started. Get or create pending navigation and fail
       // it.
       const navigation =
-        this.#pendingNavigation ?? this.createPendingNavigation(unreachableUrl);
-      navigation.started.resolve();
-      navigation.finished.resolve(
+        this.#pendingNavigation ??
+        this.createPendingNavigation(unreachableUrl, true);
+      navigation.url = unreachableUrl;
+      navigation.start();
+      navigation.finish(
         new NavigationResult(
           NavigationEventName.NavigationFailed,
           'the requested url is unreachable',
@@ -260,47 +286,22 @@ export class NavigationTracker {
       return;
     }
 
-    if (!this.#loaderIdToNavigationsMap.has(loaderId)) {
-      this.#logger?.(LogType.debug, `Unknown loader ${loaderId} navigated`);
-
-      if (this.isInitialNavigation && urlMatchesAboutBlank(url)) {
-        // Initial navigation should be ignored.
-        return;
-      }
-
-      if (
-        this.#pendingNavigation !== undefined &&
-        this.#pendingNavigation?.loaderId === undefined
-      ) {
-        // This can be a pending navigation to `about:blank` created by a command. Use the
-        // pending navigation in this case.
-        const navigation = this.#pendingNavigation;
-        navigation.started.resolve();
-        navigation.loaderId = loaderId;
-        this.#loaderIdToNavigationsMap.set(loaderId, navigation);
-      } else {
-        // Create a new pending started navigation and set its loader id.
-        const navigation = this.createPendingNavigation(url);
-        navigation.started.resolve();
-        navigation.loaderId = loaderId;
-        this.#loaderIdToNavigationsMap.set(
-          loaderId,
-          this.#createNavigation(url),
-        );
-      }
-    }
-
-    const navigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
-    navigation.url = url;
+    const navigation = this.#getNavigationForFrameNavigated(url, loaderId);
 
     if (navigation !== this.#currentNavigation) {
-      this.#currentNavigation.finished.resolve(
+      this.#currentNavigation.finish(
         new NavigationResult(
           NavigationEventName.NavigationAborted,
           'navigation canceled by concurrent navigation',
         ),
       );
     }
+
+    navigation.url = url;
+    navigation.loaderId = loaderId;
+    this.#loaderIdToNavigationsMap.set(loaderId, navigation);
+    navigation.start();
+
     this.#currentNavigation = navigation;
     if (this.#pendingNavigation === navigation) {
       this.#pendingNavigation = undefined;
@@ -331,10 +332,15 @@ export class NavigationTracker {
       this.#pendingNavigation !== undefined &&
       this.#pendingNavigation.loaderId === undefined
         ? this.#pendingNavigation
-        : this.#createNavigation(url);
+        : new NavigationState(
+            url,
+            this.#browsingContextId,
+            false,
+            this.#eventManager,
+          );
 
     // Finish ongoing navigation.
-    fragmentNavigation.finished.resolve(
+    fragmentNavigation.finish(
       new NavigationResult(NavigationEventName.FragmentNavigated),
     );
 
@@ -346,7 +352,7 @@ export class NavigationTracker {
   frameRequestedNavigation(url: string) {
     this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
     // The page is about to navigate to the url.
-    this.createPendingNavigation(url);
+    this.createPendingNavigation(url, true);
   }
 
   /**
@@ -361,7 +367,7 @@ export class NavigationTracker {
 
     this.#loaderIdToNavigationsMap
       .get(loaderId)
-      ?.finished.resolve(new NavigationResult(NavigationEventName.Load));
+      ?.finish(new NavigationResult(NavigationEventName.Load));
   }
 
   /**
@@ -369,7 +375,7 @@ export class NavigationTracker {
    */
   failNavigation(navigation: NavigationState, errorText: string) {
     this.#logger?.(LogType.debug, 'failCommandNavigation');
-    navigation.finished.resolve(
+    navigation.finish(
       new NavigationResult(NavigationEventName.NavigationFailed, errorText),
     );
   }
@@ -395,14 +401,14 @@ export class NavigationTracker {
       return;
     }
 
-    this.#currentNavigation.finished.resolve(
+    this.#currentNavigation.finish(
       new NavigationResult(
         NavigationEventName.NavigationAborted,
         'navigation canceled by concurrent navigation',
       ),
     );
 
-    navigation.started.resolve();
+    navigation.start();
     this.#currentNavigation = navigation;
 
     if (this.#pendingNavigation === navigation) {
@@ -424,10 +430,10 @@ export class NavigationTracker {
     }
 
     const pendingNavigation =
-      this.#pendingNavigation ?? this.createPendingNavigation(url);
+      this.#pendingNavigation ?? this.createPendingNavigation(url, true);
 
-    pendingNavigation.started.resolve();
     pendingNavigation.url = url;
+    pendingNavigation.start();
 
     pendingNavigation.loaderId = loaderId;
     this.#loaderIdToNavigationsMap.set(loaderId, pendingNavigation);
@@ -448,7 +454,7 @@ export class NavigationTracker {
       );
       return;
     }
-    this.#pendingNavigation.started.resolve();
+    this.#pendingNavigation.start();
   }
 
   /**
@@ -458,7 +464,7 @@ export class NavigationTracker {
   networkLoadingFailed(loaderId: string, errorText: string) {
     if (this.#loaderIdToNavigationsMap.has(loaderId)) {
       const navigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
-      navigation.finished.resolve(
+      navigation.finish(
         new NavigationResult(NavigationEventName.NavigationFailed, errorText),
       );
     }
