@@ -24,8 +24,7 @@ KEYS_TO_STABILIZE = ['context', 'navigation', 'id', 'url', 'request']
 
 @pytest.mark.asyncio
 async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
-                                                   url_example,
-                                                   read_sorted_messages,
+                                                   url_example, read_messages,
                                                    snapshot):
     pytest.xfail(
         reason=  # noqa: E251. The line is too long.
@@ -45,16 +44,16 @@ async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
             }
         })
 
-    messages = await read_sorted_messages(12,
-                                          keys_to_stabilize=KEYS_TO_STABILIZE,
-                                          check_no_other_messages=True)
+    messages = await read_messages(12,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 async def test_navigate_scriptFragmentRedirect_checkEvents(
-        websocket, context_id, html, url_example, read_sorted_messages,
-        snapshot):
+        websocket, context_id, html, url_example, read_messages, snapshot):
     pytest.xfail(
         reason=  # noqa: E251. The line is too long.
         "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
@@ -73,16 +72,16 @@ async def test_navigate_scriptFragmentRedirect_checkEvents(
             }
         })
 
-    messages = await read_sorted_messages(8,
-                                          keys_to_stabilize=KEYS_TO_STABILIZE,
-                                          check_no_other_messages=True)
+    messages = await read_messages(8,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 async def test_nested_navigate_scriptFragmentRedirect_checkEvents(
-        websocket, iframe_id, html, url_example, read_sorted_messages,
-        snapshot):
+        websocket, iframe_id, html, url_example, read_messages, snapshot):
     pytest.xfail(
         reason=  # noqa: E251. The line is too long.
         "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
@@ -101,16 +100,17 @@ async def test_nested_navigate_scriptFragmentRedirect_checkEvents(
             }
         })
 
-    messages = await read_sorted_messages(8,
-                                          keys_to_stabilize=KEYS_TO_STABILIZE,
-                                          check_no_other_messages=True)
+    messages = await read_messages(8,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 async def test_navigate_aboutBlank_checkEvents(websocket, context_id,
-                                               url_example,
-                                               read_sorted_messages, snapshot):
+                                               url_example, read_messages,
+                                               snapshot):
     await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket, ["browsingContext", "network"])
@@ -125,15 +125,16 @@ async def test_navigate_aboutBlank_checkEvents(websocket, context_id,
             }
         })
 
-    messages = await read_sorted_messages(4,
-                                          keys_to_stabilize=KEYS_TO_STABILIZE,
-                                          check_no_other_messages=True)
+    messages = await read_messages(4,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_example,
-                                            read_sorted_messages, snapshot):
+                                            read_messages, snapshot):
     data_url = "data:text/html;,<h2>header</h2>"
     await goto_url(websocket, context_id, url_example)
 
@@ -149,17 +150,17 @@ async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_example,
             }
         })
 
-    messages = await read_sorted_messages(7,
-                                          keys_to_stabilize=KEYS_TO_STABILIZE,
-                                          check_no_other_messages=True)
+    messages = await read_messages(7,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
                                                      url_example, html,
-                                                     read_sorted_messages,
-                                                     snapshot):
+                                                     read_messages, snapshot):
     pytest.xfail(
         reason=  # noqa: E251. The line is too long.
         "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856")
@@ -180,15 +181,16 @@ async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
             }
         })
 
-    messages = await read_sorted_messages(7,
-                                          keys_to_stabilize=KEYS_TO_STABILIZE,
-                                          check_no_other_messages=True)
+    messages = await read_messages(7,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 async def test_aboutBlank_reload_checkEvents(websocket, context_id, html,
-                                             read_sorted_messages, snapshot):
+                                             read_messages, snapshot):
     about_blank_url = 'about:blank'
     await goto_url(websocket, context_id, about_blank_url)
 
@@ -203,15 +205,16 @@ async def test_aboutBlank_reload_checkEvents(websocket, context_id, html,
             }
         })
 
-    messages = await read_sorted_messages(4,
-                                          keys_to_stabilize=KEYS_TO_STABILIZE,
-                                          check_no_other_messages=True)
+    messages = await read_messages(4,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 async def test_reload_checkEvents(websocket, context_id, url_example, html,
-                                  read_sorted_messages, snapshot):
+                                  read_messages, snapshot):
     await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket, ["browsingContext"])
@@ -225,7 +228,8 @@ async def test_reload_checkEvents(websocket, context_id, url_example, html,
             }
         })
 
-    messages = await read_sorted_messages(4,
-                                          keys_to_stabilize=KEYS_TO_STABILIZE,
-                                          check_no_other_messages=True)
+    messages = await read_messages(4,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)

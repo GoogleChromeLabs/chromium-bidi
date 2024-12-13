@@ -2,17 +2,18 @@
 # name: test_aboutBlank_reload_checkEvents
   list([
     dict({
-      'id': 'stable_0',
-      'result': dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
-      'type': 'success',
+      'type': 'event',
     }),
     dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
@@ -21,37 +22,37 @@
     dict({
       'method': 'browsingContext.load',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
       'type': 'event',
     }),
     dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_3',
+      'id': 'stable_3',
+      'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
-      'type': 'event',
+      'type': 'success',
     }),
   ])
 # ---
 # name: test_navigate_aboutBlank_checkEvents
   list([
     dict({
-      'id': 'stable_0',
-      'result': dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
-      'type': 'success',
+      'type': 'event',
     }),
     dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
@@ -60,109 +61,109 @@
     dict({
       'method': 'browsingContext.load',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
       'type': 'event',
     }),
     dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_3',
+      'id': 'stable_3',
+      'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
-      'type': 'event',
+      'type': 'success',
     }),
   ])
 # ---
 # name: test_navigate_dataUrl_checkEvents
   list([
     dict({
-      'id': 'stable_0',
-      'result': dict({
-        'navigation': 'stable_1',
-        'url': 'stable_2',
-      }),
-      'type': 'success',
-    }),
-    dict({
-      'method': 'browsingContext.domContentLoaded',
+      'method': 'network.beforeRequestSent',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
+        'isBlocked': False,
         'navigation': 'stable_1',
-        'url': 'stable_2',
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.load',
-      'params': dict({
-        'context': 'stable_3',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
+        'redirectCount': 0,
+        'request': 'stable_4',
       }),
       'type': 'event',
     }),
     dict({
       'method': 'browsingContext.navigationStarted',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
-        'url': 'stable_2',
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_3',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_5',
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'network.responseCompleted',
-      'params': dict({
-        'context': 'stable_3',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_5',
+        'url': 'stable_3',
       }),
       'type': 'event',
     }),
     dict({
       'method': 'network.responseStarted',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'isBlocked': False,
         'navigation': 'stable_1',
         'redirectCount': 0,
-        'request': 'stable_5',
+        'request': 'stable_4',
       }),
       'type': 'event',
+    }),
+    dict({
+      'method': 'network.responseCompleted',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_3',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_3',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_5',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_3',
+      }),
+      'type': 'success',
     }),
   ])
 # ---
 # name: test_reload_checkEvents
   list([
     dict({
-      'id': 'stable_0',
-      'result': dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
-      'type': 'success',
+      'type': 'event',
     }),
     dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
@@ -171,20 +172,19 @@
     dict({
       'method': 'browsingContext.load',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
       'type': 'event',
     }),
     dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_3',
+      'id': 'stable_3',
+      'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
-      'type': 'event',
+      'type': 'success',
     }),
   ])
 # ---
