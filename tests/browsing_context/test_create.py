@@ -20,8 +20,7 @@ from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_create_eventsEmitted(websocket,
-                                                    read_sorted_messages):
+async def test_browsingContext_create_eventsEmitted(websocket, read_messages):
     await subscribe(websocket, "browsingContext")
 
     command_id = await send_JSON_command(websocket, {
@@ -31,16 +30,11 @@ async def test_browsingContext_create_eventsEmitted(websocket,
         }
     })
 
-    messages = await read_sorted_messages(2,
-                                          keys_to_stabilize=['context'],
-                                          check_no_other_messages=True)
+    messages = await read_messages(2,
+                                   keys_to_stabilize=['context'],
+                                   check_no_other_messages=True,
+                                   sort=False)
     assert messages == [{
-        "type": "success",
-        "id": command_id,
-        "result": {
-            'context': 'stable_0'
-        }
-    }, {
         "type": "event",
         "method": "browsingContext.contextCreated",
         "params": {
@@ -52,12 +46,18 @@ async def test_browsingContext_create_eventsEmitted(websocket,
             "originalOpener": None,
             'clientWindow': ANY_STR,
         }
+    }, {
+        "type": "success",
+        "id": command_id,
+        "result": {
+            'context': 'stable_0'
+        }
     }]
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_windowOpen_blank_eventsEmitted(
-        websocket, context_id, read_sorted_messages):
+        websocket, context_id, read_messages):
     await subscribe(websocket, "browsingContext")
 
     command_id = await send_JSON_command(
@@ -73,30 +73,29 @@ async def test_browsingContext_windowOpen_blank_eventsEmitted(
             }
         })
 
-    messages = await read_sorted_messages(2, check_no_other_messages=True)
-    assert messages == [
-        AnyExtending({
-            "type": "success",
-            "id": command_id,
-        }), {
-            "type": "event",
-            "method": "browsingContext.contextCreated",
-            "params": {
-                "context": ANY_STR,
-                "url": "about:blank",
-                "children": None,
-                "parent": None,
-                "userContext": "default",
-                "originalOpener": ANY_STR,
-                'clientWindow': ANY_STR,
-            }
+    messages = await read_messages(2, check_no_other_messages=True, sort=False)
+    assert messages == [{
+        "type": "event",
+        "method": "browsingContext.contextCreated",
+        "params": {
+            "context": ANY_STR,
+            "url": "about:blank",
+            "children": None,
+            "parent": None,
+            "userContext": "default",
+            "originalOpener": ANY_STR,
+            'clientWindow': ANY_STR,
         }
-    ]
+    },
+                        AnyExtending({
+                            "type": "success",
+                            "id": command_id,
+                        })]
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
-        websocket, context_id, read_sorted_messages, url_example):
+        websocket, context_id, read_messages, url_example):
     await subscribe(websocket, "browsingContext")
 
     command_id = await send_JSON_command(
@@ -112,67 +111,62 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
             }
         })
 
-    events = await read_sorted_messages(
-        5,
-        keys_to_stabilize=['context', 'navigation'],
-        check_no_other_messages=True)
+    events = await read_messages(5,
+                                 keys_to_stabilize=['context', 'navigation'],
+                                 check_no_other_messages=True,
+                                 sort=False)
 
-    assert events == [
-        AnyExtending({
-            "type": "success",
-            "id": command_id,
-            "result": {
-                "result": {
-                    "value": {
-                        "context": "stable_0",
-                    }
-                }
-            }
-        }),
-        {
-            "type": "event",
-            "method": "browsingContext.contextCreated",
-            "params": {
-                'context': 'stable_0',
-                "url": "about:blank",
-                "children": None,
-                "parent": None,
-                "userContext": "default",
-                "originalOpener": ANY_STR,
-                'clientWindow': ANY_STR,
-            }
-        },
-        {
-            'method': 'browsingContext.domContentLoaded',
-            'params': {
-                'context': 'stable_0',
-                'navigation': 'stable_1',
-                'timestamp': ANY_TIMESTAMP,
-                'url': url_example,
-            },
-            'type': 'event',
-        },
-        {
-            'method': 'browsingContext.load',
-            'params': {
-                'context': 'stable_0',
-                'navigation': 'stable_1',
-                'timestamp': ANY_TIMESTAMP,
-                'url': url_example,
-            },
-            'type': 'event',
-        },
-        {
-            'method': 'browsingContext.navigationStarted',
-            'params': {
-                'context': 'stable_0',
-                'navigation': 'stable_1',
-                'timestamp': ANY_TIMESTAMP,
-                'url': url_example,
-            },
-            'type': 'event',
-        },
-    ]
+    assert events == [{
+        "type": "event",
+        "method": "browsingContext.contextCreated",
+        "params": {
+            'context': 'stable_0',
+            "url": "about:blank",
+            "children": None,
+            "parent": None,
+            "userContext": "default",
+            "originalOpener": ANY_STR,
+            'clientWindow': ANY_STR,
+        }
+    },
+                      AnyExtending({
+                          "type": "success",
+                          "id": command_id,
+                          "result": {
+                              "result": {
+                                  "value": {
+                                      "context": "stable_0",
+                                  }
+                              }
+                          }
+                      }), {
+                          'method': 'browsingContext.navigationStarted',
+                          'params': {
+                              'context': 'stable_0',
+                              'navigation': 'stable_1',
+                              'timestamp': ANY_TIMESTAMP,
+                              'url': url_example,
+                          },
+                          'type': 'event',
+                      }, {
+                          'method': 'browsingContext.domContentLoaded',
+                          'params': {
+                              'context': 'stable_0',
+                              'navigation': 'stable_1',
+                              'timestamp': ANY_TIMESTAMP,
+                              'url': url_example,
+                          },
+                          'type': 'event',
+                      }, {
+                          'method': 'browsingContext.load',
+                          'params': {
+                              'context': 'stable_0',
+                              'navigation': 'stable_1',
+                              'timestamp': ANY_TIMESTAMP,
+                              'url': url_example,
+                          },
+                          'type': 'event',
+                      }]
 
 
 @pytest.mark.asyncio
@@ -205,7 +199,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
 
     tree = await get_tree(websocket)
 
-    assert {
+    assert tree == {
         "contexts": [{
             "context": ANY_STR,
             "parent": None,
@@ -233,7 +227,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
                 },
             ]
         }]
-    } == tree
+    }
 
     intermediate_page_context_id = tree["contexts"][0]["children"][0][
         "context"]
@@ -266,7 +260,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
 
 @pytest.mark.asyncio
 async def test_browsingContext_create_withUserGesture_eventsEmitted(
-        websocket, context_id, html, url_example, read_sorted_messages):
+        websocket, context_id, html, url_example, read_messages):
     LINK_WITH_BLANK_TARGET = html(
         f'''<a href="{url_example}" target="_blank">new tab</a>''')
 
@@ -287,62 +281,61 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             }
         })
 
-    messages = await read_sorted_messages(
-        5,
-        check_no_other_messages=True,
-        keys_to_stabilize=['context', 'navigation'])
+    messages = await read_messages(5,
+                                   check_no_other_messages=True,
+                                   keys_to_stabilize=['context', 'navigation'],
+                                   sort=False)
 
-    assert messages == [
-        AnyExtending({
-            'id': command_id,
-            'type': 'success',
-        }), {
-            'type': 'event',
-            'method': 'browsingContext.contextCreated',
-            'params': {
-                'context': 'stable_0',
-                'url': 'about:blank',
-                'clientWindow': ANY_STR,
-                'children': None,
-                'parent': None,
-                'userContext': 'default',
-                'originalOpener': ANY_STR,
-            }
-        }, {
-            'type': 'event',
-            'method': 'browsingContext.domContentLoaded',
-            'params': {
-                'context': 'stable_0',
-                'navigation': 'stable_1',
-                'timestamp': ANY_TIMESTAMP,
-                'url': url_example,
-            },
-        }, {
-            'type': 'event',
-            'method': 'browsingContext.load',
-            'params': {
-                'context': 'stable_0',
-                'navigation': 'stable_1',
-                'timestamp': ANY_TIMESTAMP,
-                'url': url_example,
-            },
-        }, {
-            'method': 'browsingContext.navigationStarted',
-            'params': {
-                'context': 'stable_0',
-                'navigation': 'stable_1',
-                'timestamp': ANY_TIMESTAMP,
-                'url': url_example,
-            },
-            'type': 'event',
+    assert messages == [{
+        'type': 'event',
+        'method': 'browsingContext.contextCreated',
+        'params': {
+            'context': 'stable_0',
+            'url': 'about:blank',
+            'clientWindow': ANY_STR,
+            'children': None,
+            'parent': None,
+            'userContext': 'default',
+            'originalOpener': ANY_STR,
         }
-    ]
+    },
+                        AnyExtending({
+                            'id': command_id,
+                            'type': 'success',
+                        }), {
+                            'method': 'browsingContext.navigationStarted',
+                            'params': {
+                                'context': 'stable_0',
+                                'navigation': 'stable_1',
+                                'timestamp': ANY_TIMESTAMP,
+                                'url': url_example,
+                            },
+                            'type': 'event',
+                        }, {
+                            'type': 'event',
+                            'method': 'browsingContext.domContentLoaded',
+                            'params': {
+                                'context': 'stable_0',
+                                'navigation': 'stable_1',
+                                'timestamp': ANY_TIMESTAMP,
+                                'url': url_example,
+                            },
+                        }, {
+                            'type': 'event',
+                            'method': 'browsingContext.load',
+                            'params': {
+                                'context': 'stable_0',
+                                'navigation': 'stable_1',
+                                'timestamp': ANY_TIMESTAMP,
+                                'url': url_example,
+                            },
+                        }]
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("type", ["window", "tab"])
 async def test_browsingContext_create_withUserContext(websocket, type,
-                                                      read_sorted_messages):
+                                                      read_messages):
     result = await execute_command(websocket, {
         "method": "browser.createUserContext",
         "params": {}
@@ -360,17 +353,12 @@ async def test_browsingContext_create_withUserContext(websocket, type,
             }
         })
 
-    messages = await read_sorted_messages(2,
-                                          keys_to_stabilize=['context'],
-                                          check_no_other_messages=True)
+    messages = await read_messages(2,
+                                   keys_to_stabilize=['context'],
+                                   check_no_other_messages=True,
+                                   sort=False)
 
     assert messages == [{
-        'id': command_id,
-        'result': {
-            'context': 'stable_0',
-        },
-        'type': 'success',
-    }, {
         "type": "event",
         "method": "browsingContext.contextCreated",
         "params": {
@@ -382,6 +370,12 @@ async def test_browsingContext_create_withUserContext(websocket, type,
             "originalOpener": None,
             'clientWindow': ANY_STR,
         }
+    }, {
+        'id': command_id,
+        'result': {
+            'context': 'stable_0',
+        },
+        'type': 'success',
     }]
 
 
