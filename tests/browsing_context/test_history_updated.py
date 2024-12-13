@@ -49,7 +49,7 @@ async def test_browsingContext_historyUpdated_event(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_beforeunload_historyUpdated_reload_event(
+async def test_browsingContext_beforeunload_historyUpdated_reload(
         websocket, context_id, url_base, read_messages):
     await subscribe(websocket, ["browsingContext"])
 
@@ -122,4 +122,84 @@ async def test_browsingContext_beforeunload_historyUpdated_reload_event(
             'url': url_base,
         },
         'type': 'event',
+    }]
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_beforeunload_historyUpdated_navigate(
+        websocket, context_id, url_base, url_example, read_messages):
+    await subscribe(websocket, ["browsingContext"])
+
+    await goto_url(websocket, context_id, url_base)
+
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": """
+                    window.addEventListener('beforeunload', () => {
+                        return history.replaceState(null, 'initial', '#test');
+                    },false)
+                """,
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": False
+            }
+        })
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_example,
+                "context": context_id,
+                "wait": "complete"
+            }
+        })
+
+    messages = await read_messages(5, check_no_other_messages=True, sort=False)
+    stabilize_key_values(messages, ['navigation'])
+
+    assert messages == [{
+        'method': 'browsingContext.historyUpdated',
+        'params': {
+            'context': context_id,
+            'url': url_base + "#test",
+        },
+        'type': 'event',
+    }, {
+        'method': 'browsingContext.navigationStarted',
+        'params': {
+            'context': context_id,
+            'navigation': 'stable_0',
+            'timestamp': ANY_TIMESTAMP,
+            'url': url_example,
+        },
+        'type': 'event',
+    }, {
+        'method': 'browsingContext.domContentLoaded',
+        'params': {
+            'context': context_id,
+            'navigation': 'stable_0',
+            'timestamp': ANY_TIMESTAMP,
+            'url': url_example,
+        },
+        'type': 'event',
+    }, {
+        'method': 'browsingContext.load',
+        'params': {
+            'context': context_id,
+            'navigation': 'stable_0',
+            'timestamp': ANY_TIMESTAMP,
+            'url': url_example,
+        },
+        'type': 'event',
+    }, {
+        'id': command_id,
+        'type': "success",
+        'result': {
+            'navigation': 'stable_0',
+            'url': url_example,
+        },
     }]
