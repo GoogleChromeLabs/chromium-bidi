@@ -40,13 +40,13 @@ describe('NavigationTracker', () => {
   let eventManager: SinonStubbedInstance<EventManager>;
   let initialNavigationId: string;
 
-  async function assertNoNavigationEvents() {
+  function assertNoNavigationEvents() {
     // `eventManager.registerEvent` is safe do be used unbound.
     // eslint-disable-next-line @typescript-eslint/unbound-method
     sinon.assert.notCalled(eventManager.registerEvent);
   }
 
-  async function assertNavigationEvent(
+  function assertNavigationEvent(
     this: void,
     eventName: string,
     navigationId: string | sinon.SinonMatcher,
@@ -89,14 +89,14 @@ describe('NavigationTracker', () => {
       navigationTracker.navigationCommandFinished(navigation, undefined);
 
       // Assert navigation is not finished.
-      await assertNoNavigationEvents();
+      assertNoNavigationEvents();
 
       // Fragment navigation should not update the current navigation.
       assert.equal(navigationTracker.currentNavigationId, initialNavigationId);
 
       navigationTracker.navigatedWithinDocument(SOME_URL, 'fragment');
 
-      await assertNavigationEvent(
+      assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
         navigation.navigationId,
         SOME_URL,
@@ -114,7 +114,7 @@ describe('NavigationTracker', () => {
       it('started', async () => {
         const navigation = navigationTracker.createPendingNavigation(SOME_URL);
 
-        await assertNoNavigationEvents();
+        assertNoNavigationEvents();
         assert.equal(navigation.url, SOME_URL);
         assert.equal(navigationTracker.url, INITIAL_URL);
         assert.equal(
@@ -124,7 +124,7 @@ describe('NavigationTracker', () => {
 
         navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 
-        await assertNavigationEvent(
+        assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           navigation.navigationId,
           ANOTHER_URL,
@@ -138,7 +138,7 @@ describe('NavigationTracker', () => {
 
         navigationTracker.navigationCommandFinished(navigation, LOADER_ID);
 
-        await assertNoNavigationEvents();
+        assertNoNavigationEvents();
         assert.equal(navigation.url, ANOTHER_URL);
         assert.equal(navigationTracker.url, ANOTHER_URL);
         assert.equal(
@@ -148,11 +148,11 @@ describe('NavigationTracker', () => {
 
         navigationTracker.loadPageEvent(ANOTHER_LOADER_ID);
 
-        await assertNoNavigationEvents();
+        assertNoNavigationEvents();
 
         navigationTracker.loadPageEvent(LOADER_ID);
 
-        await assertNoNavigationEvents();
+        assertNoNavigationEvents();
         assert.equal(
           (await navigation.finished).eventName,
           NavigationEventName.Load,
@@ -160,11 +160,11 @@ describe('NavigationTracker', () => {
       });
     });
 
-    it('aborted by script-initiated navigation', async () => {
+    it('canceled by script-initiated navigation', async () => {
       const navigation = navigationTracker.createPendingNavigation(SOME_URL);
       navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 
-      await assertNavigationEvent(
+      assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
         navigation.navigationId,
         ANOTHER_URL,
@@ -172,7 +172,31 @@ describe('NavigationTracker', () => {
 
       navigationTracker.frameRequestedNavigation(YET_ANOTHER_URL);
 
-      await assertNavigationEvent(
+      assertNavigationEvent(
+        ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+        navigation.navigationId,
+        ANOTHER_URL,
+      );
+
+      assert.equal(
+        (await navigation.finished).eventName,
+        NavigationEventName.NavigationFailed,
+      );
+      assert.equal(navigationTracker.currentNavigationId, initialNavigationId);
+      assert.equal(navigationTracker.url, INITIAL_URL);
+    });
+
+    it('aborted by script-initiated navigation', async () => {
+      const navigation = navigationTracker.createPendingNavigation(SOME_URL);
+      navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+      navigationTracker.frameNavigated(ANOTHER_URL, LOADER_ID);
+
+      eventManager.registerEvent.reset();
+
+      navigationTracker.frameRequestedNavigation(YET_ANOTHER_URL);
+      navigationTracker.frameNavigated(YET_ANOTHER_URL, ANOTHER_LOADER_ID);
+
+      assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
         navigation.navigationId,
         ANOTHER_URL,
@@ -182,15 +206,13 @@ describe('NavigationTracker', () => {
         (await navigation.finished).eventName,
         NavigationEventName.NavigationAborted,
       );
-      assert.equal(navigationTracker.currentNavigationId, initialNavigationId);
-      assert.equal(navigationTracker.url, INITIAL_URL);
     });
 
     it('failed command', async () => {
       const navigation = navigationTracker.createPendingNavigation(SOME_URL);
       navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 
-      await assertNavigationEvent(
+      assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
         navigation.navigationId,
         ANOTHER_URL,
@@ -198,7 +220,7 @@ describe('NavigationTracker', () => {
 
       navigationTracker.failNavigation(navigation, ERROR_MESSAGE);
 
-      await assertNavigationEvent(
+      assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
         navigation.navigationId,
         ANOTHER_URL,
@@ -220,7 +242,7 @@ describe('NavigationTracker', () => {
       const navigation = navigationTracker.createPendingNavigation(SOME_URL);
       navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 
-      await assertNavigationEvent(
+      assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
         navigation.navigationId,
         ANOTHER_URL,
@@ -228,7 +250,7 @@ describe('NavigationTracker', () => {
 
       navigationTracker.networkLoadingFailed(LOADER_ID, ERROR_MESSAGE);
 
-      await assertNavigationEvent(
+      assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
         navigation.navigationId,
         ANOTHER_URL,
@@ -251,7 +273,7 @@ describe('NavigationTracker', () => {
     it('should process fragment navigation', async () => {
       navigationTracker.navigatedWithinDocument(SOME_URL, 'fragment');
 
-      await assertNavigationEvent(
+      assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
         sinon.match.any,
         SOME_URL,
@@ -265,7 +287,7 @@ describe('NavigationTracker', () => {
       it('started', async () => {
         navigationTracker.frameRequestedNavigation(SOME_URL);
 
-        await assertNoNavigationEvents();
+        assertNoNavigationEvents();
         assert.equal(
           navigationTracker.currentNavigationId,
           initialNavigationId,
@@ -274,7 +296,7 @@ describe('NavigationTracker', () => {
 
         navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 
-        await assertNavigationEvent(
+        assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           sinon.match.any,
           ANOTHER_URL,
@@ -288,18 +310,18 @@ describe('NavigationTracker', () => {
 
         navigationTracker.frameNavigated(YET_ANOTHER_URL, LOADER_ID);
 
-        await assertNoNavigationEvents();
+        assertNoNavigationEvents();
         assert.equal(navigationTracker.url, YET_ANOTHER_URL);
 
         navigationTracker.loadPageEvent(LOADER_ID);
 
-        await assertNoNavigationEvents();
+        assertNoNavigationEvents();
       });
 
-      it('aborted by script-initiated navigation', async () => {
+      it('canceled by script-initiated navigation', async () => {
         navigationTracker.frameRequestedNavigation(SOME_URL);
 
-        await assertNoNavigationEvents();
+        assertNoNavigationEvents();
         assert.equal(
           navigationTracker.currentNavigationId,
           initialNavigationId,
@@ -308,7 +330,7 @@ describe('NavigationTracker', () => {
 
         navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 
-        await assertNavigationEvent(
+        assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           sinon.match.any,
           ANOTHER_URL,
@@ -316,8 +338,8 @@ describe('NavigationTracker', () => {
 
         navigationTracker.frameRequestedNavigation(YET_ANOTHER_URL);
 
-        await assertNavigationEvent(
-          ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
           sinon.match.any,
           ANOTHER_URL,
         );
@@ -328,11 +350,11 @@ describe('NavigationTracker', () => {
         assert.equal(navigationTracker.url, INITIAL_URL);
       });
 
-      it('aborted by command navigation', async () => {
+      it('canceled by command navigation', async () => {
         navigationTracker.frameRequestedNavigation(SOME_URL);
         navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 
-        await assertNavigationEvent(
+        assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           sinon.match.any,
           ANOTHER_URL,
@@ -340,8 +362,8 @@ describe('NavigationTracker', () => {
 
         navigationTracker.createPendingNavigation(YET_ANOTHER_URL);
 
-        await assertNavigationEvent(
-          ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
           sinon.match.any,
           ANOTHER_URL,
         );
@@ -356,7 +378,7 @@ describe('NavigationTracker', () => {
         navigationTracker.frameRequestedNavigation(SOME_URL);
         navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 
-        await assertNavigationEvent(
+        assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           sinon.match.any,
           ANOTHER_URL,
@@ -364,7 +386,7 @@ describe('NavigationTracker', () => {
 
         navigationTracker.networkLoadingFailed(LOADER_ID, ERROR_MESSAGE);
 
-        await assertNavigationEvent(
+        assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
           sinon.match.any,
           ANOTHER_URL,
