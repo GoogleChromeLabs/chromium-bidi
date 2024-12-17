@@ -300,7 +300,7 @@ def url_cacheable(local_server_http):
 
 
 @pytest.fixture
-def read_sorted_messages(websocket, read_all_messages):
+def read_messages(websocket, read_all_messages):
     """
     Reads the specified number of messages from the WebSocket, returning them in
     a consistent order.
@@ -314,11 +314,12 @@ def read_sorted_messages(websocket, read_all_messages):
     is determined by the key and the order in which unique values for that key
     are encountered.
     """
-    async def read_sorted_messages(
-            message_count,
-            filter_lambda: Callable[[dict], bool] = lambda _: True,
-            keys_to_stabilize: list[str] = [],
-            check_no_other_messages: bool = False):
+    async def read_messages(message_count,
+                            filter_lambda: Callable[[dict],
+                                                    bool] = lambda _: True,
+                            keys_to_stabilize: list[str] = [],
+                            check_no_other_messages: bool = False,
+                            sort=True):
         messages = []
         for _ in range(message_count):
             # Get the next message matching the filter.
@@ -329,10 +330,12 @@ def read_sorted_messages(websocket, read_all_messages):
             messages.append(message)
 
         if check_no_other_messages:
-            messages = messages + await read_all_messages()
+            messages = messages + await read_all_messages(
+                filter_lambda=filter_lambda)
 
-        messages.sort(key=lambda x: x["method"]
-                      if "method" in x else str(x["id"]) if "id" in x else "")
+        if sort:
+            messages.sort(key=lambda x: x["method"] if "method" in x else str(
+                x["id"]) if "id" in x else "")
         # Stabilize some values through the messages.
         stabilize_key_values(messages, keys_to_stabilize)
 
@@ -345,12 +348,13 @@ def read_sorted_messages(websocket, read_all_messages):
 
         return messages
 
-    return read_sorted_messages
+    return read_messages
 
 
 @pytest.fixture
 def read_all_messages(websocket):
-    async def read_all_messages():
+    async def read_all_messages(
+            filter_lambda: Callable[[dict], bool] = lambda _: True):
         messages = []
         """ Walk through all the browsing contexts and evaluate an async script"""
         command_id = await send_JSON_command(websocket, {
@@ -359,8 +363,9 @@ def read_all_messages(websocket):
         })
         message = await read_JSON_message(websocket)
         while message != AnyExtending({'id': command_id}):
-            # Unexpected message. Add to the result list.
-            messages.append(message)
+            if filter_lambda(message):
+                # Unexpected message. Add to the result list.
+                messages.append(message)
             message = await read_JSON_message(websocket)
         else:
             assert message == AnyExtending({
@@ -382,7 +387,9 @@ def read_all_messages(websocket):
                 message = await read_JSON_message(websocket)
                 while message != AnyExtending({'id': command_id}):
                     # Ignore both success and failure command result.
-                    messages.append(message)
+                    if filter_lambda(message):
+                        # Unexpected message. Add to the result list.
+                        messages.append(message)
                     message = await read_JSON_message(websocket)
         return messages
 
