@@ -873,7 +873,7 @@ export class NetworkRequest {
       // TODO: populate
       destination: '',
       // TODO: populate
-      initiatorType: null,
+      initiatorType: 'destination',
       timings: this.#timings,
     };
 
