@@ -49,7 +49,7 @@ jobs:
         run: ./scripts/test.sh
         working-directory: webdriver-bidi
       - name: Upload WebDriverBidi CDDL
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: all-cddl
           path: webdriver-bidi/all.cddl
@@ -57,7 +57,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.html && mv all.cddl permissions.cddl
         working-directory: permissions
       - name: Upload WebDriverBidi CDDL for Permissions
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: permissions-cddl
           path: permissions/permissions.cddl
@@ -65,7 +65,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.bs && mv all.cddl web-bluetooth.cddl
         working-directory: web-bluetooth
       - name: Upload WebDriverBidi CDDL for Permissions
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: web-bluetooth-cddl
           path: web-bluetooth/web-bluetooth.cddl
@@ -83,7 +83,7 @@ jobs:
           python-version: '3.11'
           cache: pip
       - name: Setup Go
-        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.0.0
+        uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v5.0.0
         with:
           go-version: '1.21.x'
       - name: Install cddlconv
