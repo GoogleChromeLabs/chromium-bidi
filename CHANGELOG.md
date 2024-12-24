@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.12.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.11.1...chromium-bidi-v0.12.0) (2024-12-24)
+
+
+### Features
+
+* provide proper network timings ([#2919](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2919)) ([22e096b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/22e096bf65d86137de66d71f2728f0d3036d0d66))
+
 ## [0.11.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.11.0...chromium-bidi-v0.11.1) (2024-12-18)
 
 
