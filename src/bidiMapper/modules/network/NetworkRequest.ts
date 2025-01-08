@@ -943,7 +943,7 @@ export class NetworkRequest {
       case 'Image':
         return 'image';
       case 'Document':
-        // If request to document is initiated by parser| assume it is expected to
+        // If request to document is initiated by parser, assume it is expected to
         // arrive in an iframe. Otherwise, fallback to empty string.
         return this.#request.info?.initiator.type === 'parser' ? 'iframe' : '';
       default:
