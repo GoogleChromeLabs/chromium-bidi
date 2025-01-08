@@ -926,6 +926,14 @@ export class NetworkRequest {
     } as Network.RequestData;
   }
 
+  /**
+   * Heuristic trying to guess the destination.
+   * Specification: https://fetch.spec.whatwg.org/#concept-request-destination.
+   * Specified values: "audio", "audioworklet", "document", "embed", "font", "frame",
+   * "iframe", "image", "json", "manifest", "object", "paintworklet", "report", "script",
+   * "serviceworker", "sharedworker", "style", "track", "video", "webidentity", "worker",
+   * "xslt".
+   */
   #getDestination(): string {
     switch (this.#request.info?.type) {
       case 'Script':
@@ -943,9 +951,15 @@ export class NetworkRequest {
     }
   }
 
+  /**
+   * Heuristic trying to guess the initiator type.
+   * Specification: https://fetch.spec.whatwg.org/#request-initiator-type.
+   * Specified values: "audio", "beacon", "body", "css", "early-hints", "embed", "fetch",
+   * "font", "frame", "iframe", "image", "img", "input", "link", "object", "ping",
+   * "script", "track", "video", "xmlhttprequest", "other".
+   */
   #getInitiatorType(): null | string {
     if (this.#request.info?.initiator.type === 'parser') {
-      // Heuristic.
       switch (this.#request.info?.type) {
         case 'Document':
           // The request to document is initiated by the parser. Assuming it's an iframe.
