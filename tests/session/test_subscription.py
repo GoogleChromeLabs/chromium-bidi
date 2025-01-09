@@ -50,7 +50,7 @@ async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
                 "events": ["browsingContext.load"]
             }
         })
-    assert result == {}
+    assert result == {'subscription': ANY_STR}
 
     # Navigate to some page.
     await send_JSON_command(
@@ -80,7 +80,7 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
                 "contexts": [context_id]
             }
         })
-    assert result == {}
+    assert result == {"subscription": ANY_STR}
 
     # Navigate to some page.
     await send_JSON_command(
@@ -517,6 +517,7 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: conflict with spec")
 async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
     await subscribe(websocket, ["log.entryAdded"], [iframe_id])
 

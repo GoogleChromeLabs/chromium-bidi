@@ -523,5 +523,7 @@ async def test_runtimeException_buffered(websocket, context_id):
     assert {
         "type": "success",
         "id": subscribe_command_id,
-        "result": {}
+        "result": {
+            "subscription": ANY_STR
+        }
     } == resp

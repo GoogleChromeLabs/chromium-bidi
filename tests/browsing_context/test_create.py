@@ -418,7 +418,9 @@ async def test_browsingContext_subscribe_to_contextCreated_emits_for_existing(
     assert resp == {
         'id': subscribe_command_id,
         'type': 'success',
-        'result': {}
+        'result': {
+            'subscription': ANY_STR,
+        }
     }
 
 

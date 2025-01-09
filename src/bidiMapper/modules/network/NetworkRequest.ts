@@ -241,7 +241,7 @@ export class NetworkRequest {
       this.#request.info?.frameId ??
       this.#request.paused?.frameId ??
       this.#request.auth?.frameId ??
-      null
+      ''
     );
   }
 
