@@ -285,6 +285,13 @@ export class SubscriptionManager {
           newSubscriptions.push(subscription);
           continue;
         }
+        if (
+          intersection(eventNames, subscription.eventNames).size !==
+          eventNames.size
+        ) {
+          newSubscriptions.push(subscription);
+          continue;
+        }
         // Splitting context subscriptions.
         const eventMap = new Map<
           ChromiumBidi.EventNames,

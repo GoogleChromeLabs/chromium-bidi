@@ -241,7 +241,7 @@ export class NetworkRequest {
       this.#request.info?.frameId ??
       this.#request.paused?.frameId ??
       this.#request.auth?.frameId ??
-      ''
+      null
     );
   }
 
@@ -808,12 +808,20 @@ export class NetworkRequest {
     this.#phaseChanged();
 
     this.#emittedEvents[event.method] = true;
-    this.#eventManager.registerEvent(
-      Object.assign(event, {
-        type: 'event' as const,
-      }),
-      this.#context,
-    );
+    if (this.#context) {
+      this.#eventManager.registerEvent(
+        Object.assign(event, {
+          type: 'event' as const,
+        }),
+        this.#context,
+      );
+    } else {
+      this.#eventManager.registerGlobalEvent(
+        Object.assign(event, {
+          type: 'event' as const,
+        }),
+      );
+    }
   }
 
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {

@@ -142,22 +142,22 @@ describe('SubscriptionManager', () => {
     });
 
     describe('unsubscribe all', () => {
-      // it('atomicity: does not unsubscribe when there is no subscription', () => {
-      //   subscriptionManager.subscribe([SOME_EVENT], [], SOME_CHANNEL);
-      //   expect(() =>
-      //     subscriptionManager.unsubscribe(
-      //       [SOME_EVENT, ANOTHER_EVENT],
-      //       [],
-      //       SOME_CHANNEL,
-      //     ),
-      //   ).to.throw('No subscription found');
-      //   expect(
-      //     subscriptionManager.getChannelsSubscribedToEvent(
-      //       SOME_EVENT,
-      //       SOME_CONTEXT,
-      //     ),
-      //   ).to.deep.equal([SOME_CHANNEL]);
-      // });
+      it('atomicity: does not unsubscribe when there is no subscription', () => {
+        subscriptionManager.subscribe([SOME_EVENT], [], SOME_CHANNEL);
+        expect(() =>
+          subscriptionManager.unsubscribe(
+            [SOME_EVENT, ANOTHER_EVENT],
+            [],
+            SOME_CHANNEL,
+          ),
+        ).to.throw('No subscription found');
+        expect(
+          subscriptionManager.getChannelsSubscribedToEvent(
+            SOME_EVENT,
+            SOME_CONTEXT,
+          ),
+        ).to.deep.equal([SOME_CHANNEL]);
+      });
 
       it('happy path', () => {
         subscriptionManager.subscribe([SOME_EVENT], [], SOME_CHANNEL);
@@ -490,6 +490,27 @@ describe('SubscriptionManager', () => {
           [SOME_EVENT],
           [SOME_NESTED_CONTEXT],
           ANOTHER_CHANNEL,
+        );
+      }).to.throw('No subscription found');
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          SOME_EVENT,
+          SOME_CONTEXT,
+        ),
+      ).to.deep.equal([SOME_CHANNEL]);
+    });
+
+    it('should not unsubscribe from top-level context when event lists do not match', () => {
+      subscriptionManager.subscribe(
+        [SOME_EVENT],
+        [SOME_NESTED_CONTEXT],
+        SOME_CHANNEL,
+      );
+      expect(() => {
+        subscriptionManager.unsubscribe(
+          [SOME_EVENT, ANOTHER_EVENT],
+          [SOME_CONTEXT],
+          SOME_CHANNEL,
         );
       }).to.throw('No subscription found');
       expect(

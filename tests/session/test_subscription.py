@@ -517,17 +517,15 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: conflict with spec")
 async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
     await subscribe(websocket, ["log.entryAdded"], [iframe_id])
 
-    with pytest.raises(
-            Exception,
-            match=re.compile(
-                str({
-                    "error": "invalid argument",
-                    "message": 'Cannot unsubscribe from network.responseCompleted, .*. No subscription found.'
-                }))):
+    with pytest.raises(Exception,
+                       match=re.compile(
+                           str({
+                               "error": "invalid argument",
+                               "message": 'No subscription found'
+                           }))):
         await execute_command(
             websocket,
             {
