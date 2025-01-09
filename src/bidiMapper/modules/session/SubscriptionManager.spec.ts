@@ -180,6 +180,22 @@ describe('SubscriptionManager', () => {
           ),
         ).to.deep.equal([]);
       });
+
+      xit('happy path 2', () => {
+        subscriptionManager.subscribe([SOME_EVENT, ANOTHER_EVENT], [], SOME_CHANNEL);
+        subscriptionManager.subscribe([SOME_EVENT, YET_ANOTHER_EVENT], [], SOME_CHANNEL);
+        subscriptionManager.unsubscribe(
+          [SOME_EVENT],
+          [],
+          SOME_CHANNEL,
+        );
+        expect(
+          subscriptionManager.getChannelsSubscribedToEvent(
+            SOME_EVENT,
+            SOME_CONTEXT,
+          ),
+        ).to.deep.equal([]);
+      });
     });
 
     it('should handle partial global unsubscribe', () => {
