@@ -285,6 +285,8 @@ export class SubscriptionManager {
           newSubscriptions.push(subscription);
           continue;
         }
+        // If event name sets are not exactly the same,
+        // it is not a match for unsubscribe.
         if (
           intersection(eventNames, subscription.eventNames).size !==
           eventNames.size
