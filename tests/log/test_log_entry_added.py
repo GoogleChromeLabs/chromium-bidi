@@ -17,8 +17,8 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, read_JSON_message, send_JSON_command,
-                          subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, read_JSON_message,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -524,6 +524,6 @@ async def test_runtimeException_buffered(websocket, context_id):
         "type": "success",
         "id": subscribe_command_id,
         "result": {
-            "subscription": ANY_STR
+            "subscription": ANY_UUID
         }
     } == resp

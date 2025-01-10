@@ -18,9 +18,9 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_DICT, ANY_STR, AnyWithEntries
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
-                          get_next_command_id, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, get_next_command_id,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -50,7 +50,7 @@ async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
                 "events": ["browsingContext.load"]
             }
         })
-    assert result == {'subscription': ANY_STR}
+    assert result == {'subscription': ANY_UUID}
 
     # Navigate to some page.
     await send_JSON_command(
@@ -80,7 +80,7 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
                 "contexts": [context_id]
             }
         })
-    assert result == {"subscription": ANY_STR}
+    assert result == {"subscription": ANY_UUID}
 
     # Navigate to some page.
     await send_JSON_command(

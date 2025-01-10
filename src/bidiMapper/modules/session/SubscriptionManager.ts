@@ -244,20 +244,22 @@ export class SubscriptionManager {
       }),
     );
 
+    const isGlobalUnsubscribe = topLevelTraversables.size === 0;
     const newSubscriptions: Subscription[] = [];
-    let found = false;
+    const eventsMatched = new Set<ChromiumBidi.EventNames>();
+    const contextsMatched = new Set<BrowsingContext.BrowsingContext>();
     for (const subscription of this.#subscriptions) {
-      if (found || subscription.channel !== channel) {
+      if (subscription.channel !== channel) {
         newSubscriptions.push(subscription);
         continue;
       }
+      // Skip subscriptions when none of the event names match.
       if (intersection(subscription.eventNames, eventNames).size === 0) {
         newSubscriptions.push(subscription);
         continue;
       }
-      if (topLevelTraversables.size === 0) {
-        // If it is non-global subscription, keep it as is because we
-        // are only unsubscribing globally.
+      if (isGlobalUnsubscribe) {
+        // Skip non-global subscriptions.
         if (subscription.topLevelTraversableIds.size !== 0) {
           newSubscriptions.push(subscription);
           continue;
@@ -265,19 +267,16 @@ export class SubscriptionManager {
         const subscriptionEventNames = new Set(subscription.eventNames);
         for (const eventName of eventNames) {
           if (subscriptionEventNames.has(eventName)) {
-            eventNames.delete(eventName);
+            eventsMatched.add(eventName);
             subscriptionEventNames.delete(eventName);
           }
         }
-        // If we consumed all events from the unsubscribe request, we
-        // can update the subscriptions.
-        if (eventNames.size === 0) {
-          found = true;
-        }
         // If some events remain in the subscription, we keep it.
         if (subscriptionEventNames.size !== 0) {
-          subscription.eventNames = subscriptionEventNames;
-          newSubscriptions.push(subscription);
+          newSubscriptions.push({
+            ...subscription,
+            eventNames: subscriptionEventNames,
+          });
         }
       } else {
         // Skip global subscriptions.
@@ -285,15 +284,7 @@ export class SubscriptionManager {
           newSubscriptions.push(subscription);
           continue;
         }
-        // If event name sets are not exactly the same,
-        // it is not a match for unsubscribe.
-        if (
-          intersection(eventNames, subscription.eventNames).size !==
-          eventNames.size
-        ) {
-          newSubscriptions.push(subscription);
-          continue;
-        }
+
         // Splitting context subscriptions.
         const eventMap = new Map<
           ChromiumBidi.EventNames,
@@ -302,7 +293,6 @@ export class SubscriptionManager {
         for (const eventName of subscription.eventNames) {
           eventMap.set(eventName, new Set(subscription.topLevelTraversableIds));
         }
-        const toRemove = new Set<string>();
         for (const eventName of eventNames) {
           const eventContextSet = eventMap.get(eventName);
           if (!eventContextSet) {
@@ -310,17 +300,14 @@ export class SubscriptionManager {
           }
           for (const toRemoveId of topLevelTraversables) {
             if (eventContextSet.has(toRemoveId)) {
-              toRemove.add(toRemoveId);
+              contextsMatched.add(toRemoveId);
+              eventsMatched.add(eventName);
               eventContextSet.delete(toRemoveId);
             }
           }
           if (eventContextSet.size === 0) {
             eventMap.delete(eventName);
           }
-        }
-        // Consume traversables from the request.
-        for (const toRemoveId of toRemove) {
-          topLevelTraversables.delete(toRemoveId);
         }
         for (const [eventName, remainingContextIds] of eventMap) {
           const partialSubscription: Subscription = {
@@ -331,15 +318,19 @@ export class SubscriptionManager {
           };
           newSubscriptions.push(partialSubscription);
         }
-        // If we consumed all traversables, we found a match.
-        if (topLevelTraversables.size === 0) {
-          found = true;
-        }
       }
     }
-    if (!found) {
+
+    // If some events did not match, it is an invalid request.
+    if (!equal(eventsMatched, eventNames)) {
       throw new InvalidArgumentException('No subscription found');
     }
+
+    // If some events did not match, it is an invalid request.
+    if (!isGlobalUnsubscribe && !equal(contextsMatched, topLevelTraversables)) {
+      throw new InvalidArgumentException('No subscription found');
+    }
+
     // Committing the new subscriptions.
     this.#subscriptions = newSubscriptions;
   }
@@ -376,4 +367,16 @@ export function difference<T>(setA: Set<T>, setB: Set<T>): Set<T> {
     }
   }
   return result;
+}
+
+function equal<T>(setA: Set<T>, setB: Set<T>): boolean {
+  if (setA.size !== setB.size) {
+    return false;
+  }
+  for (const a of setA) {
+    if (!setB.has(a)) {
+      return false;
+    }
+  }
+  return true;
 }
