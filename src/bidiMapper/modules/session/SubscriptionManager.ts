@@ -326,7 +326,7 @@ export class SubscriptionManager {
       throw new InvalidArgumentException('No subscription found');
     }
 
-    // If some events did not match, it is an invalid request.
+    // If some contexts did not match, it is an invalid request.
     if (!isGlobalUnsubscribe && !equal(contextsMatched, topLevelTraversables)) {
       throw new InvalidArgumentException('No subscription found');
     }
