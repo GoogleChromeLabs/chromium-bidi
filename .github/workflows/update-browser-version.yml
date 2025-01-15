@@ -1,4 +1,5 @@
 # This workflow will update the version in .browser and open a PR
+
 name: 'Update the pinned browser version'
 
 # Declare default permissions as read only.
