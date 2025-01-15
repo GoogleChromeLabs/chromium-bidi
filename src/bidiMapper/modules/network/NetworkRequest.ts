@@ -258,7 +258,23 @@ export class NetworkRequest {
   get #requestHeaders(): Network.Header[] {
     let headers: Network.Header[] = [];
     if (this.#requestOverrides?.headers) {
-      headers = this.#requestOverrides.headers;
+      const headerMap = new Map<string, string[]>();
+      for (const header of this.#requestOverrides.headers) {
+        if (headerMap.has(header.name)) {
+          headerMap.get(header.name)?.push(header.value.value);
+        } else {
+          headerMap.set(header.name, [header.value.value]);
+        }
+      }
+      for (const [name, value] of headerMap.entries()) {
+        headers.push({
+          name,
+          value: {
+            type: 'string',
+            value: value.join('\n').trimEnd(),
+          },
+        });
+      }
     } else {
       headers = [
         ...bidiNetworkHeadersFromCdpNetworkHeaders(
