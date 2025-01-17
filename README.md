@@ -118,7 +118,7 @@ If provided and non-empty string, the very same `goog:channel` is added to the r
 ```cddl
 CommandResponse = {
    id: js-uint,
-   goog:channel?: text,
+   "goog:channel"?: text,
    result: ResultData,
    Extensible,
 }
