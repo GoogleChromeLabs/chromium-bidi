@@ -125,7 +125,7 @@ CommandResponse = {
 
 ErrorResponse = {
   id: js-uint / null,
-  goog:channel?: text,
+  "goog:channel"?: text,
   error: ErrorCode,
   message: text,
   ?stacktrace: text,
