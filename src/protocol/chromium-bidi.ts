@@ -127,7 +127,7 @@ export type Command = (
       // not re-define it. Therefore, it's not part of generated types.
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisement)
-) & {channel?: BidiPlusChannel};
+) & {channel: BidiPlusChannel};
 
 export type CommandResponse =
   | WebDriverBidi.CommandResponse
@@ -161,7 +161,10 @@ export type BidiPlusChannel =
       'goog:channel'?: never;
       channel: string;
     }
-  | undefined;
+  | {
+      'goog:channel'?: never;
+      channel?: never;
+    };
 
 export type Message = (WebDriverBidi.Message | Cdp.Message | BluetoothEvent) & {
   channel?: string;

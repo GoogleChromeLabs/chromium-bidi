@@ -41,12 +41,7 @@ export class WindowBidiTransport implements BidiTransport {
       } catch (e: unknown) {
         const error = e instanceof Error ? e : new Error(e as string);
         // Transport-level error does not provide channel.
-        this.#respondWithError(
-          message,
-          ErrorCode.InvalidArgument,
-          error,
-          undefined,
-        );
+        this.#respondWithError(message, ErrorCode.InvalidArgument, error, {});
       }
     };
   }
@@ -159,7 +154,7 @@ export class WindowBidiTransport implements BidiTransport {
       throw new Error(`Expected object params but got ${paramsType}`);
     }
 
-    let channel: BidiPlusChannel = undefined;
+    let channel: BidiPlusChannel = {};
     if (command['goog:channel'] !== undefined) {
       const channelType = WindowBidiTransport.#getJsonType(
         command['goog:channel'],
