@@ -141,7 +141,7 @@ with `goog:channel`, the subscriptions are handled per channel, and the correspo
 
 ```cddl
 Event = {
-  goog:channel?: text,
+  "goog:channel"?: text,
   EventData,
   Extensible,
 }
