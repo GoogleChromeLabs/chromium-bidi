@@ -127,7 +127,7 @@ export type Command = (
       // not re-define it. Therefore, it's not part of generated types.
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisement)
-) & {channel?: QWE};
+) & {channel?: BidiPlusChannel};
 
 export type CommandResponse =
   | WebDriverBidi.CommandResponse
@@ -152,7 +152,7 @@ export const EVENT_NAMES = new Set([
 export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 
 // TODO: replace with optional string once legacy `channel` is removed.
-export type QWE =
+export type BidiPlusChannel =
   | {
       'goog:channel': string;
       channel?: never;
@@ -162,8 +162,6 @@ export type QWE =
       channel: string;
     }
   | undefined;
-
-export type BidiPlusChannel = string;
 
 export type Message = (WebDriverBidi.Message | Cdp.Message | BluetoothEvent) & {
   channel?: string;

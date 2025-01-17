@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {QWE} from '../../../protocol/chromium-bidi.js';
+import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
   type BrowsingContext,
   ChromiumBidi,
@@ -80,7 +80,7 @@ export type Subscription = {
   topLevelTraversableIds: Set<BrowsingContext.BrowsingContext>;
   // Never empty.
   eventNames: Set<ChromiumBidi.EventNames>;
-  channel: QWE;
+  channel: BidiPlusChannel;
 };
 
 export class SubscriptionManager {
@@ -94,10 +94,10 @@ export class SubscriptionManager {
   getChannelsSubscribedToEvent(
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext,
-  ): QWE[] {
+  ): BidiPlusChannel[] {
     // Maps JSON stringified channel to a channel.
     // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
-    const channels = new Map<string, QWE>();
+    const channels = new Map<string, BidiPlusChannel>();
 
     for (const subscription of this.#subscriptions) {
       if (this.#isSubscribedTo(subscription, eventName, contextId)) {
@@ -113,10 +113,10 @@ export class SubscriptionManager {
 
   getChannelsSubscribedToEventGlobally(
     eventName: ChromiumBidi.EventNames,
-  ): QWE[] {
+  ): BidiPlusChannel[] {
     // Maps JSON stringified channel to a channel.
     // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
-    const channels = new Map<string, QWE>();
+    const channels = new Map<string, BidiPlusChannel>();
 
     for (const subscription of this.#subscriptions) {
       if (this.#isSubscribedTo(subscription, eventName)) {
@@ -201,7 +201,7 @@ export class SubscriptionManager {
   subscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: BrowsingContext.BrowsingContext[],
-    channel: QWE,
+    channel: BidiPlusChannel,
   ): Subscription {
     // All the subscriptions are handled on the top-level contexts.
     const subscription: Subscription = {
@@ -233,7 +233,7 @@ export class SubscriptionManager {
   unsubscribe(
     inputEventNames: ChromiumBidi.EventNames[],
     inputContextIds: BrowsingContext.BrowsingContext[],
-    channel: QWE,
+    channel: BidiPlusChannel,
   ) {
     const eventNames = new Set(unrollEvents(inputEventNames));
 

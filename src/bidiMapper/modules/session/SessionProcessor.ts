@@ -16,7 +16,7 @@
  */
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import type {QWE} from '../../../protocol/chromium-bidi.js';
+import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
   InvalidArgumentException,
   Session,
@@ -144,7 +144,7 @@ export class SessionProcessor {
 
   async subscribe(
     params: Session.SubscriptionRequest,
-    channel: QWE = undefined,
+    channel: BidiPlusChannel = undefined,
   ): Promise<Session.SubscribeResult> {
     const subscription = await this.#eventManager.subscribe(
       params.events as ChromiumBidi.EventNames[],
@@ -158,7 +158,7 @@ export class SessionProcessor {
 
   async unsubscribe(
     params: Session.SubscriptionRequest,
-    channel: QWE = undefined,
+    channel: BidiPlusChannel = undefined,
   ): Promise<EmptyResult> {
     await this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],

@@ -15,7 +15,7 @@
  * limitations under the License. *
  */
 import type {BidiTransport} from '../bidiMapper/BidiMapper.js';
-import type {QWE} from '../protocol/chromium-bidi.js';
+import type {BidiPlusChannel} from '../protocol/chromium-bidi.js';
 import {
   type ChromiumBidi,
   ErrorCode,
@@ -70,7 +70,7 @@ export class WindowBidiTransport implements BidiTransport {
     plainCommandData: string,
     errorCode: ErrorCode,
     error: Error,
-    channel: QWE,
+    channel: BidiPlusChannel,
   ) {
     const errorResponse = WindowBidiTransport.#getErrorResponse(
       plainCommandData,
@@ -159,7 +159,7 @@ export class WindowBidiTransport implements BidiTransport {
       throw new Error(`Expected object params but got ${paramsType}`);
     }
 
-    let channel: QWE = undefined;
+    let channel: BidiPlusChannel = undefined;
     if (command['goog:channel'] !== undefined) {
       const channelType = WindowBidiTransport.#getJsonType(
         command['goog:channel'],
