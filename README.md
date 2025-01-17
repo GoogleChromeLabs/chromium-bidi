@@ -107,7 +107,7 @@ Each command can be extended with a `goog:channel`:
 ```cddl
 Command = {
    id: js-uint,
-   goog:channel?: text,
+   "goog:channel"?: text,
    CommandData,
    Extensible,
 }
