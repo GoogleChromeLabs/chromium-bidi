@@ -52,7 +52,7 @@ export const enum CommandProcessorEvents {
   Response = 'response',
 }
 
-interface CommandProcessorEventsMap {
+interface CommandProcessorEventsMap extends Record<string | symbol, unknown> {
   [CommandProcessorEvents.Response]: {
     message: Promise<Result<OutgoingMessage>>;
     event: string;

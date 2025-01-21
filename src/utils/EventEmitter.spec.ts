@@ -21,7 +21,7 @@ import sinon from 'sinon';
 import {EventEmitter} from './EventEmitter.js';
 
 describe('EventEmitter', () => {
-  interface Events {
+  interface Events extends Record<string | symbol, unknown> {
     foo: undefined;
     bar: string;
   }

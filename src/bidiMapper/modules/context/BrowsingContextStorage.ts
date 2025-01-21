@@ -28,7 +28,7 @@ const enum BrowsingContextStorageEvents {
   Added = 'added',
 }
 
-interface BrowsingContextStorageEvent {
+interface BrowsingContextStorageEvent extends Record<string | symbol, unknown> {
   [BrowsingContextStorageEvents.Added]: {browsingContext: BrowsingContextImpl};
 }
 

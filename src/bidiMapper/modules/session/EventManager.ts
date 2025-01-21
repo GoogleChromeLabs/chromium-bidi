@@ -66,7 +66,7 @@ export const enum EventManagerEvents {
   Event = 'event',
 }
 
-interface EventManagerEventsMap {
+interface EventManagerEventsMap extends Record<string | symbol, unknown> {
   [EventManagerEvents.Event]: {
     message: Promise<Result<OutgoingMessage>>;
     event: string;

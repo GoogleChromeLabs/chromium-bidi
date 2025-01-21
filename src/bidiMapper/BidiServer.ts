@@ -38,7 +38,7 @@ import {
 } from './modules/session/EventManager.js';
 import type {OutgoingMessage} from './OutgoingMessage.js';
 
-interface BidiServerEvent {
+interface BidiServerEvent extends Record<string | symbol, unknown> {
   message: ChromiumBidi.Command;
 }
 
