@@ -27,10 +27,10 @@ export const enum TargetEvents {
   FrameStartedNavigating = 'frameStartedNavigating',
 }
 
-export type TargetEventMap = {
+export interface TargetEventMap {
   [TargetEvents.FrameStartedNavigating]: {
     loaderId: string;
     url: string;
     frameId: string | undefined;
   };
-};
+}

@@ -302,13 +302,13 @@ export function isSpecialScheme(protocol: string): boolean {
   );
 }
 
-export type ParsedUrlPattern = {
+export interface ParsedUrlPattern {
   protocol?: string;
   hostname?: string;
   port?: string;
   pathname?: string;
   search?: string;
-};
+}
 
 function getScheme(url: URL) {
   return url.protocol.replace(/:$/, '');
