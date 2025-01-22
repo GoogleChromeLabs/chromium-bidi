@@ -362,7 +362,7 @@ export class SubscriptionManager {
       throw new InvalidArgumentException('No subscription found');
     }
     this.#subscriptions = this.#subscriptions.filter((subscription) => {
-      return subscriptionIdsSet.has(subscription.id);
+      return !subscriptionIdsSet.has(subscription.id);
     });
     this.#knownSubscriptionIds = difference(
       this.#knownSubscriptionIds,
