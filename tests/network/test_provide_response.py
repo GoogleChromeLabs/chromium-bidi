@@ -489,7 +489,8 @@ async def test_provide_response_remove_intercept_inflight_request(
 
 
 @pytest.mark.asyncio
-async def test_provide_response_works_with_non_latin(websocket, context_id, url_example):
+async def test_provide_response_works_with_non_latin(websocket, context_id,
+                                                     url_example):
     await subscribe(websocket,
                     ["network.responseStarted", "network.responseCompleted"],
                     [context_id])
@@ -524,7 +525,7 @@ async def test_provide_response_works_with_non_latin(websocket, context_id, url_
             "method": "network.provideResponse",
             "params": {
                 "request": network_id,
-                "headers":   [{
+                "headers": [{
                     "name": "Content-Type",
                     "value": {
                         "type": "string",
