@@ -250,9 +250,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSendCommandParams(command.params),
         );
       // keep-sorted end
-      // CDP deprecated domain.
-      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
-      // keep-sorted start block=yes
 
       // Input module
       // keep-sorted start block=yes
