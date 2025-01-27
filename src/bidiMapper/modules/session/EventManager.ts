@@ -247,12 +247,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     if (userContextIds.length) {
       const userContexts = await this.#userContextStorage.getUserContexts();
       const knownUserContextIds = new Set(
-        userContexts.map(({userContext}) => userContext),
+        userContexts.map((userContext) => userContext.userContext),
       );
       for (const userContextId of userContextIds) {
-        if (knownUserContextIds.has(userContextId)) {
+        if (!knownUserContextIds.has(userContextId)) {
           throw new NoSuchUserContextException(
-            `User context ${userContextId} not found.`,
+            `User context ${userContextId} not found`,
           );
         }
       }
