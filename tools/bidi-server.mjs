@@ -110,6 +110,7 @@ export function createBiDiServerProcess() {
         `--bidi-mapper-path=${resolve(join('lib', 'iife', 'mapperTab.js'))}`,
         `--log-path=${createLogFile('chromedriver')}`,
         `--readable-timestamp`,
+        `--remote-debugging-pipe`,
         ...(VERBOSE ? ['--verbose'] : []),
       ],
       options: {
