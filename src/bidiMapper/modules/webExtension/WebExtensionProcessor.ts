@@ -50,7 +50,7 @@ export class WebExtensionProcessor {
       return {
         extension: response.id,
       };
-    } catch (err: any) {
+    } catch (err) {
       if ((err as Error).message.startsWith('invalid web extension')) {
         throw new InvalidWebExtensionException((err as Error).message);
       }
