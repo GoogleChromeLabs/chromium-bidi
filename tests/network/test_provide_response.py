@@ -539,7 +539,9 @@ async def test_provide_response_works_with_non_latin(websocket, context_id,
             },
         })
 
-    # Waif for the
+    # Wait for the navigation to complete
+    # Else we may try to execute the command
+    # while there is no realm
     await wait_for_command(websocket, command_id)
 
     result = await execute_command(
