@@ -46,6 +46,7 @@ import {ScriptProcessor} from './modules/script/ScriptProcessor.js';
 import type {EventManager} from './modules/session/EventManager.js';
 import {SessionProcessor} from './modules/session/SessionProcessor.js';
 import {StorageProcessor} from './modules/storage/StorageProcessor.js';
+import {WebExtensionProcessor} from './modules/webExtension/WebExtensionProcessor.js';
 import {OutgoingMessage} from './OutgoingMessage.js';
 
 export const enum CommandProcessorEvents {
@@ -71,6 +72,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
   #storageProcessor: StorageProcessor;
+  #webExtensionProcessor: WebExtensionProcessor;
   // keep-sorted end
 
   #parser: BidiCommandParameterParser;
@@ -134,6 +136,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       browsingContextStorage,
       logger,
     );
+    this.#webExtensionProcessor = new WebExtensionProcessor(browserCdpClient);
     // keep-sorted end
   }
 
@@ -414,8 +417,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // WebExtension module
       // keep-sorted start block=yes
       case 'webExtension.install':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#webExtensionProcessor.install(
+          this.#parser.parseInstallParams(command.params),
         );
       case 'webExtension.uninstall':
         throw new UnknownErrorException(
