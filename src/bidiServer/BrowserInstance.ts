@@ -30,6 +30,7 @@ import WebSocket from 'ws';
 
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {WebSocketTransport} from '../utils/WebsocketTransport.js';
+import {PipeTransport} from '../utils/PipeTransport.js';
 
 import {MapperServerCdpConnection} from './MapperCdpConnection.js';
 import {getMapperTabSource} from './reader.js';
@@ -106,16 +107,20 @@ export class BrowserInstance {
 
     const browserProcess = launch(launchArguments);
 
-    const cdpEndpoint = await browserProcess.waitForLineOutput(
-      CDP_WEBSOCKET_ENDPOINT_REGEX,
-    );
+    let cdpConnection;
+    if('--remote-debugging-pipe' in chromeArguments) {
+      cdpConnection = await this.#establishPipeConnection(browserProcess);
+    } else {
+      const cdpEndpoint = await browserProcess.waitForLineOutput(
+        CDP_WEBSOCKET_ENDPOINT_REGEX,
+      );
 
-    // There is a conflict between prettier and eslint here.
-    // prettier-ignore
-    const cdpConnection = await this.#establishCdpConnection(
-      cdpEndpoint
-    );
-
+      // There is a conflict between prettier and eslint here.
+      // prettier-ignore
+      cdpConnection = await this.#establishCdpConnection(
+        cdpEndpoint
+      );
+    }
     // 2. Get `BiDi-CDP` mapper JS binaries.
     const mapperTabSource = await getMapperTabSource();
 
@@ -165,5 +170,16 @@ export class BrowserInstance {
         resolve(connection);
       });
     });
+  }
+
+  static #establishPipeConnection(browserProcess: Process):Promise<MapperCdpConnection> {
+    debugInternal('Establishing pipe connection to broser process with cdpUrl: ', browserProcess.nodeProcess.pid);
+    const {3: pipeWrite, 4: pipeRead} = browserProcess.nodeProcess.stdio;
+    const transport = new PipeTransport(
+      pipeWrite as NodeJS.WritableStream,
+      pipeRead as NodeJS.ReadableStream,
+    );
+    const connection = new MapperCdpConnection(transport);
+    return Promise.resolve(connection);
   }
 }
