@@ -17,6 +17,7 @@
 
 import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
+  type Browser,
   type BrowsingContext,
   ChromiumBidi,
   InvalidArgumentException,
@@ -78,6 +79,7 @@ export interface Subscription {
   id: string;
   // Empty set means a global subscription.
   topLevelTraversableIds: Set<BrowsingContext.BrowsingContext>;
+  userContextIds: Set<string>;
   // Never empty.
   eventNames: Set<ChromiumBidi.EventNames>;
   channel: BidiPlusChannel;
@@ -157,23 +159,34 @@ export class SubscriptionManager {
       return false;
     }
 
+    // user context subscription.
+    if (subscription.userContextIds.size !== 0) {
+      if (!contextId) {
+        return false;
+      }
+
+      const context = this.#browsingContextStorage.findContext(contextId);
+      if (!context) {
+        return false;
+      }
+      return subscription.userContextIds.has(context.userContext);
+    }
+
+    // context subscription.
+    if (subscription.topLevelTraversableIds.size !== 0) {
+      if (!contextId) {
+        return false;
+      }
+      const topLevelContext =
+        this.#browsingContextStorage.findTopLevelContextId(contextId);
+      return (
+        topLevelContext !== null &&
+        subscription.topLevelTraversableIds.has(topLevelContext)
+      );
+    }
+
     // global subscription.
-    if (subscription.topLevelTraversableIds.size === 0) {
-      return true;
-    }
-
-    const topLevelContext = contextId
-      ? this.#browsingContextStorage.findTopLevelContextId(contextId)
-      : null;
-
-    if (
-      topLevelContext !== null &&
-      subscription.topLevelTraversableIds.has(topLevelContext)
-    ) {
-      return true;
-    }
-
-    return false;
+    return true;
   }
 
   isSubscribedTo(
@@ -202,6 +215,7 @@ export class SubscriptionManager {
   subscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: BrowsingContext.BrowsingContext[],
+    userContextIds: Browser.UserContext[],
     channel: BidiPlusChannel,
   ): Subscription {
     // All the subscriptions are handled on the top-level contexts.
@@ -220,6 +234,7 @@ export class SubscriptionManager {
           return topLevelContext;
         }),
       ),
+      userContextIds: new Set(userContextIds),
       channel,
     };
     this.#subscriptions.push(subscription);
@@ -263,6 +278,11 @@ export class SubscriptionManager {
     for (const subscription of this.#subscriptions) {
       // `channel` is undefined or an object with 1 field, so `JSON.stringify` is stable.
       if (JSON.stringify(subscription.channel) !== JSON.stringify(channel)) {
+        newSubscriptions.push(subscription);
+        continue;
+      }
+      // Skip user context subscriptions.
+      if (subscription.userContextIds.size !== 0) {
         newSubscriptions.push(subscription);
         continue;
       }
@@ -328,6 +348,7 @@ export class SubscriptionManager {
             channel: subscription.channel,
             eventNames: new Set([eventName]),
             topLevelTraversableIds: remainingContextIds,
+            userContextIds: new Set(),
           };
           newSubscriptions.push(partialSubscription);
         }
