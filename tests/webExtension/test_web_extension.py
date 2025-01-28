@@ -38,11 +38,11 @@ async def test_method_not_available(websocket):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-unsafe-extension-debugging', '--remote-debugging-pipe']
-    },
-}],
-                         indirect=True)
+        'goog:chromeOptions': {
+            'args': ['--enable-unsafe-extension-debugging', '--remote-debugging-pipe']
+        },
+    }],
+    indirect=True)
 async def test_invalid_path(websocket):
     with pytest.raises(
             Exception,
