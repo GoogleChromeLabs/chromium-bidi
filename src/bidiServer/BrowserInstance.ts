@@ -98,6 +98,7 @@ export class BrowserInstance {
       executablePath,
       args: chromeArguments,
       env: process.env,
+      pipe: true,
     };
 
     debugInternal(`Launching browser`, {
@@ -108,7 +109,7 @@ export class BrowserInstance {
     const browserProcess = launch(launchArguments);
 
     let cdpConnection;
-    if('--remote-debugging-pipe' in chromeArguments) {
+    if(chromeArguments.includes('--remote-debugging-pipe')) {
       cdpConnection = await this.#establishPipeConnection(browserProcess);
     } else {
       const cdpEndpoint = await browserProcess.waitForLineOutput(
