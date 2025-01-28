@@ -121,7 +121,7 @@ export class WindowBidiTransport implements BidiTransport {
       id?: unknown;
       method?: unknown;
       params?: unknown;
-      channel?: unknown;
+      
       'goog:channel'?: unknown;
     };
     try {
@@ -168,19 +168,7 @@ export class WindowBidiTransport implements BidiTransport {
       if (command['goog:channel'] !== '') {
         channel = {'goog:channel': command['goog:channel'] as string};
       }
-    } else if (command.channel !== undefined) {
-      log(
-        WindowBidiTransport.LOGGER_PREFIX_WARN,
-        'Legacy `channel` parameter is deprecated and will not supported soon. Use `goog:channel` instead.',
-      );
-      const channelType = WindowBidiTransport.#getJsonType(command.channel);
-      if (channelType !== 'string') {
-        throw new Error(`Expected string 'channel' but got ${channelType}`);
-      }
-      if (command.channel !== '') {
-        channel = {channel: command.channel as string};
-      }
-    }
+    } 
 
     return {id, method, params, channel} as ChromiumBidi.Command;
   }
