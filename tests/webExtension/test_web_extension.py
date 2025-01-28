@@ -39,7 +39,7 @@ async def test_method_not_available(websocket):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
     'goog:chromeOptions': {
-        'args': ['--enable-unsafe-extension-debugging']
+        'args': ['--enable-unsafe-extension-debugging', '--remote-debugging-pipe']
     },
 }],
                          indirect=True)
