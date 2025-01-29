@@ -136,7 +136,7 @@ export class SubscriptionManager {
   #isSubscribedTo(
     subscription: Subscription,
     moduleOrEvent: ChromiumBidi.EventNames,
-    contextId?: BrowsingContext.BrowsingContext,
+    browsingContextId?: BrowsingContext.BrowsingContext,
   ): boolean {
     let includesEvent = false;
     for (const eventName of subscription.eventNames) {
@@ -161,11 +161,12 @@ export class SubscriptionManager {
 
     // user context subscription.
     if (subscription.userContextIds.size !== 0) {
-      if (!contextId) {
+      if (!browsingContextId) {
         return false;
       }
 
-      const context = this.#browsingContextStorage.findContext(contextId);
+      const context =
+        this.#browsingContextStorage.findContext(browsingContextId);
       if (!context) {
         return false;
       }
@@ -174,11 +175,11 @@ export class SubscriptionManager {
 
     // context subscription.
     if (subscription.topLevelTraversableIds.size !== 0) {
-      if (!contextId) {
+      if (!browsingContextId) {
         return false;
       }
       const topLevelContext =
-        this.#browsingContextStorage.findTopLevelContextId(contextId);
+        this.#browsingContextStorage.findTopLevelContextId(browsingContextId);
       return (
         topLevelContext !== null &&
         subscription.topLevelTraversableIds.has(topLevelContext)
