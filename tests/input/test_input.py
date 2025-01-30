@@ -226,10 +226,9 @@ async def test_input_performActionsEmitsKeyboardEvents(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_input_performActionsEmitsDblClicks(websocket, context_id,
-                                                       html, activate_main_tab,
-                                                       query_selector,
-                                                       snapshot):
+async def test_input_performActionsEmitsDblClicks(websocket, context_id, html,
+                                                  activate_main_tab,
+                                                  query_selector, snapshot):
     await goto_url(websocket, context_id, html(DBL_CLICK_SCRIPT))
     await activate_main_tab()
     await reset_mouse(websocket, context_id)
@@ -241,22 +240,31 @@ async def test_input_performActionsEmitsDblClicks(websocket, context_id,
             "method": "input.performActions",
             "params": {
                 "context": context_id,
-                "actions": [
-                    {"type":"pointer",
-                     "id":"__puppeteer_mouse",
-                     "actions":[
-                         {"type":"pointerMove",
-                          "x": 0,
-                          "y": 0,
-                          "origin": {
-                              "type": "element",
-                              "element": target_element
-                          }},
-                         {"type":"pointerDown","button":0},
-                         {"type":"pointerUp","button":0},
-                         {"type":"pointerDown","button":0},
-                         {"type":"pointerUp","button":0}
-                ]}]
+                "actions": [{
+                    "type": "pointer",
+                    "id": "__puppeteer_mouse",
+                    "actions": [{
+                        "type": "pointerMove",
+                        "x": 0,
+                        "y": 0,
+                        "origin": {
+                            "type": "element",
+                            "element": target_element
+                        }
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
+                    }]
+                }]
             }
         })
 
@@ -265,29 +273,37 @@ async def test_input_performActionsEmitsDblClicks(websocket, context_id,
             "method": "input.performActions",
             "params": {
                 "context": context_id,
-                "actions": [
-                    {"type":"pointer",
-                     "id":"__puppeteer_mouse",
-                     "actions":[
-                         {"type":"pointerMove",
-                          "x": 0,
-                          "y": 0,
-                          "origin": {
-                              "type": "element",
-                              "element": target_element
-                          }},
-                         {"type":"pointerDown","button":0},
-                         {"type":"pointerUp","button":0},
-                         {"type":"pointerDown","button":0},
-                         {"type":"pointerUp","button":0}
-                ]}]
+                "actions": [{
+                    "type": "pointer",
+                    "id": "__puppeteer_mouse",
+                    "actions": [{
+                        "type": "pointerMove",
+                        "x": 0,
+                        "y": 0,
+                        "origin": {
+                            "type": "element",
+                            "element": target_element
+                        }
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
+                    }]
+                }]
             }
         })
 
     result = await get_events(websocket, context_id)
 
     assert result == snapshot(exclude=props("realm"))
-
 
 
 @pytest.mark.asyncio
