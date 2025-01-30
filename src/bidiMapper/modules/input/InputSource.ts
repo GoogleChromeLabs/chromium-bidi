@@ -158,6 +158,12 @@ export class PointerSource {
       storedContext = context;
     }
     ++storedContext.count;
+    if (storedContext.count > 2) {
+      // There is no API for triple clicks, so a series of clicks should be grouped in
+      // pairs.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3043
+      storedContext.count = 1;
+    }
     this.#clickContexts.set(button, storedContext);
     return storedContext.count;
   }
