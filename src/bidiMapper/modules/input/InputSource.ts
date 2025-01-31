@@ -158,18 +158,24 @@ export class PointerSource {
       storedContext = context;
     }
     ++storedContext.count;
-    if (storedContext.count > 2) {
-      // There is no API for triple clicks, so a series of clicks should be grouped in
-      // pairs.
-      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3043
-      storedContext.count = 1;
-    }
     this.#clickContexts.set(button, storedContext);
     return storedContext.count;
   }
 
   getClickCount(button: number) {
     return this.#clickContexts.get(button)?.count ?? 0;
+  }
+
+  /**
+   * Resets click count. Resets consequent click counter. Prevents grouping clicks in
+   * different `performActions` calls, so that they are not grouped as double, triple etc
+   * clicks. Required for https://github.com/GoogleChromeLabs/chromium-bidi/issues/3043.
+   */
+  resetClickCount(): void {
+    this.#clickContexts = new Map<
+      number,
+      InstanceType<typeof PointerSource.ClickContext>
+    >();
   }
   // --- Platform-specific state ends here ---
 }
