@@ -299,7 +299,6 @@ export class NavigationTracker {
     }
 
     const navigation = this.#getNavigationForFrameNavigated(url, loaderId);
-    navigation.frameNavigated();
 
     if (navigation !== this.#currentNavigation) {
       this.#currentNavigation.fail(
@@ -311,6 +310,7 @@ export class NavigationTracker {
     navigation.loaderId = loaderId;
     this.#loaderIdToNavigationsMap.set(loaderId, navigation);
     navigation.start();
+    navigation.frameNavigated();
 
     this.#currentNavigation = navigation;
     if (this.#pendingNavigation === navigation) {

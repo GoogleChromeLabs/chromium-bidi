@@ -83,7 +83,6 @@ async def test_window_open_url_checkEvents(websocket, context_id, url_example,
                                            read_messages, snapshot):
     await subscribe(websocket, ["browsingContext"])
 
-    # Make same-document navigation.
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
@@ -110,7 +109,6 @@ async def test_window_open_aboutBlank_checkEvents(websocket, context_id, url,
                                                   read_messages, snapshot):
     await subscribe(websocket, ["browsingContext"])
 
-    # Make same-document navigation.
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
