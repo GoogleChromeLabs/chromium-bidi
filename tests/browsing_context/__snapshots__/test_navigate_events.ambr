@@ -750,3 +750,107 @@
     }),
   ])
 # ---
+# name: test_window_open_aboutBlank_checkEvents[]
+  list([
+    dict({
+      'method': 'browsingContext.contextCreated',
+      'params': dict({
+        'children': None,
+        'clientWindow': '',
+        'context': 'stable_0',
+        'originalOpener': 'stable_2',
+        'parent': None,
+        'url': 'stable_1',
+        'userContext': 'default',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_window_open_aboutBlank_checkEvents[about:blank?test]
+  list([
+    dict({
+      'method': 'browsingContext.contextCreated',
+      'params': dict({
+        'children': None,
+        'clientWindow': '',
+        'context': 'stable_0',
+        'originalOpener': 'stable_2',
+        'parent': None,
+        'url': 'stable_1',
+        'userContext': 'default',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_window_open_aboutBlank_checkEvents[about:blank]
+  list([
+    dict({
+      'method': 'browsingContext.contextCreated',
+      'params': dict({
+        'children': None,
+        'clientWindow': '',
+        'context': 'stable_0',
+        'originalOpener': 'stable_2',
+        'parent': None,
+        'url': 'stable_1',
+        'userContext': 'default',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_window_open_url_checkEvents
+  list([
+    dict({
+      'method': 'browsingContext.contextCreated',
+      'params': dict({
+        'children': None,
+        'clientWindow': '',
+        'context': 'stable_0',
+        'originalOpener': 'stable_2',
+        'parent': None,
+        'url': 'stable_1',
+        'userContext': 'default',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_3',
+        'url': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_3',
+        'url': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_3',
+        'url': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_3',
+        'url': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
