@@ -121,6 +121,16 @@ export class NavigationState {
 
   frameNavigated() {
     this.#navigated = true;
+    if (!this.#isInitial) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          params: this.navigationInfo(),
+        },
+        this.#browsingContextId,
+      );
+    }
   }
 
   fragmentNavigated() {
@@ -257,7 +267,7 @@ export class NavigationTracker {
 
     if (
       this.#pendingNavigation !== undefined &&
-      this.#pendingNavigation?.loaderId === undefined
+      this.#pendingNavigation.loaderId === undefined
     ) {
       // This can be a pending navigation to `about:blank` created by a command. Use the
       // pending navigation in this case.

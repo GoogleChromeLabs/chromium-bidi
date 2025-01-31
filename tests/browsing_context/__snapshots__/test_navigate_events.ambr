@@ -25,6 +25,15 @@
       'type': 'event',
     }),
     dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
         'context': 'stable_0',
@@ -89,6 +98,15 @@
       'type': 'event',
     }),
     dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
         'context': 'stable_0',
@@ -149,6 +167,15 @@
         'navigation': 'stable_1',
         'redirectCount': 0,
         'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -243,6 +270,15 @@
       'type': 'event',
     }),
     dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_6',
+        'url': 'stable_7',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
         'context': 'stable_0',
@@ -283,6 +319,15 @@
         'source': dict({
           'context': 'stable_0',
         }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -360,6 +405,15 @@
       'type': 'event',
     }),
     dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
         'context': 'stable_0',
@@ -420,6 +474,15 @@
         'navigation': 'stable_1',
         'redirectCount': 0,
         'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -494,7 +557,25 @@
       'type': 'event',
     }),
     dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_3',
+        'url': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_3',
@@ -543,6 +624,15 @@
       'type': 'event',
     }),
     dict({
+      'method': 'browsingContext.navigationCommitted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
         'context': 'stable_0',
@@ -566,6 +656,15 @@
   list([
     dict({
       'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_1',
@@ -606,6 +705,15 @@
   list([
     dict({
       'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_1',
