@@ -39,7 +39,7 @@ function usage() {
   log(
     `Usage:
       [BROWSER_BIN=<path, default: download pinned chrome>]
-      [CHROMEDRIVER=<true | default: false>]
+      [CHROMEDRIVER=<true | default: true>]
       [HEADLESS=<default: true | false>]
       [MANIFEST=<default: 'MANIFEST.json'>]
       [RUN_TESTS=<default: true | false>]
