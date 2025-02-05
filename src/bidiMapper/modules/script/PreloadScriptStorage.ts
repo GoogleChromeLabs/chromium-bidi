@@ -80,12 +80,14 @@ export class PreloadScriptStorage {
   }
 
   onCdpTargetCreated(targetId: string, userContext: Browser.UserContext) {
-    for (const script of [...this.#scripts].filter((script) => {
+    const scriptInUserContext = [...this.#scripts].filter((script) => {
+      // Global scripts
       if (!script.userContexts && !script.contexts) {
         return true;
       }
       return script.userContexts?.includes(userContext);
-    })) {
+    });
+    for (const script of scriptInUserContext) {
       script.targetIds.add(targetId);
     }
   }
