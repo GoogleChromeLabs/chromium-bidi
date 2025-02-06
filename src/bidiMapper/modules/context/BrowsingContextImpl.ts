@@ -828,36 +828,34 @@ export class BrowsingContextImpl {
 
     // Navigate and wait for the result. If the navigation fails, the error event is
     // emitted and the promise is rejected.
-    const cdpNavigatePromise = (async () => {
-      const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
-        'Page.navigate',
-        {
-          url,
-          frameId: this.id,
-        },
-      );
+    const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
+      'Page.navigate',
+      {
+        url,
+        frameId: this.id,
+      },
+    );
 
-      if (cdpNavigateResult.errorText) {
-        // If navigation failed, no pending navigation is left.
-        this.#navigationTracker.failNavigation(
-          navigationState,
-          cdpNavigateResult.errorText,
-        );
-        throw new UnknownErrorException(cdpNavigateResult.errorText);
-      }
-
-      this.#navigationTracker.navigationCommandFinished(
+    if (cdpNavigateResult.errorText) {
+      // If navigation failed, no pending navigation is left.
+      this.#navigationTracker.failNavigation(
         navigationState,
-        cdpNavigateResult.loaderId,
+        cdpNavigateResult.errorText,
       );
+      throw new UnknownErrorException(cdpNavigateResult.errorText);
+    }
 
-      this.#documentChanged(cdpNavigateResult.loaderId);
-    })();
+    this.#navigationTracker.navigationCommandFinished(
+      navigationState,
+      cdpNavigateResult.loaderId,
+    );
+
+    this.#documentChanged(cdpNavigateResult.loaderId);
 
     // Wait for either the navigation is finished or canceled by another navigation.
     const result = await Promise.race([
       // No `loaderId` means same-document navigation.
-      this.#waitNavigation(wait, cdpNavigatePromise, navigationState),
+      this.#waitNavigation(wait, navigationState),
       // Throw an error if the navigation is canceled.
       navigationState.finished,
     ]);
@@ -882,14 +880,12 @@ export class BrowsingContextImpl {
 
   async #waitNavigation(
     wait: BrowsingContext.ReadinessState,
-    cdpCommandPromise: Promise<void>,
     navigationState: NavigationState,
   ) {
     if (wait === BrowsingContext.ReadinessState.None) {
       return;
     }
 
-    await cdpCommandPromise;
     if (navigationState.isFragmentNavigation === true) {
       // After the cdp command is finished, the `fragmentNavigation` should be already
       // settled. If it's the fragment navigation, wait for the `navigationStatus` to be
@@ -927,17 +923,14 @@ export class BrowsingContextImpl {
       this.#navigationTracker.url,
     );
 
-    const cdpReloadPromise = this.#cdpTarget.cdpClient.sendCommand(
-      'Page.reload',
-      {
-        ignoreCache,
-      },
-    );
+    await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
+      ignoreCache,
+    });
 
     // Wait for either the navigation is finished or canceled by another navigation.
     const result = await Promise.race([
       // No `loaderId` means same-document navigation.
-      this.#waitNavigation(wait, cdpReloadPromise, navigationState),
+      this.#waitNavigation(wait, navigationState),
       // Throw an error if the navigation is canceled.
       navigationState.finished,
     ]);
