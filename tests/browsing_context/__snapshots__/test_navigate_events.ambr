@@ -232,7 +232,7 @@
     dict({
       'error': 'unknown error',
       'id': 'stable_5',
-      'message': 'navigation canceled by concurrent navigation',
+      'message': 'net::ERR_ABORTED',
       'type': 'error',
     }),
     dict({
