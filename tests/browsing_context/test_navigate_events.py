@@ -203,7 +203,7 @@ async def test_navigate_hang_navigate_again_checkEvents(
             "method": "browsingContext.navigate",
             "params": {
                 "url": url_hang_forever,
-                "wait": "complete",
+                "wait": "none",
                 "context": context_id
             }
         })
