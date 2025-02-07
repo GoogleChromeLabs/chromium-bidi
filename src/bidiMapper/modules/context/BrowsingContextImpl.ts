@@ -885,7 +885,7 @@ export class BrowsingContextImpl {
     cdpCommandPromise: Promise<void>,
     navigationState: NavigationState,
   ) {
-    await cdpCommandPromise;
+    await Promise.all([navigationState.committed, cdpCommandPromise]);
 
     if (wait === BrowsingContext.ReadinessState.None) {
       return;

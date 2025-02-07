@@ -149,14 +149,6 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_3',
-      'result': dict({
-        'navigation': 'stable_1',
-        'url': 'stable_2',
-      }),
-      'type': 'success',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -164,6 +156,14 @@
         'url': 'stable_2',
       }),
       'type': 'event',
+    }),
+    dict({
+      'id': 'stable_3',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
     }),
     dict({
       'method': 'browsingContext.domContentLoaded',
@@ -368,14 +368,6 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
-      'result': dict({
-        'navigation': 'stable_1',
-        'url': 'stable_2',
-      }),
-      'type': 'success',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -383,6 +375,14 @@
         'url': 'stable_2',
       }),
       'type': 'event',
+    }),
+    dict({
+      'id': 'stable_5',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
     }),
     dict({
       'method': 'browsingContext.domContentLoaded',
@@ -587,14 +587,6 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
-      'result': dict({
-        'navigation': 'stable_1',
-        'url': 'stable_2',
-      }),
-      'type': 'success',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -602,6 +594,14 @@
         'url': 'stable_2',
       }),
       'type': 'event',
+    }),
+    dict({
+      'id': 'stable_5',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
     }),
     dict({
       'method': 'browsingContext.domContentLoaded',
