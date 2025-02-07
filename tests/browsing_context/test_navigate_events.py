@@ -53,8 +53,10 @@ async def set_beforeunload_handler(websocket, context_id):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_navigate_checkEvents(websocket, context_id, url_base,
-                                    url_example, read_messages, snapshot):
+                                    url_example, read_messages, snapshot,
+                                    wait):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(
@@ -66,7 +68,7 @@ async def test_navigate_checkEvents(websocket, context_id, url_base,
             "method": "browsingContext.navigate",
             "params": {
                 "url": url_example,
-                "wait": "complete",
+                "wait": wait,
                 "context": context_id
             }
         })
@@ -130,8 +132,9 @@ async def test_window_open_aboutBlank_checkEvents(websocket, context_id, url,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_navigate_aboutBlank_checkEvents(websocket, context_id, url_base,
-                                               read_messages, snapshot):
+                                               read_messages, snapshot, wait):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(
@@ -145,7 +148,7 @@ async def test_navigate_aboutBlank_checkEvents(websocket, context_id, url_base,
             "method": "browsingContext.navigate",
             "params": {
                 "url": about_blank_url,
-                "wait": "complete",
+                "wait": wait,
                 "context": context_id
             }
         })
@@ -158,8 +161,9 @@ async def test_navigate_aboutBlank_checkEvents(websocket, context_id, url_base,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
-                                            read_messages, snapshot):
+                                            read_messages, snapshot, wait):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(
@@ -173,7 +177,7 @@ async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
             "method": "browsingContext.navigate",
             "params": {
                 "url": data_url,
-                "wait": "complete",
+                "wait": wait,
                 "context": context_id
             }
         })
@@ -203,7 +207,7 @@ async def test_navigate_hang_navigate_again_checkEvents(
             "method": "browsingContext.navigate",
             "params": {
                 "url": url_hang_forever,
-                "wait": "complete",
+                "wait": "none",
                 "context": context_id
             }
         })
@@ -228,8 +232,9 @@ async def test_navigate_hang_navigate_again_checkEvents(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_scriptNavigate_checkEvents(websocket, context_id, url_example,
-                                          html, read_messages, snapshot):
+                                          html, read_messages, snapshot, wait):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html(f"<script>window.location='{url_example}';</script>")
@@ -239,7 +244,7 @@ async def test_scriptNavigate_checkEvents(websocket, context_id, url_example,
             "method": "browsingContext.navigate",
             "params": {
                 "url": initial_url,
-                "wait": "complete",
+                "wait": wait,
                 "context": context_id
             }
         })
@@ -256,9 +261,11 @@ async def test_scriptNavigate_checkEvents(websocket, context_id, url_example,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
                                                      url_base, html,
-                                                     read_messages, snapshot):
+                                                     read_messages, snapshot,
+                                                     wait):
     # Other events can be racy.
     await subscribe(websocket, [
         "browsingContext.navigationStarted",
@@ -274,7 +281,7 @@ async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
             "method": "browsingContext.navigate",
             "params": {
                 "url": initial_url,
-                "wait": "complete",
+                "wait": wait,
                 "context": context_id
             }
         })
@@ -291,9 +298,11 @@ async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_scriptNavigate_dataUrl_checkEvents(websocket, context_id,
                                                   url_base, html,
-                                                  read_messages, snapshot):
+                                                  read_messages, snapshot,
+                                                  wait):
     await subscribe(websocket, ["browsingContext"])
 
     data_url = "data:text/html;,<h2>header</h2>"
@@ -304,7 +313,7 @@ async def test_scriptNavigate_dataUrl_checkEvents(websocket, context_id,
             "method": "browsingContext.navigate",
             "params": {
                 "url": initial_url,
-                "wait": "complete",
+                "wait": wait,
                 "context": context_id
             }
         })
@@ -321,9 +330,11 @@ async def test_scriptNavigate_dataUrl_checkEvents(websocket, context_id,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_scriptNavigate_fragment_checkEvents(websocket, context_id,
                                                    url_base, html,
-                                                   read_messages, snapshot):
+                                                   read_messages, snapshot,
+                                                   wait):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html("<script>window.location='#test';</script>")
@@ -333,7 +344,7 @@ async def test_scriptNavigate_fragment_checkEvents(websocket, context_id,
             "method": "browsingContext.navigate",
             "params": {
                 "url": initial_url,
-                "wait": "complete",
+                "wait": wait,
                 "context": context_id
             }
         })
@@ -350,8 +361,9 @@ async def test_scriptNavigate_fragment_checkEvents(websocket, context_id,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_scriptNavigate_fragment_nested_checkEvents(
-        websocket, iframe_id, html, url_base, read_messages, snapshot):
+        websocket, iframe_id, html, url_base, read_messages, snapshot, wait):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html("<script>window.location='#test';</script>")
@@ -361,7 +373,7 @@ async def test_scriptNavigate_fragment_nested_checkEvents(
             "method": "browsingContext.navigate",
             "params": {
                 "url": initial_url,
-                "wait": "complete",
+                "wait": wait,
                 "context": iframe_id
             }
         })
