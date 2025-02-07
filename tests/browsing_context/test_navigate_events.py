@@ -81,6 +81,34 @@ async def test_navigate_checkEvents(websocket, context_id, url_base,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
+async def test_navigate_fragment_checkEvents(websocket, context_id,
+                                             url_example, read_messages,
+                                             snapshot, wait):
+    await goto_url(websocket, context_id, url_example)
+    await set_beforeunload_handler(websocket, context_id)
+    await subscribe(
+        websocket,
+        ["browsingContext", "script.message", "network.beforeRequestSent"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_example + "#test",
+                "wait": wait,
+                "context": context_id
+            }
+        })
+
+    messages = await read_messages(2,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
+    assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
+
+
+@pytest.mark.asyncio
 async def test_window_open_url_checkEvents(websocket, context_id, url_example,
                                            read_messages, snapshot):
     await subscribe(websocket, ["browsingContext"])
@@ -207,7 +235,7 @@ async def test_navigate_hang_navigate_again_checkEvents(
             "method": "browsingContext.navigate",
             "params": {
                 "url": url_hang_forever,
-                "wait": "none",
+                "wait": "complete",
                 "context": context_id
             }
         })

@@ -623,6 +623,69 @@
     }),
   ])
 # ---
+# name: test_navigate_fragment_checkEvents[complete]
+  list([
+    dict({
+      'method': 'browsingContext.fragmentNavigated',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_3',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
+# name: test_navigate_fragment_checkEvents[interactive]
+  list([
+    dict({
+      'method': 'browsingContext.fragmentNavigated',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_3',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
+# name: test_navigate_fragment_checkEvents[none]
+  list([
+    dict({
+      'method': 'browsingContext.fragmentNavigated',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_3',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
 # name: test_navigate_hang_navigate_again_checkEvents
   list([
     dict({
