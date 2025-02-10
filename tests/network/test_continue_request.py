@@ -425,12 +425,11 @@ async def test_continue_request_invalid_header(websocket, context_id,
                                               url=url_example,
                                               phase="beforeRequestSent")
 
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "invalid argument",
-                "message": "Invalid header",
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "Invalid header",
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.continueRequest",
@@ -456,12 +455,11 @@ async def test_continue_request_unsafe_header(websocket, context_id,
                                               url=url_example,
                                               phase="beforeRequestSent")
 
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "invalid argument",
-                "message": "Unsafe header",
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "Unsafe header",
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.continueRequest",
