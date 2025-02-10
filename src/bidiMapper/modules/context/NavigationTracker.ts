@@ -85,7 +85,15 @@ export class NavigationState {
   }
 
   start() {
-    if (!this.#isInitial && !this.#started) {
+    if (
+      // Initial navigation should not be reported.
+      !this.#isInitial &&
+      // No need in reporting started navigation twice.
+      !this.#started &&
+      // No need for reporting fragment navigations. Step 13 vs step 16 of the spec:
+      // https://html.spec.whatwg.org/#beginning-navigation:webdriver-bidi-navigation-started
+      !this.isFragmentNavigation
+    ) {
       this.#eventManager.registerEvent(
         {
           type: 'event',
@@ -163,7 +171,7 @@ export class NavigationTracker {
   readonly #loaderIdToNavigationsMap = new Map<string, NavigationState>();
 
   readonly #browsingContextId: string;
-  #currentNavigation: NavigationState;
+  #lastCommittedNavigation: NavigationState;
   // When a new navigation is started via `BrowsingContext.navigate` with `wait` set to
   // `None`, the command result should have `navigation` value, but mapper does not have
   // it yet. This value will be set to `navigationId` after next .
@@ -183,7 +191,7 @@ export class NavigationTracker {
     this.#logger = logger;
 
     this.#isInitialNavigation = true;
-    this.#currentNavigation = new NavigationState(
+    this.#lastCommittedNavigation = new NavigationState(
       url,
       browsingContextId,
       urlMatchesAboutBlank(url),
@@ -196,11 +204,12 @@ export class NavigationTracker {
    * navigation, or one is already navigated.
    */
   get currentNavigationId() {
-    if (this.#pendingNavigation?.loaderId !== undefined) {
+    if (this.#pendingNavigation?.isFragmentNavigation === false) {
+      // If there is a pending navigation which is not a fragment one, it should be considered as the current one.
       return this.#pendingNavigation.navigationId;
     }
 
-    return this.#currentNavigation.navigationId;
+    return this.#lastCommittedNavigation.navigationId;
   }
 
   /**
@@ -214,7 +223,7 @@ export class NavigationTracker {
    * Url of the last navigated navigation.
    */
   get url(): string {
-    return this.#currentNavigation.url;
+    return this.#lastCommittedNavigation.url;
   }
 
   /**
@@ -248,13 +257,15 @@ export class NavigationTracker {
 
   dispose() {
     this.#pendingNavigation?.fail('navigation canceled by context disposal');
-    this.#currentNavigation.fail('navigation canceled by context disposal');
+    this.#lastCommittedNavigation.fail(
+      'navigation canceled by context disposal',
+    );
   }
 
   // Update the current url.
   onTargetInfoChanged(url: string) {
     this.#logger?.(LogType.debug, `onTargetInfoChanged ${url}`);
-    this.#currentNavigation.url = url;
+    this.#lastCommittedNavigation.url = url;
   }
 
   #getNavigationForFrameNavigated(
@@ -283,6 +294,14 @@ export class NavigationTracker {
   frameNavigated(url: string, loaderId: string, unreachableUrl?: string) {
     this.#logger?.(LogType.debug, `frameNavigated ${url}`);
 
+    if (!this.#loaderIdToNavigationsMap.has(loaderId)) {
+      this.#logger?.(
+        LogType.debugError,
+        `FrameNavigated with unknown loaderId ${loaderId}`,
+      );
+      return;
+    }
+
     if (
       unreachableUrl !== undefined &&
       !this.#loaderIdToNavigationsMap.has(loaderId)
@@ -300,22 +319,10 @@ export class NavigationTracker {
 
     const navigation = this.#getNavigationForFrameNavigated(url, loaderId);
 
-    if (navigation !== this.#currentNavigation) {
-      this.#currentNavigation.fail(
-        'navigation canceled by concurrent navigation',
-      );
-    }
-
     navigation.url = url;
     navigation.loaderId = loaderId;
-    this.#loaderIdToNavigationsMap.set(loaderId, navigation);
     navigation.start();
     navigation.frameNavigated();
-
-    this.#currentNavigation = navigation;
-    if (this.#pendingNavigation === navigation) {
-      this.#pendingNavigation = undefined;
-    }
   }
 
   navigatedWithinDocument(
@@ -328,7 +335,7 @@ export class NavigationTracker {
     );
 
     // Current navigation URL should be updated.
-    this.#currentNavigation.url = url;
+    this.#lastCommittedNavigation.url = url;
 
     if (navigationType !== 'fragment') {
       // TODO: check for other navigation types, like `javascript`.
@@ -340,7 +347,7 @@ export class NavigationTracker {
     // one.
     const fragmentNavigation =
       this.#pendingNavigation !== undefined &&
-      this.#pendingNavigation.loaderId === undefined
+      this.#pendingNavigation.isFragmentNavigation
         ? this.#pendingNavigation
         : new NavigationState(
             url,
@@ -349,6 +356,7 @@ export class NavigationTracker {
             this.#eventManager,
           );
 
+    fragmentNavigation.url = url;
     // Finish ongoing navigation.
     fragmentNavigation.fragmentNavigated();
 
@@ -394,52 +402,62 @@ export class NavigationTracker {
       `finishCommandNavigation ${navigation.navigationId}, ${loaderId}`,
     );
 
-    if (loaderId !== undefined) {
-      navigation.loaderId = loaderId;
-      this.#loaderIdToNavigationsMap.set(loaderId, navigation);
+    if (loaderId !== undefined && navigation.loaderId !== loaderId) {
+      this.#logger?.(
+        LogType.debugError,
+        `Command navigation result mismatches the loader id ${navigation.loaderId} vs ${loaderId}`,
+      );
+      return;
     }
 
-    navigation.isFragmentNavigation = loaderId === undefined;
-
-    if (loaderId === undefined || this.#currentNavigation === navigation) {
+    if (
+      loaderId === undefined ||
+      this.#lastCommittedNavigation === navigation
+    ) {
       // If the command's navigation is same-document or is already the current one,
       // nothing to do.
       return;
     }
-
-    this.#currentNavigation.fail(
-      'navigation canceled by concurrent navigation',
-    );
-
-    navigation.start();
-    this.#currentNavigation = navigation;
-
-    if (this.#pendingNavigation === navigation) {
-      this.#pendingNavigation = undefined;
-    }
   }
 
-  /**
-   * Emulated event, tight to `Network.requestWillBeSent`.
-   */
-  frameStartedNavigating(url: string, loaderId: string) {
+  frameStartedNavigating(
+    url: string,
+    loaderId: string,
+    navigationType: string,
+  ) {
     this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
 
     if (this.#loaderIdToNavigationsMap.has(loaderId)) {
-      // The `frameStartedNavigating` is tight to the `Network.requestWillBeSent` event
-      // which can be emitted several times, e.g. in case of redirection. Nothing to do in
-      // such a case.
+      const existingNavigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
+      // Navigation can be changed from `sameDocument` to `differentDocument`.
+      existingNavigation.isFragmentNavigation = [
+        'historySameDocument',
+        'sameDocument',
+      ].includes(navigationType);
       return;
     }
 
-    const pendingNavigation =
+    const navigation =
       this.#pendingNavigation ?? this.createPendingNavigation(url, true);
 
-    pendingNavigation.url = url;
-    pendingNavigation.start();
+    navigation.isFragmentNavigation = [
+      'historySameDocument',
+      'sameDocument',
+    ].includes(navigationType);
+    navigation.url = url;
 
-    pendingNavigation.loaderId = loaderId;
-    this.#loaderIdToNavigationsMap.set(loaderId, pendingNavigation);
+    navigation.loaderId = loaderId;
+    this.#loaderIdToNavigationsMap.set(loaderId, navigation);
+
+    if (!navigation.isFragmentNavigation) {
+      this.#lastCommittedNavigation.fail(
+        'navigation canceled by concurrent navigation',
+      );
+      this.#lastCommittedNavigation = navigation;
+      this.#pendingNavigation = undefined;
+    }
+
+    navigation.start();
   }
 
   /**
