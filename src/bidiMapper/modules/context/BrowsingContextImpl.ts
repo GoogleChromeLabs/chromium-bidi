@@ -36,7 +36,6 @@ import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
-import {TargetEvents} from '../cdp/TargetEvents.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import {getSharedId} from '../script/SharedId.js';
@@ -462,26 +461,15 @@ export class BrowsingContextImpl {
       this.#documentChanged(params.frame.loaderId);
     });
 
-    this.#cdpTarget.on(TargetEvents.FrameStartedNavigating, (params) => {
-      this.#logger?.(
-        LogType.debugInfo,
-        `Received ${TargetEvents.FrameStartedNavigating} event`,
-        params,
-      );
-
-      // The frame ID can be either a browsing context id, or not set in case of the frame
-      // is the top-level in the current CDP target.
-      const possibleFrameIds = [
-        this.id,
-        ...(this.cdpTarget.id === this.id ? [undefined] : []),
-      ];
-      if (!possibleFrameIds.includes(params.frameId)) {
+    this.#cdpTarget.cdpClient.on('Page.frameStartedNavigating', (params) => {
+      if (this.id !== params.frameId) {
         return;
       }
 
       this.#navigationTracker.frameStartedNavigating(
         params.url,
         params.loaderId,
+        params.navigationType,
       );
     });
 
