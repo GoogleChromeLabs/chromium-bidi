@@ -2,6 +2,15 @@
 # name: test_navigate_aboutBlank_checkEvents[complete]
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -12,15 +21,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -64,6 +64,15 @@
 # name: test_navigate_aboutBlank_checkEvents[interactive]
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -74,15 +83,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -126,6 +126,15 @@
 # name: test_navigate_aboutBlank_checkEvents[none]
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -136,15 +145,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -185,8 +185,17 @@
     }),
   ])
 # ---
-# name: test_navigate_checkEvents[complete]
+# name: test_navigate_beforeunload_cancel[capabilities0]
   list([
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
     dict({
       'method': 'script.message',
       'params': dict({
@@ -202,11 +211,63 @@
       'type': 'event',
     }),
     dict({
+      'method': 'browsingContext.userPromptOpened',
+      'params': dict({
+        'context': 'stable_0',
+        'handler': 'dismiss',
+        'message': '',
+        'type': 'beforeunload',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationFailed',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'error': 'unknown error',
+      'id': 'stable_3',
+      'message': 'net::ERR_ABORTED',
+      'type': 'error',
+    }),
+    dict({
+      'method': 'browsingContext.userPromptClosed',
+      'params': dict({
+        'accepted': False,
+        'context': 'stable_0',
+        'type': 'beforeunload',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_navigate_checkEvents[complete]
+  list([
+    dict({
       'method': 'browsingContext.navigationStarted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
       }),
       'type': 'event',
     }),
@@ -261,6 +322,15 @@
 # name: test_navigate_checkEvents[interactive]
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -271,15 +341,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -334,6 +395,15 @@
 # name: test_navigate_checkEvents[none]
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -344,15 +414,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -407,6 +468,15 @@
 # name: test_navigate_dataUrl_checkEvents[complete]
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -417,15 +487,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -480,6 +541,15 @@
 # name: test_navigate_dataUrl_checkEvents[interactive]
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -490,15 +560,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -553,6 +614,15 @@
 # name: test_navigate_dataUrl_checkEvents[none]
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -563,15 +633,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -689,30 +750,13 @@
 # name: test_navigate_hang_navigate_again_checkEvents
   list([
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationFailed',
+      'method': 'browsingContext.navigationStarted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_1',
-        'url': 'stable_3',
+        'url': 'stable_2',
       }),
       'type': 'event',
-    }),
-    dict({
-      'error': 'unknown error',
-      'id': 'stable_5',
-      'message': 'navigation canceled by concurrent navigation',
-      'type': 'error',
     }),
     dict({
       'method': 'script.message',
@@ -729,11 +773,51 @@
       'type': 'event',
     }),
     dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationFailed',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'error': 'unknown error',
+      'id': 'stable_5',
+      'message': 'net::ERR_ABORTED',
+      'type': 'error',
+    }),
+    dict({
       'method': 'browsingContext.navigationStarted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_6',
         'url': 'stable_7',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
       }),
       'type': 'event',
     }),
@@ -788,6 +872,15 @@
 # name: test_reload_aboutBlank_checkEvents
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -798,15 +891,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -850,6 +934,15 @@
 # name: test_reload_checkEvents
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -860,15 +953,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -923,6 +1007,15 @@
 # name: test_reload_dataUrl_checkEvents
   list([
     dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
       'method': 'script.message',
       'params': dict({
         'channel': 'beforeunload_channel',
@@ -933,15 +1026,6 @@
         'source': dict({
           'context': 'stable_0',
         }),
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
       }),
       'type': 'event',
     }),
@@ -1107,20 +1191,20 @@
       'type': 'event',
     }),
     dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_3',
-        'url': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationAborted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_3',
+        'url': 'stable_4',
       }),
       'type': 'event',
     }),
@@ -1174,20 +1258,20 @@
       'type': 'event',
     }),
     dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_3',
-        'url': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationAborted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_3',
+        'url': 'stable_4',
       }),
       'type': 'event',
     }),
@@ -1241,20 +1325,20 @@
       'type': 'event',
     }),
     dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_0',
-        'navigation': 'stable_3',
-        'url': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationAborted',
       'params': dict({
         'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_3',
+        'url': 'stable_4',
       }),
       'type': 'event',
     }),
