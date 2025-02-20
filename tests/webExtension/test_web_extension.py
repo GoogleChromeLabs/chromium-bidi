@@ -18,37 +18,19 @@ from test_helpers import execute_command
 
 
 @pytest.mark.asyncio
-async def test_method_not_available(websocket):
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'unknown error',
-                           'message': 'Method not available.',
-                       })):
-        await execute_command(
-            websocket, {
-                "method": "webExtension.install",
-                "params": {
-                    "extensionData": {
-                        "type": "path",
-                        "path": "invalid-path",
-                    },
-                }
-            })
-
-
-@pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
-        'goog:chromeOptions': {
-            'args': ['--enable-unsafe-extension-debugging', '--remote-debugging-pipe']
-        },
-    }],
-    indirect=True)
-async def test_invalid_path(websocket):
+    'goog:chromeOptions': {
+        'args':
+            ['--enable-unsafe-extension-debugging', '--remote-debugging-pipe']
+    },
+}],
+                         indirect=True)
+async def test_extensions_invalid_path(websocket):
     with pytest.raises(
             Exception,
             match=str({
-                'error': 'unknown error',  # should not be that
-                'message': 'Method not available.',
+                'error': 'unknown error',
+                'message': 'Missing \'manifest_version\' key. Its value must be an integer either 2 or 3. See developer.chrome.com/extensions/manifestVersion for details.',
             })):
         await execute_command(
             websocket, {

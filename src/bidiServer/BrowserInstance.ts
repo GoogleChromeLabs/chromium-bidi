@@ -29,8 +29,8 @@ import debug from 'debug';
 import WebSocket from 'ws';
 
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
-import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 import {PipeTransport} from '../utils/PipeTransport.js';
+import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
 import {MapperServerCdpConnection} from './MapperCdpConnection.js';
 import {getMapperTabSource} from './reader.js';
@@ -94,11 +94,12 @@ export class BrowserInstance {
       throw new Error('Could not find Chrome binary');
     }
 
+    const pipe = chromeArguments.includes('--remote-debugging-pipe');
     const launchArguments = {
       executablePath,
       args: chromeArguments,
       env: process.env,
-      pipe: true,
+      pipe,
     };
 
     debugInternal(`Launching browser`, {
@@ -109,7 +110,7 @@ export class BrowserInstance {
     const browserProcess = launch(launchArguments);
 
     let cdpConnection;
-    if(chromeArguments.includes('--remote-debugging-pipe')) {
+    if (pipe) {
       cdpConnection = await this.#establishPipeConnection(browserProcess);
     } else {
       const cdpEndpoint = await browserProcess.waitForLineOutput(
@@ -173,8 +174,13 @@ export class BrowserInstance {
     });
   }
 
-  static #establishPipeConnection(browserProcess: Process):Promise<MapperCdpConnection> {
-    debugInternal('Establishing pipe connection to broser process with cdpUrl: ', browserProcess.nodeProcess.pid);
+  static #establishPipeConnection(
+    browserProcess: Process,
+  ): Promise<MapperCdpConnection> {
+    debugInternal(
+      'Establishing pipe connection to browser process with cdpUrl: ',
+      browserProcess.nodeProcess.pid,
+    );
     const {3: pipeWrite, 4: pipeRead} = browserProcess.nodeProcess.stdio;
     const transport = new PipeTransport(
       pipeWrite as NodeJS.WritableStream,
