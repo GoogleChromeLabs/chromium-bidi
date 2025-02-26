@@ -20,6 +20,7 @@ import {
   InvalidWebExtensionException,
   type WebExtension,
   UnsupportedOperationException,
+  type EmptyResult,
 } from '../../../protocol/protocol.js';
 
 /**
@@ -53,6 +54,25 @@ export class WebExtensionProcessor {
     } catch (err) {
       if ((err as Error).message.startsWith('invalid web extension')) {
         throw new InvalidWebExtensionException((err as Error).message);
+      }
+      throw err;
+    }
+  }
+
+  async uninstall(
+    params: WebExtension.UninstallParameters,
+  ): Promise<EmptyResult> {
+    try {
+      await this.#browserCdpClient.sendCommand('Extensions.uninstall', {
+        id: params.extension,
+      });
+      return {};
+    } catch (err) {
+      if (
+        (err as Error).message ===
+        'Uninstall failed. Reason: could not find extension.'
+      ) {
+        throw new InvalidWebExtensionException('no such web extension');
       }
       throw err;
     }

@@ -425,8 +425,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseInstallParams(command.params),
         );
       case 'webExtension.uninstall':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#webExtensionProcessor.uninstall(
+          this.#parser.parseUninstallParams(command.params),
         );
       // keep-sorted end
     }
