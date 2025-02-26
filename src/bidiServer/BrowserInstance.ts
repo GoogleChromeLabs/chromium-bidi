@@ -29,10 +29,10 @@ import debug from 'debug';
 import WebSocket from 'ws';
 
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
-import {PipeTransport} from '../utils/PipeTransport.js';
 import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
 import {MapperServerCdpConnection} from './MapperCdpConnection.js';
+import {PipeTransport} from './PipeTransport.js';
 import {getMapperTabSource} from './reader.js';
 import type {SimpleTransport} from './SimpleTransport.js';
 
