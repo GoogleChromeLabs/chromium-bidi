@@ -65,7 +65,9 @@ async def uninstall(websocket, extension_id):
     },
 }],
                          indirect=True)
-async def test_extensions_invalid_path(websocket):
+async def test_extensions_invalid_path(websocket, test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support extensions")
     with pytest.raises(Exception,
                        match=str({
                            'error': 'unknown error',
@@ -82,7 +84,10 @@ async def test_extensions_invalid_path(websocket):
     },
 }],
                          indirect=True)
-async def test_extensions_can_install(websocket, unpacked_extension_location):
+async def test_extensions_can_install(websocket, unpacked_extension_location,
+                                      test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support extensions")
     path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
     result = await install(websocket, path)
     assert result['extension']
@@ -96,7 +101,10 @@ async def test_extensions_can_install(websocket, unpacked_extension_location):
 }],
                          indirect=True)
 async def test_extensions_cannot_install(websocket,
-                                         unpacked_extension_location):
+                                         unpacked_extension_location,
+                                         test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support extensions")
     path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
     with pytest.raises(Exception,
                        match=str({
@@ -114,8 +122,10 @@ async def test_extensions_cannot_install(websocket,
     },
 }],
                          indirect=True)
-async def test_extensions_can_uninstall(websocket,
-                                        unpacked_extension_location):
+async def test_extensions_can_uninstall(websocket, unpacked_extension_location,
+                                        test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support extensions")
     path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
     result = await install(websocket, path)
     extension_id = result['extension']
@@ -130,7 +140,9 @@ async def test_extensions_can_uninstall(websocket,
     },
 }],
                          indirect=True)
-async def test_extensions_no_such_exension(websocket):
+async def test_extensions_no_such_exension(websocket, test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support extensions")
     with pytest.raises(Exception,
                        match=str({
                            'error': 'invalid web extension',
