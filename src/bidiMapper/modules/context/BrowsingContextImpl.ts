@@ -39,6 +39,7 @@ import type {CdpTarget} from '../cdp/CdpTarget.js';
 import {TargetEvents} from '../cdp/TargetEvents.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
+import {getSharedId} from '../script/SharedId.js';
 import {WindowRealm} from '../script/WindowRealm.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -401,6 +402,45 @@ export class BrowsingContextImpl {
       this.#navigationTracker.networkLoadingFailed(
         params.requestId,
         params.errorText,
+      );
+    });
+
+    this.#cdpTarget.cdpClient.on('Page.fileChooserOpened', (params) => {
+      if (this.id !== params.frameId) {
+        return;
+      }
+
+      if (params.backendNodeId === undefined) {
+        // At the moment only file inputs are supported.
+        return;
+      }
+
+      if (this.#loaderId === undefined) {
+        this.#logger?.(
+          LogType.debugError,
+          'LoaderId should be defined when file upload is shown',
+          params,
+        );
+        return;
+      }
+
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.Input.EventNames.FileDialogOpened,
+          params: {
+            context: this.id,
+            multiple: params.mode === 'selectMultiple',
+            element: {
+              sharedId: getSharedId(
+                this.id,
+                this.#loaderId,
+                params.backendNodeId,
+              ),
+            },
+          },
+        },
+        this.id,
       );
     });
 
