@@ -15,8 +15,8 @@
 
 import pytest
 from test_helpers import (ANY_SHARED_ID, AnyExtending, execute_command,
-                          goto_url, read_JSON_message, send_JSON_command,
-                          subscribe, wait_for_event)
+                          goto_url, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -37,7 +37,6 @@ async def test_file_dialog_opened_event(websocket, context_id, html):
                 "userActivation": True
             }
         })
-
 
     response = await wait_for_event(websocket, 'input.fileDialogOpened')
     assert response == {
@@ -122,8 +121,8 @@ async def test_file_dialog_opened_event(websocket, context_id, html):
     },
 ],
                          indirect=True)
-async def test_file_unhandled_prompt_behavior_cancel(
-        websocket, context_id, url_example):
+async def test_file_unhandled_prompt_behavior_cancel(websocket, context_id,
+                                                     url_example):
     await goto_url(websocket, context_id, url_example)
 
     resp = await execute_command(
