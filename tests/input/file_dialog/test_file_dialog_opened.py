@@ -20,7 +20,38 @@ from test_helpers import (ANY_SHARED_ID, AnyExtending, execute_command,
 
 
 @pytest.mark.asyncio
-async def test_file_dialog_opened_event(websocket, context_id, html):
+async def test_file_dialog_opened_event_show_picker(websocket, context_id,
+                                                    url_example):
+    await goto_url(websocket, context_id, url_example)
+
+    await subscribe(websocket, ["input.fileDialogOpened"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.showOpenFilePicker()",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": False,
+                "userActivation": True
+            }
+        })
+
+    response = await wait_for_event(websocket, 'input.fileDialogOpened')
+    assert response == {
+        'method': 'input.fileDialogOpened',
+        'params': {
+            'context': context_id,
+            'multiple': False,
+        },
+        'type': 'event',
+    }
+
+
+@pytest.mark.asyncio
+async def test_file_dialog_opened_event_element(websocket, context_id, html):
     await goto_url(websocket, context_id, html("<input id=input type=file>"))
 
     await subscribe(websocket, ["input.fileDialogOpened"])
