@@ -25,7 +25,6 @@ export class PipeTransport implements Transport {
   #pipeWrite: NodeJS.WritableStream;
   #onMessage: ((message: string) => void) | null = null;
 
-  #isClosed = false;
   #pendingMessage = '';
 
   constructor(
@@ -55,8 +54,7 @@ export class PipeTransport implements Transport {
   }
   sendMessage(message: string) {
     // TODO: WebSocketServer keeps sending messages after closing the transport.
-    this.#isClosed; // are linters happy now?
-    // assert(!this.#isClosed, '`PipeTransport` is closed.');
+    // TODO: we should assert that the pipe was not closed.
 
     this.#pipeWrite.write(message);
     this.#pipeWrite.write('\0');
@@ -64,8 +62,7 @@ export class PipeTransport implements Transport {
 
   #dispatch(buffer: Buffer): void {
     // TODO: WebSocketServer keeps sending messages after closing the transport.
-    this.#isClosed; // are linters happy now?
-    // assert(!this.#isClosed, '`PipeTransport` is closed.');
+    // TODO: we should assert that the pipe was not closed.
 
     let end = buffer.indexOf('\0');
     if (end === -1) {
@@ -91,6 +88,5 @@ export class PipeTransport implements Transport {
 
   close(): void {
     debugInternal('Closing pipe');
-    this.#isClosed = true;
   }
 }
