@@ -410,11 +410,6 @@ export class BrowsingContextImpl {
         return;
       }
 
-      if (params.backendNodeId === undefined) {
-        // At the moment only file inputs are supported.
-        return;
-      }
-
       if (this.#loaderId === undefined) {
         this.#logger?.(
           LogType.debugError,
@@ -424,6 +419,16 @@ export class BrowsingContextImpl {
         return;
       }
 
+      const element =
+        params.backendNodeId === undefined
+          ? undefined
+          : {
+              sharedId: getSharedId(
+                this.id,
+                this.#loaderId,
+                params.backendNodeId,
+              ),
+            };
       this.#eventManager.registerEvent(
         {
           type: 'event',
@@ -431,13 +436,7 @@ export class BrowsingContextImpl {
           params: {
             context: this.id,
             multiple: params.mode === 'selectMultiple',
-            element: {
-              sharedId: getSharedId(
-                this.id,
-                this.#loaderId,
-                params.backendNodeId,
-              ),
-            },
+            element,
           },
         },
         this.id,
