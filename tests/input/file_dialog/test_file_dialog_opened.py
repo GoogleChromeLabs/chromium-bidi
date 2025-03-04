@@ -17,11 +17,13 @@ import pytest
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
+KEYS_TO_STABILIZE = ['sharedId', 'context', 'realm', 'id']
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('multiple', [True, False])
-async def test_file_dialog_opened_by_show_file_picker(websocket, context_id,
-                                                      url_example, multiple):
+async def test_file_dialog_show_file_event(websocket, context_id, url_example,
+                                           multiple):
     await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket, ["input.fileDialogOpened"])
@@ -51,8 +53,8 @@ async def test_file_dialog_opened_by_show_file_picker(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_file_dialog_opened_by_show_directory_picker(
-        websocket, context_id, url_example):
+async def test_file_dialog_show_directory_event(websocket, context_id,
+                                                url_example):
     await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket, ["input.fileDialogOpened"])
@@ -83,9 +85,9 @@ async def test_file_dialog_opened_by_show_directory_picker(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('multiple', [True, False])
-async def test_file_dialog_opened_by_input_click(websocket, context_id, html,
-                                                 read_messages, multiple,
-                                                 snapshot):
+async def test_file_dialog_input_click_event(websocket, context_id, html,
+                                             read_messages, multiple,
+                                             snapshot):
     await goto_url(
         websocket, context_id,
         html(f"<input id=input type=file {'multiple' if multiple else ''} />"))
@@ -105,8 +107,7 @@ async def test_file_dialog_opened_by_input_click(websocket, context_id, html,
             }
         })
 
-    messages = await read_messages(
-        2, sort=True, keys_to_stabilize=['sharedId', 'context', 'realm', 'id'])
+    messages = await read_messages(2, keys_to_stabilize=KEYS_TO_STABILIZE)
     assert messages == snapshot
 
 
@@ -148,9 +149,147 @@ async def test_file_dialog_opened_by_input_click(websocket, context_id, html,
     },
 ],
                          indirect=True)
-async def test_file_unhandled_prompt_behavior_cancel(websocket, context_id,
-                                                     url_example):
+async def test_file_dialog_input_unhandled_prompt_behavior_cancel(
+        websocket, context_id, html, read_messages, snapshot):
+    pytest.xfail(
+        "TODO: allow `Page.setInterceptFileChooserDialog` to emit `cancel` event"
+    )
+
+    await goto_url(websocket, context_id, html("<input id=input type=file />"))
+    await subscribe(websocket, ["script.message", 'input.fileDialogOpened'])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": """function(channel) {
+                        const input = document.getElementById('input');
+                        input.addEventListener('cancel', (event) => {
+                            channel(JSON.stringify({
+                                name: 'cancel',
+                                event
+                            }));
+                        });
+                        input.click();
+                    }""",
+                "target": {
+                    "context": context_id,
+                },
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "channel_name"
+                    }
+                }],
+                "awaitPromise": False,
+                "userActivation": True
+            }
+        })
+
+    messages = await read_messages(3, keys_to_stabilize=KEYS_TO_STABILIZE)
+    assert messages == snapshot
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{}, {
+    'unhandledPromptBehavior': 'ignore'
+}, {
+    'unhandledPromptBehavior': {
+        'default': 'ignore'
+    }
+}, {
+    'unhandledPromptBehavior': {
+        'file': 'ignore',
+        'default': 'dismiss'
+    }
+}],
+                         indirect=True)
+async def test_file_dialog_input_unhandled_prompt_behavior_ignore(
+        websocket, context_id, html, read_messages, snapshot,
+        test_headless_mode):
+    if test_headless_mode != "false":
+        pytest.xfail("Headless browser always cancels the file dialog")
+        return
+
+    await goto_url(websocket, context_id, html("<input id=input type=file />"))
+    await subscribe(websocket, ["script.message", 'input.fileDialogOpened'])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": """function(channel) {
+                        const input = document.getElementById('input');
+                        input.addEventListener('cancel', (event) => {
+                            channel(JSON.stringify({
+                                name: 'cancel',
+                                event
+                            }));
+                        });
+                        input.click();
+                    }""",
+                "target": {
+                    "context": context_id,
+                },
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "channel_name"
+                    }
+                }],
+                "awaitPromise": False,
+                "userActivation": True
+            }
+        })
+
+    messages = await read_messages(2,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True)
+    assert messages == snapshot
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [
+    {
+        'unhandledPromptBehavior': 'dismiss'
+    },
+    {
+        'unhandledPromptBehavior': 'dismiss and notify'
+    },
+    {
+        'unhandledPromptBehavior': {
+            'default': 'dismiss'
+        }
+    },
+    {
+        'unhandledPromptBehavior': {
+            'file': 'dismiss',
+            'default': 'ignore'
+        }
+    },
+    {
+        'unhandledPromptBehavior': 'accept'
+    },
+    {
+        'unhandledPromptBehavior': 'accept and notify'
+    },
+    {
+        'unhandledPromptBehavior': {
+            'default': 'accept'
+        }
+    },
+    {
+        'unhandledPromptBehavior': {
+            'file': 'accept',
+            'default': 'ignore'
+        }
+    },
+],
+                         indirect=True)
+async def test_file_dialog_show_file_unhandled_prompt_behavior_cancel(
+        websocket, context_id, url_example):
     await goto_url(websocket, context_id, url_example)
+    await subscribe(websocket, ["input.fileDialogOpened"])
 
     resp = await execute_command(
         websocket, {
@@ -187,8 +326,8 @@ async def test_file_unhandled_prompt_behavior_cancel(websocket, context_id,
     }
 }],
                          indirect=True)
-async def test_file_unhandled_prompt_behavior_ignore(websocket, context_id,
-                                                     url_example):
+async def test_file_dialog_show_file_unhandled_prompt_behavior_ignore(
+        websocket, context_id, url_example):
     """
     The test exploits the fact that the file picker dialog can't be opened
     twice. This is used as an indicator that the dialog was shown.
