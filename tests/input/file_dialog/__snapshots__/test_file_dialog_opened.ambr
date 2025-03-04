@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_file_dialog_opened_by_input_click[False]
+# name: test_file_dialog_input_click_event[False]
   list([
     dict({
       'id': 'stable_0',
@@ -45,7 +45,7 @@
     }),
   ])
 # ---
-# name: test_file_dialog_opened_by_input_click[True]
+# name: test_file_dialog_input_click_event[True]
   list([
     dict({
       'id': 'stable_0',
@@ -87,6 +87,438 @@
           'sharedId': 'stable_4',
         }),
         'multiple': True,
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_cancel[capabilities0]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'channel_name',
+        'data': dict({
+          'type': 'string',
+          'value': '{"name":"cancel","event":{"isTrusted":true}}',
+        }),
+        'source': dict({
+          'context': 'stable_2',
+          'realm': 'stable_1',
+        }),
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_cancel[capabilities1]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'channel_name',
+        'data': dict({
+          'type': 'string',
+          'value': '{"name":"cancel","event":{"isTrusted":true}}',
+        }),
+        'source': dict({
+          'context': 'stable_2',
+          'realm': 'stable_1',
+        }),
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_cancel[capabilities2]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'channel_name',
+        'data': dict({
+          'type': 'string',
+          'value': '{"name":"cancel","event":{"isTrusted":true}}',
+        }),
+        'source': dict({
+          'context': 'stable_2',
+          'realm': 'stable_1',
+        }),
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_cancel[capabilities3]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'channel_name',
+        'data': dict({
+          'type': 'string',
+          'value': '{"name":"cancel","event":{"isTrusted":true}}',
+        }),
+        'source': dict({
+          'context': 'stable_2',
+          'realm': 'stable_1',
+        }),
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_cancel[capabilities4]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'channel_name',
+        'data': dict({
+          'type': 'string',
+          'value': '{"name":"cancel","event":{"isTrusted":true}}',
+        }),
+        'source': dict({
+          'context': 'stable_2',
+          'realm': 'stable_1',
+        }),
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_cancel[capabilities5]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'channel_name',
+        'data': dict({
+          'type': 'string',
+          'value': '{"name":"cancel","event":{"isTrusted":true}}',
+        }),
+        'source': dict({
+          'context': 'stable_2',
+          'realm': 'stable_1',
+        }),
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_cancel[capabilities6]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'channel_name',
+        'data': dict({
+          'type': 'string',
+          'value': '{"name":"cancel","event":{"isTrusted":true}}',
+        }),
+        'source': dict({
+          'context': 'stable_2',
+          'realm': 'stable_1',
+        }),
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_cancel[capabilities7]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'channel_name',
+        'data': dict({
+          'type': 'string',
+          'value': '{"name":"cancel","event":{"isTrusted":true}}',
+        }),
+        'source': dict({
+          'context': 'stable_2',
+          'realm': 'stable_1',
+        }),
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_ignore[capabilities0]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_ignore[capabilities1]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_ignore[capabilities2]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_input_unhandled_prompt_behavior_ignore[capabilities3]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'type': 'undefined',
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_2',
+        'element': dict({
+          'sharedId': 'stable_3',
+        }),
+        'multiple': False,
       }),
       'type': 'event',
     }),
