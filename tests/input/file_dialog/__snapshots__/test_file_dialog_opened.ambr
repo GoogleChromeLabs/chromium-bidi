@@ -1,0 +1,94 @@
+# serializer version: 1
+# name: test_file_dialog_opened_by_input_click[False]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'sharedId': 'stable_4',
+          'type': 'node',
+          'value': dict({
+            'attributes': dict({
+              'id': 'stable_3',
+              'type': 'file',
+            }),
+            'childNodeCount': 0,
+            'localName': 'input',
+            'namespaceURI': 'http://www.w3.org/1999/xhtml',
+            'nodeType': 1,
+            'shadowRoot': dict({
+              'sharedId': 'stable_2',
+              'type': 'node',
+              'value': dict({
+                'childNodeCount': 2,
+                'mode': 'closed',
+                'nodeType': 11,
+              }),
+            }),
+          }),
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_5',
+        'element': dict({
+          'sharedId': 'stable_4',
+        }),
+        'multiple': False,
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_file_dialog_opened_by_input_click[True]
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'realm': 'stable_1',
+        'result': dict({
+          'sharedId': 'stable_4',
+          'type': 'node',
+          'value': dict({
+            'attributes': dict({
+              'id': 'stable_3',
+              'multiple': '',
+              'type': 'file',
+            }),
+            'childNodeCount': 0,
+            'localName': 'input',
+            'namespaceURI': 'http://www.w3.org/1999/xhtml',
+            'nodeType': 1,
+            'shadowRoot': dict({
+              'sharedId': 'stable_2',
+              'type': 'node',
+              'value': dict({
+                'childNodeCount': 2,
+                'mode': 'closed',
+                'nodeType': 11,
+              }),
+            }),
+          }),
+        }),
+        'type': 'success',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'input.fileDialogOpened',
+      'params': dict({
+        'context': 'stable_5',
+        'element': dict({
+          'sharedId': 'stable_4',
+        }),
+        'multiple': True,
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---

@@ -14,14 +14,14 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import (ANY_SHARED_ID, AnyExtending, execute_command,
-                          goto_url, send_JSON_command, subscribe,
-                          wait_for_event)
+from test_helpers import (AnyExtending, execute_command, goto_url,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
-async def test_file_dialog_opened_event_show_picker(websocket, context_id,
-                                                    url_example):
+@pytest.mark.parametrize('multiple', [True, False])
+async def test_file_dialog_opened_by_show_file_picker(websocket, context_id,
+                                                      url_example, multiple):
     await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket, ["input.fileDialogOpened"])
@@ -30,7 +30,38 @@ async def test_file_dialog_opened_event_show_picker(websocket, context_id,
         websocket, {
             "method": "script.evaluate",
             "params": {
-                "expression": "window.showOpenFilePicker()",
+                "expression": f"window.showOpenFilePicker({{multiple: {'true' if multiple else 'false'}}})",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": False,
+                "userActivation": True
+            }
+        })
+
+    response = await wait_for_event(websocket, 'input.fileDialogOpened')
+    assert response == {
+        'method': 'input.fileDialogOpened',
+        'params': {
+            'context': context_id,
+            'multiple': multiple,
+        },
+        'type': 'event',
+    }
+
+
+@pytest.mark.asyncio
+async def test_file_dialog_opened_by_show_directory_picker(
+        websocket, context_id, url_example):
+    await goto_url(websocket, context_id, url_example)
+
+    await subscribe(websocket, ["input.fileDialogOpened"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.showDirectoryPicker()",
                 "target": {
                     "context": context_id,
                 },
@@ -51,8 +82,13 @@ async def test_file_dialog_opened_event_show_picker(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_file_dialog_opened_event_element(websocket, context_id, html):
-    await goto_url(websocket, context_id, html("<input id=input type=file>"))
+@pytest.mark.parametrize('multiple', [True, False])
+async def test_file_dialog_opened_by_input_click(websocket, context_id, html,
+                                                 read_messages, multiple,
+                                                 snapshot):
+    await goto_url(
+        websocket, context_id,
+        html(f"<input id=input type=file {'multiple' if multiple else ''} />"))
 
     await subscribe(websocket, ["input.fileDialogOpened"])
 
@@ -60,7 +96,7 @@ async def test_file_dialog_opened_event_element(websocket, context_id, html):
         websocket, {
             "method": "script.evaluate",
             "params": {
-                "expression": "input.click()",
+                "expression": "input.click(); input",
                 "target": {
                     "context": context_id,
                 },
@@ -69,49 +105,9 @@ async def test_file_dialog_opened_event_element(websocket, context_id, html):
             }
         })
 
-    response = await wait_for_event(websocket, 'input.fileDialogOpened')
-    assert response == {
-        'method': 'input.fileDialogOpened',
-        'params': {
-            'context': context_id,
-            'element': {
-                'sharedId': ANY_SHARED_ID,
-            },
-            'multiple': False,
-        },
-        'type': 'event',
-    }
-    shared_id = response['params']['element']['sharedId']
-
-    # Assert the `sharedId` is correct one:
-    response = await execute_command(
-        websocket, {
-            "method": "script.callFunction",
-            "params": {
-                "functionDeclaration": "(element)=>element",
-                "awaitPromise": True,
-                "target": {
-                    "context": context_id,
-                },
-                "arguments": [{
-                    "sharedId": shared_id,
-                }],
-            }
-        })
-
-    assert response == AnyExtending({
-        "type": "success",
-        "result": {
-            'sharedId': shared_id,
-            'type': 'node',
-            'value': {
-                'localName': 'input',
-                'attributes': {
-                    'type': 'file',
-                }
-            }
-        }
-    })
+    messages = await read_messages(
+        2, sort=True, keys_to_stabilize=['sharedId', 'context', 'realm', 'id'])
+    assert messages == snapshot
 
 
 @pytest.mark.asyncio
