@@ -801,12 +801,13 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type SetViewportParameters = {
-    context: BrowsingContext.BrowsingContext;
+    context?: BrowsingContext.BrowsingContext;
     viewport?: BrowsingContext.Viewport | null;
     /**
      * Must be greater than `0`.
      */
     devicePixelRatio?: number | null;
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
 }
 export namespace BrowsingContext {

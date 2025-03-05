@@ -981,9 +981,10 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export const SetViewportParametersSchema = z.lazy(() =>
     z.object({
-      context: BrowsingContext.BrowsingContextSchema,
+      context: BrowsingContext.BrowsingContextSchema.optional(),
       viewport: z.union([BrowsingContext.ViewportSchema, z.null()]).optional(),
       devicePixelRatio: z.union([z.number().gt(0), z.null()]).optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
 }
