@@ -149,7 +149,7 @@ async def test_file_dialog_input_click_event(websocket, context_id, html,
     },
 ],
                          indirect=True)
-async def test_file_dialog_input_unhandled_prompt_behavior_cancel(
+async def test_file_dialog_unhandled_prompt_behavior_input_cancel(
         websocket, context_id, html, read_messages, snapshot):
     pytest.xfail(
         "TODO: allow `Page.setInterceptFileChooserDialog` to emit `cancel` event"
@@ -204,7 +204,7 @@ async def test_file_dialog_input_unhandled_prompt_behavior_cancel(
     }
 }],
                          indirect=True)
-async def test_file_dialog_input_unhandled_prompt_behavior_ignore(
+async def test_file_dialog_unhandled_prompt_behavior_input_ignore(
         websocket, context_id, html, read_messages, snapshot,
         test_headless_mode):
     if test_headless_mode != "false":
@@ -286,7 +286,7 @@ async def test_file_dialog_input_unhandled_prompt_behavior_ignore(
     },
 ],
                          indirect=True)
-async def test_file_dialog_show_file_unhandled_prompt_behavior_cancel(
+async def test_file_dialog_unhandled_prompt_behavior_show_file_cancel(
         websocket, context_id, url_example):
     await goto_url(websocket, context_id, url_example)
     await subscribe(websocket, ["input.fileDialogOpened"])
@@ -326,7 +326,7 @@ async def test_file_dialog_show_file_unhandled_prompt_behavior_cancel(
     }
 }],
                          indirect=True)
-async def test_file_dialog_show_file_unhandled_prompt_behavior_ignore(
+async def test_file_dialog_unhandled_prompt_behavior_show_file_ignore(
         websocket, context_id, url_example):
     """
     The test exploits the fact that the file picker dialog can't be opened
