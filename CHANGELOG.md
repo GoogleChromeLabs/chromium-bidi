@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v2.1.2...chromium-bidi-v3.0.0) (2025-03-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 136.0.7059.0 ([#3196](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3196))
+
+### Features
+
+* `input.fileDialogOpened` + `unhandledPromptBehavior.file` ([#3155](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3155)) ([729606e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/729606e57609c7ccd81a0b18dd2a3270f2f79cc1))
+* **chrome:** update the pinned browser version to 136.0.7059.0 ([#3196](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3196)) ([0197dfe](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0197dfecef4c5b64dcebed8c407a709a67045f5c))
+
 ## [2.1.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v2.1.1...chromium-bidi-v2.1.2) (2025-03-03)
 
 
