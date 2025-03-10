@@ -37,7 +37,7 @@ async def setup_device(websocket):
     # Enable BT emulation.
     await execute_command(
         websocket, {
-            'method': 'cdp.sendCommand',
+            'method': 'goog:cdp.sendCommand',
             'params': {
                 'method': 'BluetoothEmulation.enable',
                 'params': {
@@ -49,7 +49,7 @@ async def setup_device(websocket):
 
     await execute_command(
         websocket, {
-            'method': 'cdp.sendCommand',
+            'method': 'goog:cdp.sendCommand',
             'params': {
                 'method': 'BluetoothEmulation.simulatePreconnectedPeripheral',
                 'params': {
