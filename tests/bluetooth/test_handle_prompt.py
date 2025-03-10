@@ -42,6 +42,7 @@ async def setup_device(websocket):
                 'method': 'BluetoothEmulation.enable',
                 'params': {
                     'state': 'powered-on',
+                    'leSupported': True,
                 }
             }
         })
