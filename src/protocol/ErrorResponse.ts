@@ -42,6 +42,11 @@ export class InvalidArgumentException extends Exception {
     super(ErrorCode.InvalidArgument, message, stacktrace);
   }
 }
+export class InvalidElementStateException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.InvalidElementState, message, stacktrace);
+  }
+}
 
 export class InvalidSelectorException extends Exception {
   constructor(message: string, stacktrace?: string) {
