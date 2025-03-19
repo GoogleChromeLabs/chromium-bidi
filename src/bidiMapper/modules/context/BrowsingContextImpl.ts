@@ -462,26 +462,15 @@ export class BrowsingContextImpl {
       this.#documentChanged(params.frame.loaderId);
     });
 
-    this.#cdpTarget.on(TargetEvents.FrameStartedNavigating, (params) => {
-      this.#logger?.(
-        LogType.debugInfo,
-        `Received ${TargetEvents.FrameStartedNavigating} event`,
-        params,
-      );
-
-      // The frame ID can be either a browsing context id, or not set in case of the frame
-      // is the top-level in the current CDP target.
-      const possibleFrameIds = [
-        this.id,
-        ...(this.cdpTarget.id === this.id ? [undefined] : []),
-      ];
-      if (!possibleFrameIds.includes(params.frameId)) {
+    this.#cdpTarget.cdpClient.on('Page.frameStartedNavigating', (params) => {
+      if (this.id !== params.frameId) {
         return;
       }
 
       this.#navigationTracker.frameStartedNavigating(
         params.url,
         params.loaderId,
+        params.navigationType,
       );
     });
 
