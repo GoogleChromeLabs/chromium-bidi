@@ -365,12 +365,6 @@ export class NavigationTracker {
     }
   }
 
-  frameRequestedNavigation(url: string) {
-    this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
-    // The page is about to navigate to the url.
-    this.createPendingNavigation(url, true);
-  }
-
   /**
    * Required to mark navigation as fully complete.
    * TODO: navigation should be complete when it became the current one on

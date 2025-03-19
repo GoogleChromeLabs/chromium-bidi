@@ -497,14 +497,6 @@ export class BrowsingContextImpl {
       }
     });
 
-    this.#cdpTarget.cdpClient.on('Page.frameRequestedNavigation', (params) => {
-      if (this.id !== params.frameId) {
-        return;
-      }
-
-      this.#navigationTracker.frameRequestedNavigation(params.url);
-    });
-
     this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
       if (this.id !== params.frameId) {
         return;
