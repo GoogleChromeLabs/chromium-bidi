@@ -27,11 +27,22 @@ import type {
   Permissions,
   Bluetooth,
   WebExtension,
+  Autofill,
 } from '../protocol/protocol.js';
 
 import type {BidiCommandParameterParser} from './BidiParser.js';
 
 export class BidiNoOpParser implements BidiCommandParameterParser {
+  // Autofill module
+  // keep-sorted start block=yes
+  parseAutofillTriggerParams(params: unknown): Autofill.TriggerParameters {
+    return params as Autofill.TriggerParameters;
+  }
+  parseAutofillSetAddressParams(params: unknown) {
+    return params as Autofill.AddressParameters;
+  }
+  // keep-sorted end
+
   // Bluetooth module
   // keep-sorted start block=yes
   parseHandleRequestDevicePromptParams(

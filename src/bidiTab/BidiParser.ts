@@ -16,6 +16,7 @@
  */
 import type {BidiCommandParameterParser} from '../bidiMapper/BidiMapper.js';
 import type {
+  Autofill,
   Bluetooth,
   Browser,
   BrowsingContext,
@@ -31,6 +32,16 @@ import type {
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
 export class BidiParser implements BidiCommandParameterParser {
+  // Autofill module
+  // keep-sorted start block=yes
+  parseAutofillTriggerParams(params: unknown): Autofill.TriggerParameters {
+    return Parser.Autofill.parseTriggerRequest(params);
+  }
+  parseAutofillSetAddressParams(params: unknown): Autofill.AddressParameters {
+    return Parser.Autofill.parseSetAddressRequest(params);
+  }
+  // keep-sorted end
+
   // Bluetooth module
   // keep-sorted start block=yes
   parseHandleRequestDevicePromptParams(

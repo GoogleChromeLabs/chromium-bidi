@@ -1424,7 +1424,9 @@ export const SetFilesParametersSchema = z.lazy(() => z.object({
 "context":BrowsingContext.BrowsingContextSchema,"element":Script.SharedReferenceSchema,"files":z.array(z.string())}));
 }
 export const 
-AutofillCommandSchema = z.lazy(() => Autofill.TriggerSchema);
+AutofillCommandSchema = z.lazy(() => Autofill.TriggerSchema.and(
+Autofill.SetAddressSchema)
+);
 export namespace Autofill {
 export const 
 TriggerSchema = z.lazy(() => z.object({
@@ -1437,6 +1439,15 @@ export const TriggerParametersSchema = z.lazy(() => z.object({
 export namespace Autofill {
 export const FieldSchema = z.lazy(() => z.object({
 "name":Autofill.FieldNameSchema,"value":z.string()}));
+}
+export namespace Autofill {
+export const 
+SetAddressSchema = z.lazy(() => z.object({
+"method":z.literal("autofill.setAddress"),"params":Autofill.AddressParametersSchema}));
+}
+export namespace Autofill {
+export const AddressParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"fields":z.array(Autofill.FieldSchema)}));
 }
 export namespace Autofill {
 export const FieldNameSchema = z.lazy(() => z.string());

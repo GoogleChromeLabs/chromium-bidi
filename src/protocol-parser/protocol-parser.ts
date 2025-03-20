@@ -412,6 +412,19 @@ export namespace Permissions {
   }
 }
 
+export namespace Autofill {
+  export function parseTriggerRequest(
+    params: any,
+  ): Protocol.Autofill.TriggerParameters {
+    return parseObject(params, WebDriverBidi.Autofill.TriggerParametersSchema);
+  }
+  export function parseSetAddressRequest(
+    params: unknown,
+  ): Protocol.Autofill.AddressParameters {
+    return parseObject(params, WebDriverBidi.Autofill.AddressParametersSchema);
+  }
+}
+
 export namespace Bluetooth {
   export function parseHandleRequestDevicePromptParams(
     params: unknown,

@@ -1038,12 +1038,12 @@ export type FunctionRemoteValue = (({
 }
 export namespace Script {
 export type RegExpRemoteValue = (({
-"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}) & 
+"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}) &
 Script.RegExpLocalValue);
 }
 export namespace Script {
 export type DateRemoteValue = (({
-"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}) & 
+"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}) &
 Script.DateLocalValue);
 }
 export namespace Script {
@@ -1498,7 +1498,7 @@ export type SetFilesParameters = (({
 "context":(BrowsingContext.BrowsingContext),"element":(Script.SharedReference),"files":([
 ...((string)[])])}));
 }
-export type AutofillCommand = (Autofill.Trigger);
+export type AutofillCommand = (Autofill.Trigger | Autofill.SetAddress);
 export namespace Autofill {
 export type Trigger = ({
 "method":("autofill.trigger"),"params":(Autofill.TriggerParameters)});
@@ -1510,6 +1510,15 @@ export type TriggerParameters = (({
 export namespace Autofill {
 export type Field = (({
 "name":(Autofill.FieldName),"value":(string)}));
+}
+export namespace Autofill {
+export type SetAddress = ({
+"method":("autofill.setAddress"),"params":(Autofill.AddressParameters)});
+}
+export namespace Autofill {
+export type AddressParameters = (({
+"context":(BrowsingContext.BrowsingContext),"fields":([
+...((Autofill.Field)[])])}));
 }
 export namespace Autofill {
 export type FieldName = (string);

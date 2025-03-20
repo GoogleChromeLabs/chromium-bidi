@@ -31,6 +31,7 @@ import type {Result} from '../utils/result.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {MapperOptions} from './BidiServer.js';
+import {AutofillProcessor} from './modules/autofill/AutofillProcessor.js';
 import type {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
 import type {UserContextStorage} from './modules/browser/UserContextStorage.js';
@@ -63,6 +64,7 @@ interface CommandProcessorEventsMap extends Record<string | symbol, unknown> {
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
+  #autofillProcessor: AutofillProcessor;
   #bluetoothProcessor: BluetoothProcessor;
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
@@ -100,6 +102,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#bluetoothProcessor = bluetoothProcessor;
 
     // keep-sorted start block=yes
+    this.#autofillProcessor = new AutofillProcessor(browserCdpClient);
     this.#browserProcessor = new BrowserProcessor(
       browserCdpClient,
       browsingContextStorage,
@@ -148,6 +151,18 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     command: ChromiumBidi.Command,
   ): Promise<ChromiumBidi.ResultData> {
     switch (command.method) {
+      // Autofill module
+      // keep-sorted start block=yes
+      case 'autofill.trigger':
+        return await this.#autofillProcessor.triggerById(
+          this.#parser.parseAutofillTriggerParams(command.params),
+        );
+      case 'autofill.setAddress':
+        return await this.#autofillProcessor.setAddresses(
+          this.#parser.parseAutofillSetAddressParams(command.params),
+        );
+      // keep-sorted end
+
       // Bluetooth module
       // keep-sorted start block=yes
       case 'bluetooth.handleRequestDevicePrompt':
