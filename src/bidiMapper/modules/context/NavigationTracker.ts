@@ -93,7 +93,7 @@ export class NavigationState {
       // No need for reporting fragment navigations. Step 13 vs step 16 of the spec:
       // https://html.spec.whatwg.org/#beginning-navigation:webdriver-bidi-navigation-started
       !this.isFragmentNavigation
-    ){
+    ) {
       this.#eventManager.registerEvent(
         {
           type: 'event',
@@ -171,10 +171,14 @@ export class NavigationTracker {
   readonly #loaderIdToNavigationsMap = new Map<string, NavigationState>();
 
   readonly #browsingContextId: string;
+  /**
+   * Last committed navigation is committed, but is not guaranteed to be finished, as it
+   * can still wait for `load` or `DOMContentLoaded` events.
+   */
   #lastCommittedNavigation: NavigationState;
-  // When a new navigation is started via `BrowsingContext.navigate` with `wait` set to
-  // `None`, the command result should have `navigation` value, but mapper does not have
-  // it yet. This value will be set to `navigationId` after next .
+  /**
+   * Pending navigation is a navigation that is started but not yet committed.
+   */
   #pendingNavigation?: NavigationState;
 
   // Flags if the initial navigation to `about:blank` is in progress.
@@ -191,6 +195,7 @@ export class NavigationTracker {
     this.#logger = logger;
 
     this.#isInitialNavigation = true;
+    // The initial navigation is always committed.
     this.#lastCommittedNavigation = new NavigationState(
       url,
       browsingContextId,
@@ -204,10 +209,13 @@ export class NavigationTracker {
    * navigation, or one is already navigated.
    */
   get currentNavigationId() {
-    if (this.#pendingNavigation?.loaderId !== undefined) {
+    if (this.#pendingNavigation?.isFragmentNavigation === false) {
+      // Use pending navigation if it is started and it is not a fragment navigation.
       return this.#pendingNavigation.navigationId;
     }
 
+    // If the pending navigation is a fragment one, or if it is not exists, the last
+    // committed navigation should be used.
     return this.#lastCommittedNavigation.navigationId;
   }
 
@@ -256,7 +264,9 @@ export class NavigationTracker {
 
   dispose() {
     this.#pendingNavigation?.fail('navigation canceled by context disposal');
-    this.#lastCommittedNavigation.fail('navigation canceled by context disposal');
+    this.#lastCommittedNavigation.fail(
+      'navigation canceled by context disposal',
+    );
   }
 
   // Update the current url.
@@ -291,13 +301,11 @@ export class NavigationTracker {
   frameNavigated(url: string, loaderId: string, unreachableUrl?: string) {
     this.#logger?.(LogType.debug, `frameNavigated ${url}`);
 
-    if (
-      unreachableUrl !== undefined &&
-      !this.#loaderIdToNavigationsMap.has(loaderId)
-    ) {
+    if (unreachableUrl !== undefined) {
       // The navigation failed before started. Get or create pending navigation and fail
       // it.
       const navigation =
+        this.#loaderIdToNavigationsMap.get(loaderId) ??
         this.#pendingNavigation ??
         this.createPendingNavigation(unreachableUrl, true);
       navigation.url = unreachableUrl;
@@ -367,13 +375,6 @@ export class NavigationTracker {
     }
   }
 
-  frameRequestedNavigation(url: string) {
-    // TODO: remove
-    // this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
-    // // The page is about to navigate to the url.
-    // this.createPendingNavigation(url, true);
-  }
-
   /**
    * Required to mark navigation as fully complete.
    * TODO: navigation should be complete when it became the current one on
@@ -411,29 +412,13 @@ export class NavigationTracker {
     }
 
     navigation.isFragmentNavigation = loaderId === undefined;
-
-    if (loaderId === undefined || this.#lastCommittedNavigation === navigation) {
-      // If the command's navigation is same-document or is already the current one,
-      // nothing to do.
-      return;
-    }
-
-    this.#lastCommittedNavigation.fail(
-      'navigation canceled by concurrent navigation',
-    );
-
-    navigation.start();
-    this.#lastCommittedNavigation = navigation;
-
-    if (this.#pendingNavigation === navigation) {
-      this.#pendingNavigation = undefined;
-    }
   }
 
-  /**
-   * Emulated event, tight to `Network.requestWillBeSent`.
-   */
-  frameStartedNavigating(url: string, loaderId: string, navigationType: string) {
+  frameStartedNavigating(
+    url: string,
+    loaderId: string,
+    navigationType: string,
+  ) {
     this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
 
     if (this.#loaderIdToNavigationsMap.has(loaderId)) {
@@ -443,6 +428,11 @@ export class NavigationTracker {
         'historySameDocument',
         'sameDocument',
       ].includes(navigationType);
+
+      if(existingNavigation !== this.#pendingNavigation) {
+        this.#pendingNavigation?.fail('navigation canceled by concurrent navigation');
+        this.#pendingNavigation = existingNavigation;
+      }
       return;
     }
 
@@ -459,24 +449,6 @@ export class NavigationTracker {
     pendingNavigation.url = url;
     pendingNavigation.loaderId = loaderId;
     pendingNavigation.start();
-  }
-
-  /**
-   * In case of `beforeunload` handler, the pending navigation should be marked as started
-   * for consistency, as the `browsingContext.navigationStarted` should be emitted before
-   * user prompt.
-   */
-  beforeunload() {
-    this.#logger?.(LogType.debug, `beforeunload`);
-
-    if (this.#pendingNavigation === undefined) {
-      this.#logger?.(
-        LogType.debugError,
-        `Unexpectedly no pending navigation on beforeunload`,
-      );
-      return;
-    }
-    this.#pendingNavigation.start();
   }
 
   /**
