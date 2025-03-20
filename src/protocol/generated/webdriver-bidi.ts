@@ -1038,12 +1038,12 @@ export type FunctionRemoteValue = (({
 }
 export namespace Script {
 export type RegExpRemoteValue = (({
-"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}) &
+"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}) & 
 Script.RegExpLocalValue);
 }
 export namespace Script {
 export type DateRemoteValue = (({
-"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}) &
+"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}) & 
 Script.DateLocalValue);
 }
 export namespace Script {
@@ -1498,7 +1498,7 @@ export type SetFilesParameters = (({
 "context":(BrowsingContext.BrowsingContext),"element":(Script.SharedReference),"files":([
 ...((string)[])])}));
 }
-export type AutofillCommand = (Autofill.Trigger | Autofill.SetAddress);
+export type AutofillCommand = (Autofill.Trigger| Autofill.SetAddress);
 export namespace Autofill {
 export type Trigger = ({
 "method":("autofill.trigger"),"params":(Autofill.TriggerParameters)});

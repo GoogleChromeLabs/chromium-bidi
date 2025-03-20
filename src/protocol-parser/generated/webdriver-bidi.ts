@@ -1424,9 +1424,7 @@ export const SetFilesParametersSchema = z.lazy(() => z.object({
 "context":BrowsingContext.BrowsingContextSchema,"element":Script.SharedReferenceSchema,"files":z.array(z.string())}));
 }
 export const 
-AutofillCommandSchema = z.lazy(() => Autofill.TriggerSchema.and(
-Autofill.SetAddressSchema)
-);
+AutofillCommandSchema = z.lazy(() => z.union([Autofill.TriggerSchema,Autofill.SetAddressSchema]));
 export namespace Autofill {
 export const 
 TriggerSchema = z.lazy(() => z.object({
