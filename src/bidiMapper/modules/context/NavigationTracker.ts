@@ -302,8 +302,7 @@ export class NavigationTracker {
     this.#logger?.(LogType.debug, `frameNavigated ${url}`);
 
     if (unreachableUrl !== undefined) {
-      // The navigation failed before started. Get or create pending navigation and fail
-      // it.
+      // The navigation failed.
       const navigation =
         this.#loaderIdToNavigationsMap.get(loaderId) ??
         this.#pendingNavigation ??
