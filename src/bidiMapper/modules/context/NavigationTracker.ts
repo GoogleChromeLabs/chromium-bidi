@@ -421,6 +421,15 @@ export class NavigationTracker {
   ) {
     this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
 
+    if (![loaderId, undefined].includes(this.#pendingNavigation?.loaderId)) {
+      // If there is a pending navigation with loader id set, but not equal to the new
+      // loader id, cancel pending navigation.
+      this.#pendingNavigation?.fail(
+        'navigation canceled by concurrent navigation',
+      );
+      this.#pendingNavigation = undefined;
+    }
+
     if (this.#loaderIdToNavigationsMap.has(loaderId)) {
       const existingNavigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
       // Navigation can be changed from `sameDocument` to `differentDocument`.
@@ -428,11 +437,7 @@ export class NavigationTracker {
         'historySameDocument',
         'sameDocument',
       ].includes(navigationType);
-
-      if(existingNavigation !== this.#pendingNavigation) {
-        this.#pendingNavigation?.fail('navigation canceled by concurrent navigation');
-        this.#pendingNavigation = existingNavigation;
-      }
+      this.#pendingNavigation = existingNavigation;
       return;
     }
 
