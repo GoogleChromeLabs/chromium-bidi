@@ -18,7 +18,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import {Bluetooth} from '../../../protocol/chromium-bidi.js';
+import {BiDiModule, Bluetooth} from '../../../protocol/chromium-bidi.js';
 import {type ChromiumBidi, Session} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
