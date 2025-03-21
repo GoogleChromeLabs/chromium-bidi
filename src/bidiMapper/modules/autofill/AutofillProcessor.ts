@@ -67,11 +67,8 @@ export class AutofillProcessor {
       //   },
       // });
       await this.#browserCdpClient.sendCommand('Autofill.triggerById' as any, {
-        elementId: params.element.sharedId,
-        field: {
-          name: params.field.name,
-          value: params.field.value,
-        },
+        field_id: 1, //params.element.sharedId,
+        frame_id: 'top',
       });
 
       return {};
