@@ -430,6 +430,32 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
 
 
 @pytest.mark.asyncio
+async def test_cdp_network_disabled_by_default(websocket, context_id,
+                                               create_context, url_base):
+    await subscribe(websocket, ["cdp.Network.requestWillBeSent"])
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_base,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+    resp = await read_JSON_message(websocket)
+    while "id" not in resp:
+        # Assert CDP events are not from Network.
+        assert resp["method"].startswith("cdp")
+        assert not resp["params"]["event"].startswith("Network"), \
+            "There should be no `Network` cdp events, but was " \
+            f"`{ resp['params']['event'] }` "
+        resp = await read_JSON_message(websocket)
+
+    assert resp == AnyExtending({"type": "success", "id": command_id})
+
+
+@pytest.mark.asyncio
 async def test_network_specific_context_subscription_does_not_enable_cdp_network_globally(
         websocket, context_id, create_context, url_base):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])

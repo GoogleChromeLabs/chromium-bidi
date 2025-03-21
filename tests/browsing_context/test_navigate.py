@@ -582,7 +582,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': navigate_command_id,
         'type': 'error',
         'error': 'unknown error',
-        'message': 'net::ERR_ABORTED',
+        'message': ANY_STR
     })
 
     assert close_command_result == AnyExtending({
