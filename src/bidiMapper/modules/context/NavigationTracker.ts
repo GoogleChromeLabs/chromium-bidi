@@ -352,12 +352,10 @@ export class NavigationTracker {
       return;
     }
 
-    // There is no way to guaranteed match pending navigation with finished fragment
-    // navigations. So assume any pending navigation without loader id is the fragment
-    // one.
+    // There is no way to map `navigatedWithinDocument` to a specific navigation. Consider
+    // it is the pending navigation, if it is a fragment one.
     const fragmentNavigation =
-      this.#pendingNavigation !== undefined &&
-      this.#pendingNavigation.isFragmentNavigation === true
+      this.#pendingNavigation?.isFragmentNavigation === true
         ? this.#pendingNavigation
         : new NavigationState(
             url,

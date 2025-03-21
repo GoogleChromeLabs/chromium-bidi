@@ -209,7 +209,7 @@ describe('NavigationTracker', () => {
         (await navigation.finished).eventName,
         NavigationEventName.NavigationFailed,
       );
-      // Current navigation is the not yet finished `YET_ANOTHER_URL` navigation.
+      // Current navigation is one to `YET_ANOTHER_URL`. It should be not the initial one.
       assert.notEqual(
         navigationTracker.currentNavigationId,
         initialNavigationId,
