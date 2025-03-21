@@ -418,7 +418,11 @@ export class NavigationTracker {
   ) {
     this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
 
-    if (![loaderId, undefined].includes(this.#pendingNavigation?.loaderId)) {
+    if (
+      this.#pendingNavigation &&
+      this.#pendingNavigation?.loaderId !== undefined &&
+      this.#pendingNavigation?.loaderId !== loaderId
+    ) {
       // If there is a pending navigation with loader id set, but not equal to the new
       // loader id, cancel pending navigation.
       this.#pendingNavigation?.fail(
@@ -430,10 +434,8 @@ export class NavigationTracker {
     if (this.#loaderIdToNavigationsMap.has(loaderId)) {
       const existingNavigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
       // Navigation can be changed from `sameDocument` to `differentDocument`.
-      existingNavigation.isFragmentNavigation = [
-        'historySameDocument',
-        'sameDocument',
-      ].includes(navigationType);
+      existingNavigation.isFragmentNavigation =
+        NavigationTracker.#isFragmentNavigation(navigationType);
       this.#pendingNavigation = existingNavigation;
       return;
     }
@@ -443,16 +445,21 @@ export class NavigationTracker {
 
     this.#loaderIdToNavigationsMap.set(loaderId, pendingNavigation);
 
-    pendingNavigation.isFragmentNavigation = [
-      'historySameDocument',
-      'sameDocument',
-    ].includes(navigationType);
+    pendingNavigation.isFragmentNavigation =
+      NavigationTracker.#isFragmentNavigation(navigationType);
 
     pendingNavigation.url = url;
     pendingNavigation.loaderId = loaderId;
     pendingNavigation.start();
   }
 
+  static #isFragmentNavigation(navigationType: string): boolean {
+    // Page.frameStartedNavigating.navigationType can be one of the following values:
+    // reload, reloadBypassingCache, restore, restoreWithPost, historySameDocument,
+    // historyDifferentDocument, sameDocument, differentDocument.
+    // https://chromedevtools.github.io/devtools-protocol/tot/Page/#event-frameStartedNavigating
+    return ['historySameDocument', 'sameDocument'].includes(navigationType);
+  }
   /**
    * If there is a navigation with the loaderId equals to the network request id, it means
    * that the navigation failed.
