@@ -35,6 +35,7 @@ import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
+import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -728,6 +729,27 @@ export class BrowsingContextImpl {
         case Session.UserPromptHandlerType.Ignore:
           break;
       }
+    });
+
+    this.#cdpTarget.cdpClient.on('Browser.downloadWillBegin', (params) => {
+      if (this.id !== params.frameId) {
+        return;
+      }
+
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
+          params: {
+            context: this.id,
+            suggestedFilename: params.suggestedFilename,
+            navigation: uuidv4(),
+            timestamp: getTimestamp(),
+            url: params.url,
+          },
+        },
+        this.id,
+      );
     });
   }
 
