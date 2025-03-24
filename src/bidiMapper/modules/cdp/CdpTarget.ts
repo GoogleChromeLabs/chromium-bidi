@@ -167,10 +167,6 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Page.enable', {
           enableFileChooserOpenedEvent: true,
         }),
-        this.#cdpClient.sendCommand('Browser.setDownloadBehavior', {
-          behavior: 'default',
-          eventsEnabled: true,
-        }),
         ...(this.#ignoreFileDialog()
           ? []
           : [

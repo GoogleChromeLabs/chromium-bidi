@@ -730,26 +730,29 @@ export class BrowsingContextImpl {
       }
     });
 
-    this.#cdpTarget.cdpClient.on('Browser.downloadWillBegin', (params) => {
-      if (this.id !== params.frameId) {
-        return;
-      }
+    this.#cdpTarget.browserCdpClient.on(
+      'Browser.downloadWillBegin',
+      (params) => {
+        if (this.id !== params.frameId) {
+          return;
+        }
 
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
-          params: {
-            context: this.id,
-            suggestedFilename: params.suggestedFilename,
-            navigation: params.guid,
-            timestamp: getTimestamp(),
-            url: params.url,
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
+            params: {
+              context: this.id,
+              suggestedFilename: params.suggestedFilename,
+              navigation: params.guid,
+              timestamp: getTimestamp(),
+              url: params.url,
+            },
           },
-        },
-        this.id,
-      );
-    });
+          this.id,
+        );
+      },
+    );
   }
 
   static #getPromptType(
