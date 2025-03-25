@@ -541,7 +541,7 @@ export class CdpTarget {
   }
 
   async #updateWindowId() {
-    const {windowId} = await this.#cdpClient.sendCommand(
+    const {windowId} = await this.#browserCdpClient.sendCommand(
       'Browser.getWindowForTarget',
       {targetId: this.id},
     );
