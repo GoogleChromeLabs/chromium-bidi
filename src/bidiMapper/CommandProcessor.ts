@@ -158,6 +158,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#bluetoothProcessor.simulateAdapter(
           this.#parser.parseSimulateAdapterParameters(command.params),
         );
+      case 'bluetooth.disableSimulation':
+        return await this.#bluetoothProcessor.disableSimulation(
+          this.#parser.parseDisableSimulationParameters(command.params),
+        );
       case 'bluetooth.simulateAdvertisement':
         return await this.#bluetoothProcessor.simulateAdvertisement(
           this.#parser.parseSimulateAdvertisementParameters(command.params),

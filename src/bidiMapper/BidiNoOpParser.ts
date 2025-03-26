@@ -44,6 +44,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Bluetooth.SimulateAdapterParameters {
     return params as Bluetooth.SimulateAdapterParameters;
   }
+  parseDisableSimulationParameters(
+    params: unknown,
+  ): Bluetooth.DisableSimulationParameters {
+    return params as Bluetooth.DisableSimulationParameters;
+  }
   parseSimulateAdvertisementParameters(
     params: unknown,
   ): Bluetooth.SimulateAdvertisementParameters {

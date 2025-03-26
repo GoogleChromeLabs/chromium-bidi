@@ -62,6 +62,15 @@ async def setup_device(websocket, context_id):
             }
         })
 
+async def disable_simulation(websocket, context_id):
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.disableSimulation',
+            'params': {
+                'context': context_id,
+            }
+        })
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("state_1", ["absent", "powered-off", "powered-on"])
@@ -94,6 +103,8 @@ async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
                 'state': state_2,
             }
         })
+
+    await disable_simulation(websocket, context_id)
 
 
 @pytest.mark.asyncio
@@ -140,6 +151,8 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
             }],
         }
     })
+
+    await disable_simulation(websocket, context_id)
 
 
 @pytest.mark.asyncio
@@ -188,3 +201,5 @@ async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
                 'device': event['params']['devices'][0]['id']
             }
         })
+
+    await disable_simulation(websocket, context_id)
