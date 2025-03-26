@@ -63,6 +63,7 @@ async def setup_device(websocket):
             }
         })
 
+
 @pytest_asyncio.fixture(autouse=True)
 async def disable_simulation(websocket, context_id):
     yield

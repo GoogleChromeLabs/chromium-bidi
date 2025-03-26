@@ -15,7 +15,6 @@
 
 import pytest
 import pytest_asyncio
-
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
@@ -64,6 +63,7 @@ async def setup_device(websocket, context_id):
             }
         })
 
+
 @pytest_asyncio.fixture(autouse=True)
 async def disable_simulation(websocket, context_id):
     yield
@@ -104,6 +104,7 @@ async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
                 'state': state_2,
             }
         })
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
@@ -146,6 +147,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
             }],
         }
     })
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
@@ -191,6 +193,7 @@ async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
             }
         })
 
+
 @pytest.mark.asyncio
 async def test_bluetooth_disable_simulation_twice(websocket, context_id):
     await execute_command(
@@ -207,6 +210,7 @@ async def test_bluetooth_disable_simulation_twice(websocket, context_id):
                 'context': context_id,
             }
         })
+
 
 @pytest.mark.asyncio
 async def test_bluetooth_disable_simulation(websocket, context_id):
@@ -240,9 +244,10 @@ async def test_bluetooth_disable_simulation(websocket, context_id):
                 }
             })
 
+
 @pytest.mark.asyncio
-async def test_bluetooth_disable_simulation_in_another_context(websocket, context_id,
-                                                               another_context_id):
+async def test_bluetooth_disable_simulation_in_another_context(
+        websocket, context_id, another_context_id):
     pytest.xfail(
         "Bluetooth simulation doesn not support multiple contexts yet")
 
