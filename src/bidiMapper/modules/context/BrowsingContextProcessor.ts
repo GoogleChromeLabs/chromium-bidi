@@ -24,9 +24,9 @@ import {
   type EmptyResult,
   NoSuchUserContextException,
   NoSuchAlertException,
-  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
+import type {UserContextStorage} from '../browser/UserContextStorage';
 import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
@@ -36,11 +36,15 @@ export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #eventManager: EventManager;
+  readonly #userContextStorage: UserContextStorage;
+
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
+    userContextStorage: UserContextStorage,
     eventManager: EventManager,
   ) {
+    this.#userContextStorage = userContextStorage;
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
@@ -196,27 +200,72 @@ export class BrowsingContextProcessor {
   async setViewport(
     params: BrowsingContext.SetViewportParameters,
   ): Promise<EmptyResult> {
-    if (params.userContexts === undefined && params.context === undefined) {
+    const impactedTopLevelContexts =
+      await this.#getRelatedTopLevelBrowsingContextIds(
+        params.context,
+        params.userContexts,
+      );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getUserContextConfig(userContextId);
+      userContextConfig.devicePixelRatio = params.devicePixelRatio;
+      userContextConfig.viewport = params.viewport;
+    }
+
+    for (const browsingContextId of impactedTopLevelContexts) {
+      const context =
+        this.#browsingContextStorage.getContext(browsingContextId);
+      await context.setViewport(params.viewport, params.devicePixelRatio);
+    }
+    return {};
+  }
+
+  /**
+   * Returns a list of top-level browsing context ids.
+   */
+  async #getRelatedTopLevelBrowsingContextIds(
+    browsingContextId?: string,
+    userContextIds?: string[],
+  ): Promise<BrowsingContext.BrowsingContext[]> {
+    if (browsingContextId === undefined && userContextIds === undefined) {
       throw new InvalidArgumentException(
         'Either userContexts or context must be provided',
       );
     }
-    if (params.userContexts !== undefined && params.context !== undefined) {
+
+    if (browsingContextId !== undefined && userContextIds !== undefined) {
       throw new InvalidArgumentException(
         'userContexts and context are mutually exclusive',
       );
     }
-    if (params.userContexts !== undefined) {
-      throw new UnsupportedOperationException('userContexts is not supported');
+
+    if (browsingContextId !== undefined) {
+      const context =
+        this.#browsingContextStorage.getContext(browsingContextId);
+      if (!context.isTopLevelContext()) {
+        throw new InvalidArgumentException(
+          'Emulating viewport is only supported on the top-level context',
+        );
+      }
+      return [browsingContextId];
     }
-    const context = this.#browsingContextStorage.getContext(params.context!);
-    if (!context.isTopLevelContext()) {
-      throw new InvalidArgumentException(
-        'Emulating viewport is only supported on the top-level context',
-      );
+
+    // Verify that all user contexts exist.
+    await this.#userContextStorage.verifyUserContextIdList(userContextIds!);
+
+    const result = [];
+    for (const userContextId of userContextIds!) {
+      const topLevelBrowsingContextIds = this.#browsingContextStorage
+        .getTopLevelContexts()
+        .filter(
+          (browsingContext) => browsingContext.userContext === userContextId,
+        )
+        .map((context) => context.id);
+      result.push(...topLevelBrowsingContextIds);
     }
-    await context.setViewport(params.viewport, params.devicePixelRatio);
-    return {};
+    // Remove duplicates.
+    return [...new Set(result).values()];
   }
 
   async traverseHistory(
