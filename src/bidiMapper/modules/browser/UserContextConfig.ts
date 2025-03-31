@@ -18,7 +18,8 @@
 import type {BrowsingContext} from '../../../protocol/protocol.js';
 
 /**
- * Represents a user context within the browser.
+ * Represents a user context configurations. Each new CDP target of the given user context
+ * will be configured with this.
  */
 export class UserContextConfig {
   /**
