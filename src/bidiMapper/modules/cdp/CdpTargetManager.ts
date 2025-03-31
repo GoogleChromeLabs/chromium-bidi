@@ -357,7 +357,7 @@ export class CdpTargetManager {
       this.#browsingContextStorage,
       this.#networkStorage,
       this.#prerenderingDisabled,
-      this.#userContextStorage.getUserContextConfig(userContext),
+      this.#userContextStorage.getConfig(userContext),
       this.#unhandledPromptBehavior,
       this.#logger,
     );
