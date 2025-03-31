@@ -219,11 +219,11 @@ export class BrowsingContextProcessor {
       }
     }
 
-    await Promise.all([
+    await Promise.all(
       impactedTopLevelContexts.map((context) =>
         context.setViewport(params.viewport, params.devicePixelRatio),
       ),
-    ]);
+    );
 
     return {};
   }
