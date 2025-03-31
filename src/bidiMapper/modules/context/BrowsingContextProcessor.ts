@@ -201,7 +201,7 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.SetViewportParameters,
   ): Promise<EmptyResult> {
     const impactedTopLevelContexts =
-      await this.#getRelatedTopLevelBrowsingContextIds(
+      await this.#getRelatedTopLevelBrowsingContexts(
         params.context,
         params.userContexts,
       );
@@ -219,21 +219,22 @@ export class BrowsingContextProcessor {
       }
     }
 
-    for (const browsingContextId of impactedTopLevelContexts) {
-      const context =
-        this.#browsingContextStorage.getContext(browsingContextId);
-      await context.setViewport(params.viewport, params.devicePixelRatio);
-    }
+    await Promise.all([
+      impactedTopLevelContexts.map((context) =>
+        context.setViewport(params.viewport, params.devicePixelRatio),
+      ),
+    ]);
+
     return {};
   }
 
   /**
    * Returns a list of top-level browsing context ids.
    */
-  async #getRelatedTopLevelBrowsingContextIds(
+  async #getRelatedTopLevelBrowsingContexts(
     browsingContextId?: string,
     userContextIds?: string[],
-  ): Promise<BrowsingContext.BrowsingContext[]> {
+  ): Promise<BrowsingContextImpl[]> {
     if (browsingContextId === undefined && userContextIds === undefined) {
       throw new InvalidArgumentException(
         'Either userContexts or context must be provided',
@@ -254,7 +255,7 @@ export class BrowsingContextProcessor {
           'Emulating viewport is only supported on the top-level context',
         );
       }
-      return [browsingContextId];
+      return [context];
     }
 
     // Verify that all user contexts exist.
@@ -262,15 +263,15 @@ export class BrowsingContextProcessor {
 
     const result = [];
     for (const userContextId of userContextIds!) {
-      const topLevelBrowsingContextIds = this.#browsingContextStorage
+      const topLevelBrowsingContexts = this.#browsingContextStorage
         .getTopLevelContexts()
         .filter(
           (browsingContext) => browsingContext.userContext === userContextId,
-        )
-        .map((context) => context.id);
-      result.push(...topLevelBrowsingContextIds);
+        );
+      result.push(...topLevelBrowsingContexts);
     }
-    // Remove duplicates.
+    // Remove duplicates. Compare `BrowsingContextImpl` by reference is correct here, as
+    // `browsingContextStorage` returns the same instance for the same id.
     return [...new Set(result).values()];
   }
 
