@@ -49,7 +49,7 @@ export class UserContextStorage {
     ];
   }
 
-  getUserContextConfig(userContextId: string): UserContextConfig {
+  getConfig(userContextId: string): UserContextConfig {
     const userContextConfig =
       this.#userConfigMap.get(userContextId) ??
       new UserContextConfig(userContextId);

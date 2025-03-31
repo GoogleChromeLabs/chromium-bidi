@@ -208,9 +208,15 @@ export class BrowsingContextProcessor {
 
     for (const userContextId of params.userContexts ?? []) {
       const userContextConfig =
-        this.#userContextStorage.getUserContextConfig(userContextId);
-      userContextConfig.devicePixelRatio = params.devicePixelRatio;
-      userContextConfig.viewport = params.viewport;
+        this.#userContextStorage.getConfig(userContextId);
+
+      // `undefined` means not changes should be done to the config.
+      if (params.devicePixelRatio !== undefined) {
+        userContextConfig.devicePixelRatio = params.devicePixelRatio;
+      }
+      if (params.viewport !== undefined) {
+        userContextConfig.viewport = params.viewport;
+      }
     }
 
     for (const browsingContextId of impactedTopLevelContexts) {

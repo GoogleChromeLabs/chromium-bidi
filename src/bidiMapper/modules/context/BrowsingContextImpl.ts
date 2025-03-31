@@ -1000,6 +1000,7 @@ export class BrowsingContextImpl {
     viewport?: BrowsingContext.Viewport | null,
     devicePixelRatio?: number | null,
   ) {
+    // Set the target's viewport.
     await this.cdpTarget.setViewport(viewport, devicePixelRatio);
   }
 

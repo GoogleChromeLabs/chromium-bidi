@@ -584,40 +584,47 @@ export class CdpTarget {
   ) {
     if (viewport === null && devicePixelRatio === null) {
       await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
+      return;
+    }
+
+    // CDP's `viewport` is required, so provide either new value, 0 for disabling, or
+    // previous viewport to keep it unchanged.
+    let newViewport;
+    if (viewport === undefined) {
+      // Set previously set viewport, effectively
+      newViewport = this.#previousViewport;
+    } else if (viewport === null) {
+      // Disable override.
+      newViewport = {
+        width: 0,
+        height: 0,
+      };
     } else {
-      try {
-        let appliedViewport;
-        if (viewport === undefined) {
-          appliedViewport = this.#previousViewport;
-        } else if (viewport === null) {
-          appliedViewport = {
-            width: 0,
-            height: 0,
-          };
-        } else {
-          appliedViewport = viewport;
-        }
-        this.#previousViewport = appliedViewport;
-        await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
-          width: this.#previousViewport.width,
-          height: this.#previousViewport.height,
-          deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
-          mobile: false,
-          dontSetVisibleSize: true,
-        });
-      } catch (err) {
-        if (
-          (err as Error).message.startsWith(
-            // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
-            'Width and height values must be positive',
-          )
-        ) {
-          throw new UnsupportedOperationException(
-            'Provided viewport dimensions are not supported',
-          );
-        }
-        throw err;
+      // Set the provided viewport
+      newViewport = viewport;
+    }
+
+    try {
+      await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
+        width: newViewport.width,
+        height: newViewport.height,
+        deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
+        mobile: false,
+        dontSetVisibleSize: true,
+      });
+      this.#previousViewport = newViewport;
+    } catch (err) {
+      if (
+        (err as Error).message.startsWith(
+          // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
+          'Width and height values must be positive',
+        )
+      ) {
+        throw new UnsupportedOperationException(
+          'Provided viewport dimensions are not supported',
+        );
       }
+      throw err;
     }
   }
 
