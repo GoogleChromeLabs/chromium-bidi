@@ -21,7 +21,7 @@ import {
   type Browser,
 } from '../../../protocol/protocol.js';
 
-import {UserContextConfig} from './UserContextConfig';
+import {UserContextConfig} from './UserContextConfig.js';
 
 export class UserContextStorage {
   #browserClient: CdpClient;
