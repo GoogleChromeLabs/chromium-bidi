@@ -18,10 +18,12 @@ from test_helpers import execute_command
 
 
 @pytest.mark.asyncio
-async def test_scriptGetRealms(websocket, context_id):
+async def test_scriptGetRealms(websocket, context_id, another_context_id):
     result = await execute_command(websocket, {
         "method": "script.getRealms",
-        "params": {}
+        "params": {
+            "context": context_id
+        }
     })
 
     assert {
@@ -56,7 +58,9 @@ async def test_scriptGetRealms(websocket, context_id):
 
     result = await execute_command(websocket, {
         "method": "script.getRealms",
-        "params": {}
+        "params": {
+            "context": context_id
+        }
     })
 
     assert ["realms"] == list(result.keys())
@@ -92,5 +96,5 @@ async def test_scriptGetRealms(websocket, context_id):
         "params": {}
     })
 
-    # Assert no more realms existed.
-    assert {"realms": []} == result
+    # Assert only realm form the another tab is present.
+    assert len(result["realms"]) == 1
