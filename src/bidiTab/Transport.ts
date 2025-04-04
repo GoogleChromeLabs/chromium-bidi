@@ -21,8 +21,10 @@ import {
   ErrorCode,
   type ErrorResponse,
 } from '../protocol/protocol.js';
-import {type LoggerFn, LogType} from '../utils/log.js';
+import {LogType} from '../utils/log.js';
 import type {Transport} from '../utils/transport.js';
+
+import {log} from './mapperTabPage.js';
 
 export class WindowBidiTransport implements BidiTransport {
   static readonly LOGGER_PREFIX_RECV = `${LogType.bidi}:RECV ◂` as const;
@@ -30,14 +32,12 @@ export class WindowBidiTransport implements BidiTransport {
   static readonly LOGGER_PREFIX_WARN = LogType.debugWarn;
 
   #onMessage: ((message: ChromiumBidi.Command) => void) | null = null;
-  #logger?: LoggerFn;
 
-  constructor(logger?: LoggerFn) {
-    this.#logger = logger;
+  constructor() {
     window.onBidiMessage = (message: string) => {
-      this.#logger?.(WindowBidiTransport.LOGGER_PREFIX_RECV, message);
+      log(WindowBidiTransport.LOGGER_PREFIX_RECV, message);
       try {
-        const command = WindowBidiTransport.#parseBidiMessage(message, logger);
+        const command = WindowBidiTransport.#parseBidiMessage(message);
         this.#onMessage?.call(null, command);
       } catch (e: unknown) {
         const error = e instanceof Error ? e : new Error(e as string);
@@ -52,7 +52,7 @@ export class WindowBidiTransport implements BidiTransport {
   }
 
   sendMessage(message: ChromiumBidi.Message) {
-    this.#logger?.(WindowBidiTransport.LOGGER_PREFIX_SEND, message);
+    log(WindowBidiTransport.LOGGER_PREFIX_SEND, message);
     const json = JSON.stringify(message);
     window.sendBidiResponse(json);
   }
@@ -116,10 +116,7 @@ export class WindowBidiTransport implements BidiTransport {
     };
   }
 
-  static #parseBidiMessage(
-    message: string,
-    logger?: LoggerFn,
-  ): ChromiumBidi.Command {
+  static #parseBidiMessage(message: string): ChromiumBidi.Command {
     let command: {
       id?: unknown;
       method?: unknown;
@@ -172,7 +169,7 @@ export class WindowBidiTransport implements BidiTransport {
         channel = {'goog:channel': command['goog:channel'] as string};
       }
     } else if (command.channel !== undefined) {
-      logger?.(
+      log(
         WindowBidiTransport.LOGGER_PREFIX_WARN,
         'Legacy `channel` parameter is deprecated and will not supported soon. Use `goog:channel` instead.',
       );

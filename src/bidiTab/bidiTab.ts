@@ -19,9 +19,10 @@
 
 import {BidiServer} from '../bidiMapper/BidiMapper.js';
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
-import {type LogPrefix, LogType} from '../utils/log.js';
+import {LogType} from '../utils/log.js';
 
 import {BidiParser} from './BidiParser.js';
+import {generatePage, log} from './mapperTabPage.js';
 import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
 
 declare global {
@@ -54,7 +55,8 @@ declare global {
   }
 }
 
-const mapperTabToServerTransport = new WindowBidiTransport(log);
+generatePage();
+const mapperTabToServerTransport = new WindowBidiTransport();
 const cdpTransport = new WindowCdpTransport();
 /**
  * A CdpTransport implementation that uses the window.cdp bindings
@@ -86,13 +88,6 @@ async function runMapperInstance(selfTargetId: string) {
   log(LogType.debugInfo, 'Mapper instance has been launched');
 
   return bidiServer;
-}
-
-function log(logPrefix: LogPrefix, ...messages: unknown[]) {
-  // If `sendDebugMessage` is defined, send the log message there.
-  globalThis.window?.sendDebugMessage?.(
-    JSON.stringify({logType: logPrefix, messages}, null, 2),
-  );
 }
 
 /**
