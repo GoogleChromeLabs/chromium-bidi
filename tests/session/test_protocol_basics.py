@@ -73,7 +73,7 @@ async def test_channel_non_empty_static_command(websocket):
     command_id = await send_JSON_command(websocket, {
         "method": "session.status",
         "params": {},
-            "goog:channel": "SOME_CHANNEL"
+        "goog:channel": "SOME_CHANNEL"
     })
     resp = await read_JSON_message(websocket)
 
