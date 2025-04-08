@@ -78,7 +78,8 @@ async def test_browsingContext_close_not_last_command(websocket, context_id,
             "context": another_context_id,
             "parent": None,
             "url": "about:blank",
-            "children": None,
+            "children": [],
+            'originalOpener': None,
             "userContext": "default"
         }
     }

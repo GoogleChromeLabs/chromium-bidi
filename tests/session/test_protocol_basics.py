@@ -33,7 +33,7 @@ async def test_invalid_json(websocket):
         "error": "invalid argument",
         "message": ANY_STR
     }
-    assert "Cannot parse data as JSON" in resp['message']
+    assert "unable to parse BiDi command" in resp['message']
 
 
 @pytest.mark.asyncio
@@ -99,12 +99,12 @@ async def test_channel_non_empty_not_static_command(websocket):
             "id": 2,
             "method": "browsingContext.getTree",
             "params": {},
-            "channel": "SOME_CHANNEL"
+            "goog:channel": "SOME_CHANNEL"
         })
     resp = await read_JSON_message(websocket)
     assert resp == AnyExtending({
         "id": command_id,
-        "channel": "SOME_CHANNEL",
+        "goog:channel": "SOME_CHANNEL",
         "type": "success",
         "result": {
             "contexts": [{}]
