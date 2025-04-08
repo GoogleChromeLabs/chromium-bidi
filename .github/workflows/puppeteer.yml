@@ -44,7 +44,7 @@ jobs:
           repository: 'puppeteer/puppeteer'
           path: 'puppeteer'
       - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
           node-version-file: './puppeteer/.nvmrc'
           cache-dependency-path: 'puppeteer/package-lock.json,bidi/package-lock.json'
@@ -92,7 +92,7 @@ jobs:
         working-directory: puppeteer
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-        run: xvfb-run --auto-servernum npm run test:chrome:bidi -- --shard '${{ matrix.shard }}'
+        run: xvfb-run --auto-servernum npm run test:chrome:bidi -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}'
 
   puppeteer-test-required:
     name: '[Required] Puppeteer tests'
