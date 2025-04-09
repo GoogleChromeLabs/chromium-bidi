@@ -45,6 +45,7 @@ jobs:
       matrix:
         # TODO(#876): Add Windows CI.
         # TODO(#2154): Use macos-latest once Python setup supports mac arm64.
+        # TODO(#3294): Enable headful chromedriver on ubuntu.
         os: [ubuntu-latest, macos-13]
         head: [headful, 'new-headless', 'old-headless']
         kind: [chromedriver, mapper]
@@ -55,6 +56,9 @@ jobs:
             head: new-headless
           - os: macos-13
             head: old-headless
+          - os: ubuntu-latest
+            head: headful
+            kind: chromedriver
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
