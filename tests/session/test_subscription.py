@@ -391,7 +391,10 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
 
 @pytest.mark.asyncio
 async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
-        websocket, context_id):
+        websocket, context_id, test_chromedriver_mode):
+    if test_chromedriver_mode:
+        pytest.xfail(reason="TODO: #3294")
+
     empty_channel = ""
     channel_2 = "999_SECOND_SUBSCRIBED_CHANNEL"
     channel_3 = "000_THIRD_SUBSCRIBED_CHANNEL"
