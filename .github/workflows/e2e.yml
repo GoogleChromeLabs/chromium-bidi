@@ -49,8 +49,8 @@ jobs:
         os: [ubuntu-latest, macos-13]
         head: [headful, 'new-headless', 'old-headless']
         kind: [chromedriver, mapper]
-        total_chunks: [4]
-        this_chunk: [0, 1, 2, 3]
+        total_chunks: [6]
+        this_chunk: [0, 1, 2, 3, 4, 5]
         exclude:
           - os: macos-13
             kind: mapper
