@@ -53,9 +53,7 @@ jobs:
         this_chunk: [0, 1, 2, 3]
         exclude:
           - os: macos-13
-            head: new-headless
-          - os: macos-13
-            head: old-headless
+            kind: mapper
           - os: ubuntu-latest
             head: headful
             kind: chromedriver
