@@ -145,11 +145,10 @@ jobs:
     strategy:
       matrix:
         # Should be in sync with `wpt` job.
-        kind: [cd, node]
+        kind: [chromedriver, mapper]
         head: [headless, headful]
         exclude:
-          # Don't run headful node, as it takes too long.
-          - kind: node
+          - kind: mapper
             head: headful
     runs-on: ubuntu-latest
     needs: [wpt-required]
@@ -189,7 +188,7 @@ jobs:
       - name: Update expectations
         timeout-minutes: 60
         env:
-          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           # Do not run tests, only update expectations.
           RUN_TESTS: false
@@ -202,9 +201,9 @@ jobs:
           -name "wptreport.${{ matrix.kind }}-${{ matrix.head }}*.json"
           -exec npm run wpt -- --wpt-report {} \;
       - name: Update interop expectations
-        if: ${{ matrix.kind == 'cd' }}
+        if: ${{ matrix.kind == 'chromedriver' }}
         env:
-          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           # Do not run tests, only update expectations.
           RUN_TESTS: false
