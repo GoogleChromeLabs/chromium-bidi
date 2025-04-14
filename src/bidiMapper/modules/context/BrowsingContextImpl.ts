@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 import {
   BrowsingContext,
   ChromiumBidi,
+  type Emulation,
   InvalidArgumentException,
   InvalidSelectorException,
   NoSuchElementException,
@@ -300,6 +301,12 @@ export class BrowsingContextImpl {
 
   addChild(childId: BrowsingContext.BrowsingContext) {
     this.#children.add(childId);
+  }
+
+  async setGeolocationOverride(
+    coordinates: Emulation.GeolocationCoordinates | null,
+  ): Promise<void> {
+    await this.cdpTarget.setGeolocationOverride(coordinates);
   }
 
   #deleteAllChildren(emitContextDestroyed: boolean = false) {

@@ -24,6 +24,8 @@ import {
   type EmptyResult,
   NoSuchUserContextException,
   NoSuchAlertException,
+  type Emulation,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import type {UserContextStorage} from '../browser/UserContextStorage';
@@ -202,7 +204,7 @@ export class BrowsingContextProcessor {
   ): Promise<EmptyResult> {
     const impactedTopLevelContexts =
       await this.#getRelatedTopLevelBrowsingContexts(
-        params.context,
+        params.context ? [params.context] : undefined,
         params.userContexts,
       );
 
@@ -232,43 +234,56 @@ export class BrowsingContextProcessor {
    * Returns a list of top-level browsing context ids.
    */
   async #getRelatedTopLevelBrowsingContexts(
-    browsingContextId?: string,
+    browsingContextIds?: string[],
     userContextIds?: string[],
   ): Promise<BrowsingContextImpl[]> {
-    if (browsingContextId === undefined && userContextIds === undefined) {
+    if (browsingContextIds === undefined && userContextIds === undefined) {
       throw new InvalidArgumentException(
-        'Either userContexts or context must be provided',
+        'Either user contexts or browsing contexts must be provided',
       );
     }
 
-    if (browsingContextId !== undefined && userContextIds !== undefined) {
+    if (browsingContextIds !== undefined && userContextIds !== undefined) {
       throw new InvalidArgumentException(
-        'userContexts and context are mutually exclusive',
+        'User contexts and browsing contexts are mutually exclusive',
       );
     }
-
-    if (browsingContextId !== undefined) {
-      const context =
-        this.#browsingContextStorage.getContext(browsingContextId);
-      if (!context.isTopLevelContext()) {
-        throw new InvalidArgumentException(
-          'Emulating viewport is only supported on the top-level context',
-        );
-      }
-      return [context];
-    }
-
-    // Verify that all user contexts exist.
-    await this.#userContextStorage.verifyUserContextIdList(userContextIds!);
 
     const result = [];
-    for (const userContextId of userContextIds!) {
-      const topLevelBrowsingContexts = this.#browsingContextStorage
-        .getTopLevelContexts()
-        .filter(
-          (browsingContext) => browsingContext.userContext === userContextId,
+    if (browsingContextIds === undefined) {
+      // userContextIds !== undefined
+      if (userContextIds!.length === 0) {
+        throw new InvalidArgumentException('user context should be provided');
+      }
+
+      // Verify that all user contexts exist.
+      await this.#userContextStorage.verifyUserContextIdList(userContextIds!);
+
+      for (const userContextId of userContextIds!) {
+        const topLevelBrowsingContexts = this.#browsingContextStorage
+          .getTopLevelContexts()
+          .filter(
+            (browsingContext) => browsingContext.userContext === userContextId,
+          );
+        result.push(...topLevelBrowsingContexts);
+      }
+    } else {
+      if (browsingContextIds.length === 0) {
+        throw new InvalidArgumentException(
+          'browsing context should be provided',
         );
-      result.push(...topLevelBrowsingContexts);
+      }
+
+      for (const browsingContextId of browsingContextIds) {
+        const browsingContext =
+          this.#browsingContextStorage.getContext(browsingContextId);
+        if (!browsingContext.isTopLevelContext()) {
+          throw new InvalidArgumentException(
+            'The command is only supported on the top-level context',
+          );
+        }
+        result.push(browsingContext);
+      }
     }
     // Remove duplicates. Compare `BrowsingContextImpl` by reference is correct here, as
     // `browsingContextStorage` returns the same instance for the same id.
@@ -397,5 +412,49 @@ export class BrowsingContextProcessor {
       );
     });
     return Promise.resolve();
+  }
+
+  async setGeolocationOverride(
+    params: Emulation.SetGeolocationOverrideParameters,
+  ): Promise<EmptyResult> {
+    if ((params.coordinates?.altitude ?? null) !== null) {
+      throw new UnsupportedOperationException(
+        'Geolocation altitude emulation is not supported',
+      );
+    }
+    if ((params.coordinates?.heading ?? null) !== null) {
+      throw new UnsupportedOperationException(
+        'Geolocation heading emulation is not supported',
+      );
+    }
+    if ((params.coordinates?.altitudeAccuracy ?? null) !== null) {
+      throw new UnsupportedOperationException(
+        'Geolocation altitudeAccuracy emulation is not supported',
+      );
+    }
+    if ((params.coordinates?.speed ?? null) !== null) {
+      throw new UnsupportedOperationException(
+        'Geolocation speed emulation is not supported',
+      );
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getConfig(userContextId);
+      userContextConfig.emulatedGeolocation = params.coordinates;
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) =>
+          await context.setGeolocationOverride(params.coordinates),
+      ),
+    );
+    return {};
   }
 }

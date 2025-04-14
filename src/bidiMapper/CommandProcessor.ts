@@ -266,8 +266,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Emulation module
       // keep-sorted start block=yes
       case 'emulation.setGeolocationOverride':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#browsingContextProcessor.setGeolocationOverride(
+          this.#parser.parseSetGeolocationOverrideParams(command.params),
         );
       // keep-sorted end
 
