@@ -145,10 +145,10 @@ jobs:
     strategy:
       matrix:
         # Should be in sync with `wpt` job.
-        kind: [chromedriver, mapper]
+        kind: [cd, node]
         head: [headless, headful]
         exclude:
-          - kind: mapper
+          - kind: node
             head: headful
     runs-on: ubuntu-latest
     needs: [wpt-required]
@@ -188,7 +188,7 @@ jobs:
       - name: Update expectations
         timeout-minutes: 60
         env:
-          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           # Do not run tests, only update expectations.
           RUN_TESTS: false
@@ -220,7 +220,7 @@ jobs:
         # upload them to artifacts.
         run: |
           mkdir -p ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
-          mv ./wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/* ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/
+          mv ./wpt-metadata/${{ matrix.kind == 'cd' ? 'chromedriver' : 'mapper' }}/${{ matrix.head }}/* ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
