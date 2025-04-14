@@ -148,6 +148,7 @@ jobs:
         kind: [cd, node]
         head: [headless, headful]
         exclude:
+          # Don't run headful node, as it takes too long.
           - kind: node
             head: headful
     runs-on: ubuntu-latest
@@ -201,9 +202,9 @@ jobs:
           -name "wptreport.${{ matrix.kind }}-${{ matrix.head }}*.json"
           -exec npm run wpt -- --wpt-report {} \;
       - name: Update interop expectations
-        if: ${{ matrix.kind == 'chromedriver' }}
+        if: ${{ matrix.kind == 'cd' }}
         env:
-          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           # Do not run tests, only update expectations.
           RUN_TESTS: false
@@ -223,7 +224,10 @@ jobs:
           else
             echo "src_dir_name=mapper/${{ matrix.head }}" >> $GITHUB_OUTPUT
           fi
-      - name: Move updated expectations
+      - name:
+          Move updated expectations
+          # Move the expectations from the current config to a separate directory to
+          # upload them to artifacts.
         run: |
           mkdir -p ./artifacts/updated-wpt-metadata/${{ steps.paths.outputs.src_dir_name }}
           mv ./wpt-metadata/${{ steps.paths.outputs.src_dir_name }}/* ./artifacts/updated-wpt-metadata/${{ steps.paths.outputs.src_dir_name }}/
