@@ -70,6 +70,7 @@ export const BluetoothCommandSchema = z.lazy(() =>
     Bluetooth.DisableSimulationSchema,
     Bluetooth.SimulatePreconnectedPeripheralSchema,
     Bluetooth.SimulateAdvertisementSchema,
+    Bluetooth.SimulateGattConnectionResponseSchema,
     z.object({}),
   ]),
 );
@@ -188,6 +189,23 @@ export namespace Bluetooth {
   );
 }
 export namespace Bluetooth {
+  export const SimulateGattConnectionResponseSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateGattConnectionResponse'),
+      params: Bluetooth.SimulateGattConnectionResponseParametersSchema,
+    }),
+  );
+}
+export namespace Bluetooth {
+  export const SimulateGattConnectionResponseParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      code: z.number().int().nonnegative(),
+    }),
+  );
+}
+export namespace Bluetooth {
   export const RequestDevicePromptUpdatedSchema = z.lazy(() =>
     z.object({
       method: z.literal('bluetooth.requestDevicePromptUpdated'),
@@ -201,6 +219,22 @@ export namespace Bluetooth {
       context: z.string(),
       prompt: Bluetooth.RequestDevicePromptSchema,
       devices: z.array(Bluetooth.RequestDeviceInfoSchema),
+    }),
+  );
+}
+export namespace Bluetooth {
+  export const GattConnectionAttemptedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.gattConnectionAttempted'),
+      params: Bluetooth.GattConnectionAttemptedParametersSchema,
+    }),
+  );
+}
+export namespace Bluetooth {
+  export const GattConnectionAttemptedParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
     }),
   );
 }
