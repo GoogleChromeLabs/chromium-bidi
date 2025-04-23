@@ -131,6 +131,62 @@
       list([
         'altitude',
         dict({
+          'type': 'number',
+          'value': 12.1314,
+        }),
+      ]),
+      list([
+        'altitudeAccuracy',
+        dict({
+          'type': 'number',
+          'value': 15.1617,
+        }),
+      ]),
+      list([
+        'heading',
+        dict({
+          'type': 'number',
+          'value': 18.192,
+        }),
+      ]),
+      list([
+        'speed',
+        dict({
+          'type': 'number',
+          'value': 21.2223,
+        }),
+      ]),
+    ]),
+  })
+# ---
+# name: test_geolocation_set_and_clear.1
+  dict({
+    'type': 'object',
+    'value': list([
+      list([
+        'accuracy',
+        dict({
+          'type': 'number',
+          'value': 16.1718,
+        }),
+      ]),
+      list([
+        'latitude',
+        dict({
+          'type': 'number',
+          'value': 10.1112,
+        }),
+      ]),
+      list([
+        'longitude',
+        dict({
+          'type': 'number',
+          'value': 13.1415,
+        }),
+      ]),
+      list([
+        'altitude',
+        dict({
           'type': 'null',
         }),
       ]),
