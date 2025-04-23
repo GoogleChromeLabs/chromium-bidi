@@ -106,7 +106,8 @@ async def test_geolocation_set_and_clear(websocket, context_id, url_example,
             }
         })
     emulated_geolocation = await get_geolocation(websocket, context_id)
-    assert emulated_geolocation == snapshot(), "New geolocation should match snapshot"
+    assert emulated_geolocation == snapshot(
+    ), "New geolocation should match snapshot"
 
     # Clear geolocation override.
     await execute_command(
