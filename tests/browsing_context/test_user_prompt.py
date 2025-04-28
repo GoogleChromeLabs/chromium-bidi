@@ -22,6 +22,7 @@ PROMPT_MESSAGE = 'Prompt Opened'
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("frame_level", ["top", "nested"])
 @pytest.mark.parametrize("prompt_type", ["alert", "confirm", "prompt"])
 @pytest.mark.parametrize('capabilities', [{}, {
     'unhandledPromptBehavior': 'dismiss'
@@ -93,7 +94,10 @@ PROMPT_MESSAGE = 'Prompt Opened'
 }],
                          indirect=True)
 async def test_browsingContext_userPromptOpened_capabilityRespected(
-        websocket, context_id, prompt_type, capabilities):
+        websocket, context_id, iframe_id, frame_level, prompt_type,
+        capabilities):
+    targe_context_id = iframe_id if frame_level == "nested" else context_id
+
     await subscribe(websocket, [
         "browsingContext.userPromptOpened", "browsingContext.userPromptClosed"
     ])
@@ -105,7 +109,7 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
                 "expression": f"""{prompt_type}('{PROMPT_MESSAGE}')""",
                 "awaitPromise": True,
                 "target": {
-                    "context": context_id,
+                    "context": targe_context_id,
                 }
             }
         })
@@ -129,7 +133,7 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
         'type': 'event',
         "method": "browsingContext.userPromptOpened",
         "params": {
-            "context": context_id,
+            "context": targe_context_id,
             "type": prompt_type,
             'handler': expected_handler,
             "message": PROMPT_MESSAGE,
@@ -145,7 +149,7 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
             websocket, {
                 "method": "browsingContext.handleUserPrompt",
                 "params": {
-                    "context": context_id,
+                    "context": targe_context_id,
                     "accept": False
                 }
             })
@@ -157,7 +161,7 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
         'type': 'event',
         "method": "browsingContext.userPromptClosed",
         "params": {
-            "context": context_id,
+            "context": targe_context_id,
             "accepted": expected_handler == 'accept',
             "type": prompt_type
         }
@@ -165,6 +169,7 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("frame_level", ["top", "nested"])
 @pytest.mark.parametrize('capabilities', [{}, {
     'unhandledPromptBehavior': 'dismiss'
 }, {
@@ -205,7 +210,9 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
 }],
                          indirect=True)
 async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
-        websocket, context_id, html, capabilities):
+        websocket, context_id, iframe_id, html, frame_level, capabilities):
+    targe_context_id = iframe_id if frame_level == "nested" else context_id
+
     await subscribe(websocket, ["browsingContext.userPromptOpened"])
 
     url = html("""
@@ -217,7 +224,7 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
         </script>
         """)
 
-    await goto_url(websocket, context_id, url)
+    await goto_url(websocket, targe_context_id, url)
 
     # We need to interact with the page to trigger "beforeunload"
     await execute_command(
@@ -226,7 +233,7 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
             "params": {
                 "expression": "document.body.click()",
                 "target": {
-                    "context": context_id
+                    "context": targe_context_id
                 },
                 "awaitPromise": False,
                 "userActivation": True
@@ -238,7 +245,7 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
             "method": "browsingContext.navigate",
             "params": {
                 "url": 'about:blank',
-                "context": context_id,
+                "context": targe_context_id,
                 "wait": "complete"
             }
         })
@@ -259,7 +266,7 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
     assert resp == {
         'method': 'browsingContext.userPromptOpened',
         'params': {
-            'context': context_id,
+            'context': targe_context_id,
             'handler': expected_handler,
             'message': '',
             'type': 'beforeunload',
@@ -288,7 +295,7 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
             websocket, {
                 "method": "browsingContext.handleUserPrompt",
                 "params": {
-                    "context": context_id,
+                    "context": targe_context_id,
                     "accept": True
                 }
             })
@@ -302,46 +309,3 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
         }
     else:
         assert False, f"Unexpected handler: {expected_handler}"
-
-
-@pytest.mark.parametrize("frame_level", ["top", "nested"])
-@pytest.mark.parametrize("prompt_type", ["alert", "confirm", "prompt"])
-@pytest.mark.asyncio
-async def test_browsingContext_userPromptOpened_withIframe(
-        websocket, context_id, iframe_id, read_messages, prompt_type,
-        frame_level):
-    await subscribe(websocket, [
-        "browsingContext.userPromptOpened", "browsingContext.userPromptClosed"
-    ])
-
-    targe_context_id = iframe_id if frame_level == "nested" else context_id
-
-    await send_JSON_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": f"""{prompt_type}('{PROMPT_MESSAGE}')""",
-                "awaitPromise": True,
-                "target": {
-                    "context": targe_context_id,
-                }
-            }
-        })
-
-    event = await wait_for_event(websocket, "browsingContext.userPromptOpened")
-    assert event == AnyExtending({
-        'method': 'browsingContext.userPromptOpened',
-        'params': {
-            'context': targe_context_id,
-        }
-    })
-
-    # The prompt should be dismissed, as default "unhandledPromptBehavior" is
-    # "dismiss and notify".
-    event = await wait_for_event(websocket, "browsingContext.userPromptClosed")
-    assert event == AnyExtending({
-        'method': 'browsingContext.userPromptClosed',
-        'params': {
-            'context': targe_context_id,
-        }
-    })
