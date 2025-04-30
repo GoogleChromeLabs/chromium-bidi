@@ -133,7 +133,7 @@ export class BluetoothProcessor {
         cdpTarget.id,
       );
     });
-    cdpTarget.cdpClient.on('BluetoothEmulation.gattOperationReceived', (event) => {
+    cdpTarget.browserCdpClient.on('BluetoothEmulation.gattOperationReceived', (event) => {
       this.#eventManager.registerEvent(
         {
           type: 'event',
