@@ -637,12 +637,12 @@ export class CdpTarget {
     }
 
     if (
-      this.#userContextConfig.emulatedGeolocation !== undefined &&
-      this.#userContextConfig.emulatedGeolocation !== null
+      this.#userContextConfig.geolocationOverride !== undefined &&
+      this.#userContextConfig.geolocationOverride !== null
     ) {
       promises.push(
         this.setGeolocationOverride(
-          this.#userContextConfig.emulatedGeolocation,
+          this.#userContextConfig.geolocationOverride,
         ),
       );
     }
@@ -673,32 +673,32 @@ export class CdpTarget {
   }
 
   async setGeolocationOverride(
-    coordinates:
+    geolocationOverride:
       | Emulation.GeolocationCoordinates
       | Emulation.GeolocationPositionError
       | null,
   ): Promise<void> {
-    if (coordinates === null) {
+    if (geolocationOverride === null) {
       await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
-    } else if ('type' in coordinates) {
-      if (coordinates.type !== 'positionUnavailable') {
+    } else if ('type' in geolocationOverride) {
+      if (geolocationOverride.type !== 'positionUnavailable') {
         // Unreachable.
         throw new UnknownErrorException(
-          `Unknown geolocation error ${coordinates.type}`,
+          `Unknown geolocation error ${geolocationOverride.type}`,
         );
       }
       // Omitting latitude, longitude or accuracy emulates position unavailable.
       await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {});
-    } else if ('latitude' in coordinates) {
+    } else if ('latitude' in geolocationOverride) {
       await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
-        accuracy: coordinates.accuracy ?? 1,
+        latitude: geolocationOverride.latitude,
+        longitude: geolocationOverride.longitude,
+        accuracy: geolocationOverride.accuracy ?? 1,
         // `null` value is treated as "missing".
-        altitude: coordinates.altitude ?? undefined,
-        altitudeAccuracy: coordinates.altitudeAccuracy ?? undefined,
-        heading: coordinates.heading ?? undefined,
-        speed: coordinates.speed ?? undefined,
+        altitude: geolocationOverride.altitude ?? undefined,
+        altitudeAccuracy: geolocationOverride.altitudeAccuracy ?? undefined,
+        heading: geolocationOverride.heading ?? undefined,
+        speed: geolocationOverride.speed ?? undefined,
       });
     } else {
       // Unreachable.

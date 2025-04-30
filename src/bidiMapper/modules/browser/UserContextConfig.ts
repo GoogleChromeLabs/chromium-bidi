@@ -28,7 +28,7 @@ export class UserContextConfig {
   readonly userContextId: string;
   viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
-  emulatedGeolocation?:
+  geolocationOverride?:
     | Emulation.GeolocationCoordinates
     | Emulation.GeolocationPositionError
     | null;
