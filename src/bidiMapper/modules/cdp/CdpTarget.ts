@@ -680,7 +680,7 @@ export class CdpTarget {
       await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
     } else if ('type' in geolocation) {
       if (geolocation.type !== 'positionUnavailable') {
-        // Unreachable.
+        // Unreachable. Handled by params parser.
         throw new UnknownErrorException(
           `Unknown geolocation error ${geolocation.type}`,
         );
@@ -699,7 +699,7 @@ export class CdpTarget {
         speed: geolocation.speed ?? undefined,
       });
     } else {
-      // Unreachable.
+      // Unreachable. Handled by params parser.
       throw new UnknownErrorException(
         'Unexpected geolocation coordinates value',
       );

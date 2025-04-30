@@ -40,6 +40,7 @@ export class EmulationProcessor {
     params: Emulation.SetGeolocationOverrideParameters,
   ): Promise<EmptyResult> {
     if ('coordinates' in params && 'error' in params) {
+      // Unreachable. Handled by params parser.
       throw new InvalidArgumentException(
         'Coordinates and error cannot be set at the same time',
       );
@@ -63,14 +64,14 @@ export class EmulationProcessor {
       geolocation = params.coordinates;
     } else if ('error' in params) {
       if (params.error.type !== 'positionUnavailable') {
-        // Unreachable.
+        // Unreachable. Handled by params parser.
         throw new InvalidArgumentException(
           `Unknown geolocation error ${params.error.type}`,
         );
       }
       geolocation = params.error;
     } else {
-      // Unreachable.
+      // Unreachable. Handled by params parser.
       throw new InvalidArgumentException(`Coordinates or error should be set`);
     }
 
