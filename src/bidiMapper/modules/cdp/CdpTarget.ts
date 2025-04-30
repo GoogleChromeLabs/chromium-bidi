@@ -24,6 +24,7 @@ import {
   type ChromiumBidi,
   type Emulation,
   Session,
+  UnknownErrorException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
@@ -672,11 +673,23 @@ export class CdpTarget {
   }
 
   async setGeolocationOverride(
-    coordinates: Emulation.GeolocationCoordinates | null,
+    coordinates:
+      | Emulation.GeolocationCoordinates
+      | Emulation.GeolocationPositionError
+      | null,
   ): Promise<void> {
     if (coordinates === null) {
       await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
-    } else {
+    } else if ('type' in coordinates) {
+      if (coordinates.type !== 'positionUnavailable') {
+        // Unreachable.
+        throw new UnknownErrorException(
+          `Unknown geolocation error ${coordinates.type}`,
+        );
+      }
+      // Omitting latitude, longitude or accuracy emulates position unavailable.
+      await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {});
+    } else if ('latitude' in coordinates) {
       await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
@@ -687,6 +700,11 @@ export class CdpTarget {
         heading: coordinates.heading ?? undefined,
         speed: coordinates.speed ?? undefined,
       });
+    } else {
+      // Unreachable.
+      throw new UnknownErrorException(
+        'Unexpected geolocation coordinates value',
+      );
     }
   }
 }
