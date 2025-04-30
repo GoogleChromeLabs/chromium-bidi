@@ -45,7 +45,7 @@ export class EmulationProcessor {
       );
     }
 
-    let geolocationOverride:
+    let geolocation:
       | Emulation.GeolocationCoordinates
       | Emulation.GeolocationPositionError
       | null = null;
@@ -60,7 +60,7 @@ export class EmulationProcessor {
         );
       }
 
-      geolocationOverride = params.coordinates;
+      geolocation = params.coordinates;
     } else if ('error' in params) {
       if (params.error.type !== 'positionUnavailable') {
         // Unreachable.
@@ -68,7 +68,7 @@ export class EmulationProcessor {
           `Unknown geolocation error ${params.error.type}`,
         );
       }
-      geolocationOverride = params.error;
+      geolocation = params.error;
     } else {
       // Unreachable.
       throw new InvalidArgumentException(`Coordinates or error should be set`);
@@ -82,13 +82,13 @@ export class EmulationProcessor {
     for (const userContextId of params.userContexts ?? []) {
       const userContextConfig =
         this.#userContextStorage.getConfig(userContextId);
-      userContextConfig.geolocationOverride = geolocationOverride;
+      userContextConfig.geolocation = geolocation;
     }
 
     await Promise.all(
       browsingContexts.map(
         async (context) =>
-          await context.cdpTarget.setGeolocationOverride(geolocationOverride),
+          await context.cdpTarget.setGeolocationOverride(geolocation),
       ),
     );
     return {};
