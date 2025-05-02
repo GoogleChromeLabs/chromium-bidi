@@ -18,62 +18,13 @@ import pytest_asyncio
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
-HTML_SINGLE_PERIPHERAL = """
-<div>
-    <button id="bluetooth">bluetooth</button>
-    <script>
-        const options = {filters: [{name:"SomeDevice"}]};
-        document.getElementById('bluetooth').addEventListener('click', () => {
-          navigator.bluetooth.requestDevice(options);
-        });
-    </script>
-</div>
-"""
-
-# Create a fake BT device.
-fake_device_address = '09:09:09:09:09:09'
-
-
-async def setup_device(websocket):
-    # Enable BT emulation.
-    await execute_command(
-        websocket, {
-            'method': 'goog:cdp.sendCommand',
-            'params': {
-                'method': 'BluetoothEmulation.enable',
-                'params': {
-                    'state': 'powered-on',
-                    'leSupported': True,
-                }
-            }
-        })
-
-    await execute_command(
-        websocket, {
-            'method': 'goog:cdp.sendCommand',
-            'params': {
-                'method': 'BluetoothEmulation.simulatePreconnectedPeripheral',
-                'params': {
-                    'address': fake_device_address,
-                    'name': 'SomeDevice',
-                    'manufacturerData': [],
-                    'knownServiceUuids':
-                        ['12345678-1234-5678-9abc-def123456789', ],
-                }
-            }
-        })
+from . import setup_device, disable_simulation, HTML_SINGLE_PERIPHERAL, FAKE_DEVICE_ADDRESS
 
 
 @pytest_asyncio.fixture(autouse=True)
-async def disable_simulation(websocket, context_id):
+async def teardown(websocket, context_id):
     yield
-    await execute_command(
-        websocket, {
-            'method': 'bluetooth.disableSimulation',
-            'params': {
-                'context': context_id,
-            }
-        })
+    await disable_simulation(websocket, context_id)
 
 
 @pytest.mark.asyncio
@@ -82,7 +33,7 @@ async def disable_simulation(websocket, context_id):
         'args': ['--enable-features=WebBluetooth']
     }
 }],
-                         indirect=True)
+    indirect=True)
 async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
                                                     html):
     await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
@@ -90,7 +41,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
     url = html(HTML_SINGLE_PERIPHERAL)
     await goto_url(websocket, context_id, url)
 
-    await setup_device(websocket)
+    await setup_device(websocket, context_id)
 
     await send_JSON_command(
         websocket, {
@@ -113,7 +64,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
         'params': {
             'context': context_id,
             'devices': [{
-                'id': fake_device_address
+                'id': FAKE_DEVICE_ADDRESS
             }],
         }
     })
@@ -125,7 +76,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
         'args': ['--enable-features=WebBluetooth']
     }
 }],
-                         indirect=True)
+    indirect=True)
 @pytest.mark.parametrize('accept', [True, False])
 async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
                                                    accept):
@@ -134,7 +85,7 @@ async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
     url = html(HTML_SINGLE_PERIPHERAL)
     await goto_url(websocket, context_id, url)
 
-    await setup_device(websocket)
+    await setup_device(websocket, context_id)
 
     await send_JSON_command(
         websocket, {

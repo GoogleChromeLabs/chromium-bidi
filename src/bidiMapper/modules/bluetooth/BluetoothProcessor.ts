@@ -103,6 +103,21 @@ export class BluetoothProcessor {
     return {};
   }
 
+  async simulateGattConnectionResponse(
+    params: Bluetooth.SimulateGattConnectionResponseParameters,
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.simulateGATTOperationResponse',
+      {
+        address: params.address,
+        type: 'connection',
+        code: params.code,
+      },
+    );
+    return {};
+  }
+
   onCdpTargetCreated(cdpTarget: CdpTarget) {
     cdpTarget.cdpClient.on('DeviceAccess.deviceRequestPrompted', (event) => {
       this.#eventManager.registerEvent(
@@ -113,6 +128,22 @@ export class BluetoothProcessor {
             context: cdpTarget.id,
             prompt: event.id,
             devices: event.devices,
+          },
+        },
+        cdpTarget.id,
+      );
+    });
+    cdpTarget.browserCdpClient.on('BluetoothEmulation.gattOperationReceived', (event) => {
+      if (event.type !== 'connection') {
+        return;
+      }
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: 'bluetooth.gattConnectionAttempted',
+          params: {
+            context: cdpTarget.id,
+            address: event.address,
           },
         },
         cdpTarget.id,
