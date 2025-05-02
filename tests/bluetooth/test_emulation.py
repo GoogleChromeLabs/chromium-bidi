@@ -18,7 +18,8 @@ import pytest_asyncio
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
-from . import setup_device, disable_simulation, HTML_SINGLE_PERIPHERAL, FAKE_DEVICE_ADDRESS
+from . import (FAKE_DEVICE_ADDRESS, HTML_SINGLE_PERIPHERAL, disable_simulation,
+               setup_device)
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -35,7 +36,7 @@ async def teardown(websocket, context_id):
         'args': ['--enable-features=WebBluetooth']
     }
 }],
-    indirect=True)
+                         indirect=True)
 async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
                                              state_2):
     await execute_command(
@@ -63,7 +64,7 @@ async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
         'args': ['--enable-features=WebBluetooth']
     }
 }],
-    indirect=True)
+                         indirect=True)
 async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
                                                     html):
     await subscribe(websocket, ['bluetooth'])
@@ -106,7 +107,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
         'args': ['--enable-features=WebBluetooth']
     }
 }],
-    indirect=True)
+                         indirect=True)
 @pytest.mark.parametrize('accept', [True, False])
 async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
                                                    accept):

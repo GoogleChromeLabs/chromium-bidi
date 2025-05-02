@@ -468,7 +468,8 @@ export namespace Bluetooth {
   ): Protocol.Bluetooth.SimulateGattConnectionResponseParameters {
     return parseObject(
       params,
-      WebDriverBidiBluetooth.Bluetooth.SimulateGattConnectionResponseParametersSchema,
+      WebDriverBidiBluetooth.Bluetooth
+        .SimulateGattConnectionResponseParametersSchema,
     ) as Protocol.Bluetooth.SimulateGattConnectionResponseParameters;
   }
   export function parseSimulatePreconnectedPeripheralParams(

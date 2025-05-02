@@ -175,7 +175,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       case 'bluetooth.simulateGattConnectionResponse':
         return await this.#bluetoothProcessor.simulateGattConnectionResponse(
-          this.#parser.parseSimulateGattConnectionResponseParameters(command.params),
+          this.#parser.parseSimulateGattConnectionResponseParameters(
+            command.params,
+          ),
         );
       case 'bluetooth.simulateGattDisconnection':
         throw new UnknownErrorException(

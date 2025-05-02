@@ -15,10 +15,10 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import (
-    execute_command, send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (execute_command, send_JSON_command, subscribe,
+                          wait_for_event)
 
-from . import setup_granted_device, disable_simulation
+from . import disable_simulation, setup_granted_device
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -33,10 +33,10 @@ async def teardown(websocket, context_id):
         'args': ['--enable-features=WebBluetooth']
     }
 }],
-    indirect=True)
+                         indirect=True)
 @pytest.mark.parametrize('code', [0x0, 0x1, 0x2])
-async def test_bluetooth_simulateGattConnectionResponse(websocket, context_id, html,
-                                                        code):
+async def test_bluetooth_simulateGattConnectionResponse(
+        websocket, context_id, html, code):
     await subscribe(websocket, ['bluetooth.gattConnectionAttempted'])
     await setup_granted_device(websocket, context_id, html)
 

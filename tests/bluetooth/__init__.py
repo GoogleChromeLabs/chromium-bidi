@@ -12,11 +12,10 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-
 """Shared utilities and constants for Bluetooth BiDi tests."""
 
-from test_helpers import (execute_command, goto_url,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (execute_command, goto_url, send_JSON_command,
+                          subscribe, wait_for_event)
 
 HTML_SINGLE_PERIPHERAL = """
 <div>
@@ -30,7 +29,6 @@ HTML_SINGLE_PERIPHERAL = """
     </script>
 </div>
 """
-
 
 FAKE_DEVICE_ADDRESS = '09:09:09:09:09:09'
 
@@ -62,8 +60,7 @@ async def setup_device(websocket, context_id: str) -> None:
         })
 
 
-async def setup_granted_device(websocket, context_id: str,
-                               html) -> None:
+async def setup_granted_device(websocket, context_id: str, html) -> None:
     """Navigates, sets up simulation, and grants device access to the page.
 
     Combines navigation, device simulation setup, and device request steps.

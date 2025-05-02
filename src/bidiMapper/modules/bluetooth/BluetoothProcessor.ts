@@ -133,22 +133,25 @@ export class BluetoothProcessor {
         cdpTarget.id,
       );
     });
-    cdpTarget.browserCdpClient.on('BluetoothEmulation.gattOperationReceived', (event) => {
-      if (event.type !== 'connection') {
-        return;
-      }
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: 'bluetooth.gattConnectionAttempted',
-          params: {
-            context: cdpTarget.id,
-            address: event.address,
+    cdpTarget.browserCdpClient.on(
+      'BluetoothEmulation.gattOperationReceived',
+      (event) => {
+        if (event.type !== 'connection') {
+          return;
+        }
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: 'bluetooth.gattConnectionAttempted',
+            params: {
+              context: cdpTarget.id,
+              address: event.address,
+            },
           },
-        },
-        cdpTarget.id,
-      );
-    });
+          cdpTarget.id,
+        );
+      },
+    );
   }
 
   async handleRequestDevicePrompt(
