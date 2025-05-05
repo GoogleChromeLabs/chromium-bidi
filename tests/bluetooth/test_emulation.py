@@ -15,11 +15,11 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import (AnyExtending, execute_command, goto_url,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (AnyExtending, execute_command, goto_url, subscribe,
+                          wait_for_event)
 
 from . import (FAKE_DEVICE_ADDRESS, FAKE_DEVICE_NAME, disable_simulation,
-               setup_device, request_device)
+               request_device, setup_device)
 
 
 @pytest_asyncio.fixture(autouse=True)
