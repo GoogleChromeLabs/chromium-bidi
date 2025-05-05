@@ -402,7 +402,10 @@ export class BrowsingContextImpl {
     });
 
     this.#cdpTarget.cdpClient.on('Page.fileChooserOpened', (params) => {
-      if (this.id !== params.frameId) {
+      // Checking for `params.frameId` for comptaibility with Chrome
+      // versions that do not have a frameId. TODO: remove once
+      // https://crrev.com/c/6487891 is in stable.
+      if (params.frameId && this.id !== params.frameId) {
         return;
       }
 
