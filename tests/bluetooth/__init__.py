@@ -17,20 +17,9 @@
 from test_helpers import (execute_command, goto_url, send_JSON_command,
                           subscribe, wait_for_event)
 
-HTML_SINGLE_PERIPHERAL = """
-<div>
-    <button id="bluetooth">bluetooth</button>
-    <script>
-        let device;
-        const options = {filters: [{name:"SomeDevice"}]};
-        document.getElementById('bluetooth').addEventListener('click', async () => {
-          device = await navigator.bluetooth.requestDevice(options);
-        });
-    </script>
-</div>
-"""
 
 FAKE_DEVICE_ADDRESS = '09:09:09:09:09:09'
+FAKE_DEVICE_NAME = 'SomeDevice'
 
 
 async def setup_device(websocket, context_id: str) -> None:
@@ -49,13 +38,38 @@ async def setup_device(websocket, context_id: str) -> None:
             'params': {
                 'context': context_id,
                 'address': FAKE_DEVICE_ADDRESS,
-                'name': 'SomeDevice',
+                'name': FAKE_DEVICE_NAME,
                 'manufacturerData': [{
                     'key': 17,
                     'data': 'AP8BAX8=',
                 }],
                 'knownServiceUuids':
                     ['12345678-1234-5678-9abc-def123456789', ],
+            }
+        })
+
+
+async def request_device(websocket, context_id: str) -> None:
+    """Sends the JavaScript `navigator.bluetooth.requestDevice()` command.
+
+    This function should be called after the test has navigated to the target page.
+    Once the command completes successfully, the page's JavaScript context
+    will have access to the selected Bluetooth device via the `device` variable.
+    """
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': '''
+                    let device;
+                    const options = {acceptAllDevices: true};
+                    navigator.bluetooth.requestDevice(options).then(d => device = d)
+                ''',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
             }
         })
 
@@ -67,22 +81,10 @@ async def setup_granted_device(websocket, context_id: str, html) -> None:
     The page will have access to the bluetooth device via the `device`
     JavaScript variable after this function completes.
     """
-    url = html(HTML_SINGLE_PERIPHERAL)
-    await goto_url(websocket, context_id, url)
+    await goto_url(websocket, context_id, html())
     await setup_device(websocket, context_id)
     await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
-    await send_JSON_command(
-        websocket, {
-            'method': 'script.evaluate',
-            'params': {
-                'expression': 'document.querySelector("#bluetooth").click();',
-                'awaitPromise': True,
-                'target': {
-                    'context': context_id,
-                },
-                'userActivation': True
-            }
-        })
+    await request_device(websocket, context_id)
     event = await wait_for_event(websocket,
                                  'bluetooth.requestDevicePromptUpdated')
     await execute_command(
