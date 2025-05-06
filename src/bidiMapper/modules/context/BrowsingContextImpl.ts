@@ -667,6 +667,19 @@ export class BrowsingContextImpl {
       if (params.frameId && this.id !== params.frameId) {
         return;
       }
+      if (
+        !params.frameId &&
+        this.#parentId &&
+        this.#cdpTarget.cdpClient !==
+          this.#browsingContextStorage.getContext(this.#parentId)?.cdpTarget
+            .cdpClient
+      ) {
+        // If CDP event `Page.javascriptDialogClosed` does not have a frameId, this
+        // heuristic emits the event only for top-level per-cdp target context, ignoring
+        // the event for same-process iframes. So the event will be emitted only once per
+        // CDP target. TODO: remove once https://crrev.com/c/6487891 is in stable.
+        return;
+      }
       const accepted = params.result;
       if (this.#lastUserPromptType === undefined) {
         this.#logger?.(
@@ -702,6 +715,19 @@ export class BrowsingContextImpl {
       // versions that do not have a frameId. TODO: remove once
       // https://crrev.com/c/6487891 is in stable.
       if (params.frameId && this.id !== params.frameId) {
+        return;
+      }
+      if (
+        !params.frameId &&
+        this.#parentId &&
+        this.#cdpTarget.cdpClient !==
+          this.#browsingContextStorage.getContext(this.#parentId)?.cdpTarget
+            .cdpClient
+      ) {
+        // If CDP event `Page.javascriptDialogClosed` does not have a frameId, this
+        // heuristic emits the event only for top-level per-cdp target context, ignoring
+        // the event for same-process iframes. So the event will be emitted only once per
+        // CDP target. TODO: remove once https://crrev.com/c/6487891 is in stable.
         return;
       }
       const promptType = BrowsingContextImpl.#getPromptType(params.type);
