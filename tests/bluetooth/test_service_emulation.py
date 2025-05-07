@@ -85,8 +85,7 @@ async def test_bluetooth_simulateService(websocket, context_id, html):
 
     await simulate_service(websocket, context_id, device_address,
                            HEART_RATE_SERVICE_UUID, 'add')
-    assert sorted(await get_services(websocket, context_id)) == sorted(
-        [HEART_RATE_SERVICE_UUID])
+    assert await get_services(websocket, context_id) == [HEART_RATE_SERVICE_UUID]
 
     await simulate_service(websocket, context_id, device_address,
                            BATTERY_SERVICE_UUID, 'add')
@@ -95,8 +94,7 @@ async def test_bluetooth_simulateService(websocket, context_id, html):
 
     await simulate_service(websocket, context_id, device_address,
                            BATTERY_SERVICE_UUID, 'remove')
-    assert sorted(await get_services(websocket, context_id)) == sorted(
-        [HEART_RATE_SERVICE_UUID])
+    assert await get_services(websocket, context_id) == [HEART_RATE_SERVICE_UUID]
 
     await simulate_service(websocket, context_id, device_address,
                            HEART_RATE_SERVICE_UUID, 'remove')
