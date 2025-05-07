@@ -36,8 +36,7 @@ async def simulate_service(websocket, context_id: str, address: str, uuid: str,
         })
 
 
-async def check_services(websocket, context_id: str,
-                         expected_services: list[str]) -> None:
+async def get_services(websocket, context_id: str) -> list[str]:
     response = await execute_command(
         websocket, {
             'method': 'script.evaluate',
@@ -62,9 +61,7 @@ async def check_services(websocket, context_id: str,
                 'userActivation': True
             }
         })
-
-    services = [item['value'] for item in response['result']['value']]
-    assert sorted(services) == sorted(expected_services)
+    return [item['value'] for item in response['result']['value']]
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -88,20 +85,22 @@ async def test_bluetooth_simulateService(websocket, context_id, html):
 
     await simulate_service(websocket, context_id, device_address,
                            HEART_RATE_SERVICE_UUID, 'add')
-    await check_services(websocket, context_id, [HEART_RATE_SERVICE_UUID])
+    assert sorted(await get_services(websocket, context_id)) == sorted(
+        [HEART_RATE_SERVICE_UUID])
 
     await simulate_service(websocket, context_id, device_address,
                            BATTERY_SERVICE_UUID, 'add')
-    await check_services(websocket, context_id,
-                         [HEART_RATE_SERVICE_UUID, BATTERY_SERVICE_UUID])
+    assert sorted(await get_services(websocket, context_id)) == sorted(
+        [HEART_RATE_SERVICE_UUID, BATTERY_SERVICE_UUID])
 
     await simulate_service(websocket, context_id, device_address,
                            BATTERY_SERVICE_UUID, 'remove')
-    await check_services(websocket, context_id, [HEART_RATE_SERVICE_UUID])
+    assert sorted(await get_services(websocket, context_id)) == sorted(
+        [HEART_RATE_SERVICE_UUID])
 
     await simulate_service(websocket, context_id, device_address,
                            HEART_RATE_SERVICE_UUID, 'remove')
-    await check_services(websocket, context_id, [])
+    assert await get_services(websocket, context_id) == []
 
 
 @pytest.mark.asyncio

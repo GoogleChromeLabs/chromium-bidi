@@ -250,6 +250,15 @@ export class BluetoothProcessor {
             );
             return;
           case 'discovery':
+            // Chromium Web Bluetooth simulation generates this GATT discovery event when
+            // a page attempts to get services for a given Bluetooth device for the first time.
+            // This 'get services' operation is put on hold until a GATT discovery response
+            // is sent to the simulation.
+            // Note: Web Bluetooth automation (see https://webbluetoothcg.github.io/web-bluetooth/#automated-testing)
+            // does not support simulating a GATT discovery response. This is because simulated services, characteristics,
+            // or descriptors are immediately visible to the simulation, meaning it doesn't have a distinct
+            // DISCOVERY state. Therefore, this code simulates a successful GATT discovery
+            // response upon receiving this event.
             await cdpTarget.browserCdpClient.sendCommand(
               'BluetoothEmulation.simulateGATTOperationResponse',
               {
