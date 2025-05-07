@@ -15,10 +15,31 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import (execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+from test_helpers import (AnyExtending, execute_command, send_JSON_command,
+                          subscribe, wait_for_event)
 
 from . import disable_simulation, setup_granted_device
+
+
+async def check_gatt_connected(websocket, context_id: str,
+                               connected: bool) -> None:
+    response = await execute_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'device.gatt.connected',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
+
+    assert response['result'] == AnyExtending({
+        'type': 'boolean',
+        'value': connected
+    })
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -52,7 +73,6 @@ async def test_bluetooth_simulateGattConnectionResponse(
                 'userActivation': True
             }
         })
-
     event = await wait_for_event(websocket,
                                  'bluetooth.gattConnectionAttempted')
     await execute_command(
@@ -60,8 +80,19 @@ async def test_bluetooth_simulateGattConnectionResponse(
             'method': 'bluetooth.simulateGattConnectionResponse',
             'params': {
                 'context': context_id,
-                'accept': True,
                 'address': event['params']['address'],
                 'code': code
             }
         })
+    await check_gatt_connected(websocket, context_id,
+                               True if code == 0x0 else False)
+
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateGattDisconnection',
+            'params': {
+                'context': context_id,
+                'address': event['params']['address'],
+            }
+        })
+    await check_gatt_connected(websocket, context_id, False)
