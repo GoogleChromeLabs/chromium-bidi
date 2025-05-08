@@ -2174,22 +2174,22 @@ export namespace Script {
 }
 export namespace Script {
   export const RegExpRemoteValueSchema = z.lazy(() =>
-    z
-      .object({
+    Script.RegExpLocalValueSchema.and(
+      z.object({
         handle: Script.HandleSchema.optional(),
         internalId: Script.InternalIdSchema.optional(),
-      })
-      .and(Script.RegExpLocalValueSchema),
+      }),
+    ),
   );
 }
 export namespace Script {
   export const DateRemoteValueSchema = z.lazy(() =>
-    z
-      .object({
+    Script.DateLocalValueSchema.and(
+      z.object({
         handle: Script.HandleSchema.optional(),
         internalId: Script.InternalIdSchema.optional(),
-      })
-      .and(Script.DateLocalValueSchema),
+      }),
+    ),
   );
 }
 export namespace Script {
