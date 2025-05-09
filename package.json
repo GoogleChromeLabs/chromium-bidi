@@ -177,7 +177,6 @@
   },
   "devDependencies": {
     "@actions/core": "1.11.1",
-    "@eslint/eslintrc": "3.3.1",
     "@eslint/js": "9.25.1",
     "@puppeteer/browsers": "2.10.2",
     "@rollup/plugin-node-resolve": "16.0.1",
@@ -191,8 +190,7 @@
     "@types/websocket": "1.0.10",
     "@types/ws": "8.18.1",
     "@types/yargs": "17.0.33",
-    "@typescript-eslint/eslint-plugin": "8.31.0",
-    "@typescript-eslint/parser": "8.31.0",
+    "typescript-eslint": "8.32.0",
     "chai": "4.5.0",
     "chai-as-promised": "7.1.2",
     "debug": "4.4.0",

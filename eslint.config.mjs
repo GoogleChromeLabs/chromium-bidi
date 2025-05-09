@@ -15,22 +15,13 @@
  * limitations under the License.
  */
 
-import {FlatCompat} from '@eslint/eslintrc';
 import eslint from '@eslint/js';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import';
 import mochaPlugin from 'eslint-plugin-mocha';
 import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import promisePlugin from 'eslint-plugin-promise';
 import globals from 'globals';
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: eslint.configs.recommended,
-  allConfig: eslint.configs.all,
-});
-
+import typescriptEslint from 'typescript-eslint';
 /**
  * @type {import('eslint').Linter.Config[]}
  */
@@ -83,7 +74,7 @@ export default [
         globalThis: false,
       },
 
-      parser: tsParser,
+      parser: typescriptEslint.parser,
     },
 
     settings: {
@@ -148,12 +139,13 @@ export default [
       eqeqeq: 'error',
     },
   },
-  ...compat
-    .extends(
-      'plugin:@typescript-eslint/eslint-recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    )
+
+  ...[
+    typescriptEslint.configs.eslintRecommended,
+    typescriptEslint.configs.recommended,
+    typescriptEslint.configs.recommendedRequiringTypeChecking,
+  ]
+    .flat()
     .map((config) => ({
       name: 'TypeScript plugins',
       ...config,
@@ -164,7 +156,7 @@ export default [
     files: ['**/*.ts'],
 
     plugins: {
-      '@typescript-eslint': typescriptEslint,
+      '@typescript-eslint': typescriptEslint.plugin,
     },
 
     languageOptions: {
