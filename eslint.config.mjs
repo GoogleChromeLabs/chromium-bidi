@@ -16,13 +16,13 @@
  */
 
 import eslint from '@eslint/js';
+import {defineConfig, globalIgnores} from 'eslint/config';
 import importPlugin from 'eslint-plugin-import';
 import mochaPlugin from 'eslint-plugin-mocha';
 import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import promisePlugin from 'eslint-plugin-promise';
 import globals from 'globals';
 import typescriptEslint from 'typescript-eslint';
-import {defineConfig, globalIgnores} from 'eslint/config';
 
 export default defineConfig([
   globalIgnores([
