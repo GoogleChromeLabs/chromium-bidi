@@ -22,33 +22,29 @@ import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended'
 import promisePlugin from 'eslint-plugin-promise';
 import globals from 'globals';
 import typescriptEslint from 'typescript-eslint';
-/**
- * @type {import('eslint').Linter.Config[]}
- */
-export default [
-  {
-    name: 'Ignored files',
-    ignores: [
-      '**/.mypy_cache/',
-      '**/.pytest_cache/',
-      '**/__pycache__',
-      '**/.build',
-      '**/.cache',
-      '**/.idea',
-      '**/chromium-bidi-*',
-      '**/chromium-bidi.iml',
-      '**/*.py.ini',
-      '**/lib/',
-      '**/logs/',
-      '**/node_modules/',
-      '**/wptreport*.json',
-      'tests/',
-      'wpt/',
-      'wpt-metadata/*/',
-      'src/protocol/generated/',
-      'src/protocol-parser/generated/',
-    ],
-  },
+import {defineConfig, globalIgnores} from 'eslint/config';
+
+export default defineConfig([
+  globalIgnores([
+    '**/.mypy_cache/',
+    '**/.pytest_cache/',
+    '**/__pycache__',
+    '**/.build',
+    '**/.cache',
+    '**/.idea',
+    '**/chromium-bidi-*',
+    '**/chromium-bidi.iml',
+    '**/*.py.ini',
+    '**/lib/',
+    '**/logs/',
+    '**/node_modules/',
+    '**/wptreport*.json',
+    'tests/',
+    'wpt/',
+    'wpt-metadata/*/',
+    'src/protocol/generated/',
+    'src/protocol-parser/generated/',
+  ]),
   eslint.configs.recommended,
   eslintPrettierPluginRecommended,
   importPlugin.flatConfigs.typescript,
@@ -262,4 +258,4 @@ export default [
       '@typescript-eslint/no-unused-expressions': 'error',
     },
   },
-];
+]);
