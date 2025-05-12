@@ -55,10 +55,35 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Bluetooth.SimulateAdvertisementParameters {
     return params as Bluetooth.SimulateAdvertisementParameters;
   }
+  parseSimulateCharacteristicParameters(
+    params: unknown,
+  ): Bluetooth.SimulateCharacteristicParameters {
+    return params as Bluetooth.SimulateCharacteristicParameters;
+  }
+  parseSimulateDescriptorParameters(
+    params: unknown,
+  ): Bluetooth.SimulateDescriptorParameters {
+    return params as Bluetooth.SimulateDescriptorParameters;
+  }
+  parseSimulateGattConnectionResponseParameters(
+    params: unknown,
+  ): Bluetooth.SimulateGattConnectionResponseParameters {
+    return params as Bluetooth.SimulateGattConnectionResponseParameters;
+  }
+  parseSimulateGattDisconnectionParameters(
+    params: unknown,
+  ): Bluetooth.SimulateGattDisconnectionParameters {
+    return params as Bluetooth.SimulateGattDisconnectionParameters;
+  }
   parseSimulatePreconnectedPeripheralParameters(
     params: unknown,
   ): Bluetooth.SimulatePreconnectedPeripheralParameters {
     return params as Bluetooth.SimulatePreconnectedPeripheralParameters;
+  }
+  parseSimulateServiceParameters(
+    params: unknown,
+  ): Bluetooth.SimulateServiceParameters {
+    return params as Bluetooth.SimulateServiceParameters;
   }
   // keep-sorted end
 

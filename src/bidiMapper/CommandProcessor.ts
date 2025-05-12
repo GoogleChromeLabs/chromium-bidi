@@ -37,7 +37,7 @@ import type {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
 import type {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
-import {EmulationProcessor} from './modules/emulation/EmulationProcessor';
+import {EmulationProcessor} from './modules/emulation/EmulationProcessor.js';
 import {InputProcessor} from './modules/input/InputProcessor.js';
 import {NetworkProcessor} from './modules/network/NetworkProcessor.js';
 import type {NetworkStorage} from './modules/network/NetworkStorage.js';
@@ -173,19 +173,41 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#bluetoothProcessor.simulateAdvertisement(
           this.#parser.parseSimulateAdvertisementParameters(command.params),
         );
-      case 'bluetooth.simulateGattConnectionResponse':
+      case 'bluetooth.simulateCharacteristic':
+        return await this.#bluetoothProcessor.simulateCharacteristic(
+          this.#parser.parseSimulateCharacteristicParameters(command.params),
+        );
+      case 'bluetooth.simulateCharacteristicResponse':
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );
-      case 'bluetooth.simulateGattDisconnection':
+      case 'bluetooth.simulateDescriptor':
+        return await this.#bluetoothProcessor.simulateDescriptor(
+          this.#parser.parseSimulateDescriptorParameters(command.params),
+        );
+      case 'bluetooth.simulateDescriptorResponse':
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
+        );
+      case 'bluetooth.simulateGattConnectionResponse':
+        return await this.#bluetoothProcessor.simulateGattConnectionResponse(
+          this.#parser.parseSimulateGattConnectionResponseParameters(
+            command.params,
+          ),
+        );
+      case 'bluetooth.simulateGattDisconnection':
+        return await this.#bluetoothProcessor.simulateGattDisconnection(
+          this.#parser.parseSimulateGattDisconnectionParameters(command.params),
         );
       case 'bluetooth.simulatePreconnectedPeripheral':
         return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(
           this.#parser.parseSimulatePreconnectedPeripheralParameters(
             command.params,
           ),
+        );
+      case 'bluetooth.simulateService':
+        return await this.#bluetoothProcessor.simulateService(
+          this.#parser.parseSimulateServiceParameters(command.params),
         );
       // keep-sorted end
 

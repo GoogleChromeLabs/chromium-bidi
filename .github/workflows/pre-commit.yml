@@ -30,6 +30,9 @@ jobs:
           go-version: '1.21.x'
       - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
       - run: npm ci
+      - run: npm run build
+      - name: Test that BidiMapper can be imported
+        run: cd lib/esm/bidiMapper && node ./BidiMapper.js
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'

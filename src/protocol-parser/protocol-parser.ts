@@ -463,6 +463,40 @@ export namespace Bluetooth {
       WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisementParametersSchema,
     ) as Protocol.Bluetooth.SimulateAdvertisementParameters;
   }
+  export function parseSimulateCharacteristicParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateCharacteristicParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.SimulateCharacteristicParametersSchema,
+    ) as Protocol.Bluetooth.SimulateCharacteristicParameters;
+  }
+  export function parseSimulateDescriptorParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateDescriptorParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.SimulateDescriptorParametersSchema,
+    ) as Protocol.Bluetooth.SimulateDescriptorParameters;
+  }
+  export function parseSimulateGattConnectionResponseParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateGattConnectionResponseParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth
+        .SimulateGattConnectionResponseParametersSchema,
+    ) as Protocol.Bluetooth.SimulateGattConnectionResponseParameters;
+  }
+  export function parseSimulateGattDisconnectionParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateGattDisconnectionParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth
+        .SimulateGattDisconnectionParametersSchema,
+    ) as Protocol.Bluetooth.SimulateGattDisconnectionParameters;
+  }
   export function parseSimulatePreconnectedPeripheralParams(
     params: unknown,
   ): Protocol.Bluetooth.SimulatePreconnectedPeripheralParameters {
@@ -471,6 +505,14 @@ export namespace Bluetooth {
       WebDriverBidiBluetooth.Bluetooth
         .SimulatePreconnectedPeripheralParametersSchema,
     ) as Protocol.Bluetooth.SimulatePreconnectedPeripheralParameters;
+  }
+  export function parseSimulateServiceParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateServiceParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.SimulateServiceParametersSchema,
+    ) as Protocol.Bluetooth.SimulateServiceParameters;
   }
 }
 
