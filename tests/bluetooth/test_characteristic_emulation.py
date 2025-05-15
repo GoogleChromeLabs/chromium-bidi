@@ -27,6 +27,8 @@ from . import (CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID,
                remove_characteristic, setup_device, setup_granted_device,
                simulate_descriptor, simulate_service)
 
+CHARACTERISTIC_EVENT_GENERATED = 'bluetooth.characteristicEventGenerated'
+
 
 async def setup_characteristic(websocket, context_id: str, html,
                                service_uuid: str, characteristic_uuid: str,
@@ -348,7 +350,7 @@ async def test_bluetooth_characteristic_write_event(websocket, context_id,
     await setup_characteristic(websocket, context_id, html,
                                HEART_RATE_SERVICE_UUID,
                                DATE_TIME_CHARACTERISTIC_UUID, {'write': True})
-    await subscribe(websocket, ['bluetooth.characteristicEventGenerated'])
+    await subscribe(websocket, [CHARACTERISTIC_EVENT_GENERATED])
     expected_data = [1]
     await send_JSON_command(
         websocket, {
@@ -369,8 +371,7 @@ async def test_bluetooth_characteristic_write_event(websocket, context_id,
                 'userActivation': True
             }
         })
-    event = await wait_for_event(websocket,
-                                 'bluetooth.characteristicEventGenerated')
+    event = await wait_for_event(websocket, CHARACTERISTIC_EVENT_GENERATED)
     assert event['params'] == {
         'context': context_id,
         'address': FAKE_DEVICE_ADDRESS,
@@ -406,7 +407,7 @@ async def test_bluetooth_characteristic_read_event(websocket, context_id,
     await setup_characteristic(websocket, context_id, html,
                                HEART_RATE_SERVICE_UUID,
                                DATE_TIME_CHARACTERISTIC_UUID, {'read': True})
-    await subscribe(websocket, ['bluetooth.characteristicEventGenerated'])
+    await subscribe(websocket, [CHARACTERISTIC_EVENT_GENERATED])
     await send_JSON_command(
         websocket, {
             'method': 'script.evaluate',
@@ -426,8 +427,7 @@ async def test_bluetooth_characteristic_read_event(websocket, context_id,
                 'userActivation': True
             }
         })
-    event = await wait_for_event(websocket,
-                                 'bluetooth.characteristicEventGenerated')
+    event = await wait_for_event(websocket, CHARACTERISTIC_EVENT_GENERATED)
     assert event['params'] == {
         'context': context_id,
         'address': FAKE_DEVICE_ADDRESS,
@@ -491,7 +491,7 @@ async def test_bluetooth_characteristic_notification_event(
         CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR_UUID, 'add')
 
     # Test start notification.
-    await subscribe(websocket, ['bluetooth.characteristicEventGenerated'])
+    await subscribe(websocket, [CHARACTERISTIC_EVENT_GENERATED])
     await send_JSON_command(
         websocket, {
             'method': 'script.evaluate',
@@ -511,8 +511,7 @@ async def test_bluetooth_characteristic_notification_event(
                 'userActivation': True
             }
         })
-    event = await wait_for_event(websocket,
-                                 'bluetooth.characteristicEventGenerated')
+    event = await wait_for_event(websocket, CHARACTERISTIC_EVENT_GENERATED)
     assert event['params'] == {
         'context': context_id,
         'address': FAKE_DEVICE_ADDRESS,
@@ -535,7 +534,7 @@ async def test_bluetooth_characteristic_notification_event(
         })
 
     # Test stop notification.
-    await subscribe(websocket, ['bluetooth.characteristicEventGenerated'])
+    await subscribe(websocket, [CHARACTERISTIC_EVENT_GENERATED])
     await send_JSON_command(
         websocket, {
             'method': 'script.evaluate',
@@ -555,8 +554,7 @@ async def test_bluetooth_characteristic_notification_event(
                 'userActivation': True
             }
         })
-    event = await wait_for_event(websocket,
-                                 'bluetooth.characteristicEventGenerated')
+    event = await wait_for_event(websocket, CHARACTERISTIC_EVENT_GENERATED)
     assert event['params'] == {
         'context': context_id,
         'address': FAKE_DEVICE_ADDRESS,
