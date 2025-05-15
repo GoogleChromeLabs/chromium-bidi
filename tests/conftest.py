@@ -30,7 +30,7 @@ from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
 
 
-@pytest_asyncio.fixture(scope='session')
+@pytest_asyncio.fixture
 def local_server_http() -> Generator[LocalHttpServer, None, None]:
     """
     Returns an instance of a LocalHttpServer without SSL pointing to localhost.
@@ -44,7 +44,7 @@ def local_server_http() -> Generator[LocalHttpServer, None, None]:
         return
 
 
-@pytest_asyncio.fixture(scope='session')
+@pytest_asyncio.fixture
 def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
     """
     Returns an instance of a LocalHttpServer without SSL pointing to `127.0.0.1`
@@ -58,7 +58,7 @@ def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
         return
 
 
-@pytest_asyncio.fixture(scope='session')
+@pytest_asyncio.fixture
 def local_server_http_yet_another_host(
 ) -> Generator[LocalHttpServer, None, None]:
     """
@@ -73,7 +73,7 @@ def local_server_http_yet_another_host(
         return
 
 
-@pytest_asyncio.fixture(scope='session')
+@pytest_asyncio.fixture
 def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
     """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
     server = LocalHttpServer(protocol='https')
@@ -320,7 +320,7 @@ def url_hang_forever(local_server_http_yet_another_host):
         local_server_http_yet_another_host.hang_forever_stop()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def url_bad_ssl(local_server_bad_ssl):
     """
     Return a URL with an invalid certificate authority from a SSL certificate.
