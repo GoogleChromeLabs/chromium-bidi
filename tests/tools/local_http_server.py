@@ -283,13 +283,15 @@ class LocalHttpServer:
             return self._check_server_readiness(timeout_s=0.05)
         return False
 
+    def hang_forever_stop(self):
+        self.hang_forever_stop_flag.set()  # Release any hanging requests
+
     def stop(self) -> None:
+        self.hang_forever_stop()
         """Stops the Flask server."""
         if not self._server_thread or not self._server_thread.is_alive():
             self._server_thread = None  # Ensure it's cleaned up if already dead
             return
-
-        self.hang_forever_stop_flag.set()  # Release any hanging requests
 
         # Attempt to trigger the Werkzeug shutdown function
         try:
