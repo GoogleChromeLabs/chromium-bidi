@@ -59,21 +59,6 @@ def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
 
 
 @pytest_asyncio.fixture(scope='session')
-def local_server_http_yet_another_host(
-) -> Generator[LocalHttpServer, None, None]:
-    """
-    Returns an instance of a LocalHttpServer without SSL pointing to `::1`
-    """
-    server = LocalHttpServer('::1')
-    yield server
-
-    server.clear()
-    if server.is_running():
-        server.stop()
-        return
-
-
-@pytest_asyncio.fixture(scope='session')
 def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
     """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
     server = LocalHttpServer(protocol='https')
@@ -128,7 +113,8 @@ async def capabilities(request):
 
 
 @pytest_asyncio.fixture
-async def websocket(_websocket_connection, test_headless_mode, capabilities):
+async def websocket(_websocket_connection, test_headless_mode, capabilities,
+                    request):
     """Return a websocket with an active BiDi session."""
     default_capabilities = {"webSocketUrl": True, "goog:chromeOptions": {}}
     maybe_browser_bin = os.getenv("BROWSER_BIN")
@@ -163,6 +149,22 @@ async def websocket(_websocket_connection, test_headless_mode, capabilities):
         # The session.new command can take a long time to complete, so we need
         # to increase the timeout.
         20)
+
+    if os.getenv(
+            "VERBOSE"
+    ) == "true" and request and request.node and request.node.name:
+        with pytest.raises(Exception):
+            # Send not existing command with the test name in params, so that it
+            # can be used to anchor the specific test in the log to ease
+            # debugging.
+            await execute_command(
+                _websocket_connection, {
+                    "method": "goog:debug.log",
+                    "params": {
+                        "message": f'Create session for test: "{request.node.name}"'
+                    }
+                })
+
     yield _websocket_connection
 
     try:
@@ -295,12 +297,12 @@ def url_auth_required(local_server_http):
 
 
 @pytest.fixture
-def url_hang_forever(local_server_http_yet_another_host):
+def url_hang_forever(local_server_http):
     """Return a URL that hangs forever."""
     try:
-        yield local_server_http_yet_another_host.url_hang_forever()
+        yield local_server_http.url_hang_forever()
     finally:
-        local_server_http_yet_another_host.hang_forever_stop()
+        local_server_http.hang_forever_stop()
 
 
 @pytest.fixture(scope="session")
