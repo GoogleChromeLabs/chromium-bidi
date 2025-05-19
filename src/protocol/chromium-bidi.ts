@@ -134,11 +134,10 @@ export type CommandResponse =
   | WebDriverBidi.CommandResponse
   | Cdp.CommandResponse;
 
-export type BluetoothEvent =
-  | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptUpdated>
-  | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.GattConnectionAttempted>
-  | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.CharacteristicEventGenerated>;
-export type Event = WebDriverBidi.Event | Cdp.Event | BluetoothEvent;
+export type Event =
+  | WebDriverBidi.Event
+  | Cdp.Event
+  | ExternalSpecEvent<WebDriverBidiBluetooth.BluetoothEvent>;
 
 export const EVENT_NAMES = new Set([
   // keep-sorted start
