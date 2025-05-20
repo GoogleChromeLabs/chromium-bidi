@@ -947,7 +947,9 @@ export namespace BrowsingContext {
     defaultValue?: string;
   };
 }
-export type EmulationCommand = Emulation.SetGeolocationOverride;
+export type EmulationCommand =
+  | Emulation.SetGeolocationOverride
+  | Emulation.SetLocaleOverride;
 export namespace Emulation {
   export type SetGeolocationOverride = {
     method: 'emulation.setGeolocationOverride';
@@ -1013,6 +1015,22 @@ export namespace Emulation {
 export namespace Emulation {
   export type GeolocationPositionError = {
     type: 'positionUnavailable';
+  };
+}
+export namespace Emulation {
+  export type SetLocaleOverride = {
+    method: 'emulation.setLocaleOverride';
+    params: Emulation.SetLocaleOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export type SetLocaleOverrideParameters = {
+    locale?: string;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
 }
 export type NetworkCommand =
