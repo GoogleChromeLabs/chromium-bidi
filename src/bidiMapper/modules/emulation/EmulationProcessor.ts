@@ -95,6 +95,47 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setLocaleOverride(
+    params: Emulation.SetLocaleOverrideParameters,
+  ): Promise<EmptyResult> {
+    const locale = params.locale ?? null;
+
+    if (locale !== null && !this.#isValidLocale(locale)) {
+      throw new InvalidArgumentException(`Invalid locale "${locale}"`);
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getConfig(userContextId);
+      userContextConfig.locale = locale;
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) => await context.cdpTarget.setLocaleOverride(locale),
+      ),
+    );
+    return {};
+  }
+
+  #isValidLocale(locale: string) {
+    try {
+      new Intl.Locale(locale);
+      return true;
+    } catch (e) {
+      if (e instanceof RangeError) {
+        return false;
+      }
+      // Re-throw other errors
+      throw e;
+    }
+  }
+
   /**
    * Returns a list of top-level browsing contexts.
    */
