@@ -422,6 +422,7 @@ export type BrowsingContextEvent =
   | BrowsingContext.ContextCreated
   | BrowsingContext.ContextDestroyed
   | BrowsingContext.DomContentLoaded
+  | BrowsingContext.DownloadFinished
   | BrowsingContext.DownloadWillBegin
   | BrowsingContext.FragmentNavigated
   | BrowsingContext.HistoryUpdated
@@ -898,6 +899,29 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type DownloadWillBeginParams = {
     suggestedFilename: string;
+  } & BrowsingContext.BaseNavigationInfo;
+}
+export namespace BrowsingContext {
+  export type DownloadFinished = {
+    method: 'browsingContext.downloadFinished';
+    params: BrowsingContext.DownloadFinishedParams;
+  };
+}
+export namespace BrowsingContext {
+  export type DownloadFinishedParams =
+    | BrowsingContext.DownloadCanceledParams
+    | BrowsingContext.DownloadCompleteParams
+    | Record<string, never>;
+}
+export namespace BrowsingContext {
+  export type DownloadCanceledParams = {
+    status: 'canceled';
+  } & BrowsingContext.BaseNavigationInfo;
+}
+export namespace BrowsingContext {
+  export type DownloadCompleteParams = {
+    status: 'complete';
+    filepath: string | null;
   } & BrowsingContext.BaseNavigationInfo;
 }
 export namespace BrowsingContext {
