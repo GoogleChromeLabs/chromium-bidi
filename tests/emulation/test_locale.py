@@ -108,3 +108,29 @@ async def test_locale_per_user_context(websocket, user_context_id,
     browsing_context_id_2 = await create_context(user_context_id)
     emulated_locale_2 = await get_locale(websocket, browsing_context_id_2)
     assert emulated_locale_2 == another_locale
+
+
+@pytest.mark.asyncio
+async def test_locale_per_browsing_context(websocket, context_id,
+                                           another_context_id, create_context,
+                                           some_locale, another_locale):
+    # Set different locale overrides for different user contexts.
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [context_id],
+                'locale': some_locale
+            }
+        })
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [another_context_id],
+                'locale': another_locale
+            }
+        })
+
+    assert await get_locale(websocket, context_id) == some_locale
+    assert await get_locale(websocket, another_context_id) == another_locale
