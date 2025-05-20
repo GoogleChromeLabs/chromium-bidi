@@ -1170,8 +1170,11 @@ export namespace BrowsingContext {
     }),
   );
 }
-export const EmulationCommandSchema = z.lazy(
-  () => Emulation.SetGeolocationOverrideSchema,
+export const EmulationCommandSchema = z.lazy(() =>
+  z.union([
+    Emulation.SetGeolocationOverrideSchema,
+    Emulation.SetLocaleOverrideSchema,
+  ]),
 );
 export namespace Emulation {
   export const SetGeolocationOverrideSchema = z.lazy(() =>
@@ -1227,6 +1230,26 @@ export namespace Emulation {
   export const GeolocationPositionErrorSchema = z.lazy(() =>
     z.object({
       type: z.literal('positionUnavailable'),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetLocaleOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setLocaleOverride'),
+      params: Emulation.SetLocaleOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetLocaleOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      locale: z.string().optional(),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
 }
