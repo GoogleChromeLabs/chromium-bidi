@@ -20,8 +20,7 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, goto_url, send_JSON_command,
 
 
 @pytest.mark.asyncio
-async def test_browsing_context_download_will_begin_data_url(
-        websocket, context_id, html):
+async def test_browsing_context_download_data_url(websocket, context_id, html):
     content = "SOME_FILE_CONTENT"
     filename = 'some_file_name.txt'
     download_url = f"data:text/plain;charset=utf-8,{content}"
@@ -30,7 +29,9 @@ async def test_browsing_context_download_will_begin_data_url(
     )
     await goto_url(websocket, context_id, url)
 
-    await subscribe(websocket, ["browsingContext.downloadWillBegin"])
+    await subscribe(websocket, [
+        "browsingContext.downloadWillBegin", "browsingContext.downloadFinished"
+    ])
 
     await send_JSON_command(
         websocket, {
@@ -60,10 +61,26 @@ async def test_browsing_context_download_will_begin_data_url(
         'type': 'event',
     }
 
+    navigation_id = event['params']['navigation']
+
+    event = await wait_for_event(websocket, "browsingContext.downloadFinished")
+    assert event == {
+        'method': 'browsingContext.downloadFinished',
+        'params': {
+            'context': context_id,
+            'navigation': navigation_id,
+            'status': 'complete',
+            'filepath': None,
+            'timestamp': ANY_TIMESTAMP,
+            'url': download_url
+        },
+        'type': 'event',
+    }
+
 
 @pytest.mark.asyncio
-async def test_browsing_context_download_will_begin_url(
-        websocket, context_id, url_download, html):
+async def test_browsing_context_download_url(websocket, context_id,
+                                             url_download, html):
     content = "SOME_FILE_CONTENT"
     download_attribute = "download-attribute.txt"
     header_file_name = "download-attribute.txt"
@@ -73,7 +90,9 @@ async def test_browsing_context_download_will_begin_url(
     )
     await goto_url(websocket, context_id, url)
 
-    await subscribe(websocket, ["browsingContext.downloadWillBegin"])
+    await subscribe(websocket, [
+        "browsingContext.downloadWillBegin", "browsingContext.downloadFinished"
+    ])
 
     await send_JSON_command(
         websocket, {
@@ -90,13 +109,28 @@ async def test_browsing_context_download_will_begin_url(
 
     event = await wait_for_event(websocket,
                                  "browsingContext.downloadWillBegin")
-
     assert event == {
         'method': 'browsingContext.downloadWillBegin',
         'params': {
             'context': context_id,
             'navigation': ANY_UUID,
             'suggestedFilename': header_file_name,
+            'timestamp': ANY_TIMESTAMP,
+            'url': download_url
+        },
+        'type': 'event',
+    }
+
+    navigation_id = event['params']['navigation']
+
+    event = await wait_for_event(websocket, "browsingContext.downloadFinished")
+    assert event == {
+        'method': 'browsingContext.downloadFinished',
+        'params': {
+            'context': context_id,
+            'navigation': navigation_id,
+            'status': 'complete',
+            'filepath': None,
             'timestamp': ANY_TIMESTAMP,
             'url': download_url
         },
