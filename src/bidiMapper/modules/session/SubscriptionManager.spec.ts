@@ -675,6 +675,7 @@ describe('SubscriptionManager', () => {
         ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
         ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
         ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+        ChromiumBidi.BrowsingContext.EventNames.DownloadFinished,
         ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
         ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
         ChromiumBidi.BrowsingContext.EventNames.HistoryUpdated,
