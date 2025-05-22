@@ -15,6 +15,7 @@
 #
 
 import pytest
+from anys import ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, goto_url, send_JSON_command,
                           subscribe, wait_for_event)
 
@@ -71,9 +72,8 @@ async def test_browsing_context_download_will_begin(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_browsing_context_download_finished(websocket,
-                                                  test_headless_mode,
-                                                  context_id, file_url, html):
+async def test_browsing_context_download_finished_complete(
+        websocket, test_headless_mode, context_id, file_url, html):
     if test_headless_mode == "old":
         pytest.xfail("Old headless cancels downloads")
 
@@ -126,6 +126,83 @@ async def test_browsing_context_download_finished(websocket,
             'filepath': None,
             'timestamp': ANY_TIMESTAMP,
             'url': file_url
+        },
+        'type': 'event',
+    }
+
+
+@pytest.mark.asyncio
+async def test_browsing_context_download_finished_canceled(
+        websocket, test_headless_mode, url_hang_forever_download, context_id,
+        html, get_cdp_session_id):
+
+    page_url = html(
+        f"""<a id="download_link" href="{url_hang_forever_download()}" download="{FILENAME}">Download</a>"""
+    )
+    await goto_url(websocket, context_id, page_url)
+
+    await subscribe(websocket, [
+        "browsingContext.downloadWillBegin", "browsingContext.downloadFinished"
+    ])
+
+    cdp_session_id = await get_cdp_session_id(context_id)
+
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'download_link.click();',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
+
+    event = await wait_for_event(websocket,
+                                 "browsingContext.downloadWillBegin")
+
+    assert event == {
+        'method': 'browsingContext.downloadWillBegin',
+        'params': {
+            'context': context_id,
+            'navigation': ANY_UUID,
+            'suggestedFilename': ANY_STR,
+            'timestamp': ANY_TIMESTAMP,
+            'url': ANY_STR,
+        },
+        'type': 'event',
+    }
+
+    navigation_id = event['params']['navigation']
+
+    if test_headless_mode != "old":
+        # Cancel download via CDP. Old headless cancels it automatically.
+        await send_JSON_command(
+            websocket, {
+                "method": "goog:cdp.sendCommand",
+                "params": {
+                    "method": "Browser.cancelDownload",
+                    "params": {
+                        "guid": navigation_id
+                    },
+                    "session": cdp_session_id
+                }
+            })
+
+    event = await wait_for_event(
+        websocket,
+        "browsingContext.downloadFinished",
+    )
+    assert event == {
+        'method': 'browsingContext.downloadFinished',
+        'params': {
+            'context': context_id,
+            'navigation': navigation_id,
+            'status': 'canceled',
+            'timestamp': ANY_TIMESTAMP,
+            'url': url_hang_forever_download(),
         },
         'type': 'event',
     }
