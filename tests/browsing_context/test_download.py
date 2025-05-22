@@ -18,16 +18,69 @@ import pytest
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, goto_url, send_JSON_command,
                           subscribe, wait_for_event)
 
+CONTENT = "SOME_FILE_CONTENT"
+FILENAME = 'some_file_name.txt'
+
+
+@pytest.fixture(params=['data', 'http'])
+def file_url(url_download, request):
+    """Return a URL that triggers a download."""
+    if request.param == 'data':
+        return f"data:text/plain;charset=utf-8,{CONTENT}"
+
+    return url_download(FILENAME, CONTENT)
+
 
 @pytest.mark.asyncio
-async def test_browsing_context_download_data_url(websocket, context_id, html):
-    content = "SOME_FILE_CONTENT"
-    filename = 'some_file_name.txt'
-    download_url = f"data:text/plain;charset=utf-8,{content}"
-    url = html(
-        f"""<a id="download_link" href="{download_url}" download="{filename}">Download</a>"""
+async def test_browsing_context_download_will_begin(websocket, context_id,
+                                                    file_url, html):
+    page_url = html(
+        f"""<a id="download_link" href="{file_url}" download="{FILENAME}">Download</a>"""
     )
-    await goto_url(websocket, context_id, url)
+    await goto_url(websocket, context_id, page_url)
+
+    await subscribe(websocket, ["browsingContext.downloadWillBegin"])
+
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'download_link.click();',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
+
+    event = await wait_for_event(websocket,
+                                 "browsingContext.downloadWillBegin")
+
+    assert event == {
+        'method': 'browsingContext.downloadWillBegin',
+        'params': {
+            'context': context_id,
+            'navigation': ANY_UUID,
+            'suggestedFilename': FILENAME,
+            'timestamp': ANY_TIMESTAMP,
+            'url': file_url
+        },
+        'type': 'event',
+    }
+
+
+@pytest.mark.asyncio
+async def test_browsing_context_download_finished(websocket,
+                                                  test_headless_mode,
+                                                  context_id, file_url, html):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless cancels downloads")
+
+    page_url = html(
+        f"""<a id="download_link" href="{file_url}" download="{FILENAME}">Download</a>"""
+    )
+    await goto_url(websocket, context_id, page_url)
 
     await subscribe(websocket, [
         "browsingContext.downloadWillBegin", "browsingContext.downloadFinished"
@@ -54,9 +107,9 @@ async def test_browsing_context_download_data_url(websocket, context_id, html):
         'params': {
             'context': context_id,
             'navigation': ANY_UUID,
-            'suggestedFilename': filename,
+            'suggestedFilename': FILENAME,
             'timestamp': ANY_TIMESTAMP,
-            'url': download_url
+            'url': file_url
         },
         'type': 'event',
     }
@@ -72,67 +125,7 @@ async def test_browsing_context_download_data_url(websocket, context_id, html):
             'status': 'complete',
             'filepath': None,
             'timestamp': ANY_TIMESTAMP,
-            'url': download_url
-        },
-        'type': 'event',
-    }
-
-
-@pytest.mark.asyncio
-async def test_browsing_context_download_url(websocket, context_id,
-                                             url_download, html):
-    content = "SOME_FILE_CONTENT"
-    download_attribute = "download-attribute.txt"
-    header_file_name = "download-attribute.txt"
-    download_url = url_download(header_file_name, content)
-    url = html(
-        f"""<a id="download_link" href="{download_url}" download="{download_attribute}">Download</a>"""
-    )
-    await goto_url(websocket, context_id, url)
-
-    await subscribe(websocket, [
-        "browsingContext.downloadWillBegin", "browsingContext.downloadFinished"
-    ])
-
-    await send_JSON_command(
-        websocket, {
-            'method': 'script.evaluate',
-            'params': {
-                'expression': 'download_link.click();',
-                'awaitPromise': True,
-                'target': {
-                    'context': context_id,
-                },
-                'userActivation': True
-            }
-        })
-
-    event = await wait_for_event(websocket,
-                                 "browsingContext.downloadWillBegin")
-    assert event == {
-        'method': 'browsingContext.downloadWillBegin',
-        'params': {
-            'context': context_id,
-            'navigation': ANY_UUID,
-            'suggestedFilename': header_file_name,
-            'timestamp': ANY_TIMESTAMP,
-            'url': download_url
-        },
-        'type': 'event',
-    }
-
-    navigation_id = event['params']['navigation']
-
-    event = await wait_for_event(websocket, "browsingContext.downloadFinished")
-    assert event == {
-        'method': 'browsingContext.downloadFinished',
-        'params': {
-            'context': context_id,
-            'navigation': navigation_id,
-            'status': 'complete',
-            'filepath': None,
-            'timestamp': ANY_TIMESTAMP,
-            'url': download_url
+            'url': file_url
         },
         'type': 'event',
     }
