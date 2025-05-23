@@ -116,6 +116,9 @@ export interface BidiCommandParameterParser {
   parseSetGeolocationOverrideParams(
     params: unknown,
   ): Emulation.SetGeolocationOverrideParameters;
+  parseSetOrientationOverrideParams(
+    params: unknown,
+  ): Emulation.SetOrientationOverrideParameters;
   // keep-sorted end
 
   // Input module

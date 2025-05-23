@@ -176,6 +176,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Emulation.SetGeolocationOverrideParameters {
     return params as Emulation.SetGeolocationOverrideParameters;
   }
+  parseSetOrientationOverrideParams(
+    params: unknown,
+  ): Emulation.SetOrientationOverrideParameters {
+    return params as Emulation.SetOrientationOverrideParameters;
+  }
   // keep-sorted end
 
   // Script module

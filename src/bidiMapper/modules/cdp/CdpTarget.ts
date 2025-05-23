@@ -65,7 +65,14 @@ export class CdpTarget {
   readonly #logger: LoggerFn | undefined;
 
   // Keeps track of the previously set viewport.
-  #previousViewport: {width: number; height: number} = {width: 0, height: 0};
+  #previousDeviceMetricsOverride: Protocol.Emulation.SetDeviceMetricsOverrideRequest =
+    {
+      width: 0,
+      height: 0,
+      deviceScaleFactor: 0,
+      mobile: false,
+      dontSetVisibleSize: true,
+    };
 
   /**
    * Target's window id. Is filled when the CDP target is created and do not reflect
@@ -575,32 +582,29 @@ export class CdpTarget {
       return;
     }
 
-    // CDP's `viewport` is required, so provide either new value, 0 for disabling, or
-    // previous viewport to keep it unchanged.
-    let newViewport;
-    if (viewport === undefined) {
-      // Set previously set viewport, effectively
-      newViewport = this.#previousViewport;
-    } else if (viewport === null) {
+    const newViewport = {...this.#previousDeviceMetricsOverride};
+
+    if (viewport === null) {
       // Disable override.
-      newViewport = {
-        width: 0,
-        height: 0,
-      };
-    } else {
-      // Set the provided viewport
-      newViewport = viewport;
+      newViewport.width = 0;
+    } else if (viewport !== undefined) {
+      newViewport.width = viewport.width;
+      newViewport.height = viewport.height;
+    }
+
+    if (devicePixelRatio === null) {
+      // Disable override.
+      newViewport.deviceScaleFactor = 0;
+    } else if (devicePixelRatio !== undefined) {
+      newViewport.deviceScaleFactor = devicePixelRatio;
     }
 
     try {
-      await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
-        width: newViewport.width,
-        height: newViewport.height,
-        deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
-        mobile: false,
-        dontSetVisibleSize: true,
-      });
-      this.#previousViewport = newViewport;
+      await this.cdpClient.sendCommand(
+        'Emulation.setDeviceMetricsOverride',
+        newViewport,
+      );
+      this.#previousDeviceMetricsOverride = newViewport;
     } catch (err) {
       if (
         (err as Error).message.startsWith(
@@ -642,6 +646,15 @@ export class CdpTarget {
     ) {
       promises.push(
         this.setGeolocationOverride(this.#userContextConfig.geolocation),
+      );
+    }
+
+    if (
+      this.#userContextConfig.orientation !== undefined &&
+      this.#userContextConfig.orientation !== null
+    ) {
+      promises.push(
+        this.setOrientationOverride(this.#userContextConfig.orientation),
       );
     }
 
@@ -711,6 +724,47 @@ export class CdpTarget {
       throw new UnknownErrorException(
         'Unexpected geolocation coordinates value',
       );
+    }
+  }
+
+  async setOrientationOverride(
+    orientation: Emulation.Orientation | null,
+  ): Promise<void> {
+    const newViewport = {...this.#previousDeviceMetricsOverride};
+    if (orientation === null) {
+      delete newViewport.screenOrientation;
+    } else {
+      newViewport.screenOrientation = {
+        type: this.#toCdpScreenOrientationType(orientation.type),
+        angle: orientation.angle,
+      };
+    }
+
+    await this.cdpClient.sendCommand(
+      'Emulation.setDeviceMetricsOverride',
+      newViewport,
+    );
+    this.#previousDeviceMetricsOverride = newViewport;
+  }
+
+  #toCdpScreenOrientationType(
+    type: Emulation.OrientationType,
+  ):
+    | 'portraitPrimary'
+    | 'portraitSecondary'
+    | 'landscapePrimary'
+    | 'landscapeSecondary' {
+    switch (type) {
+      case 'landscape-primary':
+        return 'landscapePrimary';
+      case 'landscape-secondary':
+        return 'landscapeSecondary';
+      case 'portrait-primary':
+        return 'portraitPrimary';
+      case 'portrait-secondary':
+        return 'portraitSecondary';
+      default:
+        throw new UnknownErrorException(`Unknown proxy type`);
     }
   }
 }
