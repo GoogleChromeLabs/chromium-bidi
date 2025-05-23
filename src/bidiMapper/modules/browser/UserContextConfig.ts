@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-import type {BrowsingContext, Emulation} from '../../../protocol/protocol.js';
+import type {
+  BrowsingContext,
+  Emulation,
+  Session,
+} from '../../../protocol/protocol.js';
 
 /**
  * Represents a user context configurations. Each new CDP target of the given user context
@@ -33,6 +37,7 @@ export class UserContextConfig {
     | Emulation.GeolocationCoordinates
     | Emulation.GeolocationPositionError
     | null;
+  userPromptHandler?: Session.UserPromptHandler;
 
   constructor(userContextId: string) {
     this.userContextId = userContextId;
