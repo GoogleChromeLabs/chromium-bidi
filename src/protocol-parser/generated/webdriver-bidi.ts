@@ -1171,8 +1171,11 @@ export namespace BrowsingContext {
     }),
   );
 }
-export const EmulationCommandSchema = z.lazy(
-  () => Emulation.SetGeolocationOverrideSchema,
+export const EmulationCommandSchema = z.lazy(() =>
+  z.union([
+    Emulation.SetGeolocationOverrideSchema,
+    Emulation.SetOrientationOverrideSchema,
+  ]),
 );
 export namespace Emulation {
   export const SetGeolocationOverrideSchema = z.lazy(() =>
@@ -1228,6 +1231,49 @@ export namespace Emulation {
   export const GeolocationPositionErrorSchema = z.lazy(() =>
     z.object({
       type: z.literal('positionUnavailable'),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetOrientationOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setOrientationOverride'),
+      params: Emulation.SetOrientationOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const OrientationAngleSchema = z.lazy(() =>
+    z.union([z.literal(0), z.literal(90), z.literal(180), z.literal(270)]),
+  );
+}
+export namespace Emulation {
+  export const OrientationTypeSchema = z.lazy(() =>
+    z.enum([
+      'portrait-primary',
+      'portrait-secondary',
+      'landscape-primary',
+      'landscape-secondary',
+    ]),
+  );
+}
+export namespace Emulation {
+  export const OrientationSchema = z.lazy(() =>
+    z.object({
+      angle: Emulation.OrientationAngleSchema,
+      type: Emulation.OrientationTypeSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetOrientationOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      orientation: z.union([Emulation.OrientationSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
 }
