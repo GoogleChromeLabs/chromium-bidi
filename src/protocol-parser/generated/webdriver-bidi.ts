@@ -571,6 +571,7 @@ export const BrowsingContextEventSchema = z.lazy(() =>
     BrowsingContext.ContextCreatedSchema,
     BrowsingContext.ContextDestroyedSchema,
     BrowsingContext.DomContentLoadedSchema,
+    BrowsingContext.DownloadFinishedSchema,
     BrowsingContext.DownloadWillBeginSchema,
     BrowsingContext.FragmentNavigatedSchema,
     BrowsingContext.HistoryUpdatedSchema,
@@ -1106,6 +1107,42 @@ export namespace BrowsingContext {
     z
       .object({
         suggestedFilename: z.string(),
+      })
+      .and(BrowsingContext.BaseNavigationInfoSchema),
+  );
+}
+export namespace BrowsingContext {
+  export const DownloadFinishedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.downloadFinished'),
+      params: BrowsingContext.DownloadFinishedParamsSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const DownloadFinishedParamsSchema = z.lazy(() =>
+    z.union([
+      BrowsingContext.DownloadCanceledParamsSchema,
+      BrowsingContext.DownloadCompleteParamsSchema,
+      z.object({}),
+    ]),
+  );
+}
+export namespace BrowsingContext {
+  export const DownloadCanceledParamsSchema = z.lazy(() =>
+    z
+      .object({
+        status: z.literal('canceled'),
+      })
+      .and(BrowsingContext.BaseNavigationInfoSchema),
+  );
+}
+export namespace BrowsingContext {
+  export const DownloadCompleteParamsSchema = z.lazy(() =>
+    z
+      .object({
+        status: z.literal('complete'),
+        filepath: z.union([z.string(), z.null()]),
       })
       .and(BrowsingContext.BaseNavigationInfoSchema),
   );

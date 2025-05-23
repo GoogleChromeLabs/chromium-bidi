@@ -58,6 +58,7 @@ export class BrowsingContextImpl {
   /** The ID of this browsing context. */
   readonly #id: BrowsingContext.BrowsingContext;
   readonly userContext: string;
+  readonly #downloadIdToUrlMap = new Map<string, string>();
 
   /**
    * The ID of the parent browsing context.
@@ -772,6 +773,8 @@ export class BrowsingContextImpl {
           return;
         }
 
+        this.#downloadIdToUrlMap.set(params.guid, params.url);
+
         this.#eventManager.registerEvent(
           {
             type: 'event',
@@ -786,6 +789,67 @@ export class BrowsingContextImpl {
           },
           this.id,
         );
+      },
+    );
+
+    this.#cdpTarget.browserCdpClient.on(
+      'Browser.downloadProgress',
+      (params) => {
+        if (!this.#downloadIdToUrlMap.has(params.guid)) {
+          // The event is not related to this browsing context.
+          return;
+        }
+
+        if (params.state === 'inProgress') {
+          // No need in reporting progress.
+          return;
+        }
+
+        const url = this.#downloadIdToUrlMap.get(params.guid)!;
+
+        switch (params.state) {
+          case 'canceled':
+            this.#eventManager.registerEvent(
+              {
+                type: 'event',
+                method:
+                  ChromiumBidi.BrowsingContext.EventNames.DownloadFinished,
+                params: {
+                  status: 'canceled',
+                  context: this.id,
+                  navigation: params.guid,
+                  timestamp: getTimestamp(),
+                  url,
+                },
+              },
+              this.id,
+            );
+            break;
+          case 'completed':
+            this.#eventManager.registerEvent(
+              {
+                type: 'event',
+                method:
+                  ChromiumBidi.BrowsingContext.EventNames.DownloadFinished,
+                params: {
+                  // TODO: provide filepath.
+                  filepath: null,
+                  status: 'complete',
+                  context: this.id,
+                  navigation: params.guid,
+                  timestamp: getTimestamp(),
+                  url,
+                },
+              },
+              this.id,
+            );
+            break;
+          default:
+            // Unreachable.
+            throw new UnknownErrorException(
+              `Unknown download state: ${params.state}`,
+            );
+        }
       },
     );
   }
