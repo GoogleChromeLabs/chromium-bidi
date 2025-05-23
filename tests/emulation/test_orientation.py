@@ -49,6 +49,15 @@ async def get_orientation(websocket, context_id):
     """
     Returns browsing context's current orientation.
     """
+    # Activation is required, as orientation is only available on an active
+    # context.
+    await execute_command(websocket, {
+        "method": "browsingContext.activate",
+        "params": {
+            "context": context_id
+        }
+    })
+
     resp = await execute_command(
         websocket, {
             "method": "script.evaluate",
@@ -136,7 +145,6 @@ async def test_orientation_per_user_context(websocket, user_context_id,
 @pytest.mark.asyncio
 async def test_orientation_per_browsing_context(websocket, context_id,
                                                 another_context_id,
-                                                create_context,
                                                 some_orientation,
                                                 another_orientation):
     # Set different orientation overrides for different user contexts.
