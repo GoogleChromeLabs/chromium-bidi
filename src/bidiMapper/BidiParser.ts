@@ -116,6 +116,9 @@ export interface BidiCommandParameterParser {
   parseSetGeolocationOverrideParams(
     params: unknown,
   ): Emulation.SetGeolocationOverrideParameters;
+  parseSetLocaleOverrideParams(
+    params: unknown,
+  ): Emulation.SetLocaleOverrideParameters;
   // keep-sorted end
 
   // Input module
