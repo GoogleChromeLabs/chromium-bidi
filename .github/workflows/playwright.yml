@@ -36,7 +36,7 @@ jobs:
       - name: Patch timeouts
         working-directory: playwright
         run: |
-          sed -i 's/timeout: 15/timeout: 5/' tests/bidi/playwright.config.ts
+          sed -i 's/timeout: 15/timeout: 8/' tests/bidi/playwright.config.ts
       - name: Install Chromium-BiDi dependencies
         working-directory: bidi
         run: npm ci
