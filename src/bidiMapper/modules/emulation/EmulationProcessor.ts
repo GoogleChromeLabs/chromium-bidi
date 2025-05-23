@@ -95,6 +95,29 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setOrientationOverride(
+    params: Emulation.SetOrientationOverrideParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getConfig(userContextId);
+      userContextConfig.orientation = params.orientation;
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) =>
+          await context.cdpTarget.setOrientationOverride(params.orientation),
+      ),
+    );
+    return {};
+  }
+
   /**
    * Returns a list of top-level browsing contexts.
    */
