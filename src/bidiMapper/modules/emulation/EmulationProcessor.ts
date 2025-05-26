@@ -100,7 +100,7 @@ export class EmulationProcessor {
   ): Promise<EmptyResult> {
     const locale = params.locale ?? null;
 
-    if (locale !== null && !this.#isValidLocale(locale)) {
+    if (locale !== null && !isValidLocale(locale)) {
       throw new InvalidArgumentException(`Invalid locale "${locale}"`);
     }
 
@@ -121,19 +121,6 @@ export class EmulationProcessor {
       ),
     );
     return {};
-  }
-
-  #isValidLocale(locale: string) {
-    try {
-      new Intl.Locale(locale);
-      return true;
-    } catch (e) {
-      if (e instanceof RangeError) {
-        return false;
-      }
-      // Re-throw other errors
-      throw e;
-    }
   }
 
   /**
@@ -194,5 +181,19 @@ export class EmulationProcessor {
     // Remove duplicates. Compare `BrowsingContextImpl` by reference is correct here, as
     // `browsingContextStorage` returns the same instance for the same id.
     return [...new Set(result).values()];
+  }
+}
+
+// Export for testing.
+export function isValidLocale(locale: string): boolean {
+  try {
+    new Intl.Locale(locale);
+    return true;
+  } catch (e) {
+    if (e instanceof RangeError) {
+      return false;
+    }
+    // Re-throw other errors
+    throw e;
   }
 }
