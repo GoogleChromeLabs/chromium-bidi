@@ -72,7 +72,8 @@ async def test_locale_set_and_clear(websocket, context_id, initial_locale,
         websocket, {
             'method': 'emulation.setLocaleOverride',
             'params': {
-                'contexts': [context_id]
+                'contexts': [context_id],
+                'locale': None
             }
         })
     assert (await get_locale(websocket, context_id)) == initial_locale

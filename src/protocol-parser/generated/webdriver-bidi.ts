@@ -1281,7 +1281,7 @@ export namespace Emulation {
 export namespace Emulation {
   export const SetLocaleOverrideParametersSchema = z.lazy(() =>
     z.object({
-      locale: z.string().optional(),
+      locale: z.union([z.string(), z.null()]),
       contexts: z
         .array(BrowsingContext.BrowsingContextSchema)
         .min(1)
