@@ -579,7 +579,7 @@ export class BluetoothProcessor {
               serviceUuid: descriptor.characteristic.service.uuid,
               characteristicUuid: descriptor.characteristic.uuid,
               descriptorUuid: descriptor.uuid,
-              type: event.type as 'read' | 'write',
+              type: event.type,
               ...(event.data && {
                 data: Array.from(atob(event.data), (c) => c.charCodeAt(0)),
               }),
