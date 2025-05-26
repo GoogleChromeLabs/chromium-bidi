@@ -29,9 +29,9 @@ from . import (BATTERY_SERVICE_UUID,
 DESCRIPTOR_EVENT_GENERATED = 'bluetooth.descriptorEventGenerated'
 
 
-async def setup_dscriptor(websocket, context_id: str, html, service_uuid: str,
-                          characteristic_uuid: str, characteristic_properties,
-                          descriptor_uuid: str):
+async def setup_descriptor(websocket, context_id: str, html, service_uuid: str,
+                           characteristic_uuid: str, characteristic_properties,
+                           descriptor_uuid: str):
     device_address = await setup_granted_device(websocket, context_id, html,
                                                 [service_uuid])
     await create_gatt_connection(websocket, context_id)
@@ -295,12 +295,13 @@ async def test_bluetooth_add_descriptor_to_unknown_characteristic(
 }],
                          indirect=True)
 async def test_bluetooth_descriptor_write_event(websocket, context_id, html):
-    await setup_dscriptor(websocket, context_id, html, HEART_RATE_SERVICE_UUID,
-                          MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
-                          {'write': True},
-                          CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID)
+    await setup_descriptor(websocket, context_id, html,
+                           HEART_RATE_SERVICE_UUID,
+                           MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
+                           {'write': True},
+                           CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID)
     await subscribe(websocket, [DESCRIPTOR_EVENT_GENERATED])
-    expected_data = [1]
+    expected_data = [42, 27]
     await send_JSON_command(
         websocket, {
             'method': 'script.evaluate',
@@ -354,10 +355,11 @@ async def test_bluetooth_descriptor_write_event(websocket, context_id, html):
 }],
                          indirect=True)
 async def test_bluetooth_descriptor_read_event(websocket, context_id, html):
-    await setup_dscriptor(websocket, context_id, html, HEART_RATE_SERVICE_UUID,
-                          MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
-                          {'read': True},
-                          CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID)
+    await setup_descriptor(websocket, context_id, html,
+                           HEART_RATE_SERVICE_UUID,
+                           MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
+                           {'read': True},
+                           CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID)
     await subscribe(websocket, [DESCRIPTOR_EVENT_GENERATED])
     await send_JSON_command(
         websocket, {

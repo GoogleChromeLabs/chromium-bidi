@@ -84,11 +84,11 @@ class BluetoothDevice {
 export class BluetoothProcessor {
   #eventManager: EventManager;
   #browsingContextStorage: BrowsingContextStorage;
-  #bluetoothDevices: Map<string, BluetoothDevice>;
+  #bluetoothDevices = new Map<string, BluetoothDevice>();
   // A map from a characteristic id from CDP to its BluetoothCharacteristic object.
-  #bluetoothCharacteristics: Map<string, BluetoothCharacteristic>;
+  #bluetoothCharacteristics = new Map<string, BluetoothCharacteristic>();
   // A map from a descriptor id from CDP to its BluetoothDescriptor object.
-  #bluetoothDescriptors: Map<string, BluetoothDescriptor>;
+  #bluetoothDescriptors = new Map<string, BluetoothDescriptor>();
 
   constructor(
     eventManager: EventManager,
@@ -96,9 +96,6 @@ export class BluetoothProcessor {
   ) {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#bluetoothDevices = new Map();
-    this.#bluetoothCharacteristics = new Map();
-    this.#bluetoothDescriptors = new Map();
   }
 
   #getDevice(address: string): BluetoothDevice {
