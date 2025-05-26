@@ -1025,7 +1025,7 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export type SetLocaleOverrideParameters = {
-    locale?: string;
+    locale: string | null;
     contexts?: [
       BrowsingContext.BrowsingContext,
       ...BrowsingContext.BrowsingContext[],
