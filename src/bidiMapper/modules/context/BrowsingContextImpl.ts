@@ -35,6 +35,7 @@ import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
+import type {UserContextConfig} from '../browser/UserContextConfig';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -81,6 +82,7 @@ export class BrowsingContextImpl {
   readonly #realmStorage: RealmStorage;
   // The deferred will be resolved when the default realm is created.
   readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
+  readonly #userContextConfig: UserContextConfig;
 
   // Set when the user prompt is opened. Required to provide the type in closing event.
   #lastUserPromptType?: BrowsingContext.UserPromptType;
@@ -89,6 +91,7 @@ export class BrowsingContextImpl {
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
     userContext: string,
+    userContextConfig: UserContextConfig,
     cdpTarget: CdpTarget,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
@@ -98,6 +101,7 @@ export class BrowsingContextImpl {
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
+    this.#userContextConfig = userContextConfig;
     this.#cdpTarget = cdpTarget;
     this.#id = id;
     this.#parentId = parentId;
@@ -121,6 +125,7 @@ export class BrowsingContextImpl {
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
     userContext: string,
+    userContextConfig: UserContextConfig,
     cdpTarget: CdpTarget,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
@@ -134,6 +139,7 @@ export class BrowsingContextImpl {
       id,
       parentId,
       userContext,
+      userContextConfig,
       cdpTarget,
       eventManager,
       browsingContextStorage,
@@ -805,19 +811,27 @@ export class BrowsingContextImpl {
     }
   }
 
+  /**
+   * Returns either custom UserContext's prompt handler, global or default one.
+   */
   #getPromptHandler(
     promptType: BrowsingContext.UserPromptType,
   ): Session.UserPromptHandlerType {
     const defaultPromptHandler = Session.UserPromptHandlerType.Dismiss;
+
     switch (promptType) {
       case BrowsingContext.UserPromptType.Alert:
         return (
+          this.#userContextConfig.userPromptHandler?.alert ??
+          this.#userContextConfig.userPromptHandler?.default ??
           this.#unhandledPromptBehavior?.alert ??
           this.#unhandledPromptBehavior?.default ??
           defaultPromptHandler
         );
       case BrowsingContext.UserPromptType.Beforeunload:
         return (
+          this.#userContextConfig.userPromptHandler?.beforeUnload ??
+          this.#userContextConfig.userPromptHandler?.default ??
           this.#unhandledPromptBehavior?.beforeUnload ??
           this.#unhandledPromptBehavior?.default ??
           // In WebDriver Classic spec, `beforeUnload` prompt should be accepted by
@@ -829,12 +843,16 @@ export class BrowsingContextImpl {
         );
       case BrowsingContext.UserPromptType.Confirm:
         return (
+          this.#userContextConfig.userPromptHandler?.confirm ??
+          this.#userContextConfig.userPromptHandler?.default ??
           this.#unhandledPromptBehavior?.confirm ??
           this.#unhandledPromptBehavior?.default ??
           defaultPromptHandler
         );
       case BrowsingContext.UserPromptType.Prompt:
         return (
+          this.#userContextConfig.userPromptHandler?.prompt ??
+          this.#userContextConfig.userPromptHandler?.default ??
           this.#unhandledPromptBehavior?.prompt ??
           this.#unhandledPromptBehavior?.default ??
           defaultPromptHandler
