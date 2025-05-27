@@ -53,6 +53,7 @@ class LocalHttpServer:
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
     __path_cacheable = "/cacheable"
+    __internal_shutdown_path = "/_server_shutdown_command"
 
     content_200: str = 'default 200 page'
 
@@ -88,13 +89,36 @@ class LocalHttpServer:
             self._server_thread = None
             return
 
-        # Wait for the thread to terminate
-        self._server_thread.join(timeout=5)
-        if self._server_thread.is_alive():
+        print("Attempting to stop server...")
+        try:
+            # Send a shutdown command to the server via HTTP
+            conn = http.client.HTTPConnection(self.__host,
+                                              self.__port,
+                                              timeout=1)  # Short timeout
+            conn.request("POST", self.__internal_shutdown_path)
+            try:
+                response = conn.getresponse()
+                response.read()
+            except (http.client.HTTPException, OSError):
+                # Expected if server shuts down quickly or connection is reset
+                pass
+            finally:
+                conn.close()
+        except (ConnectionRefusedError, TimeoutError,
+                http.client.HTTPException, OSError) as e:
+            # Server might already be down or not responding
             print(
-                f"Warning: Flask server thread for {self.origin()} did not shut down cleanly after 5s."
+                f"Info: Could not send shutdown signal to server (it may already be stopping or stopped): {e}"
             )
+        except Exception as e:
+            # Catch any other unexpected errors during shutdown signal
+            print(f"Warning: Unexpected error sending shutdown signal: {e}")
+
+        if self._server_thread:
+            self._server_thread.join(timeout=1)
+
         self._server_thread = None
+        print("Server stop process complete.")
 
     def __html_doc(self, content: str) -> str:
         return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
@@ -212,6 +236,22 @@ class LocalHttpServer:
                         'Last-Modified': self.__start_time.strftime(
                             "%a, %d %b %Y %H:%M:%S GMT")
                     })
+
+        @self.__app.route(self.__internal_shutdown_path, methods=['POST'])
+        def server_shutdown():
+            shutdown_func = request.environ.get('werkzeug.server.shutdown')
+            if shutdown_func is None:
+                # This should not happen with Werkzeug dev server
+                return FlaskResponse(
+                    "Error: Werkzeug server shutdown function not available.",
+                    status=500)
+            try:
+                shutdown_func()
+            except Exception as e:
+                # Log if shutdown function itself raises an error
+                print(f"Error during werkzeug shutdown: {e}")
+                return FlaskResponse(f"Error during shutdown: {e}", status=500)
+            return FlaskResponse("Server is shutting down...", status=200)
 
     def _check_server_readiness(self, timeout_s: float = 0.1) -> bool:
         """Checks if the server is up and responding to a basic request."""
