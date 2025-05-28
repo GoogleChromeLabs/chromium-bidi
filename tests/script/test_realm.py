@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_NUMBER, ANY_STR
+from anys import ANY_NUMBER, ANY_STR, AnySubstr
 from test_helpers import (execute_command, read_JSON_message,
                           send_JSON_command, subscribe, wait_for_event,
                           wait_for_filtered_event)
@@ -22,7 +22,7 @@ from test_helpers import (execute_command, read_JSON_message,
 
 @pytest.mark.asyncio
 async def test_realm_realmCreated(websocket, context_id, html,
-                                  local_server_http):
+                                  local_http_server):
     url = html()
 
     await subscribe(websocket, ["script.realmCreated"])
@@ -44,7 +44,7 @@ async def test_realm_realmCreated(websocket, context_id, html,
         "method": "script.realmCreated",
         "params": {
             "type": "window",
-            "origin": local_server_http.origin(),
+            "origin": AnySubstr(url),
             "realm": ANY_STR,
             "context": context_id,
         }
