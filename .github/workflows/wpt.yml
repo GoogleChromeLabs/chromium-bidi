@@ -66,8 +66,30 @@ jobs:
         # Should be in sync with `update_expectations` job.
         kind: [cd, node]
         head: [headless, headful]
-        total_chunks: [6]
-        this_chunk: [1, 2, 3, 4, 5, 6]
+        total_chunks: [20]
+        this_chunk:
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
         exclude:
           # Don't run headful node, as it takes too long.
           - kind: node
@@ -113,6 +135,7 @@ jobs:
           # TODO: Fix tests and don't rerun them.
           # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
           RETRY_UNEXPECTED: 1
+          REPEAT_TESTS: 3
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false
@@ -129,6 +152,7 @@ jobs:
           # TODO: Fix tests and don't rerun them.
           # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
           RETRY_UNEXPECTED: 1
+          REPEAT_TESTS: 3
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false
