@@ -36,8 +36,8 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
-def some_domain():
-    return 'some_domain.test'
+def default_domain():
+    return 'localhost'
 
 
 @pytest.fixture(scope="session")
@@ -51,11 +51,12 @@ def ssl_domain():
 
 
 @pytest_asyncio.fixture(scope='session')
-def local_http_server(some_domain) -> Generator[LocalHttpServer, None, None]:
+def local_http_server(
+        default_domain) -> Generator[LocalHttpServer, None, None]:
     """
     Returns an instance of a LocalHttpServer without SSL pointing to localhost.
     """
-    server = LocalHttpServer(default_host=some_domain)
+    server = LocalHttpServer(default_host=default_domain)
     yield server
 
     server.clear()
@@ -584,11 +585,11 @@ def url_download(local_http_server):
 
 
 @pytest.fixture
-def html(local_http_server, some_domain, another_domain):
+def html(local_http_server, default_domain, another_domain):
     """Return a factory for URL with the given content."""
-    def html(content="", same_origin=True):
+    def html(content="", host=None, same_origin=True):
         if same_origin:
-            return local_http_server.url_200(host=some_domain, content=content)
+            return local_http_server.url_200(host=host, content=content)
         else:
             return local_http_server.url_200(host=another_domain,
                                              content=content)
