@@ -15,13 +15,7 @@
  * limitations under the License.
  */
 
-import {
-  type EmptyResult,
-  type Script,
-  type BrowsingContext,
-  ChromiumBidi,
-  InvalidArgumentException,
-} from '../../../protocol/protocol.js';
+import {type BrowsingContext, ChromiumBidi, type EmptyResult, InvalidArgumentException, type Script,} from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
@@ -195,6 +189,7 @@ export class ScriptProcessor {
       .findRealms({
         browsingContextId: params.context,
         type: params.type,
+        isHidden: false
       })
       .map((realm) => realm.realmInfo);
     return {realms};
@@ -203,10 +198,11 @@ export class ScriptProcessor {
   async #getRealm(target: Script.Target): Promise<Realm> {
     if ('context' in target) {
       const context = this.#browsingContextStorage.getContext(target.context);
-      return await context.getOrCreateSandbox(target.sandbox);
+      return await context.getOrCreateUserSandbox(target.sandbox);
     }
     return this.#realmStorage.getRealm({
       realmId: target.realm,
+      isHidden: false,
     });
   }
 }
