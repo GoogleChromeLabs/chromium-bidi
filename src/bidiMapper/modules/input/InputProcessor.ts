@@ -184,15 +184,16 @@ export class InputProcessor {
     // file paths.
     const paths: string[] = [];
     for (let i = 0; i < params.files.length; ++i) {
-      const result: Script.EvaluateResult = await hiddenSandboxRealm.callFunction(
-        String(function getFiles(this: HTMLInputElement, index: number) {
-          return this.files?.item(index);
-        }),
-        false,
-        params.element,
-        [{type: 'number', value: 0}],
-        Script.ResultOwnership.Root,
-      );
+      const result: Script.EvaluateResult =
+        await hiddenSandboxRealm.callFunction(
+          String(function getFiles(this: HTMLInputElement, index: number) {
+            return this.files?.item(index);
+          }),
+          false,
+          params.element,
+          [{type: 'number', value: 0}],
+          Script.ResultOwnership.Root,
+        );
       assert(result.type === 'success');
       if (result.result.type !== 'object') {
         break;
@@ -200,9 +201,12 @@ export class InputProcessor {
 
       const {handle}: {handle?: string} = result.result;
       assert(handle !== undefined);
-      const {path} = await hiddenSandboxRealm.cdpClient.sendCommand('DOM.getFileInfo', {
-        objectId: handle,
-      });
+      const {path} = await hiddenSandboxRealm.cdpClient.sendCommand(
+        'DOM.getFileInfo',
+        {
+          objectId: handle,
+        },
+      );
       paths.push(path);
 
       // Cleanup the handle.
@@ -218,7 +222,9 @@ export class InputProcessor {
         return paths[index] !== path;
       })
     ) {
-      const {objectId} = await hiddenSandboxRealm.deserializeForCdp(params.element);
+      const {objectId} = await hiddenSandboxRealm.deserializeForCdp(
+        params.element,
+      );
       // This cannot throw since this was just used in `callFunction` above.
       assert(objectId !== undefined);
       await hiddenSandboxRealm.cdpClient.sendCommand('DOM.setFileInputFiles', {

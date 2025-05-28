@@ -351,7 +351,9 @@ export class BrowsingContextImpl {
     return realm;
   }
 
-  async #getOrCreateSandboxInternal(    sandbox: string | undefined  ): Promise<Realm> {
+  async #getOrCreateSandboxInternal(
+    sandbox: string | undefined,
+  ): Promise<Realm> {
     if (sandbox === undefined || sandbox === '') {
       // Default realm is not guaranteed to be created at this point, so return a deferred.
       return await this.#defaultRealmDeferred;

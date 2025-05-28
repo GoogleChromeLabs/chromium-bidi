@@ -250,7 +250,7 @@ export abstract class Realm {
   }
 
   protected initialize() {
-    if(!this.isHidden()) {
+    if (!this.isHidden()) {
       // Report only not-hidden realms.
       this.#registerEvent({
         type: 'event',
