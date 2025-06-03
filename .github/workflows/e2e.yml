@@ -43,9 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO(#876): Add Windows CI.
-        # TODO(#2154): Use macos-latest once Python setup supports mac arm64.
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         head: [headful, 'new-headless', 'old-headless']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
         kind: [cd, node]
@@ -53,7 +51,9 @@ jobs:
         this_chunk: [0, 1, 2, 3]
         exclude:
           # Run e2e via NodeJS only in new headless ubuntu.
-          - os: macos-13
+          - os: macos-latest
+            kind: node
+          - os: windows-latest
             kind: node
           - os: ubuntu-latest
             kind: node
