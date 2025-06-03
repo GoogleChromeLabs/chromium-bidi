@@ -854,7 +854,6 @@ export class BrowsingContextImpl {
                 type: 'event',
                 method: ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,
                 params: {
-                  // TODO: provide filepath.
                   filepath: params.filePath ?? null,
                   status: 'complete',
                   context: this.id,
