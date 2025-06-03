@@ -602,6 +602,15 @@ def url_download(local_server_http):
 
 
 @pytest.fixture
+def url_hang_forever_download(local_server_http):
+    """Return a URL that triggers a download which hangs forever."""
+    try:
+        yield local_server_http.url_hang_forever_download
+    finally:
+        local_server_http.hang_forever_stop()
+
+
+@pytest.fixture
 def html(local_server_http, local_server_http_another_host):
     """Return a factory for URL with the given content."""
     def html(content="", same_origin=True):
