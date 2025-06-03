@@ -13,6 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+from uuid import uuid4
 
 import pytest
 from anys import ANY_STR
@@ -20,23 +21,27 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, goto_url, send_JSON_command,
                           subscribe, wait_for_event)
 
 CONTENT = "SOME_FILE_CONTENT"
-FILENAME = 'some_file_name.txt'
 
 
 @pytest.fixture(params=['data', 'http'])
-def file_url(url_download, request):
+def file_url(url_download, request, filename):
     """Return a URL that triggers a download."""
     if request.param == 'data':
         return f"data:text/plain;charset=utf-8,{CONTENT}"
 
-    return url_download(FILENAME, CONTENT)
+    return url_download(filename, CONTENT)
+
+
+@pytest.fixture
+def filename(url_download, request):
+    return str(uuid4()) + '.txt'
 
 
 @pytest.mark.asyncio
 async def test_browsing_context_download_will_begin(websocket, context_id,
-                                                    file_url, html):
+                                                    file_url, html, filename):
     page_url = html(
-        f"""<a id="download_link" href="{file_url}" download="{FILENAME}">Download</a>"""
+        f"""<a id="download_link" href="{file_url}" download="{filename}">Download</a>"""
     )
     await goto_url(websocket, context_id, page_url)
 
@@ -63,7 +68,7 @@ async def test_browsing_context_download_will_begin(websocket, context_id,
         'params': {
             'context': context_id,
             'navigation': ANY_UUID,
-            'suggestedFilename': FILENAME,
+            'suggestedFilename': filename,
             'timestamp': ANY_TIMESTAMP,
             'url': file_url
         },
@@ -73,12 +78,12 @@ async def test_browsing_context_download_will_begin(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_browsing_context_download_finished_complete(
-        websocket, test_headless_mode, context_id, file_url, html):
+        websocket, test_headless_mode, context_id, file_url, html, filename):
     if test_headless_mode == "old":
         pytest.xfail("Old headless cancels downloads")
 
     page_url = html(
-        f"""<a id="download_link" href="{file_url}" download="{FILENAME}">Download</a>"""
+        f"""<a id="download_link" href="{file_url}" download="{filename}">Download</a>"""
     )
     await goto_url(websocket, context_id, page_url)
 
@@ -107,7 +112,7 @@ async def test_browsing_context_download_finished_complete(
         'params': {
             'context': context_id,
             'navigation': ANY_UUID,
-            'suggestedFilename': FILENAME,
+            'suggestedFilename': filename,
             'timestamp': ANY_TIMESTAMP,
             'url': file_url
         },
@@ -123,21 +128,29 @@ async def test_browsing_context_download_finished_complete(
             'context': context_id,
             'navigation': navigation_id,
             'status': 'complete',
-            'filepath': None,
+            'filepath': ANY_STR,
             'timestamp': ANY_TIMESTAMP,
             'url': file_url
         },
         'type': 'event',
     }
 
+    # Assert suggested name is used.
+    assert event["params"]["filepath"].endswith(filename)
+
+    # Assert the file content is correct.
+    with open(event["params"]["filepath"], encoding='utf-8') as file:
+        file_content = file.read()
+    assert file_content == CONTENT
+
 
 @pytest.mark.asyncio
 async def test_browsing_context_download_finished_canceled(
         websocket, test_headless_mode, url_hang_forever_download, context_id,
-        html, get_cdp_session_id):
+        html, get_cdp_session_id, filename):
 
     page_url = html(
-        f"""<a id="download_link" href="{url_hang_forever_download()}" download="{FILENAME}">Download</a>"""
+        f"""<a id="download_link" href="{url_hang_forever_download()}" download="{filename}">Download</a>"""
     )
     await goto_url(websocket, context_id, page_url)
 

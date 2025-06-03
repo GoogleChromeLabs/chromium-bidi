@@ -593,7 +593,7 @@ def url_download(local_server_http):
     def url_download(file_name="file-name.txt", content="download content"):
         return local_server_http.url_200(
             content,
-            content_type="text/html",
+            content_type="application/octet-stream",
             headers={
                 "Content-Disposition": f"attachment;  filename=\"{file_name}\""
             })
