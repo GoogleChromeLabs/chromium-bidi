@@ -33,7 +33,7 @@ def file_url(url_download, request, filename):
 
 
 @pytest.fixture
-def filename(url_download, request):
+def filename():
     return str(uuid4()) + '.txt'
 
 
