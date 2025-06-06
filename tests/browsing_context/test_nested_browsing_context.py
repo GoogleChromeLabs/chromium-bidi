@@ -271,9 +271,6 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
         websocket, iframe_id, html, iframe, url_example,
         url_example_another_origin, test_chromedriver_mode):
-    # if test_chromedriver_mode:
-    #     pytest.xfail(reason="TODO: #3294")
-
     page_with_nested_iframe = html(iframe(url_example))
     another_page_with_nested_iframe = html(iframe(url_example_another_origin))
 
