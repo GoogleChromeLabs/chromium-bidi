@@ -50,7 +50,7 @@ jobs:
         head: ['headful']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
         # kind: [cd, node]
-        kind: [node]
+        kind: [cd]
         # kind: [node]
         total_chunks: [3]
         this_chunk: [0, 1, 2]
