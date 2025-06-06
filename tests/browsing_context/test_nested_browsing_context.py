@@ -271,8 +271,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
         websocket, iframe_id, html, iframe, url_example,
         url_example_another_origin, test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
+    # if test_chromedriver_mode:
+    #     pytest.xfail(reason="TODO: #3294")
 
     page_with_nested_iframe = html(iframe(url_example))
     another_page_with_nested_iframe = html(iframe(url_example_another_origin))
@@ -306,9 +306,6 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
 async def test_nestedBrowsingContext_afterNavigation_getTree_contextsReturned(
         websocket, iframe_id, html, iframe, url_all_origins,
         test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
     page_with_nested_iframe = html('<h1>MAIN_PAGE</h1>' +
                                    iframe(url_all_origins))
     another_page_with_nested_iframe = html('<h1>ANOTHER_MAIN_PAGE</h1>' +
@@ -364,9 +361,6 @@ async def test_nestedBrowsingContext_afterNavigation_getTree_contextsReturned(
 async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
         websocket, context_id, url_all_origins, html, iframe,
         test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
     page_with_nested_iframe = html(iframe(url_all_origins))
     await goto_url(websocket, context_id, page_with_nested_iframe, "complete")
 
