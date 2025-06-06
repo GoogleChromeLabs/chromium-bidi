@@ -629,9 +629,6 @@ async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
 @pytest.mark.asyncio
 async def test_click_iframe_context(websocket, context_id, html, same_origin,
                                     read_messages, test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
     # TODO: add test for double-nested iframes.
     await subscribe(websocket, ["log.entryAdded"])
 
