@@ -18,8 +18,7 @@ from test_helpers import execute_command
 
 
 @pytest.mark.asyncio
-async def test_scriptGetRealms(websocket, context_id, another_context_id,
-                               test_chromedriver_mode):
+async def test_scriptGetRealms(websocket, context_id, another_context_id):
     result = await execute_command(websocket, {
         "method": "script.getRealms",
         "params": {

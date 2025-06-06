@@ -221,8 +221,7 @@ async def test_preloadScript_add_sameScriptMultipleTimes(
 @pytest.mark.asyncio
 async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
                                                     url_all_origins, html,
-                                                    read_messages,
-                                                    test_chromedriver_mode):
+                                                    read_messages):
     await subscribe(websocket, ["log.entryAdded"])
 
     await execute_command(
@@ -411,8 +410,7 @@ async def test_preloadScript_add_loadedInMultipleContexts(
 
 @pytest.mark.asyncio
 async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
-        websocket, context_id, url_all_origins, html, read_messages,
-        test_chromedriver_mode):
+        websocket, context_id, url_all_origins, html, read_messages):
     await subscribe(websocket, ["script.message"])
 
     await goto_url(websocket, context_id, html())
