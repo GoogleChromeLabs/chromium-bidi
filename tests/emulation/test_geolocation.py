@@ -166,15 +166,11 @@ async def test_geolocation_emulate_unavailable(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_geolocation_per_user_context(websocket, url_example,
-                                            url_example_another_origin,
                                             user_context_id, create_context,
                                             snapshot):
-    # `url_example_another_origin` is required as `local_server_http` can
-    # be dead-locked in case of concurrent requests.
-
     await set_permission(websocket, get_origin(url_example),
                          {'name': 'geolocation'}, 'granted', "default")
-    await set_permission(websocket, get_origin(url_example_another_origin),
+    await set_permission(websocket, get_origin(url_example),
                          {'name': 'geolocation'}, 'granted', user_context_id)
 
     # Set different geolocation overrides for different user contexts.
@@ -203,8 +199,7 @@ async def test_geolocation_per_user_context(websocket, url_example,
     assert emulated_geolocation_1 == snapshot()
 
     browsing_context_id_2 = await create_context(user_context_id)
-    await goto_url(websocket, browsing_context_id_2,
-                   url_example_another_origin)
+    await goto_url(websocket, browsing_context_id_2, url_example)
     emulated_geolocation_2 = await get_geolocation(websocket,
                                                    browsing_context_id_2)
     assert emulated_geolocation_2 == snapshot()
