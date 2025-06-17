@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_STR, Not
+from anys import ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, get_tree, goto_url,
                           read_JSON_message, send_JSON_command, subscribe)
@@ -236,9 +236,10 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
     oopif_url = html("<h2>test</h2>", same_origin=False)
     url = html(f"<html><body><iframe src='{oopif_url}' /></body></html>")
 
-    await subscribe(
-        websocket,
-        ["browsingContext.domContentLoaded", "browsingContext.load"])
+    await subscribe(websocket, [
+        "browsingContext.contextCreated", "browsingContext.domContentLoaded",
+        "browsingContext.load"
+    ])
 
     command_id = await send_JSON_command(
         websocket, {
@@ -250,7 +251,11 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
             }
         })
 
-    messages = await read_messages(6, check_no_other_messages=True)
+    messages = await read_messages(7)
+
+    # Get created frame id from the event. Required to assert the other events.
+    frame_id = messages[1]["params"]["context"]
+
     assert messages == [
         {
             'id': command_id,
@@ -261,6 +266,14 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
             'type': 'success',
         },
         {
+            'method': 'browsingContext.contextCreated',
+            'params': AnyExtending({
+                'context': frame_id,
+                'parent': context_id,
+            }),
+            'type': 'event',
+        },
+        {
             'method': 'browsingContext.domContentLoaded',
             'params': {
                 'context': context_id,
@@ -271,9 +284,10 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
             'type': 'event',
         },
         {
+            # Most likely this event should not be here.
             'method': 'browsingContext.domContentLoaded',
             'params': {
-                'context': Not(context_id),
+                'context': frame_id,
                 'navigation': ANY_UUID,
                 'timestamp': ANY_TIMESTAMP,
                 'url': '',
@@ -283,7 +297,7 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
         {
             'method': 'browsingContext.domContentLoaded',
             'params': {
-                'context': Not(context_id),
+                'context': frame_id,
                 'navigation': ANY_UUID,
                 'timestamp': ANY_TIMESTAMP,
                 'url': oopif_url,
@@ -293,7 +307,7 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
         {
             'method': 'browsingContext.load',
             'params': {
-                'context': Not(context_id),
+                'context': frame_id,
                 'navigation': ANY_UUID,
                 'timestamp': ANY_TIMESTAMP,
                 'url': oopif_url,
@@ -309,7 +323,7 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
                 'url': url,
             },
             'type': 'event',
-        },
+        }
     ]
 
 
