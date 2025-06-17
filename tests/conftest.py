@@ -35,12 +35,27 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+@pytest.fixture(scope="session")
+def some_domain():
+    return 'some_domain.test'
+
+
+@pytest.fixture(scope="session")
+def another_domain():
+    return 'another_domain.test'
+
+
+@pytest.fixture(scope="session")
+def ssl_domain():
+    return 'ssl_domain.test'
+
+
 @pytest_asyncio.fixture(scope='session')
-def local_server_http() -> Generator[LocalHttpServer, None, None]:
+def local_http_server(some_domain) -> Generator[LocalHttpServer, None, None]:
     """
     Returns an instance of a LocalHttpServer without SSL pointing to localhost.
     """
-    server = LocalHttpServer()
+    server = LocalHttpServer(default_host=some_domain)
     yield server
 
     server.clear()
@@ -50,23 +65,9 @@ def local_server_http() -> Generator[LocalHttpServer, None, None]:
 
 
 @pytest_asyncio.fixture(scope='session')
-def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
-    """
-    Returns an instance of a LocalHttpServer without SSL pointing to `127.0.0.1`
-    """
-    server = LocalHttpServer('127.0.0.1')
-    yield server
-
-    server.clear()
-    if server.is_running():
-        server.stop()
-        return
-
-
-@pytest_asyncio.fixture(scope='session')
-def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
+def local_server_bad_ssl(ssl_domain) -> Generator[LocalHttpServer, None, None]:
     """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
-    server = LocalHttpServer(protocol='https')
+    server = LocalHttpServer(default_host=ssl_domain, protocol='https')
     yield server
 
     server.clear()
@@ -122,7 +123,9 @@ async def websocket(test_headless_mode, capabilities, request):
                     # Required to prevent automatic switch to https.
                     "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades,LocalNetworkAccessChecks",
                     # Required for bluetooth testing.
-                    "--enable-features=WebBluetooth"
+                    "--enable-features=WebBluetooth",
+                    # Required for testing with `.test` domains.
+                    "--host-resolver-rules=MAP *.test 127.0.0.1",
                 ]
             }
         }
@@ -325,46 +328,46 @@ def url_all_origins(request, url_example, url_example_another_origin, html):
 
 
 @pytest.fixture
-def url_base(local_server_http):
+def url_base(local_http_server):
     """Return a generic example URL with status code 200."""
-    return local_server_http.url_base()
+    return local_http_server.url_base()
 
 
 @pytest.fixture
-def url_example(local_server_http):
+def url_example(local_http_server):
     """Return a generic example URL with status code 200."""
-    return local_server_http.url_200()
+    return local_http_server.url_200()
 
 
 @pytest.fixture
-def url_example_another_origin(local_server_http_another_host):
+def url_example_another_origin(local_http_server, another_domain):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server_http_another_host.url_200()
+    return local_http_server.url_200(host=another_domain)
 
 
 @pytest.fixture
-def url_auth_required(local_server_http):
+def url_auth_required(local_http_server):
     """Return a URL that requires authentication (status code 401).
     Alternatively, any of the following URLs could also be used:
         - "https://authenticationtest.com/HTTPAuth/"
         - "http://the-internet.herokuapp.com/basic_auth"
         - "http://httpstat.us/401"
     """
-    return local_server_http.url_basic_auth()
+    return local_http_server.url_basic_auth()
 
 
 @pytest.fixture
-def url_hang_forever(local_server_http):
+def url_hang_forever(local_http_server):
     """Return a URL that hangs forever."""
     try:
-        yield local_server_http.url_hang_forever()
+        yield local_http_server.url_hang_forever()
     finally:
-        local_server_http.hang_forever_stop()
+        local_http_server.hang_forever_stop()
 
 
 @pytest.fixture(scope="session")
-def url_bad_ssl(local_server_bad_ssl):
+def url_bad_ssl(local_server_bad_ssl, ssl_domain):
     """
     Return a URL with an invalid certificate authority from a SSL certificate.
     In Chromium, this generates the following error:
@@ -372,13 +375,13 @@ def url_bad_ssl(local_server_bad_ssl):
     > Your connection is not private
     > NET::ERR_CERT_AUTHORITY_INVALID
     """
-    return local_server_bad_ssl.url_200()
+    return local_server_bad_ssl.url_200(host=ssl_domain)
 
 
 @pytest.fixture
-def url_cacheable(local_server_http):
+def url_cacheable(local_http_server):
     """Return a generic example URL that can be cached."""
-    return local_server_http.url_cacheable()
+    return local_http_server.url_cacheable()
 
 
 @pytest.fixture
@@ -567,11 +570,11 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 
 
 @pytest.fixture
-def url_download(local_server_http):
+def url_download(local_http_server):
     """Return a URL that triggers a download."""
     def url_download(file_name="file-name.txt", content="download content"):
-        return local_server_http.url_200(
-            content,
+        return local_http_server.url_200(
+            content=content,
             content_type="text/html",
             headers={
                 "Content-Disposition": f"attachment;  filename=\"{file_name}\""
@@ -581,13 +584,14 @@ def url_download(local_server_http):
 
 
 @pytest.fixture
-def html(local_server_http, local_server_http_another_host):
+def html(local_http_server, some_domain, another_domain):
     """Return a factory for URL with the given content."""
     def html(content="", same_origin=True):
         if same_origin:
-            return local_server_http.url_200(content=content)
+            return local_http_server.url_200(host=some_domain, content=content)
         else:
-            return local_server_http_another_host.url_200(content=content)
+            return local_http_server.url_200(host=another_domain,
+                                             content=content)
 
     return html
 

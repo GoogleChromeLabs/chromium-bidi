@@ -148,7 +148,7 @@ async def test_network_global_subscription_enabled_in_new_context(
 
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_with_cookies_emitted(
-        websocket, context_id, url_base, url_example):
+        websocket, context_id, url_base, url_example, some_domain):
     await goto_url(websocket, context_id, url_base)
 
     await execute_command(
@@ -192,7 +192,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
                 "headers": ANY_LIST,
                 "cookies": AnyOr([
                     AnyExtending({
-                        "domain": "localhost",
+                        "domain": some_domain,
                         "httpOnly": False,
                         "name": "foo",
                         "path": "/",

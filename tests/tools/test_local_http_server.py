@@ -45,31 +45,38 @@ async def get_content(websocket, context_id, url):
 
 
 @pytest.mark.asyncio
-async def test_local_server_200(websocket, context_id, local_server_http):
-    assert await get_content(websocket, context_id, local_server_http.url_200()) \
-           == local_server_http.content_200
+async def test_local_server_url_200(websocket, context_id, local_http_server):
+    assert await get_content(websocket, context_id, local_http_server.url_200()) \
+           == local_http_server.content_200
 
 
 @pytest.mark.asyncio
-async def test_local_server_http_another_host_200(
-        websocket, context_id, local_server_http_another_host):
-    assert await get_content(websocket, context_id, local_server_http_another_host.url_200()) \
-           == local_server_http_another_host.content_200
+async def test_local_server_url_example(websocket, context_id,
+                                        local_http_server, url_example):
+    assert await get_content(websocket, context_id,
+                             url_example) == local_http_server.content_200
+
+
+@pytest.mark.asyncio
+async def test_local_server_url_example_another_origin(
+        websocket, context_id, local_http_server, url_example_another_origin):
+    assert await get_content(websocket, context_id, url_example_another_origin) \
+           == local_http_server.content_200
 
 
 @pytest.mark.asyncio
 async def test_local_server_custom_content(websocket, context_id,
-                                           local_server_http):
+                                           local_http_server):
     some_custom_content = 'some custom content'
-    assert await get_content(websocket, context_id, local_server_http.url_200(content=some_custom_content)) \
+    assert await get_content(websocket, context_id, local_http_server.url_200(content=some_custom_content)) \
            == some_custom_content
 
 
 @pytest.mark.asyncio
-async def test_local_server_redirect(websocket, context_id, local_server_http):
+async def test_local_server_redirect(websocket, context_id, local_http_server):
     assert await get_content(websocket, context_id,
-                             local_server_http.url_permanent_redirect()) \
-           == local_server_http.content_200
+                             local_http_server.url_permanent_redirect()) \
+           == local_http_server.content_200
 
 
 @pytest.mark.asyncio
