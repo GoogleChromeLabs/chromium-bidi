@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session")
 def default_domain():
-    return 'localhost'
+    return 'some_domain.test'
 
 
 @pytest.fixture(scope="session")
