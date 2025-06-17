@@ -12,8 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import pytest
-from anys import ANY_STR
+from anys import ANY_STR, Not
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, get_tree, goto_url,
                           read_JSON_message, send_JSON_command, subscribe)
@@ -177,9 +178,8 @@ async def test_browsingContext_navigateWaitComplete_navigated(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
-            "id": 15,
             "method": "browsingContext.navigate",
             "params": {
                 "url": url,
@@ -218,13 +218,99 @@ async def test_browsingContext_navigateWaitComplete_navigated(
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id": 15,
+        "id": command_id,
         "type": "success",
         "result": {
             "navigation": navigation_id,
             "url": url
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigateWaitComplete_oopif_navigated(
+        websocket, context_id, html, read_messages, test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("In old headless all iframes are run in the same process")
+
+    oopif_url = html("<h2>test</h2>", same_origin=False)
+    url = html(f"<html><body><iframe src='{oopif_url}' /></body></html>")
+
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_messages(6, check_no_other_messages=True)
+    assert messages == [
+        {
+            'id': command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url,
+            },
+            'type': 'success',
+        },
+        {
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url,
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': Not(context_id),
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': '',
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': Not(context_id),
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': oopif_url,
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.load',
+            'params': {
+                'context': Not(context_id),
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': oopif_url,
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.load',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url,
+            },
+            'type': 'event',
+        },
+    ]
 
 
 @pytest.mark.asyncio
