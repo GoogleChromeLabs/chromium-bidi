@@ -47,11 +47,10 @@ jobs:
         # os: [macos-latest]
         os: [ubuntu-latest]
         # head: [headful, 'new-headless', 'old-headless']
-        head: ['headful']
+        head: ['new-headless']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
         # kind: [cd, node]
-        kind: [cd]
-        # kind: [node]
+        kind: [node]
         total_chunks: [3]
         this_chunk: [0, 1, 2]
         # `REPEAT_TESTS` in e2e does not work with snapshots, so need to repeat it manually.
