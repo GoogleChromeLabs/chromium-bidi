@@ -316,6 +316,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#emulationProcessor.setGeolocationOverride(
           this.#parser.parseSetGeolocationOverrideParams(command.params),
         );
+      case 'emulation.setLocaleOverride':
+        return await this.#emulationProcessor.setLocaleOverride(
+          this.#parser.parseSetLocaleOverrideParams(command.params),
+        );
       // keep-sorted end
 
       // Input module
