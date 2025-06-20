@@ -12,11 +12,14 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, send_JSON_command, subscribe,
                           wait_for_event)
+
+from . import get_network_interception_pattern
 
 
 @pytest.mark.asyncio
@@ -37,7 +40,7 @@ async def test_remove_intercept_no_such_intercept(websocket):
 
 
 @pytest.mark.asyncio
-async def test_remove_intercept_twice(websocket):
+async def test_remove_intercept_twice(websocket, url_example):
     result = await execute_command(
         websocket, {
             "method": "network.addIntercept",
@@ -45,7 +48,7 @@ async def test_remove_intercept_twice(websocket):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": "https://www.example.com/\\*"
+                    "pattern": url_example,
                 }],
             },
         })
@@ -76,45 +79,23 @@ async def test_remove_intercept_twice(websocket):
             })
 
 
-@pytest.mark.asyncio
-@pytest.mark.parametrize("url_patterns", [
-    [
-        {
+@pytest.fixture(params=["string", "pattern", "string and pattern"])
+def url_patterns(request, url_example):
+    result = []
+    if "string" in request.param:
+        result.append({
             "type": "string",
-            "pattern": "https://www.example.com/",
-        },
-    ],
-    [
-        {
-            "type": "pattern",
-            "protocol": "https",
-            "hostname": "www.example.com",
-            "pathname": "/",
-        },
-    ],
-    [
-        {
-            "type": "string",
-            "pattern": "https://www.example.com/",
-        },
-        {
-            "type": "pattern",
-            "protocol": "https",
-            "hostname": "www.example.com",
-            "pathname": "/",
-        },
-    ],
-],
-                         ids=[
-                             "string",
-                             "pattern",
-                             "string and pattern",
-                         ])
+            "pattern": url_example,
+        })
+    if "pattern" in request.param:
+        result.append(get_network_interception_pattern(url_example))
+    return result
+
+
 @pytest.mark.asyncio
 async def test_remove_intercept_unblocks(websocket, context_id,
-                                         another_context_id, url_patterns):
-    # TODO: make offline
-    example_url = "https://www.example.com/"
+                                         another_context_id, url_patterns,
+                                         url_example):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
     await subscribe(websocket, ["network"], [another_context_id])
 
@@ -136,7 +117,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -157,7 +138,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -184,7 +165,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "wait": "complete",
                 "context": another_context_id,
             }
@@ -203,7 +184,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -231,7 +212,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                 "urlPatterns": [{
                     "type": "string",
                     "pattern": url_example,
-                }, ]
+                }]
             },
         })
     assert result == {

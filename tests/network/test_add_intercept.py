@@ -20,9 +20,11 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, send_JSON_command, subscribe,
                           wait_for_event)
 
+from . import get_network_interception_pattern
+
 
 @pytest.mark.asyncio
-async def test_add_intercept_invalid_empty_phases(websocket):
+async def test_add_intercept_invalid_empty_phases(websocket, url_example):
     with pytest.raises(
             Exception,
             match=re.escape(
@@ -36,15 +38,15 @@ async def test_add_intercept_invalid_empty_phases(websocket):
                 "params": {
                     "phases": [],
                     "urlPatterns": [{
-                        "type": 'string',
-                        "pattern": "https://www.example.com/*",
+                        "type": "string",
+                        "pattern": url_example,
                     }],
                 },
             })
 
 
 @pytest.mark.asyncio
-async def test_add_intercept_returns_intercept_id(websocket):
+async def test_add_intercept_returns_intercept_id(websocket, url_example):
     result = await execute_command(
         websocket, {
             "method": "network.addIntercept",
@@ -52,7 +54,7 @@ async def test_add_intercept_returns_intercept_id(websocket):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": "https://www.example.com"
+                    "pattern": url_example
                 }],
             },
         })
@@ -72,7 +74,7 @@ async def test_add_intercept_type_pattern_valid(websocket):
                 "urlPatterns": [{
                     "type": "pattern",
                     "protocol": "https",
-                    "hostname": "www.example.com",
+                    "hostname": "some_domain.test",
                     "path": "/",
                 }],
             },
@@ -105,7 +107,8 @@ async def test_add_intercept_type_string_invalid(websocket):
 
 
 @pytest.mark.asyncio
-async def test_add_intercept_type_string_one_valid_and_one_invalid(websocket):
+async def test_add_intercept_type_string_one_valid_and_one_invalid(
+        websocket, url_example):
     with pytest.raises(
             Exception,
             match=str({
@@ -122,7 +125,7 @@ async def test_add_intercept_type_string_one_valid_and_one_invalid(websocket):
                         "pattern": "foo",
                     }, {
                         "type": "string",
-                        "pattern": "https://www.example.com/",
+                        "pattern": "http://some_domain.test",
                     }],
                 },
             })
@@ -143,7 +146,7 @@ async def test_add_intercept_type_pattern_protocol_empty_invalid(websocket):
                     "urlPatterns": [{
                         "type": "pattern",
                         "protocol": "",
-                        "hostname": "www.example.com",
+                        "hostname": "some_domain.test",
                         "port": "80",
                     }],
                 },
@@ -161,7 +164,7 @@ async def test_add_intercept_type_pattern_protocol_non_special_success(
                 "urlPatterns": [{
                     "type": "pattern",
                     "protocol": "sftp",
-                    "hostname": "www.example.com",
+                    "hostname": "some_domain.test",
                     "port": "22",
                 }],
             },
@@ -232,54 +235,33 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
                     "urlPatterns": [{
                         "type": "pattern",
                         "protocol": "https",
-                        "hostname": "www.example.com",
+                        "hostname": "some_domain.test",
                         "port": "",
                     }],
                 },
             })
 
 
+@pytest.fixture(params=["string", "pattern", "string and pattern"])
+def url_patterns(request, url_example):
+    result = []
+    if "string" in request.param:
+        result.append({
+            "type": "string",
+            "pattern": url_example,
+        })
+    if "pattern" in request.param:
+        result.append(get_network_interception_pattern(url_example))
+    return result
+
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize("url_patterns", [
-    [
-        {
-            "type": "string",
-            "pattern": "https://www.example.com/",
-        },
-    ],
-    [
-        {
-            "type": "pattern",
-            "protocol": "https",
-            "hostname": "www.example.com",
-            "pathname": "/",
-        },
-    ],
-    [
-        {
-            "type": "string",
-            "pattern": "https://www.example.com/",
-        },
-        {
-            "type": "pattern",
-            "protocol": "https",
-            "hostname": "www.example.com",
-            "pathname": "/",
-        },
-    ],
-],
-                         ids=[
-                             "string",
-                             "pattern",
-                             "string and pattern",
-                         ])
 async def test_add_intercept_blocks(
     websocket,
     context_id,
+    url_example,
     url_patterns,
 ):
-    # TODO: make offline
-    example_url = "https://www.example.com/"
     await subscribe(websocket, ["network.beforeRequestSent"])
 
     result = await execute_command(
@@ -299,7 +281,7 @@ async def test_add_intercept_blocks(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -320,7 +302,7 @@ async def test_add_intercept_blocks(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],

@@ -29,11 +29,17 @@ from . import (CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID,
 
 CHARACTERISTIC_EVENT_GENERATED = 'bluetooth.characteristicEventGenerated'
 
+# Bluetooth require secure context (either `Secure` or `SecureLocalhost`).
+pytestmark = pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                                     indirect=True)
 
-async def setup_characteristic(websocket, context_id: str, html,
+
+async def setup_characteristic(websocket, context_id: str, url,
                                service_uuid: str, characteristic_uuid: str,
                                characteristic_properties):
-    device_address = await setup_granted_device(websocket, context_id, html,
+    device_address = await setup_granted_device(websocket, context_id, url,
                                                 [service_uuid])
     await create_gatt_connection(websocket, context_id)
     await simulate_service(websocket, context_id, device_address, service_uuid,
@@ -141,9 +147,10 @@ async def teardown(websocket, context_id):
     'broadcast', 'read', 'writeWithoutResponse', 'write', 'notify', 'indicate',
     'authenticatedSignedWrites'
 ])
-async def test_bluetooth_simulateCharacteristic(websocket, context_id, html,
-                                                property):
-    device_address = await setup_granted_device(websocket, context_id, html,
+async def test_bluetooth_simulateCharacteristic(websocket, context_id,
+                                                url_bad_ssl, property):
+    device_address = await setup_granted_device(websocket, context_id,
+                                                url_bad_ssl,
                                                 [HEART_RATE_SERVICE_UUID])
     await create_gatt_connection(websocket, context_id)
     await simulate_service(websocket, context_id, device_address,
@@ -304,8 +311,8 @@ async def test_bluetooth_remove_characteristic_uuid_with_properties(
     'write_type', [('writeValueWithoutResponse', 'write-without-response'),
                    ('writeValueWithResponse', 'write-with-response')])
 async def test_bluetooth_characteristic_write_event(websocket, context_id,
-                                                    html, write_type):
-    await setup_characteristic(websocket, context_id, html,
+                                                    url_bad_ssl, write_type):
+    await setup_characteristic(websocket, context_id, url_bad_ssl,
                                HEART_RATE_SERVICE_UUID,
                                DATE_TIME_CHARACTERISTIC_UUID, {'write': True})
     await subscribe(websocket, [CHARACTERISTIC_EVENT_GENERATED])
@@ -355,8 +362,8 @@ async def test_bluetooth_characteristic_write_event(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_bluetooth_characteristic_read_event(websocket, context_id,
-                                                   html):
-    await setup_characteristic(websocket, context_id, html,
+                                                   url_bad_ssl):
+    await setup_characteristic(websocket, context_id, url_bad_ssl,
                                HEART_RATE_SERVICE_UUID,
                                DATE_TIME_CHARACTERISTIC_UUID, {'read': True})
     await subscribe(websocket, [CHARACTERISTIC_EVENT_GENERATED])
@@ -419,8 +426,9 @@ async def test_bluetooth_characteristic_read_event(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_bluetooth_characteristic_notification_event(
-        websocket, context_id, html):
-    device_address = await setup_characteristic(websocket, context_id, html,
+        websocket, context_id, url_bad_ssl):
+    device_address = await setup_characteristic(websocket, context_id,
+                                                url_bad_ssl,
                                                 HEART_RATE_SERVICE_UUID,
                                                 DATE_TIME_CHARACTERISTIC_UUID,
                                                 {'notify': True})

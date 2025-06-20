@@ -13,6 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 from typing import Literal
+from urllib.parse import urlparse
 
 from test_helpers import (create_request_via_fetch, execute_command, subscribe,
                           wait_for_event)
@@ -49,3 +50,13 @@ async def create_blocked_request(websocket, context_id: str, url: str,
     network_id = event_response["params"]["request"]["request"]
 
     return network_id
+
+
+def get_network_interception_pattern(url):
+    parts = urlparse(url)
+    return {
+        "type": "pattern",
+        "protocol": parts.scheme,
+        "hostname": parts.hostname,
+        "pathname": parts.path
+    }
