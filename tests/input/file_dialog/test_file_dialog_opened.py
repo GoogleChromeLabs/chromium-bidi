@@ -53,9 +53,13 @@ async def test_file_dialog_show_file_event(websocket, context_id, url_example,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                         indirect=True)
 async def test_file_dialog_show_directory_event(websocket, context_id,
-                                                url_example):
-    await goto_url(websocket, context_id, url_example)
+                                                url_bad_ssl):
+    await goto_url(websocket, context_id, url_bad_ssl)
 
     await subscribe(websocket, ["input.fileDialogOpened"])
 
