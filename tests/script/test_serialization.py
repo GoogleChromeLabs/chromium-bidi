@@ -331,7 +331,7 @@ async def test_serialization_deserialization(websocket, context_id,
          "type": "error",
          "handle": ANY_STR
      }),
-     ("new URL('https://example.com')", {
+     ("new URL('https://some_domain.test')", {
          "type": "object",
          "handle": ANY_STR
      }),
