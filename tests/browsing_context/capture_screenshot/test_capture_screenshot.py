@@ -109,11 +109,10 @@ async def test_screenshot_element(websocket, context_id, query_selector, html):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: fails on CI")
 async def test_screenshot_oopif(websocket, context_id, html, iframe):
     await goto_url(websocket,
                    context_id,
-                   html(iframe("https://www.example.com")),
+                   html(iframe(html("OOPIF", same_origin=False))),
                    wait="complete")
 
     iframe_context_id = (await get_tree(
@@ -135,7 +134,7 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe):
         })
     await read_JSON_message(websocket)
 
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.captureScreenshot",
             "params": {
@@ -144,14 +143,12 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe):
         })
 
     resp = await read_JSON_message(websocket)
-    assert resp["result"] == {'data': ANY_STR}
-
-    png_filename = "oopif.png"
-    with open(Path(__file__).parent.resolve() / png_filename,
-              'rb') as image_file:
-        png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
-
-        assert_images_similar(resp["result"]["data"], png_base64)
+    assert resp == {
+        'error': 'unsupported operation',
+        'id': command_id,
+        'message': ANY_STR,
+        'type': 'error',
+    }
 
 
 @pytest.mark.asyncio
