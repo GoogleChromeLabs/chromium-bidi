@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_file_dialog_input_click_event[False]
+# name: test_file_dialog_input_click_event[False-capabilities0]
   list([
     dict({
       'id': 'stable_0',
@@ -45,7 +45,7 @@
     }),
   ])
 # ---
-# name: test_file_dialog_input_click_event[True]
+# name: test_file_dialog_input_click_event[True-capabilities0]
   list([
     dict({
       'id': 'stable_0',

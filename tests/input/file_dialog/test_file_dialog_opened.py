@@ -21,10 +21,14 @@ KEYS_TO_STABILIZE = ['sharedId', 'context', 'realm', 'id']
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                         indirect=True)
 @pytest.mark.parametrize('multiple', [True, False])
-async def test_file_dialog_show_file_event(websocket, context_id, url_example,
+async def test_file_dialog_show_file_event(websocket, context_id, url_bad_ssl,
                                            multiple):
-    await goto_url(websocket, context_id, url_example)
+    await goto_url(websocket, context_id, url_bad_ssl)
 
     await subscribe(websocket, ["input.fileDialogOpened"])
 
@@ -88,6 +92,10 @@ async def test_file_dialog_show_directory_event(websocket, context_id,
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                         indirect=True)
 @pytest.mark.parametrize('multiple', [True, False])
 async def test_file_dialog_input_click_event(websocket, context_id, html,
                                              read_messages, multiple,
@@ -118,34 +126,42 @@ async def test_file_dialog_input_click_event(websocket, context_id, html,
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': 'dismiss'
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': 'dismiss and notify'
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': {
             'default': 'dismiss'
         }
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': {
             'file': 'dismiss',
             'default': 'ignore'
         }
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': 'accept'
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': 'accept and notify'
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': {
             'default': 'accept'
         }
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': {
             'file': 'accept',
             'default': 'ignore'
@@ -191,13 +207,18 @@ async def test_file_dialog_unhandled_prompt_behavior_input_cancel(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{}, {
+@pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}, {
+    'acceptInsecureCerts': True,
     'unhandledPromptBehavior': 'ignore'
 }, {
+    'acceptInsecureCerts': True,
     'unhandledPromptBehavior': {
         'default': 'ignore'
     }
 }, {
+    'acceptInsecureCerts': True,
     'unhandledPromptBehavior': {
         'file': 'ignore',
         'default': 'dismiss'
@@ -251,34 +272,42 @@ async def test_file_dialog_unhandled_prompt_behavior_input_ignore(
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': 'dismiss'
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': 'dismiss and notify'
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': {
             'default': 'dismiss'
         }
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': {
             'file': 'dismiss',
             'default': 'ignore'
         }
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': 'accept'
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': 'accept and notify'
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': {
             'default': 'accept'
         }
     },
     {
+        'acceptInsecureCerts': True,
         'unhandledPromptBehavior': {
             'file': 'accept',
             'default': 'ignore'
@@ -287,8 +316,8 @@ async def test_file_dialog_unhandled_prompt_behavior_input_ignore(
 ],
                          indirect=True)
 async def test_file_dialog_unhandled_prompt_behavior_show_file_cancel(
-        websocket, context_id, url_example):
-    await goto_url(websocket, context_id, url_example)
+        websocket, context_id, url_bad_ssl):
+    await goto_url(websocket, context_id, url_bad_ssl)
     await subscribe(websocket, ["input.fileDialogOpened"])
 
     resp = await execute_command(
@@ -313,13 +342,18 @@ async def test_file_dialog_unhandled_prompt_behavior_show_file_cancel(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{}, {
+@pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}, {
+    'acceptInsecureCerts': True,
     'unhandledPromptBehavior': 'ignore'
 }, {
+    'acceptInsecureCerts': True,
     'unhandledPromptBehavior': {
         'default': 'ignore'
     }
 }, {
+    'acceptInsecureCerts': True,
     'unhandledPromptBehavior': {
         'file': 'ignore',
         'default': 'dismiss'
@@ -327,7 +361,7 @@ async def test_file_dialog_unhandled_prompt_behavior_show_file_cancel(
 }],
                          indirect=True)
 async def test_file_dialog_unhandled_prompt_behavior_show_file_ignore(
-        websocket, context_id, url_example, test_headless_mode):
+        websocket, context_id, url_bad_ssl, test_headless_mode):
     """
     The test exploits the fact that the file picker dialog can't be opened
     twice. This is used as an indicator that the dialog was shown.
@@ -336,7 +370,7 @@ async def test_file_dialog_unhandled_prompt_behavior_show_file_ignore(
         pytest.xfail("Headless browser always cancels the file dialog")
         return
 
-    await goto_url(websocket, context_id, url_example)
+    await goto_url(websocket, context_id, url_bad_ssl)
 
     resp = await execute_command(
         websocket, {
