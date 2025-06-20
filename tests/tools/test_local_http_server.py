@@ -53,7 +53,7 @@ async def test_local_server_200(websocket, context_id, local_server_http):
 @pytest.mark.asyncio
 async def test_local_server_200_custom_host(websocket, context_id,
                                             local_server_http):
-    assert await get_content(websocket, context_id, local_server_http.url_200('127.0.0.1')) \
+    assert await get_content(websocket, context_id, local_server_http.url_200(host='127.0.0.1')) \
            == local_server_http.content_200
 
 

@@ -578,7 +578,7 @@ def url_download(local_server_http):
     """Return a URL that triggers a download."""
     def url_download(file_name="file-name.txt", content="download content"):
         return local_server_http.url_200(
-            content,
+            content=content,
             content_type="text/html",
             headers={
                 "Content-Disposition": f"attachment;  filename=\"{file_name}\""
