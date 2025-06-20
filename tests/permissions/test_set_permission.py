@@ -41,10 +41,9 @@ async def test_permissions_set_permission(websocket, context_id, url_example,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="See chromium-bidi/issues#1610")
 async def test_permissions_set_permission_in_user_context(
-        websocket, context_id, url_example, create_context):
-    await goto_url(websocket, context_id, url_example)
+        websocket, context_id, url_secure, create_context):
+    await goto_url(websocket, context_id, url_secure)
 
     user_context_id = (await execute_command(websocket, {
         "method": "browser.createUserContext",
@@ -53,9 +52,9 @@ async def test_permissions_set_permission_in_user_context(
 
     another_browsing_context_id = await create_context(
         user_context_id=user_context_id)
-    origin = get_origin(url_example)
+    origin = get_origin(url_secure)
 
-    await goto_url(websocket, another_browsing_context_id, url_example)
+    await goto_url(websocket, another_browsing_context_id, url_secure)
 
     # Both contexts have the same default permission state (prompt).
     assert await query_permission(websocket, context_id,

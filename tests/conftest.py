@@ -41,6 +41,14 @@ def default_domain():
 
 
 @pytest.fixture(scope="session")
+def secure_domain():
+    """
+    Localhost is considered to be a secure domain even for http connections.
+    """
+    return 'localhost'
+
+
+@pytest.fixture(scope="session")
 def another_domain():
     return 'another_domain.test'
 
@@ -338,6 +346,12 @@ def url_base(local_http_server):
 def url_example(local_http_server):
     """Return a generic example URL with status code 200."""
     return local_http_server.url_200()
+
+
+@pytest.fixture
+def url_secure(local_http_server, secure_domain):
+    """Return a generic example URL with status code 200."""
+    return local_http_server.url_200(host=secure_domain)
 
 
 @pytest.fixture
