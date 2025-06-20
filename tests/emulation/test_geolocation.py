@@ -45,6 +45,12 @@ ANOTHER_COORDINATES = {
     'accuracy': ANOTHER_ACCURACY,
 }
 
+# Geolocation permissions require secure context (either `Secure` or `SecureLocalhost`).
+pytestmark = pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                                     indirect=True)
+
 
 async def get_geolocation(websocket, context_id):
     """
@@ -73,11 +79,11 @@ async def get_geolocation(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_geolocation_set_and_clear(websocket, context_id, url_example,
+async def test_geolocation_set_and_clear(websocket, context_id, url_bad_ssl,
                                          snapshot):
-    await goto_url(websocket, context_id, url_example)
+    await goto_url(websocket, context_id, url_bad_ssl)
 
-    await set_permission(websocket, get_origin(url_example),
+    await set_permission(websocket, get_origin(url_bad_ssl),
                          {'name': 'geolocation'}, 'granted')
 
     initial_geolocation = await get_geolocation(websocket, context_id)
@@ -125,10 +131,10 @@ async def test_geolocation_set_and_clear(websocket, context_id, url_example,
 
 @pytest.mark.asyncio
 async def test_geolocation_emulate_unavailable(websocket, context_id,
-                                               url_example, snapshot):
-    await goto_url(websocket, context_id, url_example)
+                                               url_bad_ssl, snapshot):
+    await goto_url(websocket, context_id, url_bad_ssl)
 
-    await set_permission(websocket, get_origin(url_example),
+    await set_permission(websocket, get_origin(url_bad_ssl),
                          {'name': 'geolocation'}, 'granted')
 
     initial_geolocation = await get_geolocation(websocket, context_id)
@@ -165,12 +171,12 @@ async def test_geolocation_emulate_unavailable(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_geolocation_per_user_context(websocket, url_example,
+async def test_geolocation_per_user_context(websocket, url_bad_ssl,
                                             user_context_id, create_context,
                                             snapshot):
-    await set_permission(websocket, get_origin(url_example),
+    await set_permission(websocket, get_origin(url_bad_ssl),
                          {'name': 'geolocation'}, 'granted', "default")
-    await set_permission(websocket, get_origin(url_example),
+    await set_permission(websocket, get_origin(url_bad_ssl),
                          {'name': 'geolocation'}, 'granted', user_context_id)
 
     # Set different geolocation overrides for different user contexts.
@@ -193,13 +199,13 @@ async def test_geolocation_per_user_context(websocket, url_example,
 
     # Assert the overrides applied for the right contexts.
     browsing_context_id_1 = await create_context()
-    await goto_url(websocket, browsing_context_id_1, url_example)
+    await goto_url(websocket, browsing_context_id_1, url_bad_ssl)
     emulated_geolocation_1 = await get_geolocation(websocket,
                                                    browsing_context_id_1)
     assert emulated_geolocation_1 == snapshot()
 
     browsing_context_id_2 = await create_context(user_context_id)
-    await goto_url(websocket, browsing_context_id_2, url_example)
+    await goto_url(websocket, browsing_context_id_2, url_bad_ssl)
     emulated_geolocation_2 = await get_geolocation(websocket,
                                                    browsing_context_id_2)
     assert emulated_geolocation_2 == snapshot()

@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_geolocation_emulate_unavailable
+# name: test_geolocation_emulate_unavailable[capabilities0]
   dict({
     'type': 'object',
     'value': list([
@@ -13,7 +13,7 @@
     ]),
   })
 # ---
-# name: test_geolocation_per_user_context
+# name: test_geolocation_per_user_context[capabilities0]
   dict({
     'type': 'object',
     'value': list([
@@ -69,7 +69,7 @@
     ]),
   })
 # ---
-# name: test_geolocation_per_user_context.1
+# name: test_geolocation_per_user_context[capabilities0].1
   dict({
     'type': 'object',
     'value': list([
@@ -121,7 +121,7 @@
     ]),
   })
 # ---
-# name: test_geolocation_set_and_clear
+# name: test_geolocation_set_and_clear[capabilities0]
   dict({
     'type': 'object',
     'value': list([
@@ -177,7 +177,7 @@
     ]),
   })
 # ---
-# name: test_geolocation_set_and_clear.1
+# name: test_geolocation_set_and_clear[capabilities0].1
   dict({
     'type': 'object',
     'value': list([
