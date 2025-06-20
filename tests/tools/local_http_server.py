@@ -256,7 +256,7 @@ class LocalHttpServer:
             return
 
         kwargs = {
-            'host': self.__host,
+            'host': '127.0.0.1',
             'port': self.__port,
             # Should be False for stability and threaded mode
             'debug': False,
@@ -282,19 +282,16 @@ class LocalHttpServer:
         # Release any hanging requests
         self.hang_forever_stop_flag.set()
 
-    def _build_url(self, path: str) -> str:
+    def _build_url(self, host: str, path: str) -> str:
         """Constructs a full URL for a given path on this server."""
-        return f"{self.__protocol}://{self.__host}:{self.__port}{path}"
+        return f"{self.__protocol}://{host}:{self.__port}{path}"
 
-    def origin(self) -> str:
-        """Returns the origin (scheme://host:port) of the server."""
-        return f"{self.__protocol}://{self.__host}:{self.__port}"
-
-    def url_base(self) -> str:
+    def url_base(self, host: str = 'localhost') -> str:
         """Returns the URL for the base page (used to prevent CORS issues)."""
-        return self._build_url(self.__path_base)
+        return self._build_url(host, self.__path_base)
 
     def url_200(self,
+                host='localhost',
                 content: str | None = None,
                 content_type: str = "text/html",
                 headers: dict[str, str] | None = None) -> str:
@@ -321,22 +318,22 @@ class LocalHttpServer:
                 "headers": headers
             }
             path = f"{self.__path_200}/{response_id}"
-            return self._build_url(path)
+            return self._build_url(host, path)
 
-        return self._build_url(self.__path_200)
+        return self._build_url(host, self.__path_200)
 
-    def url_permanent_redirect(self) -> str:
+    def url_permanent_redirect(self, host='localhost') -> str:
         """Returns the URL for a page that permanently redirects to the default 200 page."""
-        return self._build_url(self.__path_permanent_redirect)
+        return self._build_url(host, self.__path_permanent_redirect)
 
-    def url_basic_auth(self) -> str:
+    def url_basic_auth(self, host='localhost') -> str:
         """Returns the URL for a page protected by Basic authentication."""
-        return self._build_url(self.__path_basic_auth)
+        return self._build_url(host, self.__path_basic_auth)
 
-    def url_hang_forever(self) -> str:
+    def url_hang_forever(self, host='localhost') -> str:
         """Returns the URL for a page that will hang until `hang_forever_stop()` is called."""
-        return self._build_url(self.__path_hang_forever)
+        return self._build_url(host, self.__path_hang_forever)
 
-    def url_cacheable(self) -> str:
+    def url_cacheable(self, host='localhost') -> str:
         """Returns the URL for a cacheable page (using Last-Modified and If-Modified-Since)."""
-        return self._build_url(self.__path_cacheable)
+        return self._build_url(host, self.__path_cacheable)
