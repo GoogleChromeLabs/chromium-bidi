@@ -203,8 +203,7 @@ async def test_geolocation_per_user_context(websocket, url_example,
     assert emulated_geolocation_1 == snapshot()
 
     browsing_context_id_2 = await create_context(user_context_id)
-    await goto_url(websocket, browsing_context_id_2,
-                   url_secure_context)
+    await goto_url(websocket, browsing_context_id_2, url_secure_context)
     emulated_geolocation_2 = await get_geolocation(websocket,
                                                    browsing_context_id_2)
     assert emulated_geolocation_2 == snapshot()
