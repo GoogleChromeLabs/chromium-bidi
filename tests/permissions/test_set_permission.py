@@ -25,12 +25,8 @@ pytestmark = pytest.mark.parametrize('capabilities', [{
 
 
 @pytest.mark.asyncio
-async def test_permissions_set_permission_qwe(websocket, context_id,
-                                              url_bad_ssl, url_example,
-                                              test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="ChromeDriver handles permissions differently")
-
+async def test_permissions_set_permission(websocket, context_id, url_bad_ssl,
+                                          url_example, test_chromedriver_mode):
     origin = get_origin(url_bad_ssl)
     await goto_url(websocket, context_id, url_bad_ssl)
     assert await query_permission(websocket, context_id,
