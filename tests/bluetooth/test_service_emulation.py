@@ -22,6 +22,12 @@ from . import (BATTERY_SERVICE_UUID, FAKE_DEVICE_ADDRESS,
                disable_simulation, setup_device, setup_granted_device,
                simulate_service)
 
+# Bluetooth require secure context (either `Secure` or `SecureLocalhost`).
+pytestmark = pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                                     indirect=True)
+
 
 async def get_services(websocket, context_id: str) -> list[str]:
     response = await execute_command(
@@ -58,9 +64,9 @@ async def teardown(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_simulateService(websocket, context_id, html):
+async def test_bluetooth_simulateService(websocket, context_id, url_bad_ssl):
     device_address = await setup_granted_device(
-        websocket, context_id, html,
+        websocket, context_id, url_bad_ssl,
         [HEART_RATE_SERVICE_UUID, BATTERY_SERVICE_UUID])
     await create_gatt_connection(websocket, context_id)
 

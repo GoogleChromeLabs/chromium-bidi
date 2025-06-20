@@ -28,11 +28,17 @@ from . import (BATTERY_SERVICE_UUID,
 
 DESCRIPTOR_EVENT_GENERATED = 'bluetooth.descriptorEventGenerated'
 
+# Bluetooth require secure context (either `Secure` or `SecureLocalhost`).
+pytestmark = pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                                     indirect=True)
 
-async def setup_descriptor(websocket, context_id: str, html, service_uuid: str,
+
+async def setup_descriptor(websocket, context_id: str, url, service_uuid: str,
                            characteristic_uuid: str, characteristic_properties,
                            descriptor_uuid: str):
-    device_address = await setup_granted_device(websocket, context_id, html,
+    device_address = await setup_granted_device(websocket, context_id, url,
                                                 [service_uuid])
     await create_gatt_connection(websocket, context_id)
     await simulate_service(websocket, context_id, device_address, service_uuid,
@@ -84,9 +90,9 @@ async def teardown(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_simulateService(websocket, context_id, html):
+async def test_bluetooth_simulateService(websocket, context_id, url_bad_ssl):
     device_address = await setup_granted_device(
-        websocket, context_id, html,
+        websocket, context_id, url_bad_ssl,
         [HEART_RATE_SERVICE_UUID, BATTERY_SERVICE_UUID])
     await create_gatt_connection(websocket, context_id)
     await simulate_service(websocket, context_id, device_address,
@@ -252,8 +258,9 @@ async def test_bluetooth_add_descriptor_to_unknown_characteristic(
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_descriptor_write_event(websocket, context_id, html):
-    await setup_descriptor(websocket, context_id, html,
+async def test_bluetooth_descriptor_write_event(websocket, context_id,
+                                                url_bad_ssl):
+    await setup_descriptor(websocket, context_id, url_bad_ssl,
                            HEART_RATE_SERVICE_UUID,
                            MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
                            {'write': True},
@@ -306,8 +313,9 @@ async def test_bluetooth_descriptor_write_event(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_descriptor_read_event(websocket, context_id, html):
-    await setup_descriptor(websocket, context_id, html,
+async def test_bluetooth_descriptor_read_event(websocket, context_id,
+                                               url_bad_ssl):
+    await setup_descriptor(websocket, context_id, url_bad_ssl,
                            HEART_RATE_SERVICE_UUID,
                            MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
                            {'read': True},

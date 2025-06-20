@@ -21,6 +21,12 @@ from test_helpers import (AnyExtending, execute_command, goto_url, subscribe,
 from . import (FAKE_DEVICE_ADDRESS, FAKE_DEVICE_NAME, disable_simulation,
                request_device, setup_device)
 
+# Bluetooth require secure context (either `Secure` or `SecureLocalhost`).
+pytestmark = pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                                     indirect=True)
+
 
 @pytest_asyncio.fixture(autouse=True)
 async def teardown(websocket, context_id):
@@ -54,9 +60,9 @@ async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
 
 @pytest.mark.asyncio
 async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
-                                                    html):
+                                                    url_bad_ssl):
     await subscribe(websocket, ['bluetooth'])
-    await goto_url(websocket, context_id, html())
+    await goto_url(websocket, context_id, url_bad_ssl)
     await setup_device(websocket, context_id)
     await request_device(websocket, context_id)
     response = await wait_for_event(websocket,
@@ -75,10 +81,10 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('accept', [True, False])
-async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
-                                                   accept):
+async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id,
+                                                   url_bad_ssl, accept):
     await subscribe(websocket, ['bluetooth'])
-    await goto_url(websocket, context_id, html())
+    await goto_url(websocket, context_id, url_bad_ssl)
     await setup_device(websocket, context_id)
     await request_device(websocket, context_id)
     event = await wait_for_event(websocket,

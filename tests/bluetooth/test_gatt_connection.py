@@ -20,6 +20,12 @@ from test_helpers import (execute_command, send_JSON_command, subscribe,
 
 from . import disable_simulation, setup_granted_device
 
+# Bluetooth require secure context (either `Secure` or `SecureLocalhost`).
+pytestmark = pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                                     indirect=True)
+
 
 async def is_gatt_connected(websocket, context_id: str) -> bool:
     response = await execute_command(
@@ -46,9 +52,9 @@ async def teardown(websocket, context_id):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('code', [0x0, 0x1, 0x2])
 async def test_bluetooth_simulateGattConnectionResponse(
-        websocket, context_id, html, code):
+        websocket, context_id, url_bad_ssl, code):
     await subscribe(websocket, ['bluetooth.gattConnectionAttempted'])
-    await setup_granted_device(websocket, context_id, html)
+    await setup_granted_device(websocket, context_id, url_bad_ssl)
 
     await send_JSON_command(
         websocket, {

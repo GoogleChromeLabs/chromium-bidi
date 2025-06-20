@@ -89,7 +89,7 @@ async def request_device(websocket,
 
 async def setup_granted_device(websocket,
                                context_id: str,
-                               html,
+                               url,
                                optional_services: list[str] = []) -> str:
     """Navigates, sets up simulation, and grants device access to the page.
 
@@ -97,7 +97,7 @@ async def setup_granted_device(websocket,
     The page will have access to the bluetooth device via the `device`
     JavaScript variable after this function completes.
     """
-    await goto_url(websocket, context_id, html())
+    await goto_url(websocket, context_id, url)
     device_address = await setup_device(websocket, context_id)
     await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
     await request_device(websocket, context_id, optional_services)
