@@ -122,7 +122,9 @@ async def websocket(test_headless_mode, capabilities, request):
                     # Required to prevent automatic switch to https.
                     "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades,LocalNetworkAccessChecks",
                     # Required for bluetooth testing.
-                    "--enable-features=WebBluetooth"
+                    "--enable-features=WebBluetooth",
+                    # Required for testing with `.test` domains.
+                    "--host-resolver-rules=MAP *.test 127.0.0.1",
                 ]
             }
         }
@@ -340,7 +342,7 @@ def url_example(local_server_http):
 def url_example_another_origin(local_server_http):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server_http.url_200(host='127.0.0.1')
+    return local_server_http.url_200(host='another_host.test')
 
 
 @pytest.fixture
