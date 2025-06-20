@@ -95,11 +95,10 @@ class LocalHttpServer:
     def __html_doc(self, content: str) -> str:
         return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
 
-    def __init__(self, host: str = 'localhost', ssl_cert_prefix=None) -> None:
+    def __init__(self, ssl_cert_prefix=None) -> None:
         self.__app = Flask(__name__)
         # Important for some Flask behaviors in a test context
         self.__app.testing = True
-        self.__host = host
         self.__protocol = 'http' if ssl_cert_prefix is None else "https"
         self.__port = find_free_port()
 
@@ -214,12 +213,12 @@ class LocalHttpServer:
                 context.check_hostname = False
                 # For self-signed certs
                 context.verify_mode = ssl.CERT_NONE
-                conn = http.client.HTTPSConnection(self.__host,
+                conn = http.client.HTTPSConnection('127.0.0.1',
                                                    self.__port,
                                                    timeout=timeout_s,
                                                    context=context)
             else:
-                conn = http.client.HTTPConnection(self.__host,
+                conn = http.client.HTTPConnection('127.0.0.1',
                                                   self.__port,
                                                   timeout=timeout_s)
 
@@ -246,7 +245,7 @@ class LocalHttpServer:
             # Short sleep before retrying
             time.sleep(0.05)
         raise RuntimeError(
-            f"Flask server failed to start on {self.__protocol}://{self.__host}:{self.__port} within {max_wait_s}s."
+            f"Flask server failed to start on port {self.__port} within {max_wait_s}s."
         )
 
     def _start_server(self,
