@@ -17,15 +17,22 @@ import pytest
 from permissions import query_permission, set_permission
 from test_helpers import execute_command, get_origin, goto_url
 
+# Permissions require secure context (either `Secure` or `SecureLocalhost`).
+pytestmark = pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                                     indirect=True)
+
 
 @pytest.mark.asyncio
-async def test_permissions_set_permission(websocket, context_id, url_example,
-                                          test_chromedriver_mode):
+async def test_permissions_set_permission_qwe(websocket, context_id,
+                                              url_bad_ssl, url_example,
+                                              test_chromedriver_mode):
     if test_chromedriver_mode:
         pytest.xfail(reason="ChromeDriver handles permissions differently")
 
-    origin = get_origin(url_example)
-    await goto_url(websocket, context_id, url_example)
+    origin = get_origin(url_bad_ssl)
+    await goto_url(websocket, context_id, url_bad_ssl)
     assert await query_permission(websocket, context_id,
                                   'geolocation') == 'prompt'
     resp = await set_permission(websocket, origin, {'name': 'geolocation'},
@@ -42,8 +49,8 @@ async def test_permissions_set_permission(websocket, context_id, url_example,
 
 @pytest.mark.asyncio
 async def test_permissions_set_permission_in_user_context(
-        websocket, context_id, url_secure, create_context):
-    await goto_url(websocket, context_id, url_secure)
+        websocket, context_id, url_bad_ssl, create_context):
+    await goto_url(websocket, context_id, url_bad_ssl)
 
     user_context_id = (await execute_command(websocket, {
         "method": "browser.createUserContext",
@@ -52,9 +59,9 @@ async def test_permissions_set_permission_in_user_context(
 
     another_browsing_context_id = await create_context(
         user_context_id=user_context_id)
-    origin = get_origin(url_secure)
+    origin = get_origin(url_bad_ssl)
 
-    await goto_url(websocket, another_browsing_context_id, url_secure)
+    await goto_url(websocket, another_browsing_context_id, url_bad_ssl)
 
     # Both contexts have the same default permission state (prompt).
     assert await query_permission(websocket, context_id,
