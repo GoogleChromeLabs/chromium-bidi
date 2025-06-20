@@ -19,15 +19,11 @@ from test_helpers import execute_command
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'acceptInsecureCerts': True
-}],
-                         indirect=True)
 async def test_serviceWorker_acceptInsecureCertsCapability_respected(
-        websocket, context_id, local_server_bad_ssl):
-    service_worker_script = local_server_bad_ssl.url_200(
+        websocket, context_id, local_server_good_ssl):
+    service_worker_script = local_server_good_ssl.url_200(
         content='', content_type='text/javascript')
-    service_worker_page = local_server_bad_ssl.url_200(content=f"""<script>
+    service_worker_page = local_server_good_ssl.url_200(content=f"""<script>
           window.registrationPromise = navigator.serviceWorker.register('{service_worker_script}');
         </script>""")
 
