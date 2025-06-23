@@ -917,7 +917,8 @@ async def test_speculationrules_disable_prerender(websocket, context_id, html):
 
 @pytest.mark.asyncio
 async def test_browsing_context_navigate_ssl_bad(websocket, context_id,
-                                                 local_server_bad_ssl):
+                                                 local_server_bad_ssl,
+                                                 some_host):
     with pytest.raises(Exception,
                        match=str({
                            "error": "unknown error",
@@ -927,7 +928,7 @@ async def test_browsing_context_navigate_ssl_bad(websocket, context_id,
             websocket, {
                 'method': "browsingContext.navigate",
                 'params': {
-                    'url': local_server_bad_ssl.url_200(),
+                    'url': local_server_bad_ssl.url_200(host=some_host),
                     'wait': 'complete',
                     'context': context_id
                 }
@@ -936,12 +937,13 @@ async def test_browsing_context_navigate_ssl_bad(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_browsing_context_navigate_ssl_good(websocket, context_id,
-                                                  local_server_good_ssl):
+                                                  local_server_good_ssl,
+                                                  some_host):
     await execute_command(
         websocket, {
             'method': "browsingContext.navigate",
             'params': {
-                'url': local_server_good_ssl.url_200(),
+                'url': local_server_good_ssl.url_200(host=some_host),
                 'wait': 'complete',
                 'context': context_id
             }
