@@ -106,12 +106,14 @@ class LocalHttpServer:
         ssl_context = None
         if ssl_cert_prefix is not None:
             current_dir = Path(__file__).parent
-            cert_file = current_dir / f"{ssl_cert_prefix}.pem"
-            key_file = current_dir / f"{ssl_cert_prefix}.key"
-            if not cert_file.exists() or not key_file.exists():
+            cert_file = current_dir / f"certs/{ssl_cert_prefix}.crt"
+            key_file = current_dir / f"certs/{ssl_cert_prefix}.key"
+            if not cert_file.exists():
                 raise FileNotFoundError(
-                    f"SSL certificate or key file not found. Expected cert.pem and key.pem in {current_dir}"
-                )
+                    f"SSL certificate file not found in {cert_file}")
+            if not key_file.exists():
+                raise FileNotFoundError(
+                    f"SSL key file not found in {key_file}")
             ssl_context = (str(cert_file), str(key_file))
 
         self.__start_time = datetime.now(timezone.utc)
