@@ -39,7 +39,7 @@ openssl x509 -in ssl_good.crt -pubkey -noout | openssl pkey -pubin -outform der 
 
 ### 3.2. Update `tests/conftest.py`
 
-Update the [`tests/conftest.py:GOOD_SSL_CERT_SPKI`](...) constant with the new SPKI
+Update the [`tests/conftest.py:GOOD_SSL_CERT_SPKI`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/b41d47588bb826082a69688174e44f904b134122/tests/conftest.py#L37) constant with the new SPKI
 from the previous step.
 
 ## 4. Verify the new certificate works
