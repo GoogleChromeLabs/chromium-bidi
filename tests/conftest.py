@@ -38,6 +38,16 @@ GOOD_SSL_CERT_SPKI = "QQDsUATYj6FX2oHvQ5/cyDW9CutD2sp9z+qeLfNGHHw="
 
 
 @pytest_asyncio.fixture(scope='session')
+def some_host() -> str:
+    return "localhost"
+
+
+@pytest_asyncio.fixture(scope='session')
+def another_host() -> str:
+    return "another_host.test"
+
+
+@pytest_asyncio.fixture(scope='session')
 def local_server_http() -> Generator[LocalHttpServer, None, None]:
     """
     Returns an instance of a LocalHttpServer without SSL pointing to localhost.
@@ -124,7 +134,9 @@ async def websocket(test_headless_mode, capabilities, request):
                     # Required to prevent automatic switch to https.
                     "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades,LocalNetworkAccessChecks",
                     # Required for bluetooth testing.
-                    "--enable-features=WebBluetooth"
+                    "--enable-features=WebBluetooth",
+                    # Required for testing with `.test` domains.
+                    "--host-resolver-rules=MAP *.test 127.0.0.1",
                 ]
             }
         }
@@ -327,22 +339,22 @@ def url_all_origins(request, url_example, url_example_another_origin, html):
 
 
 @pytest.fixture
-def url_base(local_server_http):
+def url_base(local_server_http, some_host):
     """Return a generic example URL with status code 200."""
-    return local_server_http.url_base()
+    return local_server_http.url_base(host=some_host)
 
 
 @pytest.fixture
 def url_example(local_server_http):
     """Return a generic example URL with status code 200."""
-    return local_server_http.url_200()
+    return local_server_http.url_200(host=some_host)
 
 
 @pytest.fixture
-def url_example_another_origin(local_server_http):
+def url_example_another_origin(local_server_http, another_host):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server_http.url_200(host='another_host.test')
+    return local_server_http.url_200(host=another_host)
 
 
 @pytest.fixture
@@ -353,14 +365,14 @@ def url_auth_required(local_server_http):
         - "http://the-internet.herokuapp.com/basic_auth"
         - "http://httpstat.us/401"
     """
-    return local_server_http.url_basic_auth()
+    return local_server_http.url_basic_auth(host=some_host)
 
 
 @pytest.fixture
 def url_hang_forever(local_server_http):
     """Return a URL that hangs forever."""
     try:
-        yield local_server_http.url_hang_forever()
+        yield local_server_http.url_hang_forever(host=some_host)
     finally:
         local_server_http.hang_forever_stop()
 
@@ -385,7 +397,7 @@ def url_secure_context(local_server_good_ssl):
 @pytest.fixture
 def url_cacheable(local_server_http):
     """Return a generic example URL that can be cached."""
-    return local_server_http.url_cacheable()
+    return local_server_http.url_cacheable(host=some_host)
 
 
 @pytest.fixture
@@ -578,6 +590,7 @@ def url_download(local_server_http):
     """Return a URL that triggers a download."""
     def url_download(file_name="file-name.txt", content="download content"):
         return local_server_http.url_200(
+            host=some_host,
             content=content,
             content_type="application/octet-stream",
             headers={
@@ -597,11 +610,11 @@ def url_hang_forever_download(local_server_http):
 
 
 @pytest.fixture
-def html(local_server_http):
+def html(local_server_http, some_host, another_host):
     """Return a factory for URL with the given content."""
     def html(content="", same_origin=True):
         return local_server_http.url_200(
-            'localhost' if same_origin else '127.0.0.1', content=content)
+            some_host if same_origin else another_host, content=content)
 
     return html
 
