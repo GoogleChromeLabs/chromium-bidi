@@ -317,7 +317,7 @@ class LocalHttpServer:
         return self._build_url(host, self.__path_base)
 
     def url_200(self,
-                host=LOCAL_HOST,
+                host,
                 content: str | None = None,
                 content_type: str = "text/html",
                 headers: dict[str, str] | None = None) -> str:
@@ -348,15 +348,15 @@ class LocalHttpServer:
 
         return self._build_url(host, self.__path_200)
 
-    def url_permanent_redirect(self, host=LOCAL_HOST) -> str:
+    def url_permanent_redirect(self, host) -> str:
         """Returns the URL for a page that permanently redirects to the default 200 page."""
         return self._build_url(host, self.__path_permanent_redirect)
 
-    def url_basic_auth(self, host=LOCAL_HOST) -> str:
+    def url_basic_auth(self, host) -> str:
         """Returns the URL for a page protected by Basic authentication."""
         return self._build_url(host, self.__path_basic_auth)
 
-    def url_hang_forever(self, host=LOCAL_HOST) -> str:
+    def url_hang_forever(self, host) -> str:
         """Returns the URL for a page that will hang until `hang_forever_stop()` is called."""
         return self._build_url(host, self.__path_hang_forever)
 
@@ -364,6 +364,6 @@ class LocalHttpServer:
         """Returns the URL for a page that will hang until `hang_forever_stop()` is called."""
         return self._build_url(host, self.__path_hang_forever_download)
 
-    def url_cacheable(self, host=LOCAL_HOST) -> str:
+    def url_cacheable(self, host) -> str:
         """Returns the URL for a cacheable page (using Last-Modified and If-Modified-Since)."""
         return self._build_url(host, self.__path_cacheable)

@@ -45,8 +45,8 @@ async def get_content(websocket, context_id, url):
 
 
 @pytest.mark.asyncio
-async def test_local_server_200(websocket, context_id, local_server_http):
-    assert await get_content(websocket, context_id, local_server_http.url_200()) \
+async def test_local_server_200(websocket, context_id, local_server_http, some_host):
+    assert await get_content(websocket, context_id, local_server_http.url_200(some_host)) \
            == local_server_http.content_200
 
 
