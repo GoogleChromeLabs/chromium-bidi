@@ -378,7 +378,7 @@ def url_hang_forever(local_server_http, some_host):
 
 
 @pytest.fixture(scope="session")
-def url_bad_ssl(local_server_bad_ssl):
+def url_bad_ssl(local_server_bad_ssl, some_host):
     """
     Return a URL with an invalid certificate authority from a SSL certificate.
     In Chromium, this generates the following error:
@@ -386,12 +386,12 @@ def url_bad_ssl(local_server_bad_ssl):
     > Your connection is not private
     > NET::ERR_CERT_AUTHORITY_INVALID
     """
-    return local_server_bad_ssl.url_200()
+    return local_server_bad_ssl.url_200(host=some_host)
 
 
 @pytest.fixture(scope="session")
-def url_secure_context(local_server_good_ssl):
-    return local_server_good_ssl.url_200()
+def url_secure_context(local_server_good_ssl, some_host):
+    return local_server_good_ssl.url_200(host=some_host)
 
 
 @pytest.fixture
@@ -601,10 +601,10 @@ def url_download(local_server_http, some_host):
 
 
 @pytest.fixture
-def url_hang_forever_download(local_server_http):
+def url_hang_forever_download(local_server_http, some_host):
     """Return a URL that triggers a download which hangs forever."""
     try:
-        yield local_server_http.url_hang_forever_download
+        yield local_server_http.url_hang_forever_download(host=some_host)
     finally:
         local_server_http.hang_forever_stop()
 
@@ -614,7 +614,7 @@ def html(local_server_http, some_host, another_host):
     """Return a factory for URL with the given content."""
     def html(content="", same_origin=True):
         return local_server_http.url_200(
-            some_host if same_origin else another_host, content=content)
+            host=(some_host if same_origin else another_host), content=content)
 
     return html
 

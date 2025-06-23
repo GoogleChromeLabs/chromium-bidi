@@ -154,7 +154,7 @@ class LocalHttpServer:
 
         @self.__app.route(self.__path_permanent_redirect)
         def route_permanent_redirect():
-            return redirect(self.url_200(), code=301)
+            return redirect(self.url_200(host=LOCAL_IP), code=301)
 
         @self.__app.route(self.__path_basic_auth)
         def process_auth():
