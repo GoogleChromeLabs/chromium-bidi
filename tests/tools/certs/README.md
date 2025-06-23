@@ -42,7 +42,7 @@ openssl x509 -in ssl_good.crt -pubkey -noout | openssl pkey -pubin -outform der 
 Update the [`tests/conftest.py:GOOD_SSL_CERT_SPKI`](...) constant with the new SPKI
 from the previous step.
 
-## 5. Verify the new certificate works
+## 4. Verify the new certificate works
 
 Run this e2e tests to verify the configuration works as expected:
 ```bash
