@@ -25,7 +25,8 @@ sys.path.append(str(Path(__file__).resolve().parent.parent / 'tests/tools/'))
 import local_http_server  # noqa: E402
 
 local_server_http = local_http_server.LocalHttpServer()
-local_server_bad_ssl = local_http_server.LocalHttpServer(ssl_cert_prefix="ssl_bad")
+local_server_bad_ssl = local_http_server.LocalHttpServer(
+    ssl_cert_prefix="ssl_bad")
 
 print(f"""Local http server started...
   - 200: {local_server_http.url_200('localhost')}

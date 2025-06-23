@@ -345,7 +345,7 @@ def url_base(local_server_http, some_host):
 
 
 @pytest.fixture
-def url_example(local_server_http):
+def url_example(local_server_http, some_host):
     """Return a generic example URL with status code 200."""
     return local_server_http.url_200(host=some_host)
 
@@ -358,7 +358,7 @@ def url_example_another_origin(local_server_http, another_host):
 
 
 @pytest.fixture
-def url_auth_required(local_server_http):
+def url_auth_required(local_server_http, some_host):
     """Return a URL that requires authentication (status code 401).
     Alternatively, any of the following URLs could also be used:
         - "https://authenticationtest.com/HTTPAuth/"
@@ -369,7 +369,7 @@ def url_auth_required(local_server_http):
 
 
 @pytest.fixture
-def url_hang_forever(local_server_http):
+def url_hang_forever(local_server_http, some_host):
     """Return a URL that hangs forever."""
     try:
         yield local_server_http.url_hang_forever(host=some_host)
@@ -395,7 +395,7 @@ def url_secure_context(local_server_good_ssl):
 
 
 @pytest.fixture
-def url_cacheable(local_server_http):
+def url_cacheable(local_server_http, some_host):
     """Return a generic example URL that can be cached."""
     return local_server_http.url_cacheable(host=some_host)
 
@@ -586,7 +586,7 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 
 
 @pytest.fixture
-def url_download(local_server_http):
+def url_download(local_server_http, some_host):
     """Return a URL that triggers a download."""
     def url_download(file_name="file-name.txt", content="download content"):
         return local_server_http.url_200(

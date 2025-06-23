@@ -312,7 +312,7 @@ class LocalHttpServer:
         """Constructs a full URL for a given path on this server."""
         return f"{self.__protocol}://{host}:{self.__port}{path}"
 
-    def url_base(self, host: str = LOCAL_HOST) -> str:
+    def url_base(self, host) -> str:
         """Returns the URL for the base page (used to prevent CORS issues)."""
         return self._build_url(host, self.__path_base)
 
