@@ -34,6 +34,8 @@ from tools.local_http_server import LocalHttpServer
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+GOOD_SSL_CERT_SPKI = "QQDsUATYj6FX2oHvQ5/cyDW9CutD2sp9z+qeLfNGHHw="
+
 
 @pytest_asyncio.fixture(scope='session')
 def local_server_http() -> Generator[LocalHttpServer, None, None]:
@@ -66,7 +68,19 @@ def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
 @pytest_asyncio.fixture(scope='session')
 def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
     """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
-    server = LocalHttpServer(protocol='https')
+    server = LocalHttpServer(ssl_cert_prefix="ssl_bad")
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
+def local_server_good_ssl() -> Generator[LocalHttpServer, None, None]:
+    """ Returns an instance of a LocalHttpServer with a valid SSL certificate. """
+    server = LocalHttpServer(ssl_cert_prefix="ssl_good")
     yield server
 
     server.clear()
@@ -118,6 +132,8 @@ async def websocket(test_headless_mode, capabilities, request):
             "webSocketUrl": True,
             "goog:chromeOptions": {
                 "args": [
+                    # Required for navigating to `local_server_good_ssl`.
+                    f"--ignore-certificate-errors-spki-list={GOOD_SSL_CERT_SPKI}",
                     "--disable-infobars",
                     # Required to prevent automatic switch to https.
                     "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades,LocalNetworkAccessChecks",
@@ -375,6 +391,11 @@ def url_bad_ssl(local_server_bad_ssl):
     return local_server_bad_ssl.url_200()
 
 
+@pytest.fixture(scope="session")
+def url_secure_context(local_server_good_ssl):
+    return local_server_good_ssl.url_200()
+
+
 @pytest.fixture
 def url_cacheable(local_server_http):
     """Return a generic example URL that can be cached."""
@@ -572,12 +593,21 @@ def url_download(local_server_http):
     def url_download(file_name="file-name.txt", content="download content"):
         return local_server_http.url_200(
             content,
-            content_type="text/html",
+            content_type="application/octet-stream",
             headers={
                 "Content-Disposition": f"attachment;  filename=\"{file_name}\""
             })
 
     return url_download
+
+
+@pytest.fixture
+def url_hang_forever_download(local_server_http):
+    """Return a URL that triggers a download which hangs forever."""
+    try:
+        yield local_server_http.url_hang_forever_download
+    finally:
+        local_server_http.hang_forever_stop()
 
 
 @pytest.fixture
