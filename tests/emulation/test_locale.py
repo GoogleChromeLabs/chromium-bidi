@@ -15,24 +15,47 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import execute_command
+from test_helpers import execute_command, goto_url
+
+LOCALES = ["de-DE", "es-ES", "fr-FR", "it-IT"]
 
 
 @pytest_asyncio.fixture
-async def initial_locale(websocket, context_id):
+async def default_locale(websocket, context_id):
+    """
+    Returns default locale.
+    """
     return await get_locale(websocket, context_id)
 
 
 @pytest.fixture
-def some_locale(initial_locale):
-    """Returns some locale which is not equal to initial one."""
-    return "es-ES" if initial_locale != "es-ES" else "it-IT"
+def some_locale(default_locale):
+    """
+    Returns some locale which is not equal to `default_locale` nor to
+    `another_locale`.
+    """
+    for locale in LOCALES:
+        if locale != default_locale:
+            return locale
+
+    raise Exception(
+        f"Unexpectedly could not find locale different from the default {default_locale}"
+    )
 
 
 @pytest.fixture
-def another_locale(initial_locale):
-    """Returns some locale which is not equal to initial one."""
-    return "de-DE" if initial_locale != "de-DE" else "fr-FR"
+def another_locale(default_locale, some_locale):
+    """
+    Returns some another locale which is not equal to `default_locale` nor to
+    `some_locale`.
+    """
+    for locale in LOCALES:
+        if locale != default_locale and locale != another_locale:
+            return locale
+
+    raise Exception(
+        f"Unexpectedly could not find locale different from the default {default_locale} and some {some_locale}"
+    )
 
 
 async def get_locale(websocket, context_id):
@@ -55,7 +78,7 @@ async def get_locale(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_locale_set_and_clear(websocket, context_id, initial_locale,
+async def test_locale_set_and_clear(websocket, context_id, default_locale,
                                     some_locale):
     await execute_command(
         websocket, {
@@ -76,7 +99,7 @@ async def test_locale_set_and_clear(websocket, context_id, initial_locale,
                 'locale': None
             }
         })
-    assert (await get_locale(websocket, context_id)) == initial_locale
+    assert (await get_locale(websocket, context_id)) == default_locale
 
 
 @pytest.mark.asyncio
@@ -135,3 +158,57 @@ async def test_locale_per_browsing_context(websocket, context_id,
 
     assert await get_locale(websocket, context_id) == some_locale
     assert await get_locale(websocket, another_context_id) == another_locale
+
+
+@pytest.mark.asyncio
+async def test_locale_iframe(websocket, context_id, iframe_id, html,
+                             default_locale, some_locale, another_locale):
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [context_id],
+                'locale': some_locale
+            }
+        })
+
+    assert await get_locale(websocket, context_id) == some_locale
+    assert await get_locale(websocket, iframe_id) == some_locale
+
+    pytest.xfail(
+        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3532")
+
+    # Move iframe out of process
+    await goto_url(websocket, iframe_id,
+                   html("<h1>FRAME</h1>", same_origin=False))
+    # Assert locale emulation persisted.
+    assert await get_locale(websocket, iframe_id) == some_locale
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [context_id],
+                'locale': another_locale
+            }
+        })
+    assert await get_locale(websocket, context_id) == another_locale
+    assert await get_locale(websocket, iframe_id) == another_locale
+
+
+@pytest.mark.asyncio
+async def test_locale_invalid(websocket, context_id):
+    INVALID_LOCALE = "abcd"
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": f'Invalid locale "{INVALID_LOCALE}"'
+                       })):
+        await execute_command(
+            websocket, {
+                'method': 'emulation.setLocaleOverride',
+                'params': {
+                    'contexts': [context_id],
+                    'locale': INVALID_LOCALE
+                }
+            })
