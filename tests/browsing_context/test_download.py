@@ -147,10 +147,10 @@ async def test_browsing_context_download_finished_complete(
 @pytest.mark.asyncio
 async def test_browsing_context_download_finished_canceled(
         websocket, test_headless_mode, url_hang_forever_download, context_id,
-        html, get_cdp_session_id, filename):
+        html, get_cdp_session_id, filename, some_host):
 
     page_url = html(
-        f"""<a id="download_link" href="{url_hang_forever_download()}" download="{filename}">Download</a>"""
+        f"""<a id="download_link" href="{url_hang_forever_download}" download="{filename}">Download</a>"""
     )
     await goto_url(websocket, context_id, page_url)
 
@@ -215,7 +215,7 @@ async def test_browsing_context_download_finished_canceled(
             'navigation': navigation_id,
             'status': 'canceled',
             'timestamp': ANY_TIMESTAMP,
-            'url': url_hang_forever_download(),
+            'url': url_hang_forever_download,
         },
         'type': 'event',
     }
