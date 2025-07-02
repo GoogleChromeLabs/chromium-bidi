@@ -69,6 +69,14 @@ export namespace Browser {
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-network */
 export namespace Network {
+  export function parseAddDataCollectorParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    return parseObject(
+      params,
+      WebDriverBidi.Network.AddDataCollectorParametersSchema,
+    ) as Protocol.Network.AddDataCollectorParameters;
+  }
+
   export function parseAddInterceptParameters(params: unknown) {
     // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
     return parseObject(
@@ -112,6 +120,14 @@ export namespace Network {
       params,
       WebDriverBidi.Network.ProvideResponseParametersSchema,
     ) as Protocol.Network.ProvideResponseParameters;
+  }
+
+  export function parseRemoveDataCollectorParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    return parseObject(
+      params,
+      WebDriverBidi.Network.RemoveDataCollectorParametersSchema,
+    ) as Protocol.Network.RemoveDataCollectorParameters;
   }
 
   export function parseRemoveInterceptParameters(params: unknown) {

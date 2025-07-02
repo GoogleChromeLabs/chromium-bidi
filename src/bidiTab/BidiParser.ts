@@ -209,6 +209,11 @@ export class BidiParser implements BidiCommandParameterParser {
 
   // Network module
   // keep-sorted start block=yes
+  parseAddDataCollectorParams(
+    params: unknown,
+  ): Network.AddDataCollectorParameters {
+    return Parser.Network.parseAddDataCollectorParameters(params);
+  }
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
     return Parser.Network.parseAddInterceptParameters(params);
   }
@@ -234,6 +239,11 @@ export class BidiParser implements BidiCommandParameterParser {
     params: unknown,
   ): Network.ProvideResponseParameters {
     return Parser.Network.parseProvideResponseParameters(params);
+  }
+  parseRemoveDataCollectorParams(
+    params: unknown,
+  ): Network.RemoveDataCollectorParameters {
+    return Parser.Network.parseRemoveDataCollectorParameters(params);
   }
   parseRemoveInterceptParams(
     params: unknown,

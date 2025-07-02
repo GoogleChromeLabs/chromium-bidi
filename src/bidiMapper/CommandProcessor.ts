@@ -345,6 +345,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Network module
       // keep-sorted start block=yes
       case 'network.addDataCollector':
+        this.#parser.parseAddDataCollectorParams(command.params);
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );
@@ -377,6 +378,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseProvideResponseParams(command.params),
         );
       case 'network.removeDataCollector':
+        this.#parser.parseRemoveDataCollectorParams(command.params);
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );

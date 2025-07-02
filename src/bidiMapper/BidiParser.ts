@@ -143,6 +143,9 @@ export interface BidiCommandParameterParser {
 
   // Network module
   // keep-sorted start block=yes
+  parseAddDataCollectorParams(
+    params: unknown,
+  ): Network.AddDataCollectorParameters;
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters;
   parseContinueRequestParams(
     params: unknown,
@@ -157,6 +160,9 @@ export interface BidiCommandParameterParser {
   parseProvideResponseParams(
     params: unknown,
   ): Network.ProvideResponseParameters;
+  parseRemoveDataCollectorParams(
+    params: unknown,
+  ): Network.RemoveDataCollectorParameters;
   parseRemoveInterceptParams(
     params: unknown,
   ): Network.RemoveInterceptParameters;
