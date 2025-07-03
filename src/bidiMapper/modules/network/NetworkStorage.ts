@@ -41,9 +41,10 @@ type NetworkInterception = Omit<
   urlPatterns: ParsedUrlPattern[];
 };
 
-type NetworkCollector = Network.AddDataCollectorParameters & {
-  collectorId: string;
-};
+type NetworkCollector = Network.AddDataCollectorParameters;
+// type NetworkCollector = Network.AddDataCollectorParameters & {
+//   collectorId: string;
+// };
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
@@ -312,15 +313,18 @@ export class NetworkStorage {
     };
   }
 
-  getCollectorsForRequest(request: NetworkRequest): NetworkCollector[] {
-    const collectors = new Set<NetworkCollector>();
-    for (const collector of this.#collectors.values()) {
+  #getCollectorIdsForRequest(request: NetworkRequest): string[] {
+    const collectors = new Set<string>();
+    for (const collectorId of this.#collectors.keys()) {
+      const collector = this.#collectors.get(collectorId)!;
+
       if (!collector.userContexts && !collector.contexts) {
         // Add all global collectors.
-        collectors.add(collector);
+        collectors.add(collectorId);
       }
       if (collector.contexts?.includes(request.cdpTarget.topLevelId)) {
-        collectors.add(collector);
+        // Collector for browsing context.
+        collectors.add(collectorId);
       }
       if (
         collector.userContexts?.includes(
@@ -328,7 +332,8 @@ export class NetworkStorage {
             .userContext,
         )
       ) {
-        collectors.add(collector);
+        // Collector for user context.
+        collectors.add(collectorId);
       }
     }
 
@@ -340,9 +345,7 @@ export class NetworkStorage {
   }
 
   markRequestCollectedIfNeeded(request: NetworkRequest) {
-    const collectorIds = this.getCollectorsForRequest(request).map(
-      (collector) => collector.collectorId,
-    );
+    const collectorIds = this.#getCollectorIdsForRequest(request);
     if (collectorIds.length > 0) {
       this.#requestCollectors.set(request.id, new Set(collectorIds));
     }
@@ -505,10 +508,7 @@ export class NetworkStorage {
 
   addDataCollector(params: Network.AddDataCollectorParameters): string {
     const collectorId = uuidv4();
-    this.#collectors.set(collectorId, {
-      ...params,
-      collectorId,
-    });
+    this.#collectors.set(collectorId, params);
     return collectorId;
   }
 

@@ -367,7 +367,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseContinueWithAuthParams(command.params),
         );
       case 'network.disownData':
-        return await this.#networkProcessor.disownData(
+        return this.#networkProcessor.disownData(
           this.#parser.parseDisownDataParams(command.params),
         );
       case 'network.failRequest':
@@ -383,7 +383,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseProvideResponseParams(command.params),
         );
       case 'network.removeDataCollector':
-        return await this.#networkProcessor.removeDataCollector(
+        return this.#networkProcessor.removeDataCollector(
           this.#parser.parseRemoveDataCollectorParams(command.params),
         );
       case 'network.removeIntercept':
