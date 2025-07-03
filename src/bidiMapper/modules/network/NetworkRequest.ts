@@ -579,8 +579,9 @@ export class NetworkRequest {
         this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       } else {
         void (async () => {
-          if (this.#networkStorage.getCollectorsForRequest(this).length > 0) {
-            await this.#networkStorage.collectResponse(this);
+          const collectors = this.#networkStorage.getCollectorsForRequest(this);
+          if (collectors.length > 0) {
+            await this.#networkStorage.collectResponse(this, collectors);
           }
           await this.#continueResponse();
         })();

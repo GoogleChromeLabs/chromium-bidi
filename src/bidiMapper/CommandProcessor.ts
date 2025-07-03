@@ -350,9 +350,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#networkProcessor.addDataCollector(
           this.#parser.parseAddDataCollectorParams(command.params),
         );
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
-        );
       case 'network.addIntercept':
         return await this.#networkProcessor.addIntercept(
           this.#parser.parseAddInterceptParams(command.params),

@@ -477,6 +477,11 @@ export class NetworkProcessor {
     params: Network.AddDataCollectorParameters,
   ): Promise<Network.AddDataCollectorResult> {
     // TODO: verify params.
+    if (params.userContexts !== undefined) {
+      await this.#userContextStorage.verifyUserContextIdList(
+        params.userContexts,
+      );
+    }
     const collectorId = this.#networkStorage.addDataCollector(params);
 
     await Promise.all(
@@ -490,7 +495,11 @@ export class NetworkProcessor {
 
   getData(params: Network.GetDataParameters): Script.GetDataResult {
     // TODO: respect params.
-    return this.#networkStorage.getCollectedData(params.request);
+    if (params.disown && params.collector === undefined)
+      throw new InvalidArgumentException(
+        'Cannot disown collected data without collector ID',
+      );
+    return this.#networkStorage.getCollectedData(params);
   }
 }
 

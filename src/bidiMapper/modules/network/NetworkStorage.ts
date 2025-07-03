@@ -20,8 +20,8 @@ import {
   type BrowsingContext,
   Network,
   NoSuchInterceptException,
+  NoSuchNetworkDataException,
   type Script,
-  UnknownErrorException,
 } from '../../../protocol/protocol.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
@@ -62,7 +62,7 @@ export class NetworkStorage {
   readonly #collectors = new Map<string, NetworkCollector>();
   readonly #collectedResponses = new Map<
     Network.Request,
-    Script.GetDataResult
+    {data: Script.GetDataResult; collectors: Set<string>}
   >();
 
   #defaultCacheBehavior: Network.SetCacheBehaviorParameters['cacheBehavior'] =
@@ -254,13 +254,34 @@ export class NetworkStorage {
     return [...collectors.values()];
   }
 
-  getCollectedData(requestId: string): Script.GetDataResult {
-    const data = this.#collectedResponses.get(requestId);
-    if (data === undefined) throw new UnknownErrorException('Data not found');
-    return data;
+  getCollectedData(params: Network.GetDataParameters): Script.GetDataResult {
+    const collectedData = this.#collectedResponses.get(params.request);
+    if (collectedData === undefined) {
+      throw new NoSuchNetworkDataException(
+        `No collected data for request ${params.request}`,
+      );
+    }
+
+    if (
+      params.collector !== undefined &&
+      !collectedData.collectors.has(params.collector)
+    ) {
+      throw new NoSuchNetworkDataException(
+        `Collector ${params.collector} does not have data for request ${params.request}`,
+      );
+    }
+
+    if (params.disown && params.collector !== undefined) {
+      collectedData.collectors.delete(params.collector);
+      if (collectedData.collectors.size === 0) {
+        this.#collectedResponses.delete(params.request);
+      }
+    }
+
+    return collectedData.data;
   }
 
-  getCollectorsForRequest(request: NetworkRequest) {
+  getCollectorsForRequest(request: NetworkRequest): NetworkCollector[] {
     const collectors = new Set<NetworkCollector>();
     for (const collector of this.#collectors.values()) {
       if (!collector.userContexts && !collector.contexts) {
@@ -287,7 +308,10 @@ export class NetworkStorage {
     return [...collectors.values()];
   }
 
-  async collectResponse(request: NetworkRequest) {
+  async collectResponse(
+    request: NetworkRequest,
+    collectors: NetworkCollector[],
+  ) {
     const result = await request.cdpTarget.cdpClient.sendCommand(
       'Fetch.getResponseBody',
       {requestId: request.fetchId!},
@@ -300,7 +324,10 @@ export class NetworkStorage {
       },
     };
 
-    this.#collectedResponses.set(request.id, response);
+    this.#collectedResponses.set(request.id, {
+      data: response,
+      collectors: new Set(collectors.map((collector) => collector.collectorId)),
+    });
   }
 
   getInterceptionStages(browsingContextId: BrowsingContext.BrowsingContext) {
