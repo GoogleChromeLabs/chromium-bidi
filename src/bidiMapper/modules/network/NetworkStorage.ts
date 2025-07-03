@@ -18,8 +18,10 @@ import type {Protocol} from 'devtools-protocol';
 
 import {
   type BrowsingContext,
+  InvalidArgumentException,
   Network,
   NoSuchInterceptException,
+  NoSuchNetworkCollectorException,
   NoSuchNetworkDataException,
   type Script,
 } from '../../../protocol/protocol.js';
@@ -255,6 +257,11 @@ export class NetworkStorage {
   }
 
   getCollectedData(params: Network.GetDataParameters): Script.GetDataResult {
+    if (params.disown && params.collector === undefined)
+      throw new InvalidArgumentException(
+        'Cannot disown collected data without collector ID',
+      );
+
     const collectedData = this.#collectedResponses.get(params.request);
     if (collectedData === undefined) {
       throw new NoSuchNetworkDataException(
@@ -490,5 +497,27 @@ export class NetworkStorage {
       collectorId,
     });
     return collectorId;
+  }
+
+  async removeDataCollector(
+    params: Network.RemoveDataCollectorParameters,
+  ): Promise<void> {
+    const collectorId = params.collector;
+    if (!this.#collectors.has(collectorId)) {
+      throw new NoSuchNetworkCollectorException(
+        `Collector ${params.collector} does not exist`,
+      );
+    }
+    this.#collectors.delete(params.collector);
+
+    // Clean up collected responses.
+    for (const [requestId, collectedResponse] of this.#collectedResponses) {
+      if (collectedResponse.collectors.has(collectorId)) {
+        collectedResponse.collectors.delete(collectorId);
+        if (collectedResponse.collectors.size === 0) {
+          this.#collectedResponses.delete(requestId);
+        }
+      }
+    }
   }
 }

@@ -76,7 +76,7 @@ async def init_request(websocket, local_server_http, read_messages, get_url):
 
 
 @pytest.mark.asyncio
-async def test_network_get_data_required_params(websocket, context_id, get_url,
+async def test_network_get_data_required_params(websocket, context_id,
                                                 init_request, read_messages):
     resp = await execute_command(
         websocket,
@@ -125,8 +125,8 @@ async def test_network_get_data_required_params(websocket, context_id, get_url,
 
 
 @pytest.mark.asyncio
-async def test_network_get_data_collector(websocket, context_id, get_url,
-                                          init_request, read_messages):
+async def test_network_get_data_collector(websocket, context_id, init_request,
+                                          read_messages):
     resp = await execute_command(
         websocket,
         {
@@ -177,8 +177,7 @@ async def test_network_get_data_collector(websocket, context_id, get_url,
 
 @pytest.mark.asyncio
 async def test_network_get_data_unknown_collector(websocket, context_id,
-                                                  get_url, init_request,
-                                                  read_messages):
+                                                  init_request, read_messages):
     await execute_command(
         websocket,
         {
@@ -211,7 +210,7 @@ async def test_network_get_data_unknown_collector(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_network_get_data_disown_no_collector(websocket, context_id,
-                                                    get_url, init_request,
+                                                    init_request,
                                                     read_messages):
     await execute_command(
         websocket,
@@ -244,7 +243,7 @@ async def test_network_get_data_disown_no_collector(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_network_get_data_disown_removes_data(websocket, context_id,
-                                                    get_url, init_request,
+                                                    init_request,
                                                     read_messages):
     resp = await execute_command(
         websocket,
@@ -278,13 +277,86 @@ async def test_network_get_data_disown_removes_data(websocket, context_id,
         }
     }
 
+    # Assert data is not available anymore.
     with pytest.raises(
             Exception,
             match=str({
                 "error": "no such network data",
                 "message": f"No collected data for request {request_id}"
             })):
-        # Assert data is still available after collecting.
+        await execute_command(
+            websocket, {
+                "method": "network.getData",
+                "params": {
+                    "dataType": "response",
+                    "request": request_id,
+                }
+            })
+
+
+@pytest.mark.asyncio
+async def test_network_remove_data_collector(websocket, context_id,
+                                             init_request, read_messages):
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
+            }
+        })
+    assert resp == {"collector": ANY_UUID}
+    collector_id = resp["collector"]
+
+    request_id = await init_request(context_id, SOME_CONTENT)
+
+    # Assert data is collected.
+    resp = await execute_command(
+        websocket, {
+            "method": "network.getData",
+            "params": {
+                "dataType": "response",
+                "request": request_id,
+            }
+        })
+    assert resp == {
+        'bytes': {
+            'type': 'base64',
+            'value': to_base64(SOME_CONTENT)
+        }
+    }
+
+    await execute_command(
+        websocket, {
+            "method": "network.removeDataCollector",
+            "params": {
+                "collector": collector_id
+            }
+        })
+
+    # Assert the collector cannot be removed twice.
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "no such network collector",
+                "message": f"Collector {collector_id} does not exist"
+            })):
+        await execute_command(
+            websocket, {
+                "method": "network.removeDataCollector",
+                "params": {
+                    "collector": collector_id
+                }
+            })
+
+    # Assert the collected data is removed.
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "no such network data",
+                "message": f"No collected data for request {request_id}"
+            })):
         await execute_command(
             websocket, {
                 "method": "network.getData",

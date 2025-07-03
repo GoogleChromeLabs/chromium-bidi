@@ -384,9 +384,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseProvideResponseParams(command.params),
         );
       case 'network.removeDataCollector':
-        this.#parser.parseRemoveDataCollectorParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#networkProcessor.removeDataCollector(
+          this.#parser.parseRemoveDataCollectorParams(command.params),
         );
       case 'network.removeIntercept':
         return await this.#networkProcessor.removeIntercept(

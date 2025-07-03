@@ -538,12 +538,14 @@ export class NetworkProcessor {
   }
 
   getData(params: Network.GetDataParameters): Script.GetDataResult {
-    // TODO: respect params.
-    if (params.disown && params.collector === undefined)
-      throw new InvalidArgumentException(
-        'Cannot disown collected data without collector ID',
-      );
     return this.#networkStorage.getCollectedData(params);
+  }
+
+  async removeDataCollector(
+    params: Network.RemoveDataCollectorParameters,
+  ): Promise<EmptyResult> {
+    await this.#networkStorage.removeDataCollector(params);
+    return {};
   }
 }
 
