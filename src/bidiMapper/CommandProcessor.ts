@@ -375,7 +375,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseFailRequestParams(command.params),
         );
       case 'network.getData':
-        return this.#networkProcessor.getData(
+        return await this.#networkProcessor.getData(
           this.#parser.parseGetDataParams(command.params),
         );
       case 'network.provideResponse':

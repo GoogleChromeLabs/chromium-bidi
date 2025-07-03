@@ -517,18 +517,20 @@ export class NetworkProcessor {
     return {collector: collectorId};
   }
 
-  getData(params: Network.GetDataParameters): Network.GetDataResult {
-    return this.#networkStorage.getCollectedData(params);
+  async getData(
+    params: Network.GetDataParameters,
+  ): Promise<Network.GetDataResult> {
+    return await this.#networkStorage.getCollectedData(params);
   }
 
-  async removeDataCollector(
+  removeDataCollector(
     params: Network.RemoveDataCollectorParameters,
-  ): Promise<EmptyResult> {
+  ): EmptyResult {
     this.#networkStorage.removeDataCollector(params);
     return {};
   }
 
-  async disownData(params: Network.DisownDataParameters): Promise<EmptyResult> {
+  disownData(params: Network.DisownDataParameters): EmptyResult {
     this.#networkStorage.disownData(params);
     return {};
   }

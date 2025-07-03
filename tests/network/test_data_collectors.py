@@ -20,6 +20,8 @@ from test_helpers import (ANY_UUID, AnyExtending, execute_command,
 
 SOME_CONTENT = "some downloadable content"
 NETWORK_RESPONSE_STARTED_EVENT = "network.responseStarted"
+SOME_UNKNOWN_COLLECTOR_ID = "SOME_UNKNOWN_COLLECTOR_ID"
+MAX_ENCODED_DATA_SIZE = 1024 * 1024 * 1024  # 1 MB
 
 
 @pytest.fixture
@@ -79,12 +81,11 @@ async def init_request(websocket, local_server_http, read_messages, get_url):
 async def test_network_collector_get_data_required_params(
         websocket, context_id, init_request, read_messages):
     resp = await execute_command(
-        websocket,
-        {
+        websocket, {
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
+                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -129,12 +130,11 @@ async def test_network_collector_get_data_collector(websocket, context_id,
                                                     init_request,
                                                     read_messages):
     resp = await execute_command(
-        websocket,
-        {
+        websocket, {
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
+                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -179,24 +179,13 @@ async def test_network_collector_get_data_collector(websocket, context_id,
 @pytest.mark.asyncio
 async def test_network_collector_get_data_unknown_collector(
         websocket, context_id, init_request, read_messages):
-    await execute_command(
-        websocket,
-        {
-            "method": "network.addDataCollector",
-            "params": {
-                "dataTypes": ["response"],
-                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
-            }
-        })
-
-    SOME_UNKNOWN_COLLECTOR_ID = "SOME_UNKNOWN_COLLECTOR_ID"
     request_id = await init_request(context_id, SOME_CONTENT)
 
     with pytest.raises(
             Exception,
             match=str({
-                "error": "no such network data",
-                "message": f"Collector {SOME_UNKNOWN_COLLECTOR_ID} does not have data for request {request_id}"
+                "error": "no such network collector",
+                "message": f"Unknown collector {SOME_UNKNOWN_COLLECTOR_ID}"
             })):
         await execute_command(
             websocket, {
@@ -213,12 +202,11 @@ async def test_network_collector_get_data_unknown_collector(
 async def test_network_collector_get_data_disown_no_collector(
         websocket, context_id, init_request, read_messages):
     await execute_command(
-        websocket,
-        {
+        websocket, {
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
+                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
             }
         })
 
@@ -245,12 +233,11 @@ async def test_network_collector_get_data_disown_no_collector(
 async def test_network_collector_get_data_disown_removes_data(
         websocket, context_id, init_request, read_messages):
     resp = await execute_command(
-        websocket,
-        {
+        websocket, {
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
+                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -298,12 +285,11 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
                                                        init_request,
                                                        read_messages):
     resp = await execute_command(
-        websocket,
-        {
+        websocket, {
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
+                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -371,12 +357,11 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
 async def test_network_collector_disown_data(websocket, context_id,
                                              init_request, read_messages):
     resp = await execute_command(
-        websocket,
-        {
+        websocket, {
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
+                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -453,7 +438,7 @@ async def test_network_collector_scoped_to_context(websocket, context_id,
                 "error": "no such network data",
                 "message": f"No collected data for request {request_id}"
             })):
-        resp = await execute_command(
+        await execute_command(
             websocket, {
                 "method": "network.getData",
                 "params": {
