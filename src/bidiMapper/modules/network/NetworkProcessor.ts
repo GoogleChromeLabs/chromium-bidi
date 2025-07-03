@@ -500,7 +500,8 @@ export class NetworkProcessor {
     }
     const collectorId = this.#networkStorage.addDataCollector(params);
 
-    // Enable fetch domain on impacted CDP targets.
+    // Enable Network domain on impacted CDP targets. Not needed now, but will be needed
+    // when Network CDP domain will be enabled on-demand.
     await Promise.all(
       this.#browsingContextStorage
         .getTopLevelContexts()

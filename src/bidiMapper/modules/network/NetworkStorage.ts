@@ -351,9 +351,7 @@ export class NetworkStorage {
   getInterceptionStages(browsingContextId: BrowsingContext.BrowsingContext) {
     const stages = {
       request: false,
-      // In CDP the collectors work only on the intercepted requests.
-      response:
-        this.getCollectorsForBrowsingContext(browsingContextId).length > 0,
+      response: false,
       auth: false,
     };
     for (const intercept of this.#intercepts.values()) {
@@ -477,7 +475,7 @@ export class NetworkStorage {
 
   disposeRequest(id: Network.Request) {
     if (this.#requestCollectors.get(id)?.size ?? 0 > 0) {
-      // Keep request is collected. Keep it, as it's data can be accessed later.
+      // Keep request, as it's data can be accessed later.
       return;
     }
     this.#requests.delete(id);
