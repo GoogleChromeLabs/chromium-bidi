@@ -16,11 +16,13 @@
  */
 
 import {
+  type Script,
   Network,
   type EmptyResult,
   NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
+import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
@@ -31,11 +33,14 @@ import {isSpecialScheme, type ParsedUrlPattern} from './NetworkUtils.js';
 export class NetworkProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
+  readonly #userContextStorage: UserContextStorage;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
+    userContextStorage: UserContextStorage,
   ) {
+    this.#userContextStorage = userContextStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#networkStorage = networkStorage;
   }
@@ -466,6 +471,26 @@ export class NetworkProcessor {
       return new InvalidArgumentException(error.message);
     }
     return error;
+  }
+
+  async addDataCollector(
+    params: Network.AddDataCollectorParameters,
+  ): Promise<Network.AddDataCollectorResult> {
+    // TODO: verify params.
+    const collectorId = this.#networkStorage.addDataCollector(params);
+
+    await Promise.all(
+      this.#browsingContextStorage.getAllContexts().map((context) => {
+        return context.cdpTarget.toggleNetwork();
+      }),
+    );
+
+    return {collector: collectorId};
+  }
+
+  getData(params: Network.GetDataParameters): Script.GetDataResult {
+    // TODO: respect params.
+    return this.#networkStorage.getCollectedData(params.request);
   }
 }
 

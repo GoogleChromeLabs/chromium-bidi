@@ -132,6 +132,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#networkProcessor = new NetworkProcessor(
       browsingContextStorage,
       networkStorage,
+      userContextStorage,
     );
     this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
     this.#scriptProcessor = new ScriptProcessor(
@@ -346,7 +347,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Network module
       // keep-sorted start block=yes
       case 'network.addDataCollector':
-        this.#parser.parseAddDataCollectorParams(command.params);
+        return await this.#networkProcessor.addDataCollector(
+          this.#parser.parseAddDataCollectorParams(command.params),
+        );
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );
@@ -376,9 +379,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseFailRequestParams(command.params),
         );
       case 'network.getData':
-        this.#parser.parseGetDataParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return this.#networkProcessor.getData(
+          this.#parser.parseGetDataParams(command.params),
         );
       case 'network.provideResponse':
         return await this.#networkProcessor.provideResponse(

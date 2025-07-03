@@ -20,8 +20,10 @@ import {
   type BrowsingContext,
   Network,
   NoSuchInterceptException,
+  type Script,
+  UnknownErrorException,
 } from '../../../protocol/protocol.js';
-import type {LoggerFn} from '../../../utils/log.js';
+import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
@@ -38,6 +40,10 @@ type NetworkInterception = Omit<
   urlPatterns: ParsedUrlPattern[];
 };
 
+type NetworkCollector = Network.AddDataCollectorParameters & {
+  collectorId: string;
+};
+
 /** Stores network and intercept maps. */
 export class NetworkStorage {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -52,6 +58,12 @@ export class NetworkStorage {
 
   /** A map from intercept ID to track active network intercepts. */
   readonly #intercepts = new Map<Network.Intercept, NetworkInterception>();
+
+  readonly #collectors = new Map<string, NetworkCollector>();
+  readonly #collectedResponses = new Map<
+    Network.Request,
+    Script.GetDataResult
+  >();
 
   #defaultCacheBehavior: Network.SetCacheBehaviorParameters['cacheBehavior'] =
     'default';
@@ -202,10 +214,101 @@ export class NetworkStorage {
     }
   }
 
+  getCollectorsForBrowsingContext(
+    browsingContextId: BrowsingContext.BrowsingContext,
+  ) {
+    if (!this.#browsingContextStorage.hasContext(browsingContextId)) {
+      this.#logger?.(
+        LogType.debugError,
+        'trying to get collector for unknown browsing context',
+      );
+      return [];
+    }
+
+    const userContext =
+      this.#browsingContextStorage.getContext(browsingContextId).userContext;
+
+    const collectors = new Set<NetworkCollector>();
+    for (const collector of this.#collectors.values()) {
+      if (collector.contexts?.includes(browsingContextId)) {
+        // Collector is targeted to the browsing context.
+        collectors.add(collector);
+      }
+      if (collector.userContexts?.includes(userContext)) {
+        // Collector is targeted to the user context.
+        collectors.add(collector);
+      }
+      if (
+        collector.userContexts === undefined &&
+        collector.contexts === undefined
+      ) {
+        // Collector is global.
+        collectors.add(collector);
+      }
+    }
+
+    this.#logger?.(
+      LogType.debug,
+      `Browsing Context ${browsingContextId} has ${collectors.size} collectors`,
+    );
+    return [...collectors.values()];
+  }
+
+  getCollectedData(requestId: string): Script.GetDataResult {
+    const data = this.#collectedResponses.get(requestId);
+    if (data === undefined) throw new UnknownErrorException('Data not found');
+    return data;
+  }
+
+  getCollectorsForRequest(request: NetworkRequest) {
+    const collectors = new Set<NetworkCollector>();
+    for (const collector of this.#collectors.values()) {
+      if (!collector.userContexts && !collector.contexts) {
+        // Add all global collectors.
+        collectors.add(collector);
+      }
+      if (collector.contexts?.includes(request.cdpTarget.topLevelId)) {
+        collectors.add(collector);
+      }
+      if (
+        collector.userContexts?.includes(
+          this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
+            .userContext,
+        )
+      ) {
+        collectors.add(collector);
+      }
+    }
+
+    this.#logger?.(
+      LogType.debug,
+      `Request ${request.id} has ${collectors.size} collectors`,
+    );
+    return [...collectors.values()];
+  }
+
+  async collectResponse(request: NetworkRequest) {
+    const result = await request.cdpTarget.cdpClient.sendCommand(
+      'Fetch.getResponseBody',
+      {requestId: request.fetchId!},
+    );
+
+    const response: Script.GetDataResult = {
+      bytes: {
+        type: result.base64Encoded ? 'base64' : 'string',
+        value: result.body,
+      },
+    };
+
+    this.#collectedResponses.set(request.id, response);
+  }
+
   getInterceptionStages(browsingContextId: BrowsingContext.BrowsingContext) {
     const stages = {
       request: false,
-      response: false,
+      // In CDP the collectors work only on the intercepted requests.
+      response:
+        this.getCollectorsForBrowsingContext(browsingContextId).length > 0,
       auth: false,
     };
     for (const intercept of this.#intercepts.values()) {
@@ -351,5 +454,14 @@ export class NetworkStorage {
 
   get defaultCacheBehavior() {
     return this.#defaultCacheBehavior;
+  }
+
+  addDataCollector(params: Network.AddDataCollectorParameters): string {
+    const collectorId = uuidv4();
+    this.#collectors.set(collectorId, {
+      ...params,
+      collectorId,
+    });
+    return collectorId;
   }
 }
