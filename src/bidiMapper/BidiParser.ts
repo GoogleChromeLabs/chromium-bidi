@@ -157,6 +157,7 @@ export interface BidiCommandParameterParser {
     params: unknown,
   ): Network.ContinueWithAuthParameters;
   parseFailRequestParams(params: unknown): Network.FailRequestParameters;
+  parseGetDataParams(params: unknown): Network.GetDataParameters;
   parseProvideResponseParams(
     params: unknown,
   ): Network.ProvideResponseParameters;

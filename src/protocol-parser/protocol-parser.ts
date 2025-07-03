@@ -114,6 +114,14 @@ export namespace Network {
     );
   }
 
+  export function parseGetDataParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    return parseObject(
+      params,
+      WebDriverBidi.Network.GetDataParametersSchema,
+    ) as Protocol.Network.GetDataParameters;
+  }
+
   export function parseProvideResponseParameters(params: unknown) {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(

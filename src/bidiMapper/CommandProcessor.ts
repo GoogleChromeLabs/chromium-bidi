@@ -370,6 +370,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseFailRequestParams(command.params),
         );
       case 'network.getData':
+        this.#parser.parseGetDataParams(command.params);
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );

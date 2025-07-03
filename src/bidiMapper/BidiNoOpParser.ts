@@ -260,6 +260,9 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   parseFailRequestParams(params: unknown): Network.FailRequestParameters {
     return params as Network.FailRequestParameters;
   }
+  parseGetDataParams(params: unknown): Network.GetDataParameters {
+    return params as Network.GetDataParameters;
+  }
   parseProvideResponseParams(
     params: unknown,
   ): Network.ProvideResponseParameters {
