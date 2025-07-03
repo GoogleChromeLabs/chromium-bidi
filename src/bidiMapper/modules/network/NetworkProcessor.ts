@@ -476,18 +476,62 @@ export class NetworkProcessor {
   async addDataCollector(
     params: Network.AddDataCollectorParameters,
   ): Promise<Network.AddDataCollectorResult> {
-    // TODO: verify params.
+    if (params.userContexts !== undefined && params.contexts !== undefined) {
+      throw new InvalidArgumentException(
+        "'contexts' and 'userContexts' are mutually exclusive",
+      );
+    }
     if (params.userContexts !== undefined) {
+      // Assert the user contexts exist.
       await this.#userContextStorage.verifyUserContextIdList(
         params.userContexts,
       );
     }
+    if (params.contexts !== undefined) {
+      for (const browsingContextId of params.contexts) {
+        // Assert the browsing context exists and are top-level.
+        const browsingContext =
+          this.#browsingContextStorage.getContext(browsingContextId);
+        if (!browsingContext.isTopLevelContext()) {
+          throw new InvalidArgumentException(
+            `Data collectors are available only on top-level browsing contexts`,
+          );
+        }
+      }
+    }
     const collectorId = this.#networkStorage.addDataCollector(params);
 
+    // Enable fetch domain on impacted CDP targets.
     await Promise.all(
-      this.#browsingContextStorage.getAllContexts().map((context) => {
-        return context.cdpTarget.toggleNetwork();
-      }),
+      this.#browsingContextStorage
+        .getTopLevelContexts()
+        .filter((context) => {
+          if (
+            params.contexts === undefined &&
+            params.userContexts === undefined
+          ) {
+            // Global collector.
+            return true;
+          }
+          if (
+            params.contexts !== undefined &&
+            params.contexts.includes(context.id)
+          ) {
+            // Specific browsing context's collector.
+            return true;
+          }
+          if (
+            params.userContexts !== undefined &&
+            params.userContexts.includes(context.userContext)
+          ) {
+            // Specific user context's collector.
+            return true;
+          }
+          return false;
+        })
+        .map((context) => {
+          return context.cdpTarget.toggleNetwork();
+        }),
     );
 
     return {collector: collectorId};
