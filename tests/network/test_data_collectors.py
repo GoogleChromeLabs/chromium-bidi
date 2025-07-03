@@ -76,8 +76,8 @@ async def init_request(websocket, local_server_http, read_messages, get_url):
 
 
 @pytest.mark.asyncio
-async def test_network_get_data_required_params(websocket, context_id,
-                                                init_request, read_messages):
+async def test_network_collector_get_data_required_params(
+        websocket, context_id, init_request, read_messages):
     resp = await execute_command(
         websocket,
         {
@@ -125,8 +125,9 @@ async def test_network_get_data_required_params(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_network_get_data_collector(websocket, context_id, init_request,
-                                          read_messages):
+async def test_network_collector_get_data_collector(websocket, context_id,
+                                                    init_request,
+                                                    read_messages):
     resp = await execute_command(
         websocket,
         {
@@ -176,8 +177,8 @@ async def test_network_get_data_collector(websocket, context_id, init_request,
 
 
 @pytest.mark.asyncio
-async def test_network_get_data_unknown_collector(websocket, context_id,
-                                                  init_request, read_messages):
+async def test_network_collector_get_data_unknown_collector(
+        websocket, context_id, init_request, read_messages):
     await execute_command(
         websocket,
         {
@@ -209,9 +210,8 @@ async def test_network_get_data_unknown_collector(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_network_get_data_disown_no_collector(websocket, context_id,
-                                                    init_request,
-                                                    read_messages):
+async def test_network_collector_get_data_disown_no_collector(
+        websocket, context_id, init_request, read_messages):
     await execute_command(
         websocket,
         {
@@ -242,9 +242,8 @@ async def test_network_get_data_disown_no_collector(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_network_get_data_disown_removes_data(websocket, context_id,
-                                                    init_request,
-                                                    read_messages):
+async def test_network_collector_get_data_disown_removes_data(
+        websocket, context_id, init_request, read_messages):
     resp = await execute_command(
         websocket,
         {
@@ -295,8 +294,9 @@ async def test_network_get_data_disown_removes_data(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_network_remove_data_collector(websocket, context_id,
-                                             init_request, read_messages):
+async def test_network_collector_remove_data_collector(websocket, context_id,
+                                                       init_request,
+                                                       read_messages):
     resp = await execute_command(
         websocket,
         {
@@ -363,5 +363,101 @@ async def test_network_remove_data_collector(websocket, context_id,
                 "params": {
                     "dataType": "response",
                     "request": request_id,
+                }
+            })
+
+
+@pytest.mark.asyncio
+async def test_network_collector_disown_data(websocket, context_id,
+                                             init_request, read_messages):
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": 1024 * 1024 * 1024  # 1 MB
+            }
+        })
+    assert resp == {"collector": ANY_UUID}
+    collector_id = resp["collector"]
+
+    request_id = await init_request(context_id, SOME_CONTENT)
+
+    # Assert data is collected.
+    resp = await execute_command(
+        websocket, {
+            "method": "network.getData",
+            "params": {
+                "dataType": "response",
+                "request": request_id,
+            }
+        })
+    assert resp == {
+        'bytes': {
+            'type': 'base64',
+            'value': to_base64(SOME_CONTENT)
+        }
+    }
+
+    await execute_command(
+        websocket, {
+            "method": "network.disownData",
+            "params": {
+                "dataType": "response",
+                "collector": collector_id,
+                "request": request_id
+            }
+        })
+
+    # Assert the collected data is not available anymore.
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "no such network data",
+                "message": f"No collected data for request {request_id}"
+            })):
+        await execute_command(
+            websocket, {
+                "method": "network.getData",
+                "params": {
+                    "dataType": "response",
+                    "request": request_id
+                }
+            })
+
+
+@pytest.mark.asyncio
+async def test_network_collector_scoped_to_context(websocket, context_id,
+                                                   another_context_id,
+                                                   init_request,
+                                                   read_messages):
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": 1024 * 1024 * 1024,  # 1 MB
+                "contexts": [another_context_id]
+            }
+        })
+    assert resp == {"collector": ANY_UUID}
+
+    request_id = await init_request(context_id, SOME_CONTENT)
+
+    # Assert the data is not collected.
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "no such network data",
+                "message": f"No collected data for request {request_id}"
+            })):
+        resp = await execute_command(
+            websocket, {
+                "method": "network.getData",
+                "params": {
+                    "dataType": "response",
+                    "request": request_id
                 }
             })

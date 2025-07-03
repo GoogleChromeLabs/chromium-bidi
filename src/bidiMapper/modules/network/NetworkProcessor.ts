@@ -16,7 +16,6 @@
  */
 
 import {
-  type Script,
   Network,
   type EmptyResult,
   NoSuchRequestException,
@@ -505,30 +504,11 @@ export class NetworkProcessor {
     await Promise.all(
       this.#browsingContextStorage
         .getTopLevelContexts()
-        .filter((context) => {
-          if (
-            params.contexts === undefined &&
-            params.userContexts === undefined
-          ) {
-            // Global collector.
-            return true;
-          }
-          if (
-            params.contexts !== undefined &&
-            params.contexts.includes(context.id)
-          ) {
-            // Specific browsing context's collector.
-            return true;
-          }
-          if (
-            params.userContexts !== undefined &&
-            params.userContexts.includes(context.userContext)
-          ) {
-            // Specific user context's collector.
-            return true;
-          }
-          return false;
-        })
+        .filter(
+          (context) =>
+            this.#networkStorage.getCollectorsForBrowsingContext(context.id)
+              .length > 0,
+        )
         .map((context) => {
           return context.cdpTarget.toggleNetwork();
         }),
@@ -537,14 +517,19 @@ export class NetworkProcessor {
     return {collector: collectorId};
   }
 
-  getData(params: Network.GetDataParameters): Script.GetDataResult {
+  getData(params: Network.GetDataParameters): Network.GetDataResult {
     return this.#networkStorage.getCollectedData(params);
   }
 
   async removeDataCollector(
     params: Network.RemoveDataCollectorParameters,
   ): Promise<EmptyResult> {
-    await this.#networkStorage.removeDataCollector(params);
+    this.#networkStorage.removeDataCollector(params);
+    return {};
+  }
+
+  async disownData(params: Network.DisownDataParameters): Promise<EmptyResult> {
+    this.#networkStorage.disownData(params);
     return {};
   }
 }

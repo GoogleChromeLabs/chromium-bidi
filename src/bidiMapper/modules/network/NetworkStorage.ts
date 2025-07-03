@@ -23,7 +23,6 @@ import {
   NoSuchInterceptException,
   NoSuchNetworkCollectorException,
   NoSuchNetworkDataException,
-  type Script,
 } from '../../../protocol/protocol.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
@@ -64,7 +63,7 @@ export class NetworkStorage {
   readonly #collectors = new Map<string, NetworkCollector>();
   readonly #collectedResponses = new Map<
     Network.Request,
-    {data: Script.GetDataResult; collectors: Set<string>}
+    {data: Network.GetDataResult; collectors: Set<string>}
   >();
 
   #defaultCacheBehavior: Network.SetCacheBehaviorParameters['cacheBehavior'] =
@@ -256,7 +255,7 @@ export class NetworkStorage {
     return [...collectors.values()];
   }
 
-  getCollectedData(params: Network.GetDataParameters): Script.GetDataResult {
+  getCollectedData(params: Network.GetDataParameters): Network.GetDataResult {
     if (params.disown && params.collector === undefined)
       throw new InvalidArgumentException(
         'Cannot disown collected data without collector ID',
@@ -324,7 +323,7 @@ export class NetworkStorage {
       {requestId: request.fetchId!},
     );
 
-    const response: Script.GetDataResult = {
+    const response: Network.GetDataResult = {
       bytes: {
         type: result.base64Encoded ? 'base64' : 'string',
         value: result.body,
@@ -499,9 +498,7 @@ export class NetworkStorage {
     return collectorId;
   }
 
-  async removeDataCollector(
-    params: Network.RemoveDataCollectorParameters,
-  ): Promise<void> {
+  removeDataCollector(params: Network.RemoveDataCollectorParameters) {
     const collectorId = params.collector;
     if (!this.#collectors.has(collectorId)) {
       throw new NoSuchNetworkCollectorException(
@@ -518,6 +515,35 @@ export class NetworkStorage {
           this.#collectedResponses.delete(requestId);
         }
       }
+    }
+  }
+
+  disownData(params: Network.DisownDataParameters) {
+    const collectorId = params.collector;
+    const requestId = params.request;
+
+    if (!this.#collectors.has(collectorId)) {
+      throw new NoSuchNetworkCollectorException(
+        `Collector ${collectorId} does not exist`,
+      );
+    }
+
+    if (!this.#collectedResponses.has(requestId)) {
+      throw new NoSuchNetworkDataException(
+        `No collected data for request ${requestId}`,
+      );
+    }
+    const collectedResponse = this.#collectedResponses.get(requestId)!;
+
+    if (!collectedResponse.collectors.has(collectorId)) {
+      throw new NoSuchNetworkDataException(
+        `No collected data for request ${requestId} and collector ${collectorId}`,
+      );
+    }
+
+    collectedResponse.collectors.delete(collectorId);
+    if (collectedResponse.collectors.size === 0) {
+      this.#collectedResponses.delete(requestId);
     }
   }
 }

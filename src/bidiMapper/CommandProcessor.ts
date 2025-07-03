@@ -367,9 +367,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseContinueWithAuthParams(command.params),
         );
       case 'network.disownData':
-        this.#parser.parseDisownDataParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#networkProcessor.disownData(
+          this.#parser.parseDisownDataParams(command.params),
         );
       case 'network.failRequest':
         return await this.#networkProcessor.failRequest(
