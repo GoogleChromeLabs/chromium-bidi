@@ -79,6 +79,9 @@ export interface BidiCommandParameterParser {
   parseRemoveUserContextParameters(
     params: unknown,
   ): Browser.RemoveUserContextParameters;
+  parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Browser.SetClientWindowStateParameters;
   // keep-sorted end
 
   // Browsing Context module

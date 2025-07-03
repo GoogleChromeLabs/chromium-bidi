@@ -110,6 +110,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Browser.RemoveUserContextParameters {
     return Parser.Browser.parseRemoveUserContextParameters(params);
   }
+  parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Browser.SetClientWindowStateParameters {
+    return Parser.Browser.parseSetClientWindowStateParameters(params);
+  }
   // keep-sorted end
 
   // Browsing Context module

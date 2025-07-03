@@ -237,6 +237,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseRemoveUserContextParameters(command.params),
         );
       case 'browser.setClientWindowState':
+        this.#parser.parseSetClientWindowStateParameters(command.params);
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );

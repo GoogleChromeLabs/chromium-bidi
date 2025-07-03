@@ -65,6 +65,14 @@ export namespace Browser {
       WebDriverBidi.Browser.RemoveUserContextParametersSchema,
     );
   }
+  export function parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Protocol.Browser.SetClientWindowStateParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Browser.SetClientWindowStateParametersSchema,
+    );
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-network */
