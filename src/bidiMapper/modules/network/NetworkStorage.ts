@@ -42,9 +42,6 @@ type NetworkInterception = Omit<
 };
 
 type NetworkCollector = Network.AddDataCollectorParameters;
-// type NetworkCollector = Network.AddDataCollectorParameters & {
-//   collectorId: string;
-// };
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
@@ -245,11 +242,6 @@ export class NetworkStorage {
         collectors.add(collector);
       }
     }
-
-    this.#logger?.(
-      LogType.debug,
-      `Browsing Context ${browsingContextId} has ${collectors.size} collectors`,
-    );
     return [...collectors.values()];
   }
 
@@ -319,11 +311,10 @@ export class NetworkStorage {
       const collector = this.#collectors.get(collectorId)!;
 
       if (!collector.userContexts && !collector.contexts) {
-        // Add all global collectors.
+        // A global collector.
         collectors.add(collectorId);
       }
       if (collector.contexts?.includes(request.cdpTarget.topLevelId)) {
-        // Collector for browsing context.
         collectors.add(collectorId);
       }
       if (
@@ -332,7 +323,6 @@ export class NetworkStorage {
             .userContext,
         )
       ) {
-        // Collector for user context.
         collectors.add(collectorId);
       }
     }
@@ -481,6 +471,7 @@ export class NetworkStorage {
       // Keep request, as it's data can be accessed later.
       return;
     }
+    // TODO: dispose Network data from Chromium once there is a CDP command for that.
     this.#requests.delete(id);
   }
 

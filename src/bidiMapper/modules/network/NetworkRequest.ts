@@ -556,20 +556,6 @@ export class NetworkRequest {
     if (event.responseStatusCode || event.responseErrorReason) {
       this.#response.paused = event;
 
-      this.#logger?.(
-        LogType.debug,
-        `this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted): ${this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)}`,
-      );
-      this.#logger?.(
-        LogType.debug,
-        `!this.#emittedEvents[ChromiumBidi.Network.EventNames.ResponseStarted]: ${!this.#emittedEvents[ChromiumBidi.Network.EventNames.ResponseStarted]}`,
-      );
-      this.#logger?.(LogType.debug, `this.#fetchId: ${this.#fetchId}`);
-      this.#logger?.(LogType.debug, `this.id: ${this.id}`);
-      this.#logger?.(
-        LogType.debug,
-        `this.#fetchId !== this.id: ${this.#fetchId !== this.id}`,
-      );
       if (
         this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted) &&
         // CDP may emit multiple events for a single request
