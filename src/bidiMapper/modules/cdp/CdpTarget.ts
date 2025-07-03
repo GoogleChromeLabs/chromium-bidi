@@ -521,11 +521,7 @@ export class CdpTarget {
 
   async toggleNetwork() {
     const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
-    const collectors = this.#networkStorage.getCollectorsForBrowsingContext(
-      this.topLevelId,
-    );
-    const fetchEnable =
-      Object.values(stages).some((value) => value) || collectors.length;
+    const fetchEnable = Object.values(stages).some((value) => value);
     const fetchChanged =
       this.#fetchDomainStages.request !== stages.request ||
       this.#fetchDomainStages.response !== stages.response ||
