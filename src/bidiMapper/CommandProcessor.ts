@@ -383,7 +383,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseProvideResponseParams(command.params),
         );
       case 'network.removeDataCollector':
-        return this.#networkProcessor.removeDataCollector(
+        return await this.#networkProcessor.removeDataCollector(
           this.#parser.parseRemoveDataCollectorParams(command.params),
         );
       case 'network.removeIntercept':

@@ -595,8 +595,7 @@ def url_download(local_server_http):
             content,
             content_type="application/octet-stream",
             headers={
-                "Content-Disposition": f"attachment;  filename=\"{file_name}\"",
-                "Access-Control-Allow-Origin": "*"
+                "Content-Disposition": f"attachment;  filename=\"{file_name}\""
             })
 
     return url_download

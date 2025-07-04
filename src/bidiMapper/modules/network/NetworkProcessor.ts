@@ -59,11 +59,8 @@ export class NetworkProcessor {
       contexts: params.contexts,
     });
 
-    await Promise.all(
-      this.#browsingContextStorage.getAllContexts().map((context) => {
-        return context.cdpTarget.toggleNetwork();
-      }),
-    );
+    // Adding interception may require enabling CDP Network domains.
+    await this.#toggleNetwork();
 
     return {
       intercept,
@@ -178,16 +175,26 @@ export class NetworkProcessor {
     return {};
   }
 
-  async removeIntercept(
-    params: Network.RemoveInterceptParameters,
-  ): Promise<EmptyResult> {
-    this.#networkStorage.removeIntercept(params.intercept);
-
+  /**
+   * In some states CDP Network and Fetch domains are not required, but in some they have
+   * to be updated. Whenever potential change in these kinds of states is introduced,
+   * update the states of all the CDP targets.
+   */
+  async #toggleNetwork() {
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map((context) => {
         return context.cdpTarget.toggleNetwork();
       }),
     );
+  }
+
+  async removeIntercept(
+    params: Network.RemoveInterceptParameters,
+  ): Promise<EmptyResult> {
+    this.#networkStorage.removeIntercept(params.intercept);
+
+    // Removing interception may allow for disabling CDP Network domains.
+    await this.#toggleNetwork();
 
     return {};
   }
@@ -500,20 +507,8 @@ export class NetworkProcessor {
     }
     const collectorId = this.#networkStorage.addDataCollector(params);
 
-    // Enable Network domain on impacted CDP targets. Not needed now, but will be needed
-    // when Network CDP domain will be enabled on-demand.
-    await Promise.all(
-      this.#browsingContextStorage
-        .getTopLevelContexts()
-        .filter(
-          (context) =>
-            this.#networkStorage.getCollectorsForBrowsingContext(context.id)
-              .length > 0,
-        )
-        .map((context) => {
-          return context.cdpTarget.toggleNetwork();
-        }),
-    );
+    // Adding data collectors may require enabling CDP Network domains.
+    await this.#toggleNetwork();
 
     return {collector: collectorId};
   }
@@ -524,10 +519,14 @@ export class NetworkProcessor {
     return await this.#networkStorage.getCollectedData(params);
   }
 
-  removeDataCollector(
+  async removeDataCollector(
     params: Network.RemoveDataCollectorParameters,
-  ): EmptyResult {
+  ): Promise<EmptyResult> {
     this.#networkStorage.removeDataCollector(params);
+
+    // Removing data collectors may allow disabling CDP Network domains.
+    await this.#toggleNetwork();
+
     return {};
   }
 
