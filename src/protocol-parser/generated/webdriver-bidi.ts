@@ -1214,6 +1214,7 @@ export namespace BrowsingContext {
 export const EmulationCommandSchema = z.lazy(() =>
   z.union([
     Emulation.SetGeolocationOverrideSchema,
+    Emulation.SetJavascriptEnabledSchema,
     Emulation.SetLocaleOverrideSchema,
     Emulation.SetScreenOrientationOverrideSchema,
   ]),
@@ -1272,6 +1273,26 @@ export namespace Emulation {
   export const GeolocationPositionErrorSchema = z.lazy(() =>
     z.object({
       type: z.literal('positionUnavailable'),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetJavascriptEnabledSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setJavascriptEnabled'),
+      params: Emulation.SetJavascriptEnabledParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetJavascriptEnabledParametersSchema = z.lazy(() =>
+    z.object({
+      enabled: z.union([z.literal(false), z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
 }
