@@ -976,6 +976,7 @@ export namespace BrowsingContext {
 }
 export type EmulationCommand =
   | Emulation.SetGeolocationOverride
+  | Emulation.SetJavascriptEnabled
   | Emulation.SetLocaleOverride
   | Emulation.SetScreenOrientationOverride;
 export namespace Emulation {
@@ -1043,6 +1044,22 @@ export namespace Emulation {
 export namespace Emulation {
   export type GeolocationPositionError = {
     type: 'positionUnavailable';
+  };
+}
+export namespace Emulation {
+  export type SetJavascriptEnabled = {
+    method: 'emulation.setJavascriptEnabled';
+    params: Emulation.SetJavascriptEnabledParameters;
+  };
+}
+export namespace Emulation {
+  export type SetJavascriptEnabledParameters = {
+    enabled: false | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
 }
 export namespace Emulation {
