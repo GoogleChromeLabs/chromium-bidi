@@ -24,10 +24,11 @@ from test_helpers import execute_command
 }],
                          indirect=True)
 async def test_serviceWorker_acceptInsecureCertsCapability_respected(
-        websocket, context_id, local_server_bad_ssl):
+        websocket, context_id, local_server_bad_ssl, some_host):
     service_worker_script = local_server_bad_ssl.url_200(
-        content='', content_type='text/javascript')
-    service_worker_page = local_server_bad_ssl.url_200(content=f"""<script>
+        host=some_host, content='', content_type='text/javascript')
+    service_worker_page = local_server_bad_ssl.url_200(host=some_host,
+                                                       content=f"""<script>
           window.registrationPromise = navigator.serviceWorker.register('{service_worker_script}');
         </script>""")
 

@@ -29,6 +29,9 @@ from flask import Flask
 from flask import Response as FlaskResponse
 from flask import redirect, request, stream_with_context
 
+LOCAL_HOST = 'localhost'
+LOCAL_IP = '127.0.0.1'
+
 
 # Helper to find a free port
 def find_free_port() -> int:
@@ -96,11 +99,10 @@ class LocalHttpServer:
     def __html_doc(self, content: str) -> str:
         return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
 
-    def __init__(self, host: str = 'localhost', ssl_cert_prefix=None) -> None:
+    def __init__(self, ssl_cert_prefix=None) -> None:
         self.__app = Flask(__name__)
         # Important for some Flask behaviors in a test context
         self.__app.testing = True
-        self.__host = host
         self.__protocol = 'http' if ssl_cert_prefix is None else "https"
         self.__port = find_free_port()
 
@@ -152,7 +154,7 @@ class LocalHttpServer:
 
         @self.__app.route(self.__path_permanent_redirect)
         def route_permanent_redirect():
-            return redirect(self.url_200(), code=301)
+            return redirect(self.url_200(host=LOCAL_IP), code=301)
 
         @self.__app.route(self.__path_basic_auth)
         def process_auth():
@@ -238,12 +240,12 @@ class LocalHttpServer:
                 context.check_hostname = False
                 # For self-signed certs
                 context.verify_mode = ssl.CERT_NONE
-                conn = http.client.HTTPSConnection(self.__host,
+                conn = http.client.HTTPSConnection(LOCAL_IP,
                                                    self.__port,
                                                    timeout=timeout_s,
                                                    context=context)
             else:
-                conn = http.client.HTTPConnection(self.__host,
+                conn = http.client.HTTPConnection(LOCAL_IP,
                                                   self.__port,
                                                   timeout=timeout_s)
 
@@ -270,7 +272,7 @@ class LocalHttpServer:
             # Short sleep before retrying
             time.sleep(0.05)
         raise RuntimeError(
-            f"Flask server failed to start on {self.__protocol}://{self.__host}:{self.__port} within {max_wait_s}s."
+            f"Flask server failed to start on port {self.__port} within {max_wait_s}s."
         )
 
     def _start_server(self,
@@ -280,7 +282,7 @@ class LocalHttpServer:
             return
 
         kwargs = {
-            'host': self.__host,
+            'host': LOCAL_IP,
             'port': self.__port,
             # Should be False for stability and threaded mode
             'debug': False,
@@ -306,19 +308,16 @@ class LocalHttpServer:
         # Release any hanging requests
         self.hang_forever_stop_flag.set()
 
-    def _build_url(self, path: str) -> str:
+    def _build_url(self, host: str, path: str) -> str:
         """Constructs a full URL for a given path on this server."""
-        return f"{self.__protocol}://{self.__host}:{self.__port}{path}"
+        return f"{self.__protocol}://{host}:{self.__port}{path}"
 
-    def origin(self) -> str:
-        """Returns the origin (scheme://host:port) of the server."""
-        return f"{self.__protocol}://{self.__host}:{self.__port}"
-
-    def url_base(self) -> str:
+    def url_base(self, host) -> str:
         """Returns the URL for the base page (used to prevent CORS issues)."""
-        return self._build_url(self.__path_base)
+        return self._build_url(host, self.__path_base)
 
     def url_200(self,
+                host,
                 content: str | None = None,
                 content_type: str = "text/html",
                 headers: dict[str, str] | None = None) -> str:
@@ -345,26 +344,26 @@ class LocalHttpServer:
                 "headers": headers
             }
             path = f"{self.__path_200}/{response_id}"
-            return self._build_url(path)
+            return self._build_url(host, path)
 
-        return self._build_url(self.__path_200)
+        return self._build_url(host, self.__path_200)
 
-    def url_permanent_redirect(self) -> str:
+    def url_permanent_redirect(self, host) -> str:
         """Returns the URL for a page that permanently redirects to the default 200 page."""
-        return self._build_url(self.__path_permanent_redirect)
+        return self._build_url(host, self.__path_permanent_redirect)
 
-    def url_basic_auth(self) -> str:
+    def url_basic_auth(self, host) -> str:
         """Returns the URL for a page protected by Basic authentication."""
-        return self._build_url(self.__path_basic_auth)
+        return self._build_url(host, self.__path_basic_auth)
 
-    def url_hang_forever(self) -> str:
+    def url_hang_forever(self, host) -> str:
         """Returns the URL for a page that will hang until `hang_forever_stop()` is called."""
-        return self._build_url(self.__path_hang_forever)
+        return self._build_url(host, self.__path_hang_forever)
 
-    def url_hang_forever_download(self) -> str:
+    def url_hang_forever_download(self, host) -> str:
         """Returns the URL for a page that will hang until `hang_forever_stop()` is called."""
-        return self._build_url(self.__path_hang_forever_download)
+        return self._build_url(host, self.__path_hang_forever_download)
 
-    def url_cacheable(self) -> str:
+    def url_cacheable(self, host) -> str:
         """Returns the URL for a cacheable page (using Last-Modified and If-Modified-Since)."""
-        return self._build_url(self.__path_cacheable)
+        return self._build_url(host, self.__path_cacheable)
