@@ -237,14 +237,30 @@ export class NetworkRequest {
     return bodySize;
   }
 
-  get #context() {
-    return (
+  get #context(): string | null {
+    const result =
       this.#response.paused?.frameId ??
       this.#request.info?.frameId ??
       this.#request.paused?.frameId ??
-      this.#request.auth?.frameId ??
-      null
-    );
+      this.#request.auth?.frameId;
+
+    if (result !== undefined) {
+      return result;
+    }
+
+    // Heuristic for associating a request with context via it's initiator request. Useful
+    // for preflight requests.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3570
+    if (this.#request?.info?.initiator.requestId !== undefined) {
+      const maybeInitiator = this.#networkStorage.getRequestById(
+        this.#request?.info?.initiator.requestId,
+      );
+      if (maybeInitiator !== undefined) {
+        return maybeInitiator.#context;
+      }
+    }
+
+    return null;
   }
 
   /** Returns the HTTP status code associated with this request if any. */
