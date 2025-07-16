@@ -248,15 +248,18 @@ export class NetworkRequest {
       return result;
     }
 
-    // Heuristic for associating a request with context via it's initiator request. Useful
-    // for preflight requests.
+    // Heuristic for associating a preflight request with context via it's initiator
+    // request. Useful for preflight requests.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3570
-    if (this.#request?.info?.initiator.requestId !== undefined) {
+    if (
+      this.#request?.info?.initiator.type === 'preflight' &&
+      this.#request?.info?.initiator.requestId !== undefined
+    ) {
       const maybeInitiator = this.#networkStorage.getRequestById(
         this.#request?.info?.initiator.requestId,
       );
       if (maybeInitiator !== undefined) {
-        return maybeInitiator.#context;
+        return maybeInitiator.#request.info?.frameId ?? null;
       }
     }
 
