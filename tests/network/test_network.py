@@ -540,14 +540,14 @@ async def test_network_preflight(websocket, context_id, html, url_example,
 
     await subscribe(websocket, ["network.beforeRequestSent"])
 
+    # Initiate a non-trivial CORS request.
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
                 "expression": f"""
                     fetch('{url_example}', {{
-                        method: 'POST',
-                        headers: {{'x-ping': 'pong'}},
+                        method: 'PUT',
                     }})
                 """,
                 "target": {
@@ -557,7 +557,7 @@ async def test_network_preflight(websocket, context_id, html, url_example,
             }
         })
 
-    [_, preflight_request, post_request] = await read_messages(3, sort=False)
+    [_, preflight_request, post_request] = await read_messages(3, sort=True)
 
     assert preflight_request == AnyExtending({
         'method': 'network.beforeRequestSent',
@@ -583,7 +583,7 @@ async def test_network_preflight(websocket, context_id, html, url_example,
             'context': context_id,
             'request': {
                 'initiatorType': 'fetch',
-                'method': 'POST',
+                'method': 'PUT',
                 'request': initiator_request_id,
                 'url': url_example,
             },
