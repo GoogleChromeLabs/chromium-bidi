@@ -48,6 +48,7 @@ import type {RealmStorage} from './modules/script/RealmStorage.js';
 import {ScriptProcessor} from './modules/script/ScriptProcessor.js';
 import type {EventManager} from './modules/session/EventManager.js';
 import {SessionProcessor} from './modules/session/SessionProcessor.js';
+import type {SpeculationProcessor} from './modules/speculation/SpeculationProcessor';
 import {StorageProcessor} from './modules/storage/StorageProcessor.js';
 import {WebExtensionProcessor} from './modules/webExtension/WebExtensionProcessor.js';
 import {OutgoingMessage} from './OutgoingMessage.js';
@@ -76,6 +77,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #permissionsProcessor: PermissionsProcessor;
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
+  // Used for event handling in CdpTargetManager, no direct commands
+  // eslint-disable-next-line no-unused-private-class-members
+  #speculationProcessor: SpeculationProcessor;
   #storageProcessor: StorageProcessor;
   #webExtensionProcessor: WebExtensionProcessor;
   // keep-sorted end
@@ -93,6 +97,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     networkStorage: NetworkStorage,
     mapperOptionsStorage: MapperOptionsStorage,
     bluetoothProcessor: BluetoothProcessor,
+    speculationProcessor: SpeculationProcessor,
     userContextStorage: UserContextStorage,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     initConnection: (options: MapperOptions) => Promise<void>,
@@ -104,6 +109,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#logger = logger;
 
     this.#bluetoothProcessor = bluetoothProcessor;
+    this.#speculationProcessor = speculationProcessor;
 
     // keep-sorted start block=yes
     this.#browserProcessor = new BrowserProcessor(
