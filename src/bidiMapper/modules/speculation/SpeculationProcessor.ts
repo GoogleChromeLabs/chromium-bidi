@@ -21,15 +21,12 @@ import type {EventManager} from '../session/EventManager.js';
 export class SpeculationProcessor {
   #eventManager: EventManager;
 
-  constructor(
-    eventManager: EventManager
-  ) {
+  constructor(eventManager: EventManager) {
     this.#eventManager = eventManager;
   }
 
   onCdpTargetCreated(cdpTarget: CdpTarget) {
     cdpTarget.cdpClient.on('Preload.prefetchStatusUpdated', (event) => {
-      console.log('SpeculationProcessor: ', event.status);
       this.#eventManager.registerEvent(
         {
           type: 'event',
