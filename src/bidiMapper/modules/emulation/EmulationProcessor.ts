@@ -207,6 +207,40 @@ export class EmulationProcessor {
     // `browsingContextStorage` returns the same instance for the same id.
     return [...new Set(result).values()];
   }
+
+  async setTimezoneOverride(
+    params: Emulation.SetTimezoneOverrideParameters,
+  ): Promise<EmptyResult> {
+    let timezone = params.timezone ?? null;
+
+    if (timezone !== null && !isValidTimezone(timezone)) {
+      throw new InvalidArgumentException(`Invalid timezone "${timezone}"`);
+    }
+
+    if (timezone !== null && isTimeZoneOffsetString(timezone)) {
+      // CDP supports offset timezone with `GMT` prefix.
+      timezone = `GMT${timezone}`;
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getConfig(userContextId);
+      userContextConfig.timezone = timezone;
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) =>
+          await context.cdpTarget.setTimezoneOverride(timezone),
+      ),
+    );
+    return {};
+  }
 }
 
 // Export for testing.
@@ -221,4 +255,23 @@ export function isValidLocale(locale: string): boolean {
     // Re-throw other errors
     throw e;
   }
+}
+
+// Export for testing.
+export function isValidTimezone(timezone: string): boolean {
+  try {
+    Intl.DateTimeFormat(undefined, {timeZone: timezone});
+    return true;
+  } catch (e) {
+    if (e instanceof RangeError) {
+      return false;
+    }
+    // Re-throw other errors
+    throw e;
+  }
+}
+
+// Export for testing.
+export function isTimeZoneOffsetString(timezone: string): boolean {
+  return /^[+-](?:2[0-3]|[01]\d)(?::[0-5]\d)?$/.test(timezone);
 }

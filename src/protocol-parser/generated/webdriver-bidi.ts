@@ -1216,6 +1216,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetGeolocationOverrideSchema,
     Emulation.SetLocaleOverrideSchema,
     Emulation.SetScreenOrientationOverrideSchema,
+    Emulation.SetTimezoneOverrideSchema,
   ]),
 );
 export namespace Emulation {
@@ -1338,6 +1339,26 @@ export namespace Emulation {
     }),
   );
 }
+export namespace Emulation {
+  export const SetTimezoneOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setTimezoneOverride'),
+      params: Emulation.SetTimezoneOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetTimezoneOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      timezone: z.union([z.string(), z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
 export const NetworkCommandSchema = z.lazy(() =>
   z.union([
     Network.AddDataCollectorSchema,
@@ -1397,9 +1418,6 @@ export namespace Network {
   );
 }
 export namespace Network {
-  export const DataTypeSchema = z.literal('response');
-}
-export namespace Network {
   export const BytesValueSchema = z.lazy(() =>
     z.union([Network.StringValueSchema, Network.Base64ValueSchema]),
   );
@@ -1455,6 +1473,9 @@ export namespace Network {
       value: Network.BytesValueSchema,
     }),
   );
+}
+export namespace Network {
+  export const DataTypeSchema = z.literal('response');
 }
 export namespace Network {
   export const FetchTimingInfoSchema = z.lazy(() =>
