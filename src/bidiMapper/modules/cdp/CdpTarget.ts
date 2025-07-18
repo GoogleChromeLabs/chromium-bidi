@@ -422,9 +422,7 @@ export class CdpTarget {
 
   async togglePreloadIfNeeded(): Promise<void> {
     // Enable Preload domain when speculation events are subscribed to
-    const enabled = this.isSubscribedTo(
-      'speculation.prefetchStatusUpdated',
-    );
+    const enabled = this.isSubscribedTo('speculation.prefetchStatusUpdated');
     if (this.#preloadEnabled === enabled) {
       return;
     }
