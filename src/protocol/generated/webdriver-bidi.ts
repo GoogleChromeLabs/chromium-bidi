@@ -2658,3 +2658,27 @@ export namespace WebExtension {
     extension: WebExtension.Extension;
   };
 }
+export type PreloadCommand = Record<string, never>;
+export type PreloadResult = Record<string, never>;
+export type PreloadEvent = Preload.PrefetchStatusUpdated;
+export namespace Preload {
+  export const enum PrefetchStatus {
+    Pending = 'pending',
+    Running = 'running',
+    Success = 'success',
+    Failure = 'failure',
+  }
+}
+export namespace Preload {
+  export type PrefetchStatusUpdated = {
+    method: 'preload.prefetchStatusUpdated';
+    params: Preload.PrefetchStatusUpdatedParameters;
+  };
+}
+export namespace Preload {
+  export type PrefetchStatusUpdatedParameters = {
+    initiatingFrameId: JsUint;
+    url: string;
+    status: Preload.PrefetchStatus;
+  };
+}

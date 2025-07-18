@@ -82,6 +82,7 @@ export class CdpTarget {
   #windowId?: number;
 
   #deviceAccessEnabled = false;
+  #preloadEnabled = false;
   #cacheDisableState = false;
   #fetchDomainStages: FetchStages = {
     request: false,
@@ -265,6 +266,7 @@ export class CdpTarget {
         // Resume tab execution as well if it was paused by the debugger.
         this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
         this.toggleDeviceAccessIfNeeded(),
+        this.togglePreloadIfNeeded(),
       ]);
     } catch (error: any) {
       this.#logger?.(LogType.debugError, 'Failed to unblock target', error);
@@ -412,6 +414,29 @@ export class CdpTarget {
     } catch (err) {
       this.#logger?.(LogType.debugError, err);
       this.#cacheDisableState = !cacheDisabled;
+      if (!this.#isExpectedError(err)) {
+        throw err;
+      }
+    }
+  }
+
+  async togglePreloadIfNeeded(): Promise<void> {
+    // Enable Preload domain when speculation events are subscribed to
+    const enabled = this.isSubscribedTo(
+      'speculation.prefetchStatusUpdated',
+    );
+    if (this.#preloadEnabled === enabled) {
+      return;
+    }
+
+    this.#preloadEnabled = enabled;
+    try {
+      await this.#cdpClient.sendCommand(
+        enabled ? 'Preload.enable' : 'Preload.disable',
+      );
+    } catch (err) {
+      this.#logger?.(LogType.debugError, err);
+      this.#preloadEnabled = !enabled;
       if (!this.#isExpectedError(err)) {
         throw err;
       }

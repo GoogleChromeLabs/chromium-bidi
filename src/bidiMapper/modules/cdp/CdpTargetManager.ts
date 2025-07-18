@@ -33,6 +33,7 @@ import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import {WorkerRealm, type WorkerRealmType} from '../script/WorkerRealm.js';
 import type {EventManager} from '../session/EventManager.js';
+import type {SpeculationProcessor} from '../speculation/SpeculationProcessor.js';
 
 import {CdpTarget} from './CdpTarget.js';
 
@@ -53,6 +54,7 @@ export class CdpTargetManager {
   readonly #networkStorage: NetworkStorage;
   readonly #userContextStorage: UserContextStorage;
   readonly #bluetoothProcessor: BluetoothProcessor;
+  readonly #speculationProcessor: SpeculationProcessor;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
@@ -71,6 +73,7 @@ export class CdpTargetManager {
     realmStorage: RealmStorage,
     networkStorage: NetworkStorage,
     bluetoothProcessor: BluetoothProcessor,
+    speculationProcessor: SpeculationProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
     prerenderingDisabled: boolean,
@@ -87,6 +90,7 @@ export class CdpTargetManager {
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#bluetoothProcessor = bluetoothProcessor;
+    this.#speculationProcessor = speculationProcessor;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
     this.#prerenderingDisabled = prerenderingDisabled;
@@ -366,6 +370,7 @@ export class CdpTargetManager {
 
     this.#networkStorage.onCdpTargetCreated(target);
     this.#bluetoothProcessor.onCdpTargetCreated(target);
+    this.#speculationProcessor.onCdpTargetCreated(target);
 
     return target;
   }

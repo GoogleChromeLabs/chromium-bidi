@@ -3364,3 +3364,30 @@ export namespace WebExtension {
     }),
   );
 }
+export const PreloadCommandSchema = z.lazy(() => z.object({}));
+export const PreloadResultSchema = z.lazy(() => z.object({}));
+export const PreloadEventSchema = z.lazy(
+  () => Preload.PrefetchStatusUpdatedSchema,
+);
+export namespace Preload {
+  export const PrefetchStatusSchema = z.lazy(() =>
+    z.enum(['pending', 'running', 'success', 'failure']),
+  );
+}
+export namespace Preload {
+  export const PrefetchStatusUpdatedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('preload.prefetchStatusUpdated'),
+      params: Preload.PrefetchStatusUpdatedParametersSchema,
+    }),
+  );
+}
+export namespace Preload {
+  export const PrefetchStatusUpdatedParametersSchema = z.lazy(() =>
+    z.object({
+      initiatingFrameId: JsUintSchema,
+      url: z.string(),
+      status: Preload.PrefetchStatusSchema,
+    }),
+  );
+}
