@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-import type {Speculation} from '../../../protocol/protocol.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
 export class SpeculationProcessor {
   #eventManager: EventManager;
-  #browsingContextStorage: BrowsingContextStorage;
-  #logger?: LoggerFn;
 
   constructor(
-    eventManager: EventManager,
-    browsingContextStorage: BrowsingContextStorage,
-    logger?: LoggerFn,
+    eventManager: EventManager
   ) {
     this.#eventManager = eventManager;
-    this.#browsingContextStorage = browsingContextStorage;
-    this.#logger = logger;
   }
 
   onCdpTargetCreated(cdpTarget: CdpTarget) {
