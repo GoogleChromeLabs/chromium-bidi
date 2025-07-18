@@ -220,9 +220,9 @@ export class EmulationProcessor {
       throw new InvalidArgumentException(`Invalid timezone "${timezone}"`);
     }
 
-    // CDP does not support timezone offset emulation.
-    // TODO: remove after http://b/432670902 is addressed.
-    if (timezone !== null && !isTimeZoneOffsetString(timezone)) {
+    if (timezone !== null && isTimeZoneOffsetString(timezone)) {
+      // CDP does not support timezone offset emulation.
+      // TODO: remove after http://b/432670902 is addressed.
       throw new UnsupportedOperationException(
         'Timezone offsets are not yet supported',
       );
@@ -241,7 +241,8 @@ export class EmulationProcessor {
 
     await Promise.all(
       browsingContexts.map(
-        async (context) => await context.cdpTarget.setTimezoneOverride(timezone),
+        async (context) =>
+          await context.cdpTarget.setTimezoneOverride(timezone),
       ),
     );
     return {};
