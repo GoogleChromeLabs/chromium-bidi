@@ -78,7 +78,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
   // Used for event handling in CdpTargetManager, no direct commands
-  // eslint-disable-next-line @typescript-eslint/no-unused-private-class-members
+  // eslint-disable-next-line no-unused-private-class-members
   #speculationProcessor: SpeculationProcessor;
   #storageProcessor: StorageProcessor;
   #webExtensionProcessor: WebExtensionProcessor;
