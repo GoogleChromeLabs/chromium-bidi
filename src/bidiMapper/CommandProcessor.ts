@@ -318,6 +318,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#emulationProcessor.setGeolocationOverride(
           this.#parser.parseSetGeolocationOverrideParams(command.params),
         );
+      case 'emulation.setJavascriptEnabled':
+        this.#parser.parseSetJavascriptEnabledParams(command.params);
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'emulation.setLocaleOverride':
         return await this.#emulationProcessor.setLocaleOverride(
           this.#parser.parseSetLocaleOverrideParams(command.params),
