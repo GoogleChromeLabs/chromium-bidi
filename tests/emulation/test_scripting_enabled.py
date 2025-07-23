@@ -16,8 +16,7 @@
 import pytest
 import pytest_asyncio
 from anys import ANY_DICT
-from test_helpers import (execute_command, goto_url, read_JSON_message,
-                          subscribe)
+from test_helpers import execute_command, goto_url, subscribe
 
 SOME_STRING = "SOME STRING"
 
@@ -47,34 +46,38 @@ async def create_and_prepare_browsing_context(create_context,
 
 
 @pytest_asyncio.fixture
-async def assert_scripting_disabled(websocket, html, click_element):
+async def assert_scripting_disabled(websocket, html, click_element,
+                                    read_messages):
     async def assert_scripting_disabled(context_id):
         command_id = await click_element("button", context_id)
 
         # No `browsingContext.userPromptOpened` events expected.
-        click_command_result = await read_JSON_message(websocket)
+        [click_command_result
+         ] = await read_messages(1, check_no_other_messages=True)
         assert click_command_result == {
             'id': command_id,
             'result': {},
             'type': 'success',
-        }, "Unexpected `userPromptOpened` event means the script was enabled, but should be disabled"
+        }
 
     return assert_scripting_disabled
 
 
 @pytest_asyncio.fixture
-async def assert_scripting_enabled(websocket, html, click_element):
+async def assert_scripting_enabled(websocket, html, click_element,
+                                   read_messages):
     async def assert_scripting_enabled(context_id):
         command_id = await click_element("button", context_id)
 
-        prompt_event = await read_JSON_message(websocket)
+        [click_command_result,
+         prompt_event] = await read_messages(2, check_no_other_messages=True)
+
         assert prompt_event == {
             'method': 'browsingContext.userPromptOpened',
             'params': ANY_DICT,
             'type': 'event',
-        }, "Missing `userPromptOpened` event means the script was disabled, but should be enabled"
+        }
 
-        click_command_result = await read_JSON_message(websocket)
         assert click_command_result == {
             'id': command_id,
             'result': {},
