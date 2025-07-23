@@ -552,7 +552,7 @@ def get_cdp_session_id(websocket):
 @pytest.fixture
 def query_selector(websocket, context_id):
     """Return an element matching the given selector"""
-    async def query_selector(selector: str) -> str:
+    async def query_selector(selector: str, context_id=context_id) -> str:
         result = await execute_command(
             websocket, {
                 "method": "script.evaluate",
@@ -568,6 +568,40 @@ def query_selector(websocket, context_id):
         return result["result"]
 
     return query_selector
+
+
+@pytest_asyncio.fixture
+async def click_element(websocket, query_selector, context_id):
+    async def click_element(element_selector='button', context_id=context_id):
+        target_element = await query_selector(element_selector, context_id)
+        return await send_JSON_command(
+            websocket, {
+                "method": "input.performActions",
+                "params": {
+                    "context": context_id,
+                    "actions": [{
+                        "type": "pointer",
+                        "id": "__puppeteer_mouse",
+                        "actions": [{
+                            "type": "pointerMove",
+                            "x": 0,
+                            "y": 0,
+                            "origin": {
+                                "type": "element",
+                                "element": target_element
+                            }
+                        }, {
+                            "type": "pointerDown",
+                            "button": 0
+                        }, {
+                            "type": "pointerUp",
+                            "button": 0
+                        }]
+                    }]
+                }
+            })
+
+    return click_element
 
 
 @pytest.fixture

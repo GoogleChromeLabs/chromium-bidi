@@ -318,11 +318,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#emulationProcessor.setGeolocationOverride(
           this.#parser.parseSetGeolocationOverrideParams(command.params),
         );
-      case 'emulation.setScriptingEnabled':
-        this.#parser.parseSetScriptingEnabledParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
-        );
       case 'emulation.setLocaleOverride':
         return await this.#emulationProcessor.setLocaleOverride(
           this.#parser.parseSetLocaleOverrideParams(command.params),
@@ -330,6 +325,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'emulation.setScreenOrientationOverride':
         return await this.#emulationProcessor.setScreenOrientationOverride(
           this.#parser.parseSetScreenOrientationOverrideParams(command.params),
+        );
+      case 'emulation.setScriptingEnabled':
+        return await this.#emulationProcessor.setScriptingEnabled(
+          this.#parser.parseSetScriptingEnabledParams(command.params),
         );
       case 'emulation.setTimezoneOverride':
         return await this.#emulationProcessor.setTimezoneOverride(

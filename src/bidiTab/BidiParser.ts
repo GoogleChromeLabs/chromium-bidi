@@ -187,11 +187,6 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Emulation.SetGeolocationOverrideParameters {
     return Parser.Emulation.parseSetGeolocationOverrideParams(params);
   }
-  parseSetScriptingEnabledParams(
-    params: unknown,
-  ): Emulation.SetScriptingEnabledParameters {
-    return Parser.Emulation.parseSetScriptingEnabledParams(params);
-  }
   parseSetLocaleOverrideParams(
     params: unknown,
   ): Emulation.SetLocaleOverrideParameters {
@@ -201,6 +196,11 @@ export class BidiParser implements BidiCommandParameterParser {
     params: unknown,
   ): Emulation.SetScreenOrientationOverrideParameters {
     return Parser.Emulation.parseSetScreenOrientationOverrideParams(params);
+  }
+  parseSetScriptingEnabledParams(
+    params: unknown,
+  ): Emulation.SetScriptingEnabledParameters {
+    return Parser.Emulation.parseSetScriptingEnabledParams(params);
   }
   parseSetTimezoneOverrideParams(
     params: unknown,
