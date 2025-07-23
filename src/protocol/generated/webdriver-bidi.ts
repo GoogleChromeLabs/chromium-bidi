@@ -976,7 +976,7 @@ export namespace BrowsingContext {
 }
 export type EmulationCommand =
   | Emulation.SetGeolocationOverride
-  | Emulation.SetJavascriptEnabled
+  | Emulation.SetScriptingEnabled
   | Emulation.SetLocaleOverride
   | Emulation.SetScreenOrientationOverride
   | Emulation.SetTimezoneOverride;
@@ -1048,13 +1048,13 @@ export namespace Emulation {
   };
 }
 export namespace Emulation {
-  export type SetJavascriptEnabled = {
-    method: 'emulation.setJavascriptEnabled';
-    params: Emulation.SetJavascriptEnabledParameters;
+  export type SetScriptingEnabled = {
+    method: 'emulation.setScriptingEnabled';
+    params: Emulation.SetScriptingEnabledParameters;
   };
 }
 export namespace Emulation {
-  export type SetJavascriptEnabledParameters = {
+  export type SetScriptingEnabledParameters = {
     enabled: false | null;
     contexts?: [
       BrowsingContext.BrowsingContext,

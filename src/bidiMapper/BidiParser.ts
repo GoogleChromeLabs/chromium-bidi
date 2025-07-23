@@ -122,9 +122,9 @@ export interface BidiCommandParameterParser {
   parseSetGeolocationOverrideParams(
     params: unknown,
   ): Emulation.SetGeolocationOverrideParameters;
-  parseSetJavascriptEnabledParams(
+  parseSetScriptingEnabledParams(
     params: unknown,
-  ): Emulation.SetJavascriptEnabledParameters;
+  ): Emulation.SetScriptingEnabledParameters;
   parseSetLocaleOverrideParams(
     params: unknown,
   ): Emulation.SetLocaleOverrideParameters;

@@ -187,10 +187,10 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Emulation.SetGeolocationOverrideParameters {
     return Parser.Emulation.parseSetGeolocationOverrideParams(params);
   }
-  parseSetJavascriptEnabledParams(
+  parseSetScriptingEnabledParams(
     params: unknown,
-  ): Emulation.SetJavascriptEnabledParameters {
-    return Parser.Emulation.parseSetJavascriptEnabledParams(params);
+  ): Emulation.SetScriptingEnabledParameters {
+    return Parser.Emulation.parseSetScriptingEnabledParams(params);
   }
   parseSetLocaleOverrideParams(
     params: unknown,
