@@ -106,6 +106,9 @@ export class BrowserProcessor {
       request,
     );
 
+    // Required for enabling download events.
+    await this.#setDownloadBehavior(null, context.browserContextId);
+
     this.#userContextStorage.getConfig(
       context.browserContextId,
     ).acceptInsecureCerts = params['acceptInsecureCerts'];
@@ -187,6 +190,74 @@ export class BrowserProcessor {
       }
     }
     return {clientWindows: uniqueClientWindows};
+  }
+
+  #getDownloadBehaviorCdpParams(
+    downloadBehavior: Browser.DownloadBehavior | null,
+  ): Protocol.Browser.SetDownloadBehaviorRequest {
+    if (downloadBehavior === null)
+      return {
+        behavior: 'default',
+        eventsEnabled: true,
+      };
+
+    if (downloadBehavior?.type === 'denied')
+      return {
+        behavior: 'deny',
+        eventsEnabled: true,
+      };
+
+    if (downloadBehavior?.type === 'allowed') {
+      if (downloadBehavior.destinationFolder) {
+        return {
+          behavior: 'allow',
+          downloadPath: downloadBehavior.destinationFolder,
+          eventsEnabled: true,
+        };
+      }
+      return {
+        behavior: 'default',
+        eventsEnabled: true,
+      };
+    }
+
+    // Unreachable. Handled by params parser.
+    throw new UnknownErrorException('Unexpected download behavior');
+  }
+
+  async #setDownloadBehavior(
+    downloadBehavior: Browser.DownloadBehavior | null,
+    userContext: Browser.UserContext,
+  ) {
+    this.#userContextStorage.getConfig(userContext).downloadBehavior =
+      downloadBehavior;
+    await this.#browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
+      ...this.#getDownloadBehaviorCdpParams(downloadBehavior),
+      browserContextId: userContext === 'default' ? undefined : userContext,
+    });
+  }
+
+  async setDownloadBehavior(
+    params: Browser.SetDownloadBehaviorParameters,
+  ): Promise<EmptyResult> {
+    const userContexts =
+      params.userContexts === undefined
+        ? (await this.#userContextStorage.getUserContexts()).map(
+            (c) => c.userContext,
+          )
+        : Array.from(
+            await this.#userContextStorage.verifyUserContextIdList(
+              params.userContexts,
+            ),
+          );
+
+    await Promise.all(
+      userContexts.map(async (userContext) => {
+        await this.#setDownloadBehavior(params.downloadBehavior, userContext);
+      }),
+    );
+
+    return {};
   }
 }
 

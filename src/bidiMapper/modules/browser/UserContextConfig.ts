@@ -16,6 +16,7 @@
  */
 
 import type {
+  Browser,
   BrowsingContext,
   Emulation,
   Session,
@@ -33,6 +34,7 @@ export class UserContextConfig {
   acceptInsecureCerts?: boolean;
   viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
+  downloadBehavior?: Browser.DownloadBehavior | null;
   geolocation?:
     | Emulation.GeolocationCoordinates
     | Emulation.GeolocationPositionError
