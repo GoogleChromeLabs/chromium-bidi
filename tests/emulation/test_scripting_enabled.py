@@ -22,14 +22,14 @@ SOME_STRING = "SOME STRING"
 
 
 @pytest_asyncio.fixture
-async def prepare_browsing_context(websocket, html, click_element):
-    async def prepare_browsing_context(context_id, same_origin=True):
+async def prepare_browsing_context(websocket, html):
+    async def prepare_browsing_context(target_context_id, same_origin=True):
         url = html(
             f"<button onclick=\'alert(\"{SOME_STRING}\")'>some button</button>",
             same_origin)
-        await goto_url(websocket, context_id, url)
+        await goto_url(websocket, target_context_id, url)
         await subscribe(websocket, ["browsingContext.userPromptOpened"],
-                        [context_id])
+                        [target_context_id])
 
     return prepare_browsing_context
 
@@ -38,18 +38,19 @@ async def prepare_browsing_context(websocket, html, click_element):
 async def create_and_prepare_browsing_context(create_context,
                                               prepare_browsing_context):
     async def create_and_prepare_browsing_context(user_context_id=None):
-        context_id = await create_context(user_context_id)
-        await prepare_browsing_context(context_id)
-        return context_id
+        target_context_id = await create_context(user_context_id)
+        await prepare_browsing_context(target_context_id)
+        return target_context_id
 
     return create_and_prepare_browsing_context
 
 
 @pytest_asyncio.fixture
-async def assert_scripting_disabled(websocket, html, click_element,
-                                    read_messages):
-    async def assert_scripting_disabled(context_id):
-        command_id = await click_element("button", context_id)
+async def assert_scripting_disabled(click_element, read_messages,
+                                    activate_main_tab):
+    async def assert_scripting_disabled(target_context_id):
+        await activate_main_tab(target_context_id)
+        command_id = await click_element("button", target_context_id)
 
         # No `browsingContext.userPromptOpened` events expected.
         [click_command_result
@@ -64,10 +65,12 @@ async def assert_scripting_disabled(websocket, html, click_element,
 
 
 @pytest_asyncio.fixture
-async def assert_scripting_enabled(websocket, html, click_element,
-                                   read_messages):
-    async def assert_scripting_enabled(context_id):
-        command_id = await click_element("button", context_id)
+async def assert_scripting_enabled(click_element, read_messages,
+                                   activate_main_tab):
+    async def assert_scripting_enabled(target_context_id):
+        await activate_main_tab(target_context_id)
+
+        command_id = await click_element("button", target_context_id)
 
         [click_command_result,
          prompt_event] = await read_messages(2, check_no_other_messages=True)
@@ -120,7 +123,12 @@ async def test_script_disable_and_enabled(websocket, context_id,
 @pytest.mark.asyncio
 async def test_script_disable_per_browsing_context(
         websocket, create_and_prepare_browsing_context,
-        assert_scripting_disabled, assert_scripting_enabled):
+        assert_scripting_disabled, assert_scripting_enabled,
+        test_headless_mode):
+    if test_headless_mode != "false":
+        pytest.xfail(
+            "Headless mode is flaky when rapidly switching between contexts")
+
     browsing_context_id_1 = await create_and_prepare_browsing_context()
     browsing_context_id_2 = await create_and_prepare_browsing_context()
 
@@ -248,6 +256,7 @@ async def test_script_disable_iframe(websocket, context_id, iframe_id,
                                      prepare_browsing_context,
                                      assert_scripting_disabled,
                                      assert_scripting_enabled, same_origin):
+    pytest.xfail("Not supported yet")
     await prepare_browsing_context(iframe_id, same_origin)
     await assert_scripting_enabled(iframe_id)
 

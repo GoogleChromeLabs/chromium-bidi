@@ -606,15 +606,13 @@ async def click_element(websocket, query_selector, context_id):
 
 @pytest.fixture
 def activate_main_tab(websocket, context_id, get_cdp_session_id):
-    """Actives the main tab"""
-    async def activate_main_tab():
-        session_id = await get_cdp_session_id(context_id)
+    """Actives the given or main tab"""
+    async def activate_main_tab(context_id=context_id):
         await execute_command(
             websocket, {
-                "method": "goog:cdp.sendCommand",
+                "method": "browsingContext.activate",
                 "params": {
-                    "method": "Page.bringToFront",
-                    "session": session_id
+                    "context": context_id
                 }
             })
 
