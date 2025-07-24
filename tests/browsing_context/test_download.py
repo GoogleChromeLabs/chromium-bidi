@@ -231,11 +231,9 @@ async def test_browsing_context_download_finished_canceled(
 
 
 @pytest.mark.asyncio
-async def test_browsing_context_download_behavior_deny(websocket,
-                                                       target_context_id,
-                                                       downloadable_url,
-                                                       prepare_context,
-                                                       trigger_download):
+async def test_browsing_context_download_behavior_deny(
+        websocket, target_context_id, downloadable_url, prepare_context,
+        trigger_download, target_user_context_id):
     await prepare_context(target_context_id)
 
     await execute_command(
@@ -244,7 +242,8 @@ async def test_browsing_context_download_behavior_deny(websocket,
             'params': {
                 'downloadBehavior': {
                     'type': 'denied'
-                }
+                },
+                'userContexts': [target_user_context_id]
             }
         })
 
@@ -288,13 +287,19 @@ async def test_browsing_context_download_behavior_allowed(
         trigger_download, target_user_context_id):
     await prepare_context(target_context_id)
 
+    if target_user_context_id != 'default':
+        pytest.xfail(
+            "Custom user contexts requires explicitly set download destination folder"
+        )
+
     await execute_command(
         websocket, {
             'method': 'browser.setDownloadBehavior',
             'params': {
                 'downloadBehavior': {
-                    'type': 'allowed',
-                }
+                    'type': 'allowed'
+                },
+                'userContexts': [target_user_context_id]
             }
         })
 
@@ -314,11 +319,6 @@ async def test_browsing_context_download_behavior_allowed(
         'type': 'event',
     }
     navigation_id = event['params']['navigation']
-
-    if target_user_context_id != 'default':
-        pytest.xfail(
-            "Custom user contexts requires explicitly set download destination folder"
-        )
 
     event = await wait_for_event(
         websocket,
@@ -341,7 +341,7 @@ async def test_browsing_context_download_behavior_allowed(
 @pytest.mark.asyncio
 async def test_browsing_context_download_behavior_destination_folder(
         websocket, target_context_id, downloadable_url, tmp_path,
-        prepare_context, trigger_download):
+        prepare_context, trigger_download, target_user_context_id):
     await prepare_context(target_context_id)
 
     await execute_command(
@@ -351,7 +351,8 @@ async def test_browsing_context_download_behavior_destination_folder(
                 'downloadBehavior': {
                     'type': 'allowed',
                     'destinationFolder': str(tmp_path)
-                }
+                },
+                'userContexts': [target_user_context_id]
             }
         })
 

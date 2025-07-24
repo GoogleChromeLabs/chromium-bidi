@@ -582,7 +582,7 @@ export namespace Browser {
   export const DownloadBehaviorAllowedSchema = z.lazy(() =>
     z.object({
       type: z.literal('allowed'),
-      destinationFolder: z.union([z.string(), z.null()]).optional(),
+      destinationFolder: z.string().optional(),
     }),
   );
 }

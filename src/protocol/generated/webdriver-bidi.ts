@@ -429,7 +429,7 @@ export namespace Browser {
 export namespace Browser {
   export type DownloadBehaviorAllowed = {
     type: 'allowed';
-    destinationFolder?: string | null;
+    destinationFolder?: string;
   };
 }
 export namespace Browser {
