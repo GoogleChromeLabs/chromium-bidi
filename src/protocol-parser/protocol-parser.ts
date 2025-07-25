@@ -357,6 +357,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetGeolocationOverrideParametersSchema,
     ) as Protocol.Emulation.SetGeolocationOverrideParameters;
   }
+  export function parseSetScriptingEnabledParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetScriptingEnabledParametersSchema,
+    ) as Protocol.Emulation.SetScriptingEnabledParameters;
+  }
   export function parseSetLocaleOverrideParams(params: unknown) {
     return parseObject(
       params,
