@@ -107,7 +107,7 @@ async def test_extensions_can_open_manifest(websocket,
                                             unpacked_extension_location,
                                             test_headless_mode,
                                             create_context):
-    """ Verify the extension page can be opened. http://b/412926721 """
+    """ Verify the extension page can be opened. https://crbug.com/412926721 """
     if test_headless_mode == "old":
         pytest.xfail("Old headless mode does not support extensions")
         return
