@@ -404,6 +404,7 @@ export const BrowserCommandSchema = z.lazy(() =>
     Browser.GetUserContextsSchema,
     Browser.RemoveUserContextSchema,
     Browser.SetClientWindowStateSchema,
+    Browser.SetDownloadBehaviorSchema,
   ]),
 );
 export const BrowserResultSchema = z.lazy(() =>
@@ -550,6 +551,45 @@ export namespace Browser {
       height: JsUintSchema.optional(),
       x: JsIntSchema.optional(),
       y: JsIntSchema.optional(),
+    }),
+  );
+}
+export namespace Browser {
+  export const SetDownloadBehaviorSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browser.setDownloadBehavior'),
+      params: Browser.SetDownloadBehaviorParametersSchema,
+    }),
+  );
+}
+export namespace Browser {
+  export const SetDownloadBehaviorParametersSchema = z.lazy(() =>
+    z.object({
+      downloadBehavior: z.union([Browser.DownloadBehaviorSchema, z.null()]),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Browser {
+  export const DownloadBehaviorSchema = z.lazy(() =>
+    z.union([
+      Browser.DownloadBehaviorAllowedSchema,
+      Browser.DownloadBehaviorDeniedSchema,
+    ]),
+  );
+}
+export namespace Browser {
+  export const DownloadBehaviorAllowedSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('allowed'),
+      destinationFolder: z.string().optional(),
+    }),
+  );
+}
+export namespace Browser {
+  export const DownloadBehaviorDeniedSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('denied'),
     }),
   );
 }

@@ -106,6 +106,9 @@ export class BrowserProcessor {
       request,
     );
 
+    // Required for enabling download events.
+    await this.#setDownloadBehavior(null, context.browserContextId);
+
     this.#userContextStorage.getConfig(
       context.browserContextId,
     ).acceptInsecureCerts = params['acceptInsecureCerts'];
@@ -187,6 +190,97 @@ export class BrowserProcessor {
       }
     }
     return {clientWindows: uniqueClientWindows};
+  }
+
+  #getCdpDownloadBehavior(
+    downloadBehavior: Browser.DownloadBehavior | null,
+  ): Protocol.Browser.SetDownloadBehaviorRequest {
+    if (downloadBehavior === null)
+      // CDP behavior "default" behavior.
+      return {
+        behavior: 'default',
+      };
+
+    if (downloadBehavior?.type === 'denied')
+      // Deny all the downloads.
+      return {
+        behavior: 'deny',
+      };
+
+    if (downloadBehavior?.type === 'allowed') {
+      if (downloadBehavior.destinationFolder) {
+        // CDP behavior "allow" means "save downloaded files to the specific download path".
+        return {
+          behavior: 'allow',
+          downloadPath: downloadBehavior.destinationFolder,
+        };
+      }
+
+      // Allow download without a specific download path matches the "default" CDP
+      // behavior.
+      return {
+        behavior: 'default',
+      };
+    }
+
+    // Unreachable. Handled by params parser.
+    throw new UnknownErrorException('Unexpected download behavior');
+  }
+
+  async #setDownloadBehavior(
+    downloadBehavior: Browser.DownloadBehavior | null,
+    userContext: Browser.UserContext,
+  ) {
+    await this.#browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
+      ...this.#getCdpDownloadBehavior(downloadBehavior),
+      browserContextId: userContext === 'default' ? undefined : userContext,
+      // Required for enabling download events.
+      eventsEnabled: true,
+    });
+  }
+
+  async setDownloadBehavior(
+    params: Browser.SetDownloadBehaviorParameters,
+  ): Promise<EmptyResult> {
+    let userContexts: string[];
+    if (params.userContexts === undefined) {
+      // Global download behavior.
+      userContexts = (await this.#userContextStorage.getUserContexts()).map(
+        (c) => c.userContext,
+      );
+    } else {
+      // Download behavior for the specific user contexts.
+      userContexts = Array.from(
+        await this.#userContextStorage.verifyUserContextIdList(
+          params.userContexts,
+        ),
+      );
+    }
+
+    if (
+      params.userContexts === undefined ||
+      userContexts.filter((c) => c !== 'default').length > 0
+    ) {
+      // Download behavior is specified for non-default user contexts.
+      if (
+        params.downloadBehavior === null ||
+        (params.downloadBehavior?.type === 'allowed' &&
+          params.downloadBehavior.destinationFolder === undefined)
+      ) {
+        // Download is allowed, but no destinationFolder is specified.
+        throw new UnsupportedOperationException(
+          'Download in non-default user contexts requires destination folder',
+        );
+      }
+    }
+
+    await Promise.all(
+      userContexts.map(async (userContext) => {
+        await this.#setDownloadBehavior(params.downloadBehavior, userContext);
+      }),
+    );
+
+    return {};
   }
 }
 

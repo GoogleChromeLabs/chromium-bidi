@@ -74,6 +74,15 @@ export namespace Browser {
       WebDriverBidi.Browser.SetClientWindowStateParametersSchema,
     );
   }
+  export function parseSetDownloadBehaviorParameters(
+    params: unknown,
+  ): Protocol.Browser.SetDownloadBehaviorParameters {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    return parseObject(
+      params,
+      WebDriverBidi.Browser.SetDownloadBehaviorParametersSchema,
+    ) as Protocol.Browser.SetDownloadBehaviorParameters;
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-network */
