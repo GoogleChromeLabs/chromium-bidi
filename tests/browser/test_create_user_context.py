@@ -94,9 +94,6 @@ async def test_browser_create_user_context_legacy_proxy(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('no_proxy', [True, False])
-# Rerun the test, as proxy server is flaky.
-# https://github.com/GoogleChromeLabs/chromium-bidi/issues/2771
-@pytest.mark.flaky(reruns=2)
 async def test_browser_create_user_context_proxy(websocket, http_proxy_server,
                                                  no_proxy):
     example_url = "http://example.com/"
