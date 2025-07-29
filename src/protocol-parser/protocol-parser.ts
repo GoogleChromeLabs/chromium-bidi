@@ -160,11 +160,17 @@ export namespace Network {
     );
   }
 
-  export function parseSetCacheBehavior(params: unknown) {
+  export function parseSetCacheBehaviorParameters(params: unknown) {
     return parseObject(
       params,
       WebDriverBidi.Network.SetCacheBehaviorParametersSchema,
     ) as Protocol.Network.SetCacheBehaviorParameters;
+  }
+  export function parseSetExtraHeadersParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.SetExtraHeadersParametersSchema,
+    ) as Protocol.Network.SetExtraHeadersParameters;
   }
 }
 
@@ -374,6 +380,12 @@ export namespace Emulation {
       params,
       WebDriverBidi.Emulation.SetTimezoneOverrideParametersSchema,
     ) as Protocol.Emulation.SetTimezoneOverrideParameters;
+  }
+  export function parseSetForcedColorsModeThemeOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetForcedColorsModeThemeOverrideParametersSchema,
+    ) as Protocol.Emulation.SetForcedColorsModeThemeOverrideParameters;
   }
 }
 
