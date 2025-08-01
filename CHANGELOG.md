@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.2.0...chromium-bidi-v7.2.1) (2025-08-01)
+
+
+### Bug Fixes
+
+* allow svg element as a start node ([#3614](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3614)) ([32e4657](https://github.com/GoogleChromeLabs/chromium-bidi/commit/32e46573ee42c043c1462d5eea0a09999b0fa314))
+
 ## [7.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.1.1...chromium-bidi-v7.2.0) (2025-07-21)
 
 
