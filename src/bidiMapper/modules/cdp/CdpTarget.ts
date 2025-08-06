@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {Bluetooth} from '../../../protocol/chromium-bidi.js';
 import {
+  type Browser,
   type BrowsingContext,
   type ChromiumBidi,
   Emulation,
@@ -31,7 +32,7 @@ import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
-import type {UserContextConfig} from '../browser/UserContextConfig.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {LogManager} from '../log/LogManager.js';
@@ -48,6 +49,7 @@ interface FetchStages {
 }
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
+  readonly #userContext: Browser.UserContext;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
   readonly #parentCdpClient: CdpClient;
@@ -58,10 +60,9 @@ export class CdpTarget {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #prerenderingDisabled: boolean;
   readonly #networkStorage: NetworkStorage;
-  readonly #userContextConfig: UserContextConfig;
+  readonly contextConfigStorage: ContextConfigStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
-  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
   readonly #logger: LoggerFn | undefined;
 
   // Keeps track of the previously set viewport.
@@ -99,9 +100,9 @@ export class CdpTarget {
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
+    configStorage: ContextConfigStorage,
     prerenderingDisabled: boolean,
-    userContextConfig: UserContextConfig,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
+    userContext: Browser.UserContext,
     logger?: LoggerFn,
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
@@ -113,10 +114,10 @@ export class CdpTarget {
       realmStorage,
       preloadScriptStorage,
       browsingContextStorage,
+      configStorage,
       networkStorage,
       prerenderingDisabled,
-      userContextConfig,
-      unhandledPromptBehavior,
+      userContext,
       logger,
     );
 
@@ -140,13 +141,13 @@ export class CdpTarget {
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
+    configStorage: ContextConfigStorage,
     networkStorage: NetworkStorage,
     prerenderingDisabled: boolean,
-    userContextConfig: UserContextConfig,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
-    logger?: LoggerFn,
+    userContext: Browser.UserContext,
+    logger: LoggerFn | undefined,
   ) {
-    this.#userContextConfig = userContextConfig;
+    this.#userContext = userContext;
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
@@ -156,8 +157,8 @@ export class CdpTarget {
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
+    this.contextConfigStorage = configStorage;
     this.#prerenderingDisabled = prerenderingDisabled;
-    this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
   }
 
@@ -307,15 +308,14 @@ export class CdpTarget {
       BrowsingContextImpl.create(
         frame.id,
         frame.parentId,
-        parentBrowsingContext.userContext,
-        this.#userContextConfig,
+        this.#userContext,
         parentBrowsingContext.cdpTarget,
         this.#eventManager,
         this.#browsingContextStorage,
         this.#realmStorage,
+        this.contextConfigStorage,
         frame.url,
         undefined,
-        this.#unhandledPromptBehavior,
         this.#logger,
       );
     }
@@ -633,50 +633,55 @@ export class CdpTarget {
   async #setUserContextConfig() {
     const promises = [];
 
+    const config = this.contextConfigStorage.getActiveConfig(
+      this.topLevelId,
+      this.#userContext,
+    );
+
     if (
-      this.#userContextConfig.viewport !== undefined ||
-      this.#userContextConfig.devicePixelRatio !== undefined
+      config.viewport !== undefined ||
+      config.devicePixelRatio !== undefined
     ) {
       promises.push(
-        this.setViewport(
-          this.#userContextConfig.viewport,
-          this.#userContextConfig.devicePixelRatio,
+        this.setViewport(config.viewport, config.devicePixelRatio).catch(() => {
+          // Ignore CDP errors, as the command is not supported by iframe targets. Generic
+          // catch, as the error can vary between CdpClient implementations: Tab vs
+          // Puppeteer.
+        }),
+      );
+    }
+
+    if (
+      config.screenOrientation !== undefined &&
+      config.screenOrientation !== null
+    ) {
+      promises.push(
+        this.setScreenOrientationOverride(config.screenOrientation).catch(
+          () => {
+            // Ignore CDP errors, as the command is not supported by iframe targets.
+            // Generic catch, as the error can vary between CdpClient implementations:
+            // Tab vs Puppeteer.
+          },
         ),
       );
     }
 
-    if (
-      this.#userContextConfig.geolocation !== undefined &&
-      this.#userContextConfig.geolocation !== null
-    ) {
-      promises.push(
-        this.setGeolocationOverride(this.#userContextConfig.geolocation),
-      );
+    if (config.geolocation !== undefined && config.geolocation !== null) {
+      promises.push(this.setGeolocationOverride(config.geolocation));
     }
 
-    if (
-      this.#userContextConfig.screenOrientation !== undefined &&
-      this.#userContextConfig.screenOrientation !== null
-    ) {
-      promises.push(
-        this.setScreenOrientationOverride(
-          this.#userContextConfig.screenOrientation,
-        ),
-      );
+    if (config.locale !== undefined) {
+      promises.push(this.setLocaleOverride(config.locale));
     }
 
-    if (this.#userContextConfig.locale !== undefined) {
-      promises.push(this.setLocaleOverride(this.#userContextConfig.locale));
+    if (config.timezone !== undefined) {
+      promises.push(this.setTimezoneOverride(config.timezone));
     }
 
-    if (this.#userContextConfig.timezone !== undefined) {
-      promises.push(this.setTimezoneOverride(this.#userContextConfig.timezone));
-    }
-
-    if (this.#userContextConfig.acceptInsecureCerts !== undefined) {
+    if (config.acceptInsecureCerts !== undefined) {
       promises.push(
         this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-          ignore: this.#userContextConfig.acceptInsecureCerts,
+          ignore: config.acceptInsecureCerts,
         }),
       );
     }
@@ -698,9 +703,14 @@ export class CdpTarget {
   }
 
   #ignoreFileDialog(): boolean {
+    const config = this.contextConfigStorage.getActiveConfig(
+      this.topLevelId,
+      this.#userContext,
+    );
+
     return (
-      (this.#unhandledPromptBehavior?.file ??
-        this.#unhandledPromptBehavior?.default ??
+      (config.userPromptHandler?.file ??
+        config.userPromptHandler?.default ??
         Session.UserPromptHandlerType.Ignore) ===
       Session.UserPromptHandlerType.Ignore
     );

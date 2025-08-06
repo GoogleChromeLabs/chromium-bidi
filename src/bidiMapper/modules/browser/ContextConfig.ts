@@ -22,14 +22,10 @@ import type {
 } from '../../../protocol/protocol.js';
 
 /**
- * Represents a user context configurations. Each new CDP target of the given user context
- * will be configured with this.
+ * Represents a context configurations. It can be global, per User Context, or per
+ * Browsing Context.
  */
-export class UserContextConfig {
-  /**
-   * The ID of the user context.
-   */
-  readonly userContextId: string;
+export class ContextConfig {
   acceptInsecureCerts?: boolean;
   viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
@@ -41,8 +37,4 @@ export class UserContextConfig {
   screenOrientation?: Emulation.ScreenOrientation | null;
   timezone?: string | null;
   userPromptHandler?: Session.UserPromptHandler;
-
-  constructor(userContextId: string) {
-    this.userContextId = userContextId;
-  }
 }
