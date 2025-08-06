@@ -669,6 +669,12 @@ export class CdpTarget {
       promises.push(this.setLocaleOverride(this.#userContextConfig.locale));
     }
 
+    if (this.#userContextConfig.scriptingEnabled !== undefined) {
+      promises.push(
+        this.setScriptingEnabled(this.#userContextConfig.scriptingEnabled),
+      );
+    }
+
     if (this.#userContextConfig.timezone !== undefined) {
       promises.push(this.setTimezoneOverride(this.#userContextConfig.timezone));
     }
@@ -836,6 +842,12 @@ export class CdpTarget {
         locale,
       });
     }
+  }
+
+  async setScriptingEnabled(scriptingEnabled: false | null): Promise<void> {
+    await this.cdpClient.sendCommand('Emulation.setScriptExecutionDisabled', {
+      value: scriptingEnabled === false,
+    });
   }
 
   async setTimezoneOverride(timezone: string | null): Promise<void> {
