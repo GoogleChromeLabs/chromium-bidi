@@ -18,7 +18,7 @@ import type Protocol from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {CdpConnection} from '../../../cdp/CdpConnection.js';
-import type {Browser, Session} from '../../../protocol/protocol.js';
+import type {Browser} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
@@ -58,7 +58,6 @@ export class CdpTargetManager {
 
   readonly #defaultUserContextId: Browser.UserContext;
   readonly #logger?: LoggerFn;
-  readonly #prerenderingDisabled: boolean;
 
   constructor(
     cdpConnection: CdpConnection,
@@ -72,7 +71,6 @@ export class CdpTargetManager {
     bluetoothProcessor: BluetoothProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
-    prerenderingDisabled: boolean,
     logger?: LoggerFn,
   ) {
     this.#cdpConnection = cdpConnection;
@@ -87,7 +85,6 @@ export class CdpTargetManager {
     this.#bluetoothProcessor = bluetoothProcessor;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
-    this.#prerenderingDisabled = prerenderingDisabled;
     this.#logger = logger;
 
     this.#setEventListeners(browserCdpClient);
@@ -354,7 +351,6 @@ export class CdpTargetManager {
       this.#browsingContextStorage,
       this.#networkStorage,
       this.#configStorage,
-      this.#prerenderingDisabled,
       userContext,
       this.#logger,
     );

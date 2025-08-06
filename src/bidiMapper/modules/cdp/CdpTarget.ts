@@ -58,7 +58,6 @@ export class CdpTarget {
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #prerenderingDisabled: boolean;
   readonly #networkStorage: NetworkStorage;
   readonly contextConfigStorage: ContextConfigStorage;
 
@@ -101,7 +100,6 @@ export class CdpTarget {
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
     configStorage: ContextConfigStorage,
-    prerenderingDisabled: boolean,
     userContext: Browser.UserContext,
     logger?: LoggerFn,
   ): CdpTarget {
@@ -116,7 +114,6 @@ export class CdpTarget {
       browsingContextStorage,
       configStorage,
       networkStorage,
-      prerenderingDisabled,
       userContext,
       logger,
     );
@@ -143,7 +140,6 @@ export class CdpTarget {
     browsingContextStorage: BrowsingContextStorage,
     configStorage: ContextConfigStorage,
     networkStorage: NetworkStorage,
-    prerenderingDisabled: boolean,
     userContext: Browser.UserContext,
     logger: LoggerFn | undefined,
   ) {
@@ -158,7 +154,6 @@ export class CdpTarget {
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.contextConfigStorage = configStorage;
-    this.#prerenderingDisabled = prerenderingDisabled;
     this.#logger = logger;
   }
 
@@ -240,15 +235,6 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
         }),
-        this.#cdpClient
-          .sendCommand('Page.setPrerenderingAllowed', {
-            isAllowed: !this.#prerenderingDisabled,
-          })
-          .catch(() => {
-            // Ignore CDP errors, as the command is not supported by iframe targets or
-            // prerendered pages. Generic catch, as the error can vary between CdpClient
-            // implementations: Tab vs Puppeteer.
-          }),
         // Enabling CDP Network domain is required for navigation detection:
         // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
         this.#cdpClient
@@ -636,6 +622,18 @@ export class CdpTarget {
     const config = this.contextConfigStorage.getActiveConfig(
       this.topLevelId,
       this.#userContext,
+    );
+
+    promises.push(
+      this.#cdpClient
+        .sendCommand('Page.setPrerenderingAllowed', {
+          isAllowed: !config.prerenderingDisabled,
+        })
+        .catch(() => {
+          // Ignore CDP errors, as the command is not supported by iframe targets or
+          // prerendered pages. Generic catch, as the error can vary between CdpClient
+          // implementations: Tab vs Puppeteer.
+        }),
     );
 
     if (

@@ -34,6 +34,7 @@ export class ContextConfig {
     | Emulation.GeolocationPositionError
     | null;
   locale?: string | null;
+  prerenderingDisabled?: boolean;
   screenOrientation?: Emulation.ScreenOrientation | null;
   timezone?: string | null;
   userPromptHandler?: Session.UserPromptHandler;

@@ -130,6 +130,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
         contextConfigStorage.updateGlobalConfig({
           acceptInsecureCerts: options.acceptInsecureCerts ?? false,
           userPromptHandler: options.unhandledPromptBehavior,
+          prerenderingDisabled: options?.['goog:prerenderingDisabled'] ?? false,
         });
         new CdpTargetManager(
           cdpConnection,
@@ -143,7 +144,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           this.#bluetoothProcessor,
           this.#preloadScriptStorage,
           defaultUserContextId,
-          options?.['goog:prerenderingDisabled'] ?? false,
           logger,
         );
 
