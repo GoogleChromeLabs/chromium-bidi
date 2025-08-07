@@ -73,24 +73,21 @@ export class ContextConfigStorage {
   }
 
   /**
+   * Returns the current global configuration.
+   */
+  getGlobalConfig(): ContextConfig {
+    return this.#global;
+  }
+
+  /**
    * Calculates the active configuration by merging global, user context, and
    * browsing context settings.
    */
-  getActiveConfig(topLevelBrowsingContextId?: string, userContext?: string) {
-    const userContextConfig =
-      userContext === undefined
-        ? undefined
-        : this.#userContextConfigs.get(userContext);
-
-    const browsingContextConfig =
-      topLevelBrowsingContextId === undefined
-        ? undefined
-        : this.#browsingContextConfigs.get(topLevelBrowsingContextId);
-
+  getActiveConfig(topLevelBrowsingContextId: string, userContext: string) {
     return ContextConfig.merge(
       this.#global,
-      userContextConfig,
-      browsingContextConfig,
+      this.#userContextConfigs.get(userContext),
+      this.#browsingContextConfigs.get(topLevelBrowsingContextId),
     );
   }
 }

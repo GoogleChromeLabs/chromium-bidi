@@ -21,8 +21,8 @@ import {ContextConfig} from './ContextConfig.js';
 import {ContextConfigStorage} from './ContextConfigStorage.js';
 
 describe('ContextConfigStorage', () => {
-  const USER_CONTEXT_1 = 'some user context';
-  const BROWSER_CONTEXT_1 = 'some browsing context';
+  const USER_CONTEXT = 'some user context';
+  const BROWSER_CONTEXT = 'some browsing context';
 
   let storage: ContextConfigStorage;
 
@@ -136,20 +136,20 @@ describe('ContextConfigStorage', () => {
         }
         if (user) {
           for (const config of Array.isArray(user) ? user : [user]) {
-            storage.updateUserContextConfig(USER_CONTEXT_1, config);
+            storage.updateUserContextConfig(USER_CONTEXT, config);
           }
         }
         if (browsing) {
           for (const config of Array.isArray(browsing)
             ? browsing
             : [browsing]) {
-            storage.updateBrowsingContextConfig(BROWSER_CONTEXT_1, config);
+            storage.updateBrowsingContextConfig(BROWSER_CONTEXT, config);
           }
         }
 
         const activeConfig = storage.getActiveConfig(
-          browsing ? BROWSER_CONTEXT_1 : undefined,
-          user ? USER_CONTEXT_1 : undefined,
+          BROWSER_CONTEXT,
+          USER_CONTEXT,
         );
 
         const expectedConfig = new ContextConfig();
