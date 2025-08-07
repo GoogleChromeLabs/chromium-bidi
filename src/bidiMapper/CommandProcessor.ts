@@ -136,6 +136,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       browsingContextStorage,
       networkStorage,
       userContextStorage,
+      contextConfigStorage,
     );
     this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
     this.#scriptProcessor = new ScriptProcessor(
@@ -409,9 +410,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetCacheBehaviorParams(command.params),
         );
       case 'network.setExtraHeaders':
-        this.#parser.parseSetExtraHeadersParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#networkProcessor.setExtraHeaders(
+          this.#parser.parseSetExtraHeadersParams(command.params),
         );
       // keep-sorted end
 
