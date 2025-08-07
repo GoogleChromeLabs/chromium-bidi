@@ -52,7 +52,7 @@ export class ContextConfig {
    * The final result will not contain any `undefined` properties.
    */
   static merge(...configs: (ContextConfig | undefined)[]): ContextConfig {
-  const result = new ContextConfig()
+    const result = new ContextConfig();
 
     for (const config of configs) {
       if (!config) {

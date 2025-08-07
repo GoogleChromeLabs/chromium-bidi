@@ -17,6 +17,7 @@
 
 import {expect} from 'chai';
 
+import {ContextConfig} from './ContextConfig.js';
 import {ContextConfigStorage} from './ContextConfigStorage.js';
 
 describe('ContextConfigStorage', () => {
@@ -151,7 +152,10 @@ describe('ContextConfigStorage', () => {
           user ? USER_CONTEXT_1 : undefined,
         );
 
-        expect(activeConfig).to.deep.equal(expected);
+        const expectedConfig = new ContextConfig();
+        Object.assign(expectedConfig, expected);
+
+        expect(activeConfig).to.deep.equal(expectedConfig);
       });
     });
   });
