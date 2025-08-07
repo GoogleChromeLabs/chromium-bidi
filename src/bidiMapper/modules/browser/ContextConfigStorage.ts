@@ -17,69 +17,80 @@
 
 import {ContextConfig} from './ContextConfig.js';
 
+/**
+ * Manages context-specific configurations. This class allows setting
+ * configurations at three levels: global, user context, and browsing context.
+ *
+ * When `getActiveConfig` is called, it merges the configurations in a specific
+ * order of precedence: `global -> user context -> browsing context`. For each
+ * configuration property, the value from the highest-precedence level that has a
+ * non-`undefined` value is used.
+ *
+ * The `update` methods (`updateGlobalConfig`, `updateUserContextConfig`,
+ * `updateBrowsingContextConfig`) merge the provided configuration with the
+ * existing one at the corresponding level. Properties with `undefined` values in
+ * the provided configuration are ignored, preserving the existing value.
+ */
 export class ContextConfigStorage {
   #global = new ContextConfig();
   #userContextConfigs = new Map<string, ContextConfig>();
   #browsingContextConfigs = new Map<string, ContextConfig>();
 
+  /**
+   * Updates the global configuration. Properties with `undefined` values in the
+   * provided `config` are ignored.
+   */
   updateGlobalConfig(config: ContextConfig) {
-    this.#global = {...this.#global, ...this.#removeUndefined(config)};
+    this.#global = ContextConfig.merge(this.#global, config);
   }
 
+  /**
+   * Updates the configuration for a specific browsing context. Properties with
+   * `undefined` values in the provided `config` are ignored.
+   */
   updateBrowsingContextConfig(
     browsingContextId: string,
     config: ContextConfig,
   ) {
-    config = this.#removeUndefined(config);
-    if (this.#browsingContextConfigs.has(browsingContextId)) {
-      this.#browsingContextConfigs.set(browsingContextId, {
-        ...this.#browsingContextConfigs.get(browsingContextId),
-        ...config,
-      });
-    } else {
-      this.#browsingContextConfigs.set(browsingContextId, config);
-    }
-  }
-
-  updateUserContextConfig(userContext: string, config: ContextConfig) {
-    config = this.#removeUndefined(config);
-    if (this.#userContextConfigs.has(userContext)) {
-      this.#userContextConfigs.set(userContext, {
-        ...this.#userContextConfigs.get(userContext),
-        ...config,
-      });
-    } else {
-      this.#userContextConfigs.set(userContext, config);
-    }
-  }
-
-  getActiveConfig(topLevelBrowsingContextId?: string, userContext?: string) {
-    let result = {...this.#global};
-    if (
-      userContext !== undefined &&
-      this.#userContextConfigs.has(userContext)
-    ) {
-      result = {...result, ...this.#userContextConfigs.get(userContext)};
-    }
-    if (
-      topLevelBrowsingContextId !== undefined &&
-      this.#browsingContextConfigs.has(topLevelBrowsingContextId)
-    ) {
-      result = {
-        ...result,
-        ...this.#browsingContextConfigs.get(topLevelBrowsingContextId),
-      };
-    }
-    return result;
+    this.#browsingContextConfigs.set(
+      browsingContextId,
+      ContextConfig.merge(
+        this.#browsingContextConfigs.get(browsingContextId),
+        config,
+      ),
+    );
   }
 
   /**
-   * Removes undefined values from an object. Required, as undefined values of the config
-   * should not override values from the upstream config.
+   * Updates the configuration for a specific user context. Properties with
+   * `undefined` values in the provided `config` are ignored.
    */
-  #removeUndefined<T extends object>(obj: T): T {
-    return Object.fromEntries(
-      Object.entries(obj).filter(([, value]) => value !== undefined),
-    ) as T;
+  updateUserContextConfig(userContext: string, config: ContextConfig) {
+    this.#userContextConfigs.set(
+      userContext,
+      ContextConfig.merge(this.#userContextConfigs.get(userContext), config),
+    );
+  }
+
+  /**
+   * Calculates the active configuration by merging global, user context, and
+   * browsing context settings.
+   */
+  getActiveConfig(topLevelBrowsingContextId?: string, userContext?: string) {
+    const userContextConfig =
+      userContext === undefined
+        ? undefined
+        : this.#userContextConfigs.get(userContext);
+
+    const browsingContextConfig =
+      topLevelBrowsingContextId === undefined
+        ? undefined
+        : this.#browsingContextConfigs.get(topLevelBrowsingContextId);
+
+    return ContextConfig.merge(
+      this.#global,
+      userContextConfig,
+      browsingContextConfig,
+    );
   }
 }

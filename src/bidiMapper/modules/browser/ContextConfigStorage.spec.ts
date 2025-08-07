@@ -17,123 +17,142 @@
 
 import {expect} from 'chai';
 
-import {ContextConfig} from './ContextConfig.js';
 import {ContextConfigStorage} from './ContextConfigStorage.js';
 
 describe('ContextConfigStorage', () => {
-  let storage: ContextConfigStorage;
   const USER_CONTEXT_1 = 'some user context';
   const BROWSER_CONTEXT_1 = 'some browsing context';
+
+  let storage: ContextConfigStorage;
 
   beforeEach(() => {
     storage = new ContextConfigStorage();
   });
 
   describe('getActiveConfig', () => {
-    it('should return the global config if no other configs are set', () => {
-      storage.updateGlobalConfig({
-        acceptInsecureCerts: true,
-        prerenderingDisabled: true,
-      });
-      const expected = new ContextConfig();
-      expected.acceptInsecureCerts = true;
-      expected.prerenderingDisabled = true;
-      expect(storage.getActiveConfig()).to.deep.equal(expected);
-    });
+    // Test cases for various configuration scenarios.
+    [
+      // Global config only.
+      {
+        global: {acceptInsecureCerts: true, prerenderingDisabled: true},
+        expected: {acceptInsecureCerts: true, prerenderingDisabled: true},
+        name: 'should return the global config if no other configs are set',
+      },
+      // User context overrides global.
+      {
+        global: {acceptInsecureCerts: true, prerenderingDisabled: true},
+        user: {acceptInsecureCerts: false},
+        expected: {acceptInsecureCerts: false, prerenderingDisabled: true},
+        name: 'should override global config with user context config',
+      },
+      // Browsing context overrides global and user context.
+      {
+        global: {acceptInsecureCerts: false, prerenderingDisabled: true},
+        user: {acceptInsecureCerts: false, prerenderingDisabled: false},
+        browsing: {acceptInsecureCerts: true},
+        expected: {acceptInsecureCerts: true, prerenderingDisabled: false},
+        name: 'should override global and user context configs with browsing context config',
+      },
+      // Undefined in user context does not override global.
+      {
+        global: {acceptInsecureCerts: true, prerenderingDisabled: true},
+        user: {acceptInsecureCerts: undefined, prerenderingDisabled: false},
+        expected: {acceptInsecureCerts: true, prerenderingDisabled: false},
+        name: 'should not override with undefined from user context config',
+      },
+      // Undefined in browsing context does not override user context.
+      {
+        global: {acceptInsecureCerts: true, prerenderingDisabled: true},
+        user: {acceptInsecureCerts: false, prerenderingDisabled: false},
+        browsing: {acceptInsecureCerts: undefined, prerenderingDisabled: true},
+        expected: {acceptInsecureCerts: false, prerenderingDisabled: true},
+        name: 'should not override with undefined from browsing context config',
+      },
+      // Undefined in both user and browsing context does not override global.
+      {
+        global: {acceptInsecureCerts: true, prerenderingDisabled: true},
+        user: {acceptInsecureCerts: undefined, prerenderingDisabled: false},
+        browsing: {
+          acceptInsecureCerts: undefined,
+          prerenderingDisabled: undefined,
+        },
+        expected: {acceptInsecureCerts: true, prerenderingDisabled: false},
+        name: 'should not override with undefined from either user or browsing context config',
+      },
+      // Sequential updates to global context.
+      {
+        global: [{acceptInsecureCerts: true}, {acceptInsecureCerts: undefined}],
+        expected: {acceptInsecureCerts: true},
+        name: 'should ignore undefined when updating global config',
+      },
+      // Sequential updates to user context.
+      {
+        global: {acceptInsecureCerts: true},
+        user: [{acceptInsecureCerts: false}, {acceptInsecureCerts: undefined}],
+        expected: {acceptInsecureCerts: false},
+        name: 'should ignore undefined when updating user context config',
+      },
+      // Sequential updates to browsing context.
+      {
+        global: {acceptInsecureCerts: true},
+        user: {acceptInsecureCerts: false},
+        browsing: [
+          {acceptInsecureCerts: true},
+          {acceptInsecureCerts: undefined},
+        ],
+        expected: {acceptInsecureCerts: true},
+        name: 'should ignore undefined when updating browsing context config',
+      },
+      // Null in user context overrides global.
+      {
+        global: {viewport: {width: 1, height: 1}},
+        user: {viewport: null},
+        expected: {viewport: null},
+        name: 'should override with null from user context config',
+      },
+      // Null in browsing context overrides user context.
+      {
+        global: {viewport: {width: 1, height: 1}},
+        user: {viewport: {width: 2, height: 2}},
+        browsing: {viewport: null},
+        expected: {viewport: null},
+        name: 'should override with null from browsing context config',
+      },
+      // Value in browsing context overrides null in user context.
+      {
+        global: {viewport: {width: 1, height: 1}},
+        user: {viewport: null},
+        browsing: {viewport: {width: 3, height: 3}},
+        expected: {viewport: {width: 3, height: 3}},
+        name: 'should override null with value from browsing context config',
+      },
+    ].forEach(({name, global, user, browsing, expected}) => {
+      it(name, () => {
+        if (global) {
+          for (const config of Array.isArray(global) ? global : [global]) {
+            storage.updateGlobalConfig(config);
+          }
+        }
+        if (user) {
+          for (const config of Array.isArray(user) ? user : [user]) {
+            storage.updateUserContextConfig(USER_CONTEXT_1, config);
+          }
+        }
+        if (browsing) {
+          for (const config of Array.isArray(browsing)
+            ? browsing
+            : [browsing]) {
+            storage.updateBrowsingContextConfig(BROWSER_CONTEXT_1, config);
+          }
+        }
 
-    it('should override global config with user context config', () => {
-      storage.updateGlobalConfig({
-        acceptInsecureCerts: true,
-        prerenderingDisabled: true,
-      });
-      storage.updateUserContextConfig(USER_CONTEXT_1, {
-        acceptInsecureCerts: false,
-      });
-      const expected = new ContextConfig();
-      expected.acceptInsecureCerts = false;
-      expected.prerenderingDisabled = true;
-      expect(storage.getActiveConfig(undefined, USER_CONTEXT_1)).to.deep.equal(
-        expected,
-      );
-    });
+        const activeConfig = storage.getActiveConfig(
+          browsing ? BROWSER_CONTEXT_1 : undefined,
+          user ? USER_CONTEXT_1 : undefined,
+        );
 
-    it('should override global and user context configs with browsing context config', () => {
-      storage.updateGlobalConfig({
-        acceptInsecureCerts: false,
-        prerenderingDisabled: true,
+        expect(activeConfig).to.deep.equal(expected);
       });
-      storage.updateUserContextConfig(USER_CONTEXT_1, {
-        acceptInsecureCerts: false,
-        prerenderingDisabled: false,
-      });
-      storage.updateBrowsingContextConfig(BROWSER_CONTEXT_1, {
-        acceptInsecureCerts: true,
-      });
-      const expected = new ContextConfig();
-      expected.acceptInsecureCerts = true;
-      expected.prerenderingDisabled = false;
-      expect(
-        storage.getActiveConfig(BROWSER_CONTEXT_1, USER_CONTEXT_1),
-      ).to.deep.equal(expected);
-    });
-
-    it('should not override with undefined from user context config', () => {
-      storage.updateGlobalConfig({
-        acceptInsecureCerts: true,
-        prerenderingDisabled: true,
-      });
-      storage.updateUserContextConfig(USER_CONTEXT_1, {
-        acceptInsecureCerts: undefined,
-        prerenderingDisabled: false,
-      });
-      const expected = new ContextConfig();
-      expected.acceptInsecureCerts = true;
-      expected.prerenderingDisabled = false;
-      expect(storage.getActiveConfig(undefined, USER_CONTEXT_1)).to.deep.equal(
-        expected,
-      );
-    });
-
-    it('should not override with undefined from browsing context config', () => {
-      storage.updateGlobalConfig({
-        acceptInsecureCerts: true,
-        prerenderingDisabled: true,
-      });
-      storage.updateUserContextConfig(USER_CONTEXT_1, {
-        acceptInsecureCerts: false,
-        prerenderingDisabled: false,
-      });
-      storage.updateBrowsingContextConfig(BROWSER_CONTEXT_1, {
-        acceptInsecureCerts: undefined,
-        prerenderingDisabled: true,
-      });
-      const expected = new ContextConfig();
-      expected.acceptInsecureCerts = false;
-      expected.prerenderingDisabled = true;
-      expect(
-        storage.getActiveConfig(BROWSER_CONTEXT_1, USER_CONTEXT_1),
-      ).to.deep.equal(expected);
-    });
-
-    it('should not override with undefined from either user or browsing context config', () => {
-      storage.updateGlobalConfig({
-        acceptInsecureCerts: true,
-        prerenderingDisabled: true,
-      });
-      storage.updateUserContextConfig(USER_CONTEXT_1, {
-        acceptInsecureCerts: undefined,
-        prerenderingDisabled: false,
-      });
-      storage.updateBrowsingContextConfig(BROWSER_CONTEXT_1, {
-        acceptInsecureCerts: undefined,
-        prerenderingDisabled: undefined,
-      });
-      const expected = new ContextConfig();
-      expected.acceptInsecureCerts = true;
-      expected.prerenderingDisabled = false;
-      expect(
-        storage.getActiveConfig(BROWSER_CONTEXT_1, USER_CONTEXT_1),
-      ).to.deep.equal(expected);
     });
   });
 });
