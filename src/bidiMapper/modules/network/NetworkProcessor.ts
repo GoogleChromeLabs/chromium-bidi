@@ -24,9 +24,9 @@ import {
   InvalidArgumentException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
-import type {ContextConfigStorage} from '../browser/ContextConfigStorage';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
-import type {CdpTarget} from '../cdp/CdpTarget';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';

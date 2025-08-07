@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {CdpClient} from '../cdp/CdpClient';
+import type {CdpClient} from '../cdp/CdpClient.js';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
 import {
   Exception,
