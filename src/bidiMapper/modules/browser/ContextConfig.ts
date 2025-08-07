@@ -25,7 +25,8 @@ import type {
 
 /**
  * Represents a context configurations. It can be global, per User Context, or per
- * Browsing Context.
+ * Browsing Context. The undefined value means the config will be taken from the upstream
+ * config. `null` values means the value should be default regardless of the upstream.
  */
 export class ContextConfig {
   acceptInsecureCerts?: boolean;

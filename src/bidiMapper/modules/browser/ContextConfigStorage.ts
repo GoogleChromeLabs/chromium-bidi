@@ -23,13 +23,14 @@ export class ContextConfigStorage {
   #browsingContextConfigs = new Map<string, ContextConfig>();
 
   updateGlobalConfig(config: ContextConfig) {
-    this.#global = {...this.#global, ...config};
+    this.#global = {...this.#global, ...this.#removeUndefined(config)};
   }
 
   updateBrowsingContextConfig(
     browsingContextId: string,
     config: ContextConfig,
   ) {
+    config = this.#removeUndefined(config);
     if (this.#browsingContextConfigs.has(browsingContextId)) {
       this.#browsingContextConfigs.set(browsingContextId, {
         ...this.#browsingContextConfigs.get(browsingContextId),
@@ -41,6 +42,7 @@ export class ContextConfigStorage {
   }
 
   updateUserContextConfig(userContext: string, config: ContextConfig) {
+    config = this.#removeUndefined(config);
     if (this.#userContextConfigs.has(userContext)) {
       this.#userContextConfigs.set(userContext, {
         ...this.#userContextConfigs.get(userContext),
@@ -69,5 +71,15 @@ export class ContextConfigStorage {
       };
     }
     return result;
+  }
+
+  /**
+   * Removes undefined values from an object. Required, as undefined values of the config
+   * should not override values from the upstream config.
+   */
+  #removeUndefined<T extends object>(obj: T): T {
+    return Object.fromEntries(
+      Object.entries(obj).filter(([, value]) => value !== undefined),
+    ) as T;
   }
 }
