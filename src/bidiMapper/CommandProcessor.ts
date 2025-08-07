@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {CdpClient} from '../cdp/CdpClient';
+import type {CdpClient} from '../cdp/CdpClient.js';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
 import {
   Exception,
@@ -31,9 +31,10 @@ import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
-import type {MapperOptions, MapperOptionsStorage} from './MapperOptions.js';
+import type {MapperOptions} from './MapperOptions.js';
 import type {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
+import type {ContextConfigStorage} from './modules/browser/ContextConfigStorage.js';
 import type {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
@@ -91,7 +92,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     networkStorage: NetworkStorage,
-    mapperOptionsStorage: MapperOptionsStorage,
+    contextConfigStorage: ContextConfigStorage,
     bluetoothProcessor: BluetoothProcessor,
     userContextStorage: UserContextStorage,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
@@ -109,13 +110,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#browserProcessor = new BrowserProcessor(
       browserCdpClient,
       browsingContextStorage,
-      mapperOptionsStorage,
+      contextConfigStorage,
       userContextStorage,
     );
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       browserCdpClient,
       browsingContextStorage,
       userContextStorage,
+      contextConfigStorage,
       eventManager,
     );
     this.#cdpProcessor = new CdpProcessor(
@@ -127,12 +129,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#emulationProcessor = new EmulationProcessor(
       browsingContextStorage,
       userContextStorage,
+      contextConfigStorage,
     );
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
     this.#networkProcessor = new NetworkProcessor(
       browsingContextStorage,
       networkStorage,
       userContextStorage,
+      contextConfigStorage,
     );
     this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
     this.#scriptProcessor = new ScriptProcessor(
@@ -406,9 +410,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetCacheBehaviorParams(command.params),
         );
       case 'network.setExtraHeaders':
-        this.#parser.parseSetExtraHeadersParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#networkProcessor.setExtraHeaders(
+          this.#parser.parseSetExtraHeadersParams(command.params),
         );
       // keep-sorted end
 
