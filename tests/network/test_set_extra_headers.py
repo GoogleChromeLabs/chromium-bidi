@@ -121,6 +121,19 @@ async def test_network_set_extra_headers_global(websocket, context_id, setup,
                              SOME_HEADER_NAME: None
                          })
 
+    # Clear headers.
+    await execute_command(websocket, {
+        "method": "network.setExtraHeaders",
+        "params": {
+            "headers": [],
+        }
+    })
+    await assert_headers(context_id,
+                         expected_headers={
+                             ANOTHER_HEADER_NAME: None,
+                             SOME_HEADER_NAME: None
+                         })
+
 
 @pytest.mark.asyncio
 async def test_network_set_extra_headers_per_context(websocket, context_id,
@@ -168,6 +181,26 @@ async def test_network_set_extra_headers_per_context(websocket, context_id,
     await assert_headers(context_id,
                          expected_headers={
                              SOME_HEADER_NAME: SOME_HEADER_VALUE,
+                             ANOTHER_HEADER_NAME: None
+                         })
+    await assert_headers(another_context_id,
+                         expected_headers={
+                             ANOTHER_HEADER_NAME: ANOTHER_HEADER_VALUE,
+                             SOME_HEADER_NAME: None
+                         })
+
+    # Clear headers for the first context.
+    await execute_command(
+        websocket, {
+            "method": "network.setExtraHeaders",
+            "params": {
+                "contexts": [context_id],
+                "headers": [],
+            }
+        })
+    await assert_headers(context_id,
+                         expected_headers={
+                             SOME_HEADER_NAME: None,
                              ANOTHER_HEADER_NAME: None
                          })
     await assert_headers(another_context_id,
@@ -250,6 +283,26 @@ async def test_network_set_extra_headers_per_user_context(
                              SOME_HEADER_NAME: None
                          })
 
+    # Clear headers for the first user context.
+    await execute_command(
+        websocket, {
+            "method": "network.setExtraHeaders",
+            "params": {
+                "userContexts": ["default"],
+                "headers": [],
+            }
+        })
+    await assert_headers(browsing_context_id_1,
+                         expected_headers={
+                             ANOTHER_HEADER_NAME: None,
+                             SOME_HEADER_NAME: None
+                         })
+    await assert_headers(browsing_context_id_2,
+                         expected_headers={
+                             ANOTHER_HEADER_NAME: ANOTHER_HEADER_VALUE,
+                             SOME_HEADER_NAME: None
+                         })
+
 
 @pytest.mark.asyncio
 async def test_network_set_extra_headers_iframe(websocket, context_id,
@@ -297,6 +350,22 @@ async def test_network_set_extra_headers_iframe(websocket, context_id,
     await assert_headers(iframe_id,
                          expected_headers={
                              ANOTHER_HEADER_NAME: ANOTHER_HEADER_VALUE,
+                             SOME_HEADER_NAME: None
+                         },
+                         same_origin=False)
+
+    # Clear headers.
+    await execute_command(
+        websocket, {
+            "method": "network.setExtraHeaders",
+            "params": {
+                "contexts": [context_id],
+                "headers": [],
+            }
+        })
+    await assert_headers(iframe_id,
+                         expected_headers={
+                             ANOTHER_HEADER_NAME: None,
                              SOME_HEADER_NAME: None
                          },
                          same_origin=False)
