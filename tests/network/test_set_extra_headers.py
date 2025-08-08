@@ -23,6 +23,8 @@ SOME_HEADER_NAME = 'Some-Header-Name'
 SOME_HEADER_VALUE = 'SOME HEADER VALUE'
 ANOTHER_HEADER_NAME = 'Another-Header-Name'
 ANOTHER_HEADER_VALUE = 'ANOTHER HEADER VALUE'
+REFERER_HEADER_NAME = "Referer"
+REFERER_HEADER_VALUE = "http://google.com/"
 
 
 @pytest_asyncio.fixture
@@ -74,10 +76,11 @@ async def assert_headers(get_headers):
         headers = await get_headers(context_id, same_origin)
         for key, value in expected_headers.items():
             if value is None:
-                assert key not in headers
+                assert key not in headers, f"'{key}' header should not be present in the request headers"
             else:
-                assert key in headers
-                assert headers[key] == value
+                assert key in headers, f"'{key}' header should be present in the request headers"
+                assert headers[
+                    key] == value, f"'{key}' header should have value of '{value}'"
 
     return _assert_headers
 
@@ -393,3 +396,83 @@ async def test_network_set_extra_headers_invalid_value(websocket, context_id,
                     }],
                 }
             })
+
+
+@pytest.mark.asyncio
+async def test_network_set_extra_headers_referer_with_fetch(
+        websocket, context_id, setup, assert_headers):
+    await setup(context_id)
+    await execute_command(
+        websocket, {
+            "method": "network.setExtraHeaders",
+            "params": {
+                "headers": [{
+                    'name': SOME_HEADER_NAME,
+                    'value': {
+                        'type': 'string',
+                        'value': SOME_HEADER_VALUE
+                    }
+                }, {
+                    'name': REFERER_HEADER_NAME,
+                    'value': {
+                        'type': 'string',
+                        'value': REFERER_HEADER_VALUE
+                    }
+                }],
+            }
+        })
+
+    await assert_headers(context_id,
+                         expected_headers={
+                             SOME_HEADER_NAME: SOME_HEADER_VALUE,
+                             REFERER_HEADER_NAME: REFERER_HEADER_VALUE
+                         })
+
+
+@pytest.mark.asyncio
+async def test_network_set_extra_headers_referer_with_navigation(
+        websocket, context_id, url_echo):
+    await execute_command(
+        websocket, {
+            "method": "network.setExtraHeaders",
+            "params": {
+                "headers": [{
+                    'name': SOME_HEADER_NAME,
+                    'value': {
+                        'type': 'string',
+                        'value': SOME_HEADER_VALUE
+                    }
+                }, {
+                    'name': REFERER_HEADER_NAME,
+                    'value': {
+                        'type': 'string',
+                        'value': REFERER_HEADER_VALUE
+                    }
+                }],
+            }
+        })
+
+    await goto_url(websocket, context_id, url_echo)
+
+    response = await execute_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': "document.body.innerText",
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id
+                }
+            }
+        })
+
+    assert response['result']['value']
+    request_data = JSONDecoder().decode(response['result']['value'])
+    headers = request_data['headers']
+    assert headers[SOME_HEADER_NAME] == SOME_HEADER_VALUE
+
+    pytest.xfail(
+        "`Referer` headers is not set during navigation: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3637"
+    )
+    assert REFERER_HEADER_NAME in headers, f"'{REFERER_HEADER_NAME}' header should be present in the request headers"
+    assert headers[REFERER_HEADER_NAME] == REFERER_HEADER_VALUE
