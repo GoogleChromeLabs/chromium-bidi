@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [7.4.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.3.1...chromium-bidi-v7.4.0) (2025-08-08)
+## [7.3.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.3.1...chromium-bidi-v7.3.2) (2025-08-08)
 
 
 ### Features
