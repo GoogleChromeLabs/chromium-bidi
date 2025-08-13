@@ -283,7 +283,7 @@ class LocalHttpServer:
             if self._check_server_readiness():
                 return
             # Short sleep before retrying
-            time.sleep(0.05)
+            time.sleep(0.1)
         raise RuntimeError(
             f"Flask server failed to start on {self.__protocol}://{self.__host}:{self.__port} within {max_wait_s}s."
         )
