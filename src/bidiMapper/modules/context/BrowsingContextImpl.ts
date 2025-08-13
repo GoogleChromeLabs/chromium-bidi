@@ -1137,10 +1137,13 @@ export class BrowsingContextImpl {
   }
 
   async handleUserPrompt(accept?: boolean, userText?: string): Promise<void> {
-    await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
-      accept: accept ?? true,
-      promptText: userText,
-    });
+    await this.top.#cdpTarget.cdpClient.sendCommand(
+      'Page.handleJavaScriptDialog',
+      {
+        accept: accept ?? true,
+        promptText: userText,
+      },
+    );
   }
 
   async activate(): Promise<void> {
@@ -1928,6 +1931,15 @@ export class BrowsingContextImpl {
     screenOrientation: Emulation.ScreenOrientation | null,
   ): Promise<void> {
     await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
+  }
+
+  async setScriptingEnabled(scriptingEnabled: false | null) {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) =>
+          await cdpTarget.setScriptingEnabled(scriptingEnabled),
+      ),
+    );
   }
 }
 
