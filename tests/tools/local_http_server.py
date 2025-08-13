@@ -276,7 +276,7 @@ class LocalHttpServer:
             # Catch any other unexpected errors during check
             return False
 
-    def _wait_for_server_startup(self, max_wait_s: int = 5) -> None:
+    def _wait_for_server_startup(self, max_wait_s: int = 60) -> None:
         """Waits for the Flask server to start by polling a readiness check."""
         start_time_monotonic = time.monotonic()
         while time.monotonic() - start_time_monotonic < max_wait_s:
