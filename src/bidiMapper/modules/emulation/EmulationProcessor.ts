@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
+import {
+  InvalidArgumentException,
+  UnsupportedOperationException,
+} from '../../../protocol/ErrorResponse.js';
 import type {
   EmptyResult,
   Emulation,
@@ -302,6 +305,43 @@ export class EmulationProcessor {
     await Promise.all(
       browsingContexts.map(
         async (context) => await context.setTimezoneOverride(timezone),
+      ),
+    );
+    return {};
+  }
+
+  async setUserAgentOverrideParams(
+    params: Emulation.SetUserAgentOverrideParameters,
+  ): Promise<EmptyResult> {
+    if (params.userAgent === '') {
+      throw new UnsupportedOperationException(
+        'empty user agent string is not supported',
+      );
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          userAgent: params.userAgent,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        userAgent: params.userAgent,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) =>
+          await context.setUserAgentOverrideParams(params.userAgent),
       ),
     );
     return {};
