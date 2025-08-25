@@ -1033,9 +1033,11 @@ export class BrowsingContextImpl {
 
     if (result instanceof NavigationResult) {
       if (
-        // TODO: check after decision on the spec is done:
-        //  https://github.com/w3c/webdriver-bidi/issues/799.
-        result.eventName === NavigationEventName.NavigationAborted ||
+        // If the navigation was committed and then another navigation started, the
+        // command should be considered as successfully finished.
+        // Details:
+        // * https://github.com/w3c/webdriver-bidi/issues/763
+        // * https://github.com/w3c/webdriver-bidi/issues/799
         result.eventName === NavigationEventName.NavigationFailed
       ) {
         throw new UnknownErrorException(result.message ?? 'unknown exception');
