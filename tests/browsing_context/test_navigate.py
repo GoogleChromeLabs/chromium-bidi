@@ -45,9 +45,11 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
     assert messages == [
         AnyExtending({
             'id': command_id,
-            'error': 'unknown error',
-            'message': 'navigation canceled by concurrent navigation',
-            'type': 'error',
+            'result': {
+                'navigation': 'stable_0',
+                'url': initial_url
+            },
+            'type': 'success',
         }),
         {
             'method': 'browsingContext.navigationAborted',
