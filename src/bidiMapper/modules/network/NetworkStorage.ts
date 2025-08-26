@@ -443,6 +443,16 @@ export class NetworkStorage {
     this.#intercepts.delete(intercept);
   }
 
+  getRequestsByContext(context: string): NetworkRequest[] {
+    const requests: NetworkRequest[] = [];
+    for (const request of this.#requests.values()) {
+      if (request.context === context) {
+        requests.push(request);
+      }
+    }
+    return requests;
+  }
+
   getRequestsByTarget(target: CdpTarget): NetworkRequest[] {
     const requests: NetworkRequest[] = [];
     for (const request of this.#requests.values()) {

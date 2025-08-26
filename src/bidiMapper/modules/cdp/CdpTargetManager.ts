@@ -227,6 +227,15 @@ export class CdpTargetManager {
         if (maybeContext && targetInfo.type === 'iframe') {
           // OOPiF.
           maybeContext.updateCdpTarget(cdpTarget);
+
+          // When OOPiF changes the CdpTarget, its requests should be moved to the new
+          // target as well. Navigation request has the `requestId` the same
+          // `navigableId`.
+          for (const request of this.#networkStorage.getRequestsByContext(
+            cdpTarget.id,
+          )) {
+            request.updateCdpTarget(cdpTarget);
+          }
         } else {
           // If attaching to existing browser instance, there could be OOPiF targets. This
           // case is handled by the `findFrameParentId` method.

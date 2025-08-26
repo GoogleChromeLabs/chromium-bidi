@@ -70,8 +70,8 @@ export class BrowsingContextImpl {
    * The ID of the parent browsing context.
    * If null, this is a top-level context.
    */
-  #loaderId?: Protocol.Network.LoaderId;
   #parentId: BrowsingContext.BrowsingContext | null = null;
+  #loaderId?: Protocol.Network.LoaderId;
   #originalOpener?: string;
 
   #lifecycle = {
