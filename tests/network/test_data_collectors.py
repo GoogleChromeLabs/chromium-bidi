@@ -468,7 +468,7 @@ async def test_network_collector_get_data_oopif(websocket, context_id, html):
             "params": {
                 "expression": f"""
                     const iframe = document.createElement('iframe');
-                    iframe.src = '{html(same_origin=False)}';
+                    iframe.src = '{html(same_origin=True)}';
                     document.body.appendChild(iframe);
                 """,
                 "target": {
@@ -479,14 +479,36 @@ async def test_network_collector_get_data_oopif(websocket, context_id, html):
         })
 
     event = await wait_for_event(websocket, 'network.responseCompleted')
+    iframe_id = event['params']['context']
+    same_process_request_id = event["params"]["request"]["request"]
 
-    request_id = event["params"]["request"]["request"]
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html(same_origin=False),
+                "context": iframe_id,
+                "wait": "none"
+            }
+        })
+
+    event = await wait_for_event(websocket, 'network.responseCompleted')
+    another_process_request_id = event["params"]["request"]["request"]
 
     await execute_command(
         websocket, {
             "method": "network.getData",
             "params": {
                 "dataType": "response",
-                "request": request_id
+                "request": same_process_request_id
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "network.getData",
+            "params": {
+                "dataType": "response",
+                "request": another_process_request_id
             }
         })

@@ -174,9 +174,15 @@ export class NetworkRequest {
     return this.#cdpTarget;
   }
 
-  /** The request can be moved to another target in case of OOPiF. */
+  /** CdpTarget can be changed when frame is moving out of process. */
   updateCdpTarget(cdpTarget: CdpTarget) {
-    this.#cdpTarget = cdpTarget;
+    if (cdpTarget !== this.#cdpTarget) {
+      this.#logger?.(
+        LogType.debugInfo,
+        `Request ${this.id} was moved from ${this.#cdpTarget.id} to ${cdpTarget.id}`,
+      );
+      this.#cdpTarget = cdpTarget;
+    }
   }
 
   get cdpClient() {
@@ -215,7 +221,7 @@ export class NetworkRequest {
     }
 
     // Get virtual navigation ID from the browsing context.
-    return this.#networkStorage.getNavigationId(this.context ?? undefined);
+    return this.#networkStorage.getNavigationId(this.#context ?? undefined);
   }
 
   get #cookies() {
@@ -242,7 +248,7 @@ export class NetworkRequest {
     return bodySize;
   }
 
-  get context(): string | null {
+  get #context(): string | null {
     const result =
       this.#response.paused?.frameId ??
       this.#request.info?.frameId ??
@@ -847,12 +853,12 @@ export class NetworkRequest {
     this.#phaseChanged();
 
     this.#emittedEvents[event.method] = true;
-    if (this.context) {
+    if (this.#context) {
       this.#eventManager.registerEvent(
         Object.assign(event, {
           type: 'event' as const,
         }),
-        this.context,
+        this.#context,
       );
     } else {
       this.#eventManager.registerGlobalEvent(
@@ -883,7 +889,7 @@ export class NetworkRequest {
     }
 
     return {
-      context: this.context,
+      context: this.#context,
       navigation: this.#navigationId,
       redirectCount: this.#redirectCount,
       request: this.#getRequestData(),
