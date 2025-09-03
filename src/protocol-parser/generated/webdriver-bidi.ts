@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2024 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -195,363 +196,200 @@ export namespace Session {
   );
 }
 export namespace Session {
-  export const AutodetectProxyConfigurationSchema = z.lazy(() =>
-    z
-      .object({
-        proxyType: z.literal('autodetect'),
-      })
-      .and(ExtensibleSchema),
-  );
-}
-export namespace Session {
-  export const DirectProxyConfigurationSchema = z.lazy(() =>
-    z
-      .object({
-        proxyType: z.literal('direct'),
-      })
-      .and(ExtensibleSchema),
-  );
-}
-export namespace Session {
-  export const ManualProxyConfigurationSchema = z.lazy(() =>
-    z
-      .object({
-        proxyType: z.literal('manual'),
-        httpProxy: z.string().optional(),
-        sslProxy: z.string().optional(),
-      })
-      .and(Session.SocksProxyConfigurationSchema.or(z.object({})))
-      .and(
-        z.object({
-          noProxy: z.array(z.string()).optional(),
-        }),
-      )
-      .and(ExtensibleSchema),
-  );
-}
-export namespace Session {
-  export const SocksProxyConfigurationSchema = z.lazy(() =>
-    z.object({
-      socksProxy: z.string(),
-      socksVersion: z.number().int().nonnegative().gte(0).lte(255),
-    }),
-  );
-}
-export namespace Session {
-  export const PacProxyConfigurationSchema = z.lazy(() =>
-    z
-      .object({
-        proxyType: z.literal('pac'),
-        proxyAutoconfigUrl: z.string(),
-      })
-      .and(ExtensibleSchema),
-  );
-}
-export namespace Session {
-  export const SystemProxyConfigurationSchema = z.lazy(() =>
-    z
-      .object({
-        proxyType: z.literal('system'),
-      })
-      .and(ExtensibleSchema),
-  );
-}
-export namespace Session {
-  export const UserPromptHandlerSchema = z.lazy(() =>
-    z.object({
-      alert: Session.UserPromptHandlerTypeSchema.optional(),
-      beforeUnload: Session.UserPromptHandlerTypeSchema.optional(),
-      confirm: Session.UserPromptHandlerTypeSchema.optional(),
-      default: Session.UserPromptHandlerTypeSchema.optional(),
-      file: Session.UserPromptHandlerTypeSchema.optional(),
-      prompt: Session.UserPromptHandlerTypeSchema.optional(),
-    }),
-  );
-}
-export namespace Session {
-  export const UserPromptHandlerTypeSchema = z.lazy(() =>
-    z.enum(['accept', 'dismiss', 'ignore']),
-  );
-}
-export namespace Session {
-  export const SubscriptionSchema = z.lazy(() => z.string());
-}
-export namespace Session {
-  export const SubscriptionRequestSchema = z.lazy(() =>
-    z.object({
-      events: z.array(z.string()).min(1),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
-  );
-}
-export namespace Session {
-  export const UnsubscribeByIdRequestSchema = z.lazy(() =>
-    z.object({
-      subscriptions: z.array(Session.SubscriptionSchema).min(1),
-    }),
-  );
-}
-export namespace Session {
-  export const UnsubscribeByAttributesRequestSchema = z.lazy(() =>
-    z.object({
-      events: z.array(z.string()).min(1),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-    }),
-  );
-}
-export namespace Session {
-  export const StatusSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('session.status'),
-      params: EmptyParamsSchema,
-    }),
-  );
-}
-export namespace Session {
-  export const StatusResultSchema = z.lazy(() =>
-    z.object({
-      ready: z.boolean(),
-      message: z.string(),
-    }),
-  );
-}
-export namespace Session {
-  export const NewSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('session.new'),
-      params: Session.NewParametersSchema,
-    }),
-  );
-}
-export namespace Session {
-  export const NewParametersSchema = z.lazy(() =>
-    z.object({
-      capabilities: Session.CapabilitiesRequestSchema,
-    }),
-  );
-}
-export namespace Session {
-  export const NewResultSchema = z.lazy(() =>
-    z.object({
-      sessionId: z.string(),
-      capabilities: z
-        .object({
-          acceptInsecureCerts: z.boolean(),
-          browserName: z.string(),
-          browserVersion: z.string(),
-          platformName: z.string(),
-          setWindowRect: z.boolean(),
-          userAgent: z.string(),
-          proxy: Session.ProxyConfigurationSchema.optional(),
-          unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
-          webSocketUrl: z.string().optional(),
-        })
-        .and(ExtensibleSchema),
-    }),
-  );
-}
-export namespace Session {
-  export const EndSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('session.end'),
-      params: EmptyParamsSchema,
-    }),
-  );
-}
-export namespace Session {
-  export const SubscribeSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('session.subscribe'),
-      params: Session.SubscriptionRequestSchema,
-    }),
-  );
-}
-export namespace Session {
-  export const SubscribeResultSchema = z.lazy(() =>
-    z.object({
-      subscription: Session.SubscriptionSchema,
-    }),
-  );
-}
-export namespace Session {
-  export const UnsubscribeSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('session.unsubscribe'),
-      params: Session.UnsubscribeParametersSchema,
-    }),
-  );
-}
-export namespace Session {
-  export const UnsubscribeParametersSchema = z.lazy(() =>
-    z.union([
-      Session.UnsubscribeByAttributesRequestSchema,
-      Session.UnsubscribeByIdRequestSchema,
-    ]),
-  );
-}
-export const BrowserCommandSchema = z.lazy(() =>
-  z.union([
-    Browser.CloseSchema,
-    Browser.CreateUserContextSchema,
-    Browser.GetClientWindowsSchema,
-    Browser.GetUserContextsSchema,
-    Browser.RemoveUserContextSchema,
-    Browser.SetClientWindowStateSchema,
-  ]),
+export const 
+AutodetectProxyConfigurationSchema = z.lazy(() => z.object({
+"proxyType":z.literal("autodetect")}).and(
+ExtensibleSchema)
 );
-export const BrowserResultSchema = z.lazy(() =>
-  z.union([
-    Browser.CreateUserContextResultSchema,
-    Browser.GetUserContextsResultSchema,
-  ]),
+}
+export namespace Session {
+export const 
+DirectProxyConfigurationSchema = z.lazy(() => z.object({
+"proxyType":z.literal("direct")}).and(
+ExtensibleSchema)
 );
+}
+export namespace Session {
+export const 
+ManualProxyConfigurationSchema = z.lazy(() => z.object({
+"proxyType":z.literal("manual"),"httpProxy":z.string().optional(),"sslProxy":z.string().optional()}).and(
+Session.SocksProxyConfigurationSchema.or(z.object({})))
+.and(
+z.object({
+"noProxy":z.array(z.string()).optional()}))
+.and(
+ExtensibleSchema)
+);
+}
+export namespace Session {
+export const 
+SocksProxyConfigurationSchema = z.lazy(() => z.object({
+"socksProxy":z.string(),"socksVersion":z.number().int().nonnegative().gte(0).lte(255)}));
+}
+export namespace Session {
+export const 
+PacProxyConfigurationSchema = z.lazy(() => z.object({
+"proxyType":z.literal("pac"),"proxyAutoconfigUrl":z.string()}).and(
+ExtensibleSchema)
+);
+}
+export namespace Session {
+export const 
+SystemProxyConfigurationSchema = z.lazy(() => z.object({
+"proxyType":z.literal("system")}).and(
+ExtensibleSchema)
+);
+}
+export namespace Session {
+export const UserPromptHandlerSchema = z.lazy(() => z.object({
+"alert":Session.UserPromptHandlerTypeSchema.optional(),"beforeUnload":Session.UserPromptHandlerTypeSchema.optional(),"confirm":Session.UserPromptHandlerTypeSchema.optional(),"default":Session.UserPromptHandlerTypeSchema.optional(),"file":Session.UserPromptHandlerTypeSchema.optional(),"prompt":Session.UserPromptHandlerTypeSchema.optional()}));
+}
+export namespace Session {
+export const UserPromptHandlerTypeSchema = z.lazy(() => z.enum(["accept","dismiss","ignore",]));
+}
+export namespace Session {
+export const SubscriptionSchema = z.lazy(() => z.string());
+}
+export namespace Session {
+export const SubscriptionRequestSchema = z.lazy(() => z.object({
+"events":z.array(z.string()).min(1),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}));
+}
+export namespace Session {
+export const UnsubscribeByIdRequestSchema = z.lazy(() => z.object({
+"subscriptions":z.array(Session.SubscriptionSchema).min(1)}));
+}
+export namespace Session {
+export const UnsubscribeByAttributesRequestSchema = z.lazy(() => z.object({
+"events":z.array(z.string()).min(1),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional()}));
+}
+export namespace Session {
+export const 
+StatusSchema = z.lazy(() => z.object({
+"method":z.literal("session.status"),"params":EmptyParamsSchema}));
+}
+export namespace Session {
+export const StatusResultSchema = z.lazy(() => z.object({
+"ready":z.boolean(),"message":z.string()}));
+}
+export namespace Session {
+export const 
+NewSchema = z.lazy(() => z.object({
+"method":z.literal("session.new"),"params":Session.NewParametersSchema}));
+}
+export namespace Session {
+export const NewParametersSchema = z.lazy(() => z.object({
+"capabilities":Session.CapabilitiesRequestSchema}));
+}
+export namespace Session {
+export const NewResultSchema = z.lazy(() => z.object({
+"sessionId":z.string(),"capabilities":z.object({
+"acceptInsecureCerts":z.boolean(),"browserName":z.string(),"browserVersion":z.string(),"platformName":z.string(),"setWindowRect":z.boolean(),"userAgent":z.string(),"proxy":Session.ProxyConfigurationSchema.optional(),"unhandledPromptBehavior":Session.UserPromptHandlerSchema.optional(),"webSocketUrl":z.string().optional()}).and(
+ExtensibleSchema)
+}));
+}
+export namespace Session {
+export const 
+EndSchema = z.lazy(() => z.object({
+"method":z.literal("session.end"),"params":EmptyParamsSchema}));
+}
+export namespace Session {
+export const 
+SubscribeSchema = z.lazy(() => z.object({
+"method":z.literal("session.subscribe"),"params":Session.SubscriptionRequestSchema}));
+}
+export namespace Session {
+export const SubscribeResultSchema = z.lazy(() => z.object({
+"subscription":Session.SubscriptionSchema}));
+}
+export namespace Session {
+export const 
+UnsubscribeSchema = z.lazy(() => z.object({
+"method":z.literal("session.unsubscribe"),"params":Session.UnsubscribeParametersSchema}));
+}
+export namespace Session {
+export const UnsubscribeParametersSchema = z.lazy(() => z.union([Session.UnsubscribeByAttributesRequestSchema,Session.UnsubscribeByIdRequestSchema]));
+}
+export const 
+BrowserCommandSchema = z.lazy(() => z.union([Browser.CloseSchema,Browser.CreateUserContextSchema,Browser.GetClientWindowsSchema,Browser.GetUserContextsSchema,Browser.RemoveUserContextSchema,Browser.SetClientWindowStateSchema]));
+export const BrowserResultSchema = z.lazy(() => z.union([Browser.CreateUserContextResultSchema,Browser.GetUserContextsResultSchema]));
 export namespace Browser {
-  export const ClientWindowSchema = z.lazy(() => z.string());
+export const ClientWindowSchema = z.lazy(() => z.string());
 }
 export namespace Browser {
-  export const ClientWindowInfoSchema = z.lazy(() =>
-    z.object({
-      active: z.boolean(),
-      clientWindow: Browser.ClientWindowSchema,
-      height: JsUintSchema,
-      state: z.enum(['fullscreen', 'maximized', 'minimized', 'normal']),
-      width: JsUintSchema,
-      x: JsIntSchema,
-      y: JsIntSchema,
-    }),
-  );
+export const ClientWindowInfoSchema = z.lazy(() => z.object({
+"active":z.boolean(),"clientWindow":Browser.ClientWindowSchema,"height":JsUintSchema,"state":z.enum(["fullscreen","maximized","minimized","normal",]),"width":JsUintSchema,"x":JsIntSchema,"y":JsIntSchema}));
 }
 export namespace Browser {
-  export const UserContextSchema = z.lazy(() => z.string());
+export const UserContextSchema = z.lazy(() => z.string());
 }
 export namespace Browser {
-  export const UserContextInfoSchema = z.lazy(() =>
-    z.object({
-      userContext: Browser.UserContextSchema,
-    }),
-  );
+export const UserContextInfoSchema = z.lazy(() => z.object({
+"userContext":Browser.UserContextSchema}));
 }
 export namespace Browser {
-  export const CloseSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browser.close'),
-      params: EmptyParamsSchema,
-    }),
-  );
+export const 
+CloseSchema = z.lazy(() => z.object({
+"method":z.literal("browser.close"),"params":EmptyParamsSchema}));
 }
 export namespace Browser {
-  export const CreateUserContextSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browser.createUserContext'),
-      params: Browser.CreateUserContextParametersSchema,
-    }),
-  );
+export const 
+CreateUserContextSchema = z.lazy(() => z.object({
+"method":z.literal("browser.createUserContext"),"params":Browser.CreateUserContextParametersSchema}));
 }
 export namespace Browser {
-  export const CreateUserContextParametersSchema = z.lazy(() =>
-    z.object({
-      acceptInsecureCerts: z.boolean().optional(),
-      proxy: Session.ProxyConfigurationSchema.optional(),
-      unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
-    }),
-  );
+export const CreateUserContextParametersSchema = z.lazy(() => z.object({
+"acceptInsecureCerts":z.boolean().optional(),"proxy":Session.ProxyConfigurationSchema.optional(),"unhandledPromptBehavior":Session.UserPromptHandlerSchema.optional()}));
 }
 export namespace Browser {
-  export const CreateUserContextResultSchema = z.lazy(
-    () => Browser.UserContextInfoSchema,
-  );
+export const CreateUserContextResultSchema = z.lazy(() => Browser.UserContextInfoSchema);
 }
 export namespace Browser {
-  export const GetClientWindowsSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browser.getClientWindows'),
-      params: EmptyParamsSchema,
-    }),
-  );
+export const 
+GetClientWindowsSchema = z.lazy(() => z.object({
+"method":z.literal("browser.getClientWindows"),"params":EmptyParamsSchema}));
 }
 export namespace Browser {
-  export const GetClientWindowsResultSchema = z.lazy(() =>
-    z.object({
-      clientWindows: z.array(Browser.ClientWindowInfoSchema),
-    }),
-  );
+export const GetClientWindowsResultSchema = z.lazy(() => z.object({
+"clientWindows":z.array(Browser.ClientWindowInfoSchema)}));
 }
 export namespace Browser {
-  export const GetUserContextsSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browser.getUserContexts'),
-      params: EmptyParamsSchema,
-    }),
-  );
+export const 
+GetUserContextsSchema = z.lazy(() => z.object({
+"method":z.literal("browser.getUserContexts"),"params":EmptyParamsSchema}));
 }
 export namespace Browser {
-  export const GetUserContextsResultSchema = z.lazy(() =>
-    z.object({
-      userContexts: z.array(Browser.UserContextInfoSchema).min(1),
-    }),
-  );
+export const GetUserContextsResultSchema = z.lazy(() => z.object({
+"userContexts":z.array(Browser.UserContextInfoSchema).min(1)}));
 }
 export namespace Browser {
-  export const RemoveUserContextSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browser.removeUserContext'),
-      params: Browser.RemoveUserContextParametersSchema,
-    }),
-  );
+export const 
+RemoveUserContextSchema = z.lazy(() => z.object({
+"method":z.literal("browser.removeUserContext"),"params":Browser.RemoveUserContextParametersSchema}));
 }
 export namespace Browser {
-  export const RemoveUserContextParametersSchema = z.lazy(() =>
-    z.object({
-      userContext: Browser.UserContextSchema,
-    }),
-  );
+export const RemoveUserContextParametersSchema = z.lazy(() => z.object({
+"userContext":Browser.UserContextSchema}));
 }
 export namespace Browser {
-  export const SetClientWindowStateSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browser.setClientWindowState'),
-      params: Browser.SetClientWindowStateParametersSchema,
-    }),
-  );
+export const 
+SetClientWindowStateSchema = z.lazy(() => z.object({
+"method":z.literal("browser.setClientWindowState"),"params":Browser.SetClientWindowStateParametersSchema}));
 }
 export namespace Browser {
-  export const SetClientWindowStateParametersSchema = z.lazy(() =>
-    z
-      .object({
-        clientWindow: Browser.ClientWindowSchema,
-      })
-      .and(
-        z.union([
-          Browser.ClientWindowNamedStateSchema,
-          Browser.ClientWindowRectStateSchema,
-        ]),
-      ),
-  );
+export const SetClientWindowStateParametersSchema = z.lazy(() => z.object({
+"clientWindow":Browser.ClientWindowSchema}).and(
+z.union([Browser.ClientWindowNamedStateSchema,Browser.ClientWindowRectStateSchema]))
+);
 }
 export namespace Browser {
-  export const ClientWindowNamedStateSchema = z.lazy(() =>
-    z.object({
-      state: z.enum(['fullscreen', 'maximized', 'minimized']),
-    }),
-  );
+export const 
+ClientWindowNamedStateSchema = z.lazy(() => z.object({
+"state":z.enum(["fullscreen","maximized","minimized",])}));
 }
 export namespace Browser {
-  export const ClientWindowRectStateSchema = z.lazy(() =>
-    z.object({
-      state: z.literal('normal'),
-      width: JsUintSchema.optional(),
-      height: JsUintSchema.optional(),
-      x: JsIntSchema.optional(),
-      y: JsIntSchema.optional(),
-    }),
-  );
+export const 
+ClientWindowRectStateSchema = z.lazy(() => z.object({
+"state":z.literal("normal"),"width":JsUintSchema.optional(),"height":JsUintSchema.optional(),"x":JsIntSchema.optional(),"y":JsIntSchema.optional()}));
 }
 export const BrowsingContextCommandSchema = z.lazy(() =>
   z.union([
@@ -599,132 +437,65 @@ export const BrowsingContextEventSchema = z.lazy(() =>
   ]),
 );
 export namespace BrowsingContext {
-  export const BrowsingContextSchema = z.lazy(() => z.string());
+export const BrowsingContextSchema = z.lazy(() => z.string());
 }
 export namespace BrowsingContext {
-  export const InfoListSchema = z.lazy(() =>
-    z.array(BrowsingContext.InfoSchema),
-  );
+export const InfoListSchema = z.lazy(() => z.array(BrowsingContext.InfoSchema));
 }
 export namespace BrowsingContext {
-  export const InfoSchema = z.lazy(() =>
-    z.object({
-      children: z.union([BrowsingContext.InfoListSchema, z.null()]),
-      clientWindow: Browser.ClientWindowSchema,
-      context: BrowsingContext.BrowsingContextSchema,
-      originalOpener: z.union([
-        BrowsingContext.BrowsingContextSchema,
-        z.null(),
-      ]),
-      url: z.string(),
-      userContext: Browser.UserContextSchema,
-      parent: z
-        .union([BrowsingContext.BrowsingContextSchema, z.null()])
-        .optional(),
-    }),
-  );
+export const InfoSchema = z.lazy(() => z.object({
+"children":z.union([BrowsingContext.InfoListSchema,z.null()]),"clientWindow":Browser.ClientWindowSchema,"context":BrowsingContext.BrowsingContextSchema,"originalOpener":z.union([BrowsingContext.BrowsingContextSchema,z.null()]),"url":z.string(),"userContext":Browser.UserContextSchema,"parent":z.union([BrowsingContext.BrowsingContextSchema,z.null()]).optional()}));
 }
 export namespace BrowsingContext {
-  export const LocatorSchema = z.lazy(() =>
-    z.union([
-      BrowsingContext.AccessibilityLocatorSchema,
-      BrowsingContext.CssLocatorSchema,
-      BrowsingContext.ContextLocatorSchema,
-      BrowsingContext.InnerTextLocatorSchema,
-      BrowsingContext.XPathLocatorSchema,
-    ]),
-  );
+export const LocatorSchema = z.lazy(() => z.union([BrowsingContext.AccessibilityLocatorSchema,BrowsingContext.CssLocatorSchema,BrowsingContext.ContextLocatorSchema,BrowsingContext.InnerTextLocatorSchema,BrowsingContext.XPathLocatorSchema]));
 }
 export namespace BrowsingContext {
-  export const AccessibilityLocatorSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('accessibility'),
-      value: z.object({
-        name: z.string().optional(),
-        role: z.string().optional(),
-      }),
-    }),
-  );
+export const AccessibilityLocatorSchema = z.lazy(() => z.object({
+"type":z.literal("accessibility"),"value":z.object({
+"name":z.string().optional(),"role":z.string().optional()})}));
 }
 export namespace BrowsingContext {
-  export const CssLocatorSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('css'),
-      value: z.string(),
-    }),
-  );
+export const CssLocatorSchema = z.lazy(() => z.object({
+"type":z.literal("css"),"value":z.string()}));
 }
 export namespace BrowsingContext {
-  export const ContextLocatorSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('context'),
-      value: z.object({
-        context: BrowsingContext.BrowsingContextSchema,
-      }),
-    }),
-  );
+export const ContextLocatorSchema = z.lazy(() => z.object({
+"type":z.literal("context"),"value":z.object({
+"context":BrowsingContext.BrowsingContextSchema})}));
 }
 export namespace BrowsingContext {
-  export const InnerTextLocatorSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('innerText'),
-      value: z.string(),
-      ignoreCase: z.boolean().optional(),
-      matchType: z.enum(['full', 'partial']).optional(),
-      maxDepth: JsUintSchema.optional(),
-    }),
-  );
+export const InnerTextLocatorSchema = z.lazy(() => z.object({
+"type":z.literal("innerText"),"value":z.string(),"ignoreCase":z.boolean().optional(),"matchType":z.enum(["full","partial",]).optional(),"maxDepth":JsUintSchema.optional()}));
 }
 export namespace BrowsingContext {
-  export const XPathLocatorSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('xpath'),
-      value: z.string(),
-    }),
-  );
+export const XPathLocatorSchema = z.lazy(() => z.object({
+"type":z.literal("xpath"),"value":z.string()}));
 }
 export namespace BrowsingContext {
-  export const NavigationSchema = z.lazy(() => z.string());
+export const NavigationSchema = z.lazy(() => z.string());
 }
 export namespace BrowsingContext {
-  export const BaseNavigationInfoSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      navigation: z.union([BrowsingContext.NavigationSchema, z.null()]),
-      timestamp: JsUintSchema,
-      url: z.string(),
-    }),
-  );
+export const 
+BaseNavigationInfoSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"navigation":z.union([BrowsingContext.NavigationSchema,z.null()]),"timestamp":JsUintSchema,"url":z.string()}));
 }
 export namespace BrowsingContext {
-  export const NavigationInfoSchema = z.lazy(
-    () => BrowsingContext.BaseNavigationInfoSchema,
-  );
+export const NavigationInfoSchema = z.lazy(() => BrowsingContext.BaseNavigationInfoSchema);
 }
 export namespace BrowsingContext {
-  export const ReadinessStateSchema = z.lazy(() =>
-    z.enum(['none', 'interactive', 'complete']),
-  );
+export const ReadinessStateSchema = z.lazy(() => z.enum(["none","interactive","complete",]));
 }
 export namespace BrowsingContext {
-  export const UserPromptTypeSchema = z.lazy(() =>
-    z.enum(['alert', 'beforeunload', 'confirm', 'prompt']),
-  );
+export const UserPromptTypeSchema = z.lazy(() => z.enum(["alert","beforeunload","confirm","prompt",]));
 }
 export namespace BrowsingContext {
-  export const ActivateSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.activate'),
-      params: BrowsingContext.ActivateParametersSchema,
-    }),
-  );
+export const 
+ActivateSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.activate"),"params":BrowsingContext.ActivateParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const ActivateParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-    }),
-  );
+export const ActivateParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema}));
 }
 export namespace BrowsingContext {
   export const CaptureScreenshotSchema = z.lazy(() =>
@@ -745,130 +516,70 @@ export namespace BrowsingContext {
   );
 }
 export namespace BrowsingContext {
-  export const ImageFormatSchema = z.lazy(() =>
-    z.object({
-      type: z.string(),
-      quality: z.number().gte(0).lte(1).optional(),
-    }),
-  );
+export const ImageFormatSchema = z.lazy(() => z.object({
+"type":z.string(),"quality":z.number().gte(0).lte(1).optional()}));
 }
 export namespace BrowsingContext {
-  export const ClipRectangleSchema = z.lazy(() =>
-    z.union([
-      BrowsingContext.BoxClipRectangleSchema,
-      BrowsingContext.ElementClipRectangleSchema,
-    ]),
-  );
+export const ClipRectangleSchema = z.lazy(() => z.union([BrowsingContext.BoxClipRectangleSchema,BrowsingContext.ElementClipRectangleSchema]));
 }
 export namespace BrowsingContext {
-  export const ElementClipRectangleSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('element'),
-      element: Script.SharedReferenceSchema,
-    }),
-  );
+export const ElementClipRectangleSchema = z.lazy(() => z.object({
+"type":z.literal("element"),"element":Script.SharedReferenceSchema}));
 }
 export namespace BrowsingContext {
-  export const BoxClipRectangleSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('box'),
-      x: z.number(),
-      y: z.number(),
-      width: z.number(),
-      height: z.number(),
-    }),
-  );
+export const BoxClipRectangleSchema = z.lazy(() => z.object({
+"type":z.literal("box"),"x":z.number(),"y":z.number(),"width":z.number(),"height":z.number()}));
 }
 export namespace BrowsingContext {
-  export const CaptureScreenshotResultSchema = z.lazy(() =>
-    z.object({
-      data: z.string(),
-    }),
-  );
+export const CaptureScreenshotResultSchema = z.lazy(() => z.object({
+"data":z.string()}));
 }
 export namespace BrowsingContext {
-  export const CloseSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.close'),
-      params: BrowsingContext.CloseParametersSchema,
-    }),
-  );
+export const 
+CloseSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.close"),"params":BrowsingContext.CloseParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const CloseParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      promptUnload: z.boolean().default(false).optional(),
-    }),
-  );
+export const CloseParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"promptUnload":z.boolean().default(false).optional()}));
 }
 export namespace BrowsingContext {
-  export const CreateSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.create'),
-      params: BrowsingContext.CreateParametersSchema,
-    }),
-  );
+export const 
+CreateSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.create"),"params":BrowsingContext.CreateParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const CreateTypeSchema = z.lazy(() => z.enum(['tab', 'window']));
+export const CreateTypeSchema = z.lazy(() => z.enum(["tab","window",]));
 }
 export namespace BrowsingContext {
-  export const CreateParametersSchema = z.lazy(() =>
-    z.object({
-      type: BrowsingContext.CreateTypeSchema,
-      referenceContext: BrowsingContext.BrowsingContextSchema.optional(),
-      background: z.boolean().default(false).optional(),
-      userContext: Browser.UserContextSchema.optional(),
-    }),
-  );
+export const CreateParametersSchema = z.lazy(() => z.object({
+"type":BrowsingContext.CreateTypeSchema,"referenceContext":BrowsingContext.BrowsingContextSchema.optional(),"background":z.boolean().default(false).optional(),"userContext":Browser.UserContextSchema.optional()}));
 }
 export namespace BrowsingContext {
-  export const CreateResultSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-    }),
-  );
+export const CreateResultSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema}));
 }
 export namespace BrowsingContext {
-  export const GetTreeSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.getTree'),
-      params: BrowsingContext.GetTreeParametersSchema,
-    }),
-  );
+export const 
+GetTreeSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.getTree"),"params":BrowsingContext.GetTreeParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const GetTreeParametersSchema = z.lazy(() =>
-    z.object({
-      maxDepth: JsUintSchema.optional(),
-      root: BrowsingContext.BrowsingContextSchema.optional(),
-    }),
-  );
+export const GetTreeParametersSchema = z.lazy(() => z.object({
+"maxDepth":JsUintSchema.optional(),"root":BrowsingContext.BrowsingContextSchema.optional()}));
 }
 export namespace BrowsingContext {
-  export const GetTreeResultSchema = z.lazy(() =>
-    z.object({
-      contexts: BrowsingContext.InfoListSchema,
-    }),
-  );
+export const GetTreeResultSchema = z.lazy(() => z.object({
+"contexts":BrowsingContext.InfoListSchema}));
 }
 export namespace BrowsingContext {
-  export const HandleUserPromptSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.handleUserPrompt'),
-      params: BrowsingContext.HandleUserPromptParametersSchema,
-    }),
-  );
+export const 
+HandleUserPromptSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.handleUserPrompt"),"params":BrowsingContext.HandleUserPromptParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const HandleUserPromptParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      accept: z.boolean().optional(),
-      userText: z.string().optional(),
-    }),
-  );
+export const HandleUserPromptParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"accept":z.boolean().optional(),"userText":z.string().optional()}));
 }
 export namespace BrowsingContext {
   export const LocateNodesSchema = z.lazy(() =>
@@ -890,521 +601,263 @@ export namespace BrowsingContext {
   );
 }
 export namespace BrowsingContext {
-  export const LocateNodesResultSchema = z.lazy(() =>
-    z.object({
-      nodes: z.array(Script.NodeRemoteValueSchema),
-    }),
-  );
+export const LocateNodesResultSchema = z.lazy(() => z.object({
+"nodes":z.array(Script.NodeRemoteValueSchema)}));
 }
 export namespace BrowsingContext {
-  export const NavigateSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.navigate'),
-      params: BrowsingContext.NavigateParametersSchema,
-    }),
-  );
+export const 
+NavigateSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.navigate"),"params":BrowsingContext.NavigateParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const NavigateParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      url: z.string(),
-      wait: BrowsingContext.ReadinessStateSchema.optional(),
-    }),
-  );
+export const NavigateParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"url":z.string(),"wait":BrowsingContext.ReadinessStateSchema.optional()}));
 }
 export namespace BrowsingContext {
-  export const NavigateResultSchema = z.lazy(() =>
-    z.object({
-      navigation: z.union([BrowsingContext.NavigationSchema, z.null()]),
-      url: z.string(),
-    }),
-  );
+export const NavigateResultSchema = z.lazy(() => z.object({
+"navigation":z.union([BrowsingContext.NavigationSchema,z.null()]),"url":z.string()}));
 }
 export namespace BrowsingContext {
-  export const PrintSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.print'),
-      params: BrowsingContext.PrintParametersSchema,
-    }),
-  );
+export const 
+PrintSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.print"),"params":BrowsingContext.PrintParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const PrintParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      background: z.boolean().default(false).optional(),
-      margin: BrowsingContext.PrintMarginParametersSchema.optional(),
-      orientation: z
-        .enum(['portrait', 'landscape'])
-        .default('portrait')
-        .optional(),
-      page: BrowsingContext.PrintPageParametersSchema.optional(),
-      pageRanges: z.array(z.union([JsUintSchema, z.string()])).optional(),
-      scale: z.number().gte(0.1).lte(2).default(1).optional(),
-      shrinkToFit: z.boolean().default(true).optional(),
-    }),
-  );
+export const PrintParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"background":z.boolean().default(false).optional(),"margin":BrowsingContext.PrintMarginParametersSchema.optional(),"orientation":z.enum(["portrait","landscape",]).default("portrait").optional(),"page":BrowsingContext.PrintPageParametersSchema.optional(),"pageRanges":z.array(z.union([JsUintSchema,z.string()])).optional(),"scale":z.number().gte(0.1).lte(2).default(1).optional(),"shrinkToFit":z.boolean().default(true).optional()}));
 }
 export namespace BrowsingContext {
-  export const PrintMarginParametersSchema = z.lazy(() =>
-    z.object({
-      bottom: z.number().gte(0).default(1).optional(),
-      left: z.number().gte(0).default(1).optional(),
-      right: z.number().gte(0).default(1).optional(),
-      top: z.number().gte(0).default(1).optional(),
-    }),
-  );
+export const PrintMarginParametersSchema = z.lazy(() => z.object({
+"bottom":z.number().gte(0).default(1).optional(),"left":z.number().gte(0).default(1).optional(),"right":z.number().gte(0).default(1).optional(),"top":z.number().gte(0).default(1).optional()}));
 }
 export namespace BrowsingContext {
-  export const PrintPageParametersSchema = z.lazy(() =>
-    z.object({
-      height: z.number().gte(0.0352).default(27.94).optional(),
-      width: z.number().gte(0.0352).default(21.59).optional(),
-    }),
-  );
+export const PrintPageParametersSchema = z.lazy(() => z.object({
+"height":z.number().gte(0.0352).default(27.94).optional(),"width":z.number().gte(0.0352).default(21.59).optional()}));
 }
 export namespace BrowsingContext {
-  export const PrintResultSchema = z.lazy(() =>
-    z.object({
-      data: z.string(),
-    }),
-  );
+export const PrintResultSchema = z.lazy(() => z.object({
+"data":z.string()}));
 }
 export namespace BrowsingContext {
-  export const ReloadSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.reload'),
-      params: BrowsingContext.ReloadParametersSchema,
-    }),
-  );
+export const 
+ReloadSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.reload"),"params":BrowsingContext.ReloadParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const ReloadParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      ignoreCache: z.boolean().optional(),
-      wait: BrowsingContext.ReadinessStateSchema.optional(),
-    }),
-  );
+export const ReloadParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"ignoreCache":z.boolean().optional(),"wait":BrowsingContext.ReadinessStateSchema.optional()}));
 }
 export namespace BrowsingContext {
-  export const SetViewportSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.setViewport'),
-      params: BrowsingContext.SetViewportParametersSchema,
-    }),
-  );
+export const 
+SetViewportSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.setViewport"),"params":BrowsingContext.SetViewportParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const SetViewportParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema.optional(),
-      viewport: z.union([BrowsingContext.ViewportSchema, z.null()]).optional(),
-      devicePixelRatio: z.union([z.number().gt(0), z.null()]).optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
-  );
+export const SetViewportParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema.optional(),"viewport":z.union([BrowsingContext.ViewportSchema,z.null()]).optional(),"devicePixelRatio":z.union([z.number().gt(0),z.null()]).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}));
 }
 export namespace BrowsingContext {
-  export const ViewportSchema = z.lazy(() =>
-    z.object({
-      width: JsUintSchema,
-      height: JsUintSchema,
-    }),
-  );
+export const ViewportSchema = z.lazy(() => z.object({
+"width":JsUintSchema,"height":JsUintSchema}));
 }
 export namespace BrowsingContext {
-  export const TraverseHistorySchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.traverseHistory'),
-      params: BrowsingContext.TraverseHistoryParametersSchema,
-    }),
-  );
+export const 
+TraverseHistorySchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.traverseHistory"),"params":BrowsingContext.TraverseHistoryParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const TraverseHistoryParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      delta: JsIntSchema,
-    }),
-  );
+export const TraverseHistoryParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"delta":JsIntSchema}));
 }
 export namespace BrowsingContext {
-  export const TraverseHistoryResultSchema = z.lazy(() => z.object({}));
+export const TraverseHistoryResultSchema = z.lazy(() => z.object({
+}));
 }
 export namespace BrowsingContext {
-  export const ContextCreatedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.contextCreated'),
-      params: BrowsingContext.InfoSchema,
-    }),
-  );
+export const 
+ContextCreatedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.contextCreated"),"params":BrowsingContext.InfoSchema}));
 }
 export namespace BrowsingContext {
-  export const ContextDestroyedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.contextDestroyed'),
-      params: BrowsingContext.InfoSchema,
-    }),
-  );
+export const 
+ContextDestroyedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.contextDestroyed"),"params":BrowsingContext.InfoSchema}));
 }
 export namespace BrowsingContext {
-  export const NavigationStartedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.navigationStarted'),
-      params: BrowsingContext.NavigationInfoSchema,
-    }),
-  );
+export const 
+NavigationStartedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.navigationStarted"),"params":BrowsingContext.NavigationInfoSchema}));
 }
 export namespace BrowsingContext {
-  export const FragmentNavigatedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.fragmentNavigated'),
-      params: BrowsingContext.NavigationInfoSchema,
-    }),
-  );
+export const 
+FragmentNavigatedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.fragmentNavigated"),"params":BrowsingContext.NavigationInfoSchema}));
 }
 export namespace BrowsingContext {
-  export const HistoryUpdatedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.historyUpdated'),
-      params: BrowsingContext.HistoryUpdatedParametersSchema,
-    }),
-  );
+export const 
+HistoryUpdatedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.historyUpdated"),"params":BrowsingContext.HistoryUpdatedParametersSchema}));
 }
 export namespace BrowsingContext {
-  export const HistoryUpdatedParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      timestamp: JsUintSchema,
-      url: z.string(),
-    }),
-  );
+export const HistoryUpdatedParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"timestamp":JsUintSchema,"url":z.string()}));
 }
 export namespace BrowsingContext {
-  export const DomContentLoadedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.domContentLoaded'),
-      params: BrowsingContext.NavigationInfoSchema,
-    }),
-  );
+export const 
+DomContentLoadedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.domContentLoaded"),"params":BrowsingContext.NavigationInfoSchema}));
 }
 export namespace BrowsingContext {
-  export const LoadSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.load'),
-      params: BrowsingContext.NavigationInfoSchema,
-    }),
-  );
+export const 
+LoadSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.load"),"params":BrowsingContext.NavigationInfoSchema}));
 }
 export namespace BrowsingContext {
-  export const DownloadWillBeginSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.downloadWillBegin'),
-      params: BrowsingContext.DownloadWillBeginParamsSchema,
-    }),
-  );
+export const 
+DownloadWillBeginSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.downloadWillBegin"),"params":BrowsingContext.DownloadWillBeginParamsSchema}));
 }
 export namespace BrowsingContext {
-  export const DownloadWillBeginParamsSchema = z.lazy(() =>
-    z
-      .object({
-        suggestedFilename: z.string(),
-      })
-      .and(BrowsingContext.BaseNavigationInfoSchema),
-  );
-}
-export namespace BrowsingContext {
-  export const DownloadEndSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.downloadEnd'),
-      params: BrowsingContext.DownloadEndParamsSchema,
-    }),
-  );
-}
-export namespace BrowsingContext {
-  export const DownloadEndParamsSchema = z.lazy(() =>
-    z.union([
-      BrowsingContext.DownloadCanceledParamsSchema,
-      BrowsingContext.DownloadCompleteParamsSchema,
-    ]),
-  );
-}
-export namespace BrowsingContext {
-  export const DownloadCanceledParamsSchema = z.lazy(() =>
-    z
-      .object({
-        status: z.literal('canceled'),
-      })
-      .and(BrowsingContext.BaseNavigationInfoSchema),
-  );
-}
-export namespace BrowsingContext {
-  export const DownloadCompleteParamsSchema = z.lazy(() =>
-    z
-      .object({
-        status: z.literal('complete'),
-        filepath: z.union([z.string(), z.null()]),
-      })
-      .and(BrowsingContext.BaseNavigationInfoSchema),
-  );
-}
-export namespace BrowsingContext {
-  export const NavigationAbortedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.navigationAborted'),
-      params: BrowsingContext.NavigationInfoSchema,
-    }),
-  );
-}
-export namespace BrowsingContext {
-  export const NavigationCommittedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.navigationCommitted'),
-      params: BrowsingContext.NavigationInfoSchema,
-    }),
-  );
-}
-export namespace BrowsingContext {
-  export const NavigationFailedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.navigationFailed'),
-      params: BrowsingContext.NavigationInfoSchema,
-    }),
-  );
-}
-export namespace BrowsingContext {
-  export const UserPromptClosedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.userPromptClosed'),
-      params: BrowsingContext.UserPromptClosedParametersSchema,
-    }),
-  );
-}
-export namespace BrowsingContext {
-  export const UserPromptClosedParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      accepted: z.boolean(),
-      type: BrowsingContext.UserPromptTypeSchema,
-      userText: z.string().optional(),
-    }),
-  );
-}
-export namespace BrowsingContext {
-  export const UserPromptOpenedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('browsingContext.userPromptOpened'),
-      params: BrowsingContext.UserPromptOpenedParametersSchema,
-    }),
-  );
-}
-export namespace BrowsingContext {
-  export const UserPromptOpenedParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      handler: Session.UserPromptHandlerTypeSchema,
-      message: z.string(),
-      type: BrowsingContext.UserPromptTypeSchema,
-      defaultValue: z.string().optional(),
-    }),
-  );
-}
-export const EmulationCommandSchema = z.lazy(() =>
-  z.union([
-    Emulation.SetForcedColorsModeThemeOverrideSchema,
-    Emulation.SetGeolocationOverrideSchema,
-    Emulation.SetLocaleOverrideSchema,
-    Emulation.SetScreenOrientationOverrideSchema,
-    Emulation.SetScriptingEnabledSchema,
-    Emulation.SetTimezoneOverrideSchema,
-  ]),
+export const DownloadWillBeginParamsSchema = z.lazy(() => z.object({
+"suggestedFilename":z.string()}).and(
+BrowsingContext.BaseNavigationInfoSchema)
 );
+}
+export namespace BrowsingContext {
+export const 
+DownloadEndSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.downloadEnd"),"params":BrowsingContext.DownloadEndParamsSchema}));
+}
+export namespace BrowsingContext {
+export const DownloadEndParamsSchema = z.lazy(() => z.union([BrowsingContext.DownloadCanceledParamsSchema,BrowsingContext.DownloadCompleteParamsSchema]));
+}
+export namespace BrowsingContext {
+export const 
+DownloadCanceledParamsSchema = z.lazy(() => z.object({
+"status":z.literal("canceled")}).and(
+BrowsingContext.BaseNavigationInfoSchema)
+);
+}
+export namespace BrowsingContext {
+export const 
+DownloadCompleteParamsSchema = z.lazy(() => z.object({
+"status":z.literal("complete"),"filepath":z.union([z.string(),z.null()])}).and(
+BrowsingContext.BaseNavigationInfoSchema)
+);
+}
+export namespace BrowsingContext {
+export const 
+NavigationAbortedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.navigationAborted"),"params":BrowsingContext.NavigationInfoSchema}));
+}
+export namespace BrowsingContext {
+export const 
+NavigationCommittedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.navigationCommitted"),"params":BrowsingContext.NavigationInfoSchema}));
+}
+export namespace BrowsingContext {
+export const 
+NavigationFailedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.navigationFailed"),"params":BrowsingContext.NavigationInfoSchema}));
+}
+export namespace BrowsingContext {
+export const 
+UserPromptClosedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.userPromptClosed"),"params":BrowsingContext.UserPromptClosedParametersSchema}));
+}
+export namespace BrowsingContext {
+export const UserPromptClosedParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"accepted":z.boolean(),"type":BrowsingContext.UserPromptTypeSchema,"userText":z.string().optional()}));
+}
+export namespace BrowsingContext {
+export const 
+UserPromptOpenedSchema = z.lazy(() => z.object({
+"method":z.literal("browsingContext.userPromptOpened"),"params":BrowsingContext.UserPromptOpenedParametersSchema}));
+}
+export namespace BrowsingContext {
+export const UserPromptOpenedParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"handler":Session.UserPromptHandlerTypeSchema,"message":z.string(),"type":BrowsingContext.UserPromptTypeSchema,"defaultValue":z.string().optional()}));
+}
+export const 
+EmulationCommandSchema = z.lazy(() => z.union([Emulation.SetForcedColorsModeThemeOverrideSchema,Emulation.SetGeolocationOverrideSchema,Emulation.SetLocaleOverrideSchema,Emulation.SetScreenOrientationOverrideSchema,Emulation.SetScriptingEnabledSchema,Emulation.SetTimezoneOverrideSchema]));
 export namespace Emulation {
-  export const SetForcedColorsModeThemeOverrideSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('emulation.setForcedColorsModeThemeOverride'),
-      params: Emulation.SetForcedColorsModeThemeOverrideParametersSchema,
-    }),
-  );
+export const 
+SetForcedColorsModeThemeOverrideSchema = z.lazy(() => z.object({
+"method":z.literal("emulation.setForcedColorsModeThemeOverride"),"params":Emulation.SetForcedColorsModeThemeOverrideParametersSchema}));
 }
 export namespace Emulation {
-  export const SetForcedColorsModeThemeOverrideParametersSchema = z.lazy(() =>
-    z.object({
-      theme: z.union([Emulation.ForcedColorsModeThemeSchema, z.null()]),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
-  );
+export const SetForcedColorsModeThemeOverrideParametersSchema = z.lazy(() => z.object({
+"theme":z.union([Emulation.ForcedColorsModeThemeSchema,z.null()]),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}));
 }
 export namespace Emulation {
-  export const ForcedColorsModeThemeSchema = z.lazy(() =>
-    z.enum(['light', 'dark']),
-  );
+export const ForcedColorsModeThemeSchema = z.lazy(() => z.enum(["light","dark",]));
 }
 export namespace Emulation {
-  export const SetGeolocationOverrideSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('emulation.setGeolocationOverride'),
-      params: Emulation.SetGeolocationOverrideParametersSchema,
-    }),
-  );
+export const 
+SetGeolocationOverrideSchema = z.lazy(() => z.object({
+"method":z.literal("emulation.setGeolocationOverride"),"params":Emulation.SetGeolocationOverrideParametersSchema}));
 }
 export namespace Emulation {
-  export const SetGeolocationOverrideParametersSchema = z.lazy(() =>
-    z
-      .union([
-        z.object({
-          coordinates: z.union([
-            Emulation.GeolocationCoordinatesSchema,
-            z.null(),
-          ]),
-        }),
-        z.object({
-          error: Emulation.GeolocationPositionErrorSchema,
-        }),
-      ])
-      .and(
-        z.object({
-          contexts: z
-            .array(BrowsingContext.BrowsingContextSchema)
-            .min(1)
-            .optional(),
-          userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-        }),
-      ),
-  );
+export const SetGeolocationOverrideParametersSchema = z.lazy(() => z.union([z.object({
+"coordinates":z.union([Emulation.GeolocationCoordinatesSchema,z.null()])}),z.object({
+"error":Emulation.GeolocationPositionErrorSchema})]).and(
+z.object({
+"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}))
+);
 }
 export namespace Emulation {
-  export const GeolocationCoordinatesSchema = z.lazy(() =>
-    z.object({
-      latitude: z.number().gte(-90).lte(90),
-      longitude: z.number().gte(-180).lte(180),
-      accuracy: z.number().gte(0).default(1).optional(),
-      altitude: z.union([z.number(), z.null().default(null)]).optional(),
-      altitudeAccuracy: z
-        .union([z.number().gte(0), z.null().default(null)])
-        .optional(),
-      heading: z
-        .union([z.number().gt(0).lt(360), z.null().default(null)])
-        .optional(),
-      speed: z.union([z.number().gte(0), z.null().default(null)]).optional(),
-    }),
-  );
+export const GeolocationCoordinatesSchema = z.lazy(() => z.object({
+"latitude":z.number().gte(-90).lte(90),"longitude":z.number().gte(-180).lte(180),"accuracy":z.number().gte(0).default(1).optional(),"altitude":z.union([z.number(),z.null().default(null)]).optional(),"altitudeAccuracy":z.union([z.number().gte(0),z.null().default(null)]).optional(),"heading":z.union([z.number().gt(0).lt(360),z.null().default(null)]).optional(),"speed":z.union([z.number().gte(0),z.null().default(null)]).optional()}));
 }
 export namespace Emulation {
-  export const GeolocationPositionErrorSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('positionUnavailable'),
-    }),
-  );
+export const GeolocationPositionErrorSchema = z.lazy(() => z.object({
+"type":z.literal("positionUnavailable")}));
 }
 export namespace Emulation {
-  export const SetLocaleOverrideSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('emulation.setLocaleOverride'),
-      params: Emulation.SetLocaleOverrideParametersSchema,
-    }),
-  );
+export const 
+SetLocaleOverrideSchema = z.lazy(() => z.object({
+"method":z.literal("emulation.setLocaleOverride"),"params":Emulation.SetLocaleOverrideParametersSchema}));
 }
 export namespace Emulation {
-  export const SetLocaleOverrideParametersSchema = z.lazy(() =>
-    z.object({
-      locale: z.union([z.string(), z.null()]),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
-  );
+export const SetLocaleOverrideParametersSchema = z.lazy(() => z.object({
+"locale":z.union([z.string(),z.null()]),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}));
 }
 export namespace Emulation {
-  export const SetScreenOrientationOverrideSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('emulation.setScreenOrientationOverride'),
-      params: Emulation.SetScreenOrientationOverrideParametersSchema,
-    }),
-  );
+export const 
+SetScreenOrientationOverrideSchema = z.lazy(() => z.object({
+"method":z.literal("emulation.setScreenOrientationOverride"),"params":Emulation.SetScreenOrientationOverrideParametersSchema}));
 }
 export namespace Emulation {
-  export const ScreenOrientationNaturalSchema = z.lazy(() =>
-    z.enum(['portrait', 'landscape']),
-  );
+export const ScreenOrientationNaturalSchema = z.lazy(() => z.enum(["portrait","landscape",]));
 }
 export namespace Emulation {
-  export const ScreenOrientationTypeSchema = z.lazy(() =>
-    z.enum([
-      'portrait-primary',
-      'portrait-secondary',
-      'landscape-primary',
-      'landscape-secondary',
-    ]),
-  );
+export const ScreenOrientationTypeSchema = z.lazy(() => z.enum(["portrait-primary","portrait-secondary","landscape-primary","landscape-secondary",]));
 }
 export namespace Emulation {
-  export const ScreenOrientationSchema = z.lazy(() =>
-    z.object({
-      natural: Emulation.ScreenOrientationNaturalSchema,
-      type: Emulation.ScreenOrientationTypeSchema,
-    }),
-  );
+export const ScreenOrientationSchema = z.lazy(() => z.object({
+"natural":Emulation.ScreenOrientationNaturalSchema,"type":Emulation.ScreenOrientationTypeSchema}));
 }
 export namespace Emulation {
-  export const SetScreenOrientationOverrideParametersSchema = z.lazy(() =>
-    z.object({
-      screenOrientation: z.union([Emulation.ScreenOrientationSchema, z.null()]),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
-  );
+export const SetScreenOrientationOverrideParametersSchema = z.lazy(() => z.object({
+"screenOrientation":z.union([Emulation.ScreenOrientationSchema,z.null()]),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}));
 }
 export namespace Emulation {
-  export const SetScriptingEnabledSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('emulation.setScriptingEnabled'),
-      params: Emulation.SetScriptingEnabledParametersSchema,
-    }),
-  );
+export const 
+SetScriptingEnabledSchema = z.lazy(() => z.object({
+"method":z.literal("emulation.setScriptingEnabled"),"params":Emulation.SetScriptingEnabledParametersSchema}));
 }
 export namespace Emulation {
-  export const SetScriptingEnabledParametersSchema = z.lazy(() =>
-    z.object({
-      enabled: z.union([z.literal(false), z.null()]),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
-  );
+export const SetScriptingEnabledParametersSchema = z.lazy(() => z.object({
+"enabled":z.union([z.literal(false),z.null()]),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}));
 }
 export namespace Emulation {
-  export const SetTimezoneOverrideSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('emulation.setTimezoneOverride'),
-      params: Emulation.SetTimezoneOverrideParametersSchema,
-    }),
-  );
+export const 
+SetTimezoneOverrideSchema = z.lazy(() => z.object({
+"method":z.literal("emulation.setTimezoneOverride"),"params":Emulation.SetTimezoneOverrideParametersSchema}));
 }
 export namespace Emulation {
-  export const SetTimezoneOverrideParametersSchema = z.lazy(() =>
-    z.object({
-      timezone: z.union([z.string(), z.null()]),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
-  );
+export const SetTimezoneOverrideParametersSchema = z.lazy(() => z.object({
+"timezone":z.union([z.string(),z.null()]),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}));
 }
 export const NetworkCommandSchema = z.lazy(() =>
   z.union([
@@ -1436,248 +889,108 @@ export const NetworkEventSchema = z.lazy(() =>
   ]),
 );
 export namespace Network {
-  export const AuthChallengeSchema = z.lazy(() =>
-    z.object({
-      scheme: z.string(),
-      realm: z.string(),
-    }),
-  );
+export const AuthChallengeSchema = z.lazy(() => z.object({
+"scheme":z.string(),"realm":z.string()}));
 }
 export namespace Network {
-  export const AuthCredentialsSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('password'),
-      username: z.string(),
-      password: z.string(),
-    }),
-  );
+export const AuthCredentialsSchema = z.lazy(() => z.object({
+"type":z.literal("password"),"username":z.string(),"password":z.string()}));
 }
 export namespace Network {
-  export const BaseParametersSchema = z.lazy(() =>
-    z.object({
-      context: z.union([BrowsingContext.BrowsingContextSchema, z.null()]),
-      isBlocked: z.boolean(),
-      navigation: z.union([BrowsingContext.NavigationSchema, z.null()]),
-      redirectCount: JsUintSchema,
-      request: Network.RequestDataSchema,
-      timestamp: JsUintSchema,
-      intercepts: z.array(Network.InterceptSchema).min(1).optional(),
-    }),
-  );
+export const 
+BaseParametersSchema = z.lazy(() => z.object({
+"context":z.union([BrowsingContext.BrowsingContextSchema,z.null()]),"isBlocked":z.boolean(),"navigation":z.union([BrowsingContext.NavigationSchema,z.null()]),"redirectCount":JsUintSchema,"request":Network.RequestDataSchema,"timestamp":JsUintSchema,"intercepts":z.array(Network.InterceptSchema).min(1).optional()}));
 }
 export namespace Network {
-  export const BytesValueSchema = z.lazy(() =>
-    z.union([Network.StringValueSchema, Network.Base64ValueSchema]),
-  );
+export const BytesValueSchema = z.lazy(() => z.union([Network.StringValueSchema,Network.Base64ValueSchema]));
 }
 export namespace Network {
-  export const StringValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('string'),
-      value: z.string(),
-    }),
-  );
+export const StringValueSchema = z.lazy(() => z.object({
+"type":z.literal("string"),"value":z.string()}));
 }
 export namespace Network {
-  export const Base64ValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('base64'),
-      value: z.string(),
-    }),
-  );
+export const Base64ValueSchema = z.lazy(() => z.object({
+"type":z.literal("base64"),"value":z.string()}));
 }
 export namespace Network {
-  export const CollectorSchema = z.lazy(() => z.string());
+export const CollectorSchema = z.lazy(() => z.string());
 }
 export namespace Network {
-  export const CollectorTypeSchema = z.literal('blob');
+export const CollectorTypeSchema = z.literal("blob");
 }
 export namespace Network {
-  export const SameSiteSchema = z.lazy(() =>
-    z.enum(['strict', 'lax', 'none', 'default']),
-  );
+export const SameSiteSchema = z.lazy(() => z.enum(["strict","lax","none","default",]));
 }
 export namespace Network {
-  export const CookieSchema = z.lazy(() =>
-    z
-      .object({
-        name: z.string(),
-        value: Network.BytesValueSchema,
-        domain: z.string(),
-        path: z.string(),
-        size: JsUintSchema,
-        httpOnly: z.boolean(),
-        secure: z.boolean(),
-        sameSite: Network.SameSiteSchema,
-        expiry: JsUintSchema.optional(),
-      })
-      .and(ExtensibleSchema),
-  );
+export const CookieSchema = z.lazy(() => z.object({
+"name":z.string(),"value":Network.BytesValueSchema,"domain":z.string(),"path":z.string(),"size":JsUintSchema,"httpOnly":z.boolean(),"secure":z.boolean(),"sameSite":Network.SameSiteSchema,"expiry":JsUintSchema.optional()}).and(
+ExtensibleSchema)
+);
 }
 export namespace Network {
-  export const CookieHeaderSchema = z.lazy(() =>
-    z.object({
-      name: z.string(),
-      value: Network.BytesValueSchema,
-    }),
-  );
+export const CookieHeaderSchema = z.lazy(() => z.object({
+"name":z.string(),"value":Network.BytesValueSchema}));
 }
 export namespace Network {
-  export const DataTypeSchema = z.literal('response');
+export const DataTypeSchema = z.literal("response");
 }
 export namespace Network {
-  export const FetchTimingInfoSchema = z.lazy(() =>
-    z.object({
-      timeOrigin: z.number(),
-      requestTime: z.number(),
-      redirectStart: z.number(),
-      redirectEnd: z.number(),
-      fetchStart: z.number(),
-      dnsStart: z.number(),
-      dnsEnd: z.number(),
-      connectStart: z.number(),
-      connectEnd: z.number(),
-      tlsStart: z.number(),
-      requestStart: z.number(),
-      responseStart: z.number(),
-      responseEnd: z.number(),
-    }),
-  );
+export const FetchTimingInfoSchema = z.lazy(() => z.object({
+"timeOrigin":z.number(),"requestTime":z.number(),"redirectStart":z.number(),"redirectEnd":z.number(),"fetchStart":z.number(),"dnsStart":z.number(),"dnsEnd":z.number(),"connectStart":z.number(),"connectEnd":z.number(),"tlsStart":z.number(),"requestStart":z.number(),"responseStart":z.number(),"responseEnd":z.number()}));
 }
 export namespace Network {
-  export const HeaderSchema = z.lazy(() =>
-    z.object({
-      name: z.string(),
-      value: Network.BytesValueSchema,
-    }),
-  );
+export const HeaderSchema = z.lazy(() => z.object({
+"name":z.string(),"value":Network.BytesValueSchema}));
 }
 export namespace Network {
-  export const InitiatorSchema = z.lazy(() =>
-    z.object({
-      columnNumber: JsUintSchema.optional(),
-      lineNumber: JsUintSchema.optional(),
-      request: Network.RequestSchema.optional(),
-      stackTrace: Script.StackTraceSchema.optional(),
-      type: z.enum(['parser', 'script', 'preflight', 'other']).optional(),
-    }),
-  );
+export const InitiatorSchema = z.lazy(() => z.object({
+"columnNumber":JsUintSchema.optional(),"lineNumber":JsUintSchema.optional(),"request":Network.RequestSchema.optional(),"stackTrace":Script.StackTraceSchema.optional(),"type":z.enum(["parser","script","preflight","other",]).optional()}));
 }
 export namespace Network {
-  export const InterceptSchema = z.lazy(() => z.string());
+export const InterceptSchema = z.lazy(() => z.string());
 }
 export namespace Network {
-  export const RequestSchema = z.lazy(() => z.string());
+export const RequestSchema = z.lazy(() => z.string());
 }
 export namespace Network {
-  export const RequestDataSchema = z.lazy(() =>
-    z.object({
-      request: Network.RequestSchema,
-      url: z.string(),
-      method: z.string(),
-      headers: z.array(Network.HeaderSchema),
-      cookies: z.array(Network.CookieSchema),
-      headersSize: JsUintSchema,
-      bodySize: z.union([JsUintSchema, z.null()]),
-      destination: z.string(),
-      initiatorType: z.union([z.string(), z.null()]),
-      timings: Network.FetchTimingInfoSchema,
-    }),
-  );
+export const RequestDataSchema = z.lazy(() => z.object({
+"request":Network.RequestSchema,"url":z.string(),"method":z.string(),"headers":z.array(Network.HeaderSchema),"cookies":z.array(Network.CookieSchema),"headersSize":JsUintSchema,"bodySize":z.union([JsUintSchema,z.null()]),"destination":z.string(),"initiatorType":z.union([z.string(),z.null()]),"timings":Network.FetchTimingInfoSchema}));
 }
 export namespace Network {
-  export const ResponseContentSchema = z.lazy(() =>
-    z.object({
-      size: JsUintSchema,
-    }),
-  );
+export const ResponseContentSchema = z.lazy(() => z.object({
+"size":JsUintSchema}));
 }
 export namespace Network {
-  export const ResponseDataSchema = z.lazy(() =>
-    z.object({
-      url: z.string(),
-      protocol: z.string(),
-      status: JsUintSchema,
-      statusText: z.string(),
-      fromCache: z.boolean(),
-      headers: z.array(Network.HeaderSchema),
-      mimeType: z.string(),
-      bytesReceived: JsUintSchema,
-      headersSize: z.union([JsUintSchema, z.null()]),
-      bodySize: z.union([JsUintSchema, z.null()]),
-      content: Network.ResponseContentSchema,
-      authChallenges: z.array(Network.AuthChallengeSchema).optional(),
-    }),
-  );
+export const ResponseDataSchema = z.lazy(() => z.object({
+"url":z.string(),"protocol":z.string(),"status":JsUintSchema,"statusText":z.string(),"fromCache":z.boolean(),"headers":z.array(Network.HeaderSchema),"mimeType":z.string(),"bytesReceived":JsUintSchema,"headersSize":z.union([JsUintSchema,z.null()]),"bodySize":z.union([JsUintSchema,z.null()]),"content":Network.ResponseContentSchema,"authChallenges":z.array(Network.AuthChallengeSchema).optional()}));
 }
 export namespace Network {
-  export const SetCookieHeaderSchema = z.lazy(() =>
-    z.object({
-      name: z.string(),
-      value: Network.BytesValueSchema,
-      domain: z.string().optional(),
-      httpOnly: z.boolean().optional(),
-      expiry: z.string().optional(),
-      maxAge: JsIntSchema.optional(),
-      path: z.string().optional(),
-      sameSite: Network.SameSiteSchema.optional(),
-      secure: z.boolean().optional(),
-    }),
-  );
+export const SetCookieHeaderSchema = z.lazy(() => z.object({
+"name":z.string(),"value":Network.BytesValueSchema,"domain":z.string().optional(),"httpOnly":z.boolean().optional(),"expiry":z.string().optional(),"maxAge":JsIntSchema.optional(),"path":z.string().optional(),"sameSite":Network.SameSiteSchema.optional(),"secure":z.boolean().optional()}));
 }
 export namespace Network {
-  export const UrlPatternSchema = z.lazy(() =>
-    z.union([Network.UrlPatternPatternSchema, Network.UrlPatternStringSchema]),
-  );
+export const UrlPatternSchema = z.lazy(() => z.union([Network.UrlPatternPatternSchema,Network.UrlPatternStringSchema]));
 }
 export namespace Network {
-  export const UrlPatternPatternSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('pattern'),
-      protocol: z.string().optional(),
-      hostname: z.string().optional(),
-      port: z.string().optional(),
-      pathname: z.string().optional(),
-      search: z.string().optional(),
-    }),
-  );
+export const UrlPatternPatternSchema = z.lazy(() => z.object({
+"type":z.literal("pattern"),"protocol":z.string().optional(),"hostname":z.string().optional(),"port":z.string().optional(),"pathname":z.string().optional(),"search":z.string().optional()}));
 }
 export namespace Network {
-  export const UrlPatternStringSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('string'),
-      pattern: z.string(),
-    }),
-  );
+export const UrlPatternStringSchema = z.lazy(() => z.object({
+"type":z.literal("string"),"pattern":z.string()}));
 }
 export namespace Network {
-  export const AddDataCollectorSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.addDataCollector'),
-      params: Network.AddDataCollectorParametersSchema,
-    }),
-  );
+export const 
+AddDataCollectorSchema = z.lazy(() => z.object({
+"method":z.literal("network.addDataCollector"),"params":Network.AddDataCollectorParametersSchema}));
 }
 export namespace Network {
-  export const AddDataCollectorParametersSchema = z.lazy(() =>
-    z.object({
-      dataTypes: z.array(Network.DataTypeSchema).min(1),
-      maxEncodedDataSize: JsUintSchema,
-      collectorType: Network.CollectorTypeSchema.default('blob').optional(),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
-  );
+export const AddDataCollectorParametersSchema = z.lazy(() => z.object({
+"dataTypes":z.array(Network.DataTypeSchema).min(1),"maxEncodedDataSize":JsUintSchema,"collectorType":Network.CollectorTypeSchema.default("blob").optional(),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional()}));
 }
 export namespace Network {
-  export const AddDataCollectorResultSchema = z.lazy(() =>
-    z.object({
-      collector: Network.CollectorSchema,
-    }),
-  );
+export const AddDataCollectorResultSchema = z.lazy(() => z.object({
+"collector":Network.CollectorSchema}));
 }
 export namespace Network {
   export const AddInterceptSchema = z.lazy(() =>
@@ -1700,200 +1013,108 @@ export namespace Network {
   );
 }
 export namespace Network {
-  export const InterceptPhaseSchema = z.lazy(() =>
-    z.enum(['beforeRequestSent', 'responseStarted', 'authRequired']),
-  );
+export const InterceptPhaseSchema = z.lazy(() => z.enum(["beforeRequestSent","responseStarted","authRequired",]));
 }
 export namespace Network {
-  export const AddInterceptResultSchema = z.lazy(() =>
-    z.object({
-      intercept: Network.InterceptSchema,
-    }),
-  );
+export const AddInterceptResultSchema = z.lazy(() => z.object({
+"intercept":Network.InterceptSchema}));
 }
 export namespace Network {
-  export const ContinueRequestSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.continueRequest'),
-      params: Network.ContinueRequestParametersSchema,
-    }),
-  );
+export const 
+ContinueRequestSchema = z.lazy(() => z.object({
+"method":z.literal("network.continueRequest"),"params":Network.ContinueRequestParametersSchema}));
 }
 export namespace Network {
-  export const ContinueRequestParametersSchema = z.lazy(() =>
-    z.object({
-      request: Network.RequestSchema,
-      body: Network.BytesValueSchema.optional(),
-      cookies: z.array(Network.CookieHeaderSchema).optional(),
-      headers: z.array(Network.HeaderSchema).optional(),
-      method: z.string().optional(),
-      url: z.string().optional(),
-    }),
-  );
+export const ContinueRequestParametersSchema = z.lazy(() => z.object({
+"request":Network.RequestSchema,"body":Network.BytesValueSchema.optional(),"cookies":z.array(Network.CookieHeaderSchema).optional(),"headers":z.array(Network.HeaderSchema).optional(),"method":z.string().optional(),"url":z.string().optional()}));
 }
 export namespace Network {
-  export const ContinueResponseSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.continueResponse'),
-      params: Network.ContinueResponseParametersSchema,
-    }),
-  );
+export const 
+ContinueResponseSchema = z.lazy(() => z.object({
+"method":z.literal("network.continueResponse"),"params":Network.ContinueResponseParametersSchema}));
 }
 export namespace Network {
-  export const ContinueResponseParametersSchema = z.lazy(() =>
-    z.object({
-      request: Network.RequestSchema,
-      cookies: z.array(Network.SetCookieHeaderSchema).optional(),
-      credentials: Network.AuthCredentialsSchema.optional(),
-      headers: z.array(Network.HeaderSchema).optional(),
-      reasonPhrase: z.string().optional(),
-      statusCode: JsUintSchema.optional(),
-    }),
-  );
+export const ContinueResponseParametersSchema = z.lazy(() => z.object({
+"request":Network.RequestSchema,"cookies":z.array(Network.SetCookieHeaderSchema).optional(),"credentials":Network.AuthCredentialsSchema.optional(),"headers":z.array(Network.HeaderSchema).optional(),"reasonPhrase":z.string().optional(),"statusCode":JsUintSchema.optional()}));
 }
 export namespace Network {
-  export const ContinueWithAuthSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.continueWithAuth'),
-      params: Network.ContinueWithAuthParametersSchema,
-    }),
-  );
+export const 
+ContinueWithAuthSchema = z.lazy(() => z.object({
+"method":z.literal("network.continueWithAuth"),"params":Network.ContinueWithAuthParametersSchema}));
 }
 export namespace Network {
-  export const ContinueWithAuthParametersSchema = z.lazy(() =>
-    z
-      .object({
-        request: Network.RequestSchema,
-      })
-      .and(
-        z.union([
-          Network.ContinueWithAuthCredentialsSchema,
-          Network.ContinueWithAuthNoCredentialsSchema,
-        ]),
-      ),
-  );
+export const ContinueWithAuthParametersSchema = z.lazy(() => z.object({
+"request":Network.RequestSchema}).and(
+z.union([Network.ContinueWithAuthCredentialsSchema,Network.ContinueWithAuthNoCredentialsSchema]))
+);
 }
 export namespace Network {
-  export const ContinueWithAuthCredentialsSchema = z.lazy(() =>
-    z.object({
-      action: z.literal('provideCredentials'),
-      credentials: Network.AuthCredentialsSchema,
-    }),
-  );
+export const 
+ContinueWithAuthCredentialsSchema = z.lazy(() => z.object({
+"action":z.literal("provideCredentials"),"credentials":Network.AuthCredentialsSchema}));
 }
 export namespace Network {
-  export const ContinueWithAuthNoCredentialsSchema = z.lazy(() =>
-    z.object({
-      action: z.enum(['default', 'cancel']),
-    }),
-  );
+export const 
+ContinueWithAuthNoCredentialsSchema = z.lazy(() => z.object({
+"action":z.enum(["default","cancel",])}));
 }
 export namespace Network {
-  export const DisownDataSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.disownData'),
-      params: Network.DisownDataParametersSchema,
-    }),
-  );
+export const 
+DisownDataSchema = z.lazy(() => z.object({
+"method":z.literal("network.disownData"),"params":Network.DisownDataParametersSchema}));
 }
 export namespace Network {
-  export const DisownDataParametersSchema = z.lazy(() =>
-    z.object({
-      dataType: Network.DataTypeSchema,
-      collector: Network.CollectorSchema,
-      request: Network.RequestSchema,
-    }),
-  );
+export const DisownDataParametersSchema = z.lazy(() => z.object({
+"dataType":Network.DataTypeSchema,"collector":Network.CollectorSchema,"request":Network.RequestSchema}));
 }
 export namespace Network {
-  export const FailRequestSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.failRequest'),
-      params: Network.FailRequestParametersSchema,
-    }),
-  );
+export const 
+FailRequestSchema = z.lazy(() => z.object({
+"method":z.literal("network.failRequest"),"params":Network.FailRequestParametersSchema}));
 }
 export namespace Network {
-  export const FailRequestParametersSchema = z.lazy(() =>
-    z.object({
-      request: Network.RequestSchema,
-    }),
-  );
+export const FailRequestParametersSchema = z.lazy(() => z.object({
+"request":Network.RequestSchema}));
 }
 export namespace Network {
-  export const GetDataSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.getData'),
-      params: Network.GetDataParametersSchema,
-    }),
-  );
+export const 
+GetDataSchema = z.lazy(() => z.object({
+"method":z.literal("network.getData"),"params":Network.GetDataParametersSchema}));
 }
 export namespace Network {
-  export const GetDataParametersSchema = z.lazy(() =>
-    z.object({
-      dataType: Network.DataTypeSchema,
-      collector: Network.CollectorSchema.optional(),
-      disown: z.boolean().default(false).optional(),
-      request: Network.RequestSchema,
-    }),
-  );
+export const GetDataParametersSchema = z.lazy(() => z.object({
+"dataType":Network.DataTypeSchema,"collector":Network.CollectorSchema.optional(),"disown":z.boolean().default(false).optional(),"request":Network.RequestSchema}));
 }
 export namespace Network {
-  export const GetDataResultSchema = z.lazy(() =>
-    z.object({
-      bytes: Network.BytesValueSchema,
-    }),
-  );
+export const GetDataResultSchema = z.lazy(() => z.object({
+"bytes":Network.BytesValueSchema}));
 }
 export namespace Network {
-  export const ProvideResponseSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.provideResponse'),
-      params: Network.ProvideResponseParametersSchema,
-    }),
-  );
+export const 
+ProvideResponseSchema = z.lazy(() => z.object({
+"method":z.literal("network.provideResponse"),"params":Network.ProvideResponseParametersSchema}));
 }
 export namespace Network {
-  export const ProvideResponseParametersSchema = z.lazy(() =>
-    z.object({
-      request: Network.RequestSchema,
-      body: Network.BytesValueSchema.optional(),
-      cookies: z.array(Network.SetCookieHeaderSchema).optional(),
-      headers: z.array(Network.HeaderSchema).optional(),
-      reasonPhrase: z.string().optional(),
-      statusCode: JsUintSchema.optional(),
-    }),
-  );
+export const ProvideResponseParametersSchema = z.lazy(() => z.object({
+"request":Network.RequestSchema,"body":Network.BytesValueSchema.optional(),"cookies":z.array(Network.SetCookieHeaderSchema).optional(),"headers":z.array(Network.HeaderSchema).optional(),"reasonPhrase":z.string().optional(),"statusCode":JsUintSchema.optional()}));
 }
 export namespace Network {
-  export const RemoveDataCollectorSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.removeDataCollector'),
-      params: Network.RemoveDataCollectorParametersSchema,
-    }),
-  );
+export const 
+RemoveDataCollectorSchema = z.lazy(() => z.object({
+"method":z.literal("network.removeDataCollector"),"params":Network.RemoveDataCollectorParametersSchema}));
 }
 export namespace Network {
-  export const RemoveDataCollectorParametersSchema = z.lazy(() =>
-    z.object({
-      collector: Network.CollectorSchema,
-    }),
-  );
+export const RemoveDataCollectorParametersSchema = z.lazy(() => z.object({
+"collector":Network.CollectorSchema}));
 }
 export namespace Network {
-  export const RemoveInterceptSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('network.removeIntercept'),
-      params: Network.RemoveInterceptParametersSchema,
-    }),
-  );
+export const 
+RemoveInterceptSchema = z.lazy(() => z.object({
+"method":z.literal("network.removeIntercept"),"params":Network.RemoveInterceptParametersSchema}));
 }
 export namespace Network {
-  export const RemoveInterceptParametersSchema = z.lazy(() =>
-    z.object({
-      intercept: Network.InterceptSchema,
-    }),
-  );
+export const RemoveInterceptParametersSchema = z.lazy(() => z.object({
+"intercept":Network.InterceptSchema}));
 }
 export namespace Network {
   export const SetCacheBehaviorSchema = z.lazy(() =>
@@ -2011,13 +1232,10 @@ export namespace Network {
   );
 }
 export namespace Network {
-  export const ResponseStartedParametersSchema = z.lazy(() =>
-    Network.BaseParametersSchema.and(
-      z.object({
-        response: Network.ResponseDataSchema,
-      }),
-    ),
-  );
+export const ResponseStartedParametersSchema = z.lazy(() => Network.BaseParametersSchema.and(
+z.object({
+"response":Network.ResponseDataSchema}))
+);
 }
 export const ScriptCommandSchema = z.lazy(() =>
   z.union([
@@ -2044,15 +1262,11 @@ export const ScriptEventSchema = z.lazy(() =>
   ]),
 );
 export namespace Script {
-  export const ChannelSchema = z.lazy(() => z.string());
+export const ChannelSchema = z.lazy(() => z.string());
 }
 export namespace Script {
-  export const ChannelValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('channel'),
-      value: Script.ChannelPropertiesSchema,
-    }),
-  );
+export const ChannelValueSchema = z.lazy(() => z.object({
+"type":z.literal("channel"),"value":Script.ChannelPropertiesSchema}));
 }
 export namespace Script {
   export const ChannelPropertiesSchema = z.lazy(() =>
@@ -2101,25 +1315,13 @@ export namespace Script {
   );
 }
 export namespace Script {
-  export const HandleSchema = z.lazy(() => z.string());
+export const HandleSchema = z.lazy(() => z.string());
 }
 export namespace Script {
-  export const InternalIdSchema = z.lazy(() => z.string());
+export const InternalIdSchema = z.lazy(() => z.string());
 }
 export namespace Script {
-  export const LocalValueSchema = z.lazy(() =>
-    z.union([
-      Script.RemoteReferenceSchema,
-      Script.PrimitiveProtocolValueSchema,
-      Script.ChannelValueSchema,
-      Script.ArrayLocalValueSchema,
-      Script.DateLocalValueSchema,
-      Script.MapLocalValueSchema,
-      Script.ObjectLocalValueSchema,
-      Script.RegExpLocalValueSchema,
-      Script.SetLocalValueSchema,
-    ]),
-  );
+export const LocalValueSchema = z.lazy(() => z.union([Script.RemoteReferenceSchema,Script.PrimitiveProtocolValueSchema,Script.ChannelValueSchema,Script.ArrayLocalValueSchema,Script.DateLocalValueSchema,Script.MapLocalValueSchema,Script.ObjectLocalValueSchema,Script.RegExpLocalValueSchema,Script.SetLocalValueSchema]));
 }
 export namespace Script {
   export const ListLocalValueSchema = z.lazy(() =>
@@ -2193,184 +1395,100 @@ export namespace Script {
   );
 }
 export namespace Script {
-  export const PreloadScriptSchema = z.lazy(() => z.string());
+export const PreloadScriptSchema = z.lazy(() => z.string());
 }
 export namespace Script {
-  export const RealmSchema = z.lazy(() => z.string());
+export const RealmSchema = z.lazy(() => z.string());
 }
 export namespace Script {
-  export const PrimitiveProtocolValueSchema = z.lazy(() =>
-    z.union([
-      Script.UndefinedValueSchema,
-      Script.NullValueSchema,
-      Script.StringValueSchema,
-      Script.NumberValueSchema,
-      Script.BooleanValueSchema,
-      Script.BigIntValueSchema,
-    ]),
-  );
+export const PrimitiveProtocolValueSchema = z.lazy(() => z.union([Script.UndefinedValueSchema,Script.NullValueSchema,Script.StringValueSchema,Script.NumberValueSchema,Script.BooleanValueSchema,Script.BigIntValueSchema]));
 }
 export namespace Script {
-  export const UndefinedValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('undefined'),
-    }),
-  );
+export const UndefinedValueSchema = z.lazy(() => z.object({
+"type":z.literal("undefined")}));
 }
 export namespace Script {
-  export const NullValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('null'),
-    }),
-  );
+export const NullValueSchema = z.lazy(() => z.object({
+"type":z.literal("null")}));
 }
 export namespace Script {
-  export const StringValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('string'),
-      value: z.string(),
-    }),
-  );
+export const StringValueSchema = z.lazy(() => z.object({
+"type":z.literal("string"),"value":z.string()}));
 }
 export namespace Script {
-  export const SpecialNumberSchema = z.lazy(() =>
-    z.enum(['NaN', '-0', 'Infinity', '-Infinity']),
-  );
+export const SpecialNumberSchema = z.lazy(() => z.enum(["NaN","-0","Infinity","-Infinity",]));
 }
 export namespace Script {
-  export const NumberValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('number'),
-      value: z.union([z.number(), Script.SpecialNumberSchema]),
-    }),
-  );
+export const NumberValueSchema = z.lazy(() => z.object({
+"type":z.literal("number"),"value":z.union([z.number(),Script.SpecialNumberSchema])}));
 }
 export namespace Script {
-  export const BooleanValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('boolean'),
-      value: z.boolean(),
-    }),
-  );
+export const BooleanValueSchema = z.lazy(() => z.object({
+"type":z.literal("boolean"),"value":z.boolean()}));
 }
 export namespace Script {
-  export const BigIntValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('bigint'),
-      value: z.string(),
-    }),
-  );
+export const BigIntValueSchema = z.lazy(() => z.object({
+"type":z.literal("bigint"),"value":z.string()}));
 }
 export namespace Script {
-  export const RealmInfoSchema = z.lazy(() =>
-    z.union([
-      Script.WindowRealmInfoSchema,
-      Script.DedicatedWorkerRealmInfoSchema,
-      Script.SharedWorkerRealmInfoSchema,
-      Script.ServiceWorkerRealmInfoSchema,
-      Script.WorkerRealmInfoSchema,
-      Script.PaintWorkletRealmInfoSchema,
-      Script.AudioWorkletRealmInfoSchema,
-      Script.WorkletRealmInfoSchema,
-    ]),
-  );
+export const RealmInfoSchema = z.lazy(() => z.union([Script.WindowRealmInfoSchema,Script.DedicatedWorkerRealmInfoSchema,Script.SharedWorkerRealmInfoSchema,Script.ServiceWorkerRealmInfoSchema,Script.WorkerRealmInfoSchema,Script.PaintWorkletRealmInfoSchema,Script.AudioWorkletRealmInfoSchema,Script.WorkletRealmInfoSchema]));
 }
 export namespace Script {
-  export const BaseRealmInfoSchema = z.lazy(() =>
-    z.object({
-      realm: Script.RealmSchema,
-      origin: z.string(),
-    }),
-  );
+export const 
+BaseRealmInfoSchema = z.lazy(() => z.object({
+"realm":Script.RealmSchema,"origin":z.string()}));
 }
 export namespace Script {
-  export const WindowRealmInfoSchema = z.lazy(() =>
-    Script.BaseRealmInfoSchema.and(
-      z.object({
-        type: z.literal('window'),
-        context: BrowsingContext.BrowsingContextSchema,
-        sandbox: z.string().optional(),
-      }),
-    ),
-  );
+export const WindowRealmInfoSchema = z.lazy(() => Script.BaseRealmInfoSchema.and(
+z.object({
+"type":z.literal("window"),"context":BrowsingContext.BrowsingContextSchema,"sandbox":z.string().optional()}))
+);
 }
 export namespace Script {
-  export const DedicatedWorkerRealmInfoSchema = z.lazy(() =>
-    Script.BaseRealmInfoSchema.and(
-      z.object({
-        type: z.literal('dedicated-worker'),
-        owners: z.tuple([Script.RealmSchema]),
-      }),
-    ),
-  );
+export const DedicatedWorkerRealmInfoSchema = z.lazy(() => Script.BaseRealmInfoSchema.and(
+z.object({
+"type":z.literal("dedicated-worker"),"owners":z.tuple([
+Script.RealmSchema])}))
+);
 }
 export namespace Script {
-  export const SharedWorkerRealmInfoSchema = z.lazy(() =>
-    Script.BaseRealmInfoSchema.and(
-      z.object({
-        type: z.literal('shared-worker'),
-      }),
-    ),
-  );
+export const SharedWorkerRealmInfoSchema = z.lazy(() => Script.BaseRealmInfoSchema.and(
+z.object({
+"type":z.literal("shared-worker")}))
+);
 }
 export namespace Script {
-  export const ServiceWorkerRealmInfoSchema = z.lazy(() =>
-    Script.BaseRealmInfoSchema.and(
-      z.object({
-        type: z.literal('service-worker'),
-      }),
-    ),
-  );
+export const ServiceWorkerRealmInfoSchema = z.lazy(() => Script.BaseRealmInfoSchema.and(
+z.object({
+"type":z.literal("service-worker")}))
+);
 }
 export namespace Script {
-  export const WorkerRealmInfoSchema = z.lazy(() =>
-    Script.BaseRealmInfoSchema.and(
-      z.object({
-        type: z.literal('worker'),
-      }),
-    ),
-  );
+export const WorkerRealmInfoSchema = z.lazy(() => Script.BaseRealmInfoSchema.and(
+z.object({
+"type":z.literal("worker")}))
+);
 }
 export namespace Script {
-  export const PaintWorkletRealmInfoSchema = z.lazy(() =>
-    Script.BaseRealmInfoSchema.and(
-      z.object({
-        type: z.literal('paint-worklet'),
-      }),
-    ),
-  );
+export const PaintWorkletRealmInfoSchema = z.lazy(() => Script.BaseRealmInfoSchema.and(
+z.object({
+"type":z.literal("paint-worklet")}))
+);
 }
 export namespace Script {
-  export const AudioWorkletRealmInfoSchema = z.lazy(() =>
-    Script.BaseRealmInfoSchema.and(
-      z.object({
-        type: z.literal('audio-worklet'),
-      }),
-    ),
-  );
+export const AudioWorkletRealmInfoSchema = z.lazy(() => Script.BaseRealmInfoSchema.and(
+z.object({
+"type":z.literal("audio-worklet")}))
+);
 }
 export namespace Script {
-  export const WorkletRealmInfoSchema = z.lazy(() =>
-    Script.BaseRealmInfoSchema.and(
-      z.object({
-        type: z.literal('worklet'),
-      }),
-    ),
-  );
+export const WorkletRealmInfoSchema = z.lazy(() => Script.BaseRealmInfoSchema.and(
+z.object({
+"type":z.literal("worklet")}))
+);
 }
 export namespace Script {
-  export const RealmTypeSchema = z.lazy(() =>
-    z.enum([
-      'window',
-      'dedicated-worker',
-      'shared-worker',
-      'service-worker',
-      'worker',
-      'paint-worklet',
-      'audio-worklet',
-      'worklet',
-    ]),
-  );
+export const RealmTypeSchema = z.lazy(() => z.enum(["window","dedicated-worker","shared-worker","service-worker","worker","paint-worklet","audio-worklet","worklet",]));
 }
 export namespace Script {
   export const RemoteReferenceSchema = z.lazy(() =>
@@ -2398,31 +1516,7 @@ export namespace Script {
   );
 }
 export namespace Script {
-  export const RemoteValueSchema = z.lazy(() =>
-    z.union([
-      Script.PrimitiveProtocolValueSchema,
-      Script.SymbolRemoteValueSchema,
-      Script.ArrayRemoteValueSchema,
-      Script.ObjectRemoteValueSchema,
-      Script.FunctionRemoteValueSchema,
-      Script.RegExpRemoteValueSchema,
-      Script.DateRemoteValueSchema,
-      Script.MapRemoteValueSchema,
-      Script.SetRemoteValueSchema,
-      Script.WeakMapRemoteValueSchema,
-      Script.WeakSetRemoteValueSchema,
-      Script.GeneratorRemoteValueSchema,
-      Script.ErrorRemoteValueSchema,
-      Script.ProxyRemoteValueSchema,
-      Script.PromiseRemoteValueSchema,
-      Script.TypedArrayRemoteValueSchema,
-      Script.ArrayBufferRemoteValueSchema,
-      Script.NodeListRemoteValueSchema,
-      Script.HtmlCollectionRemoteValueSchema,
-      Script.NodeRemoteValueSchema,
-      Script.WindowProxyRemoteValueSchema,
-    ]),
-  );
+export const RemoteValueSchema = z.lazy(() => z.union([Script.PrimitiveProtocolValueSchema,Script.SymbolRemoteValueSchema,Script.ArrayRemoteValueSchema,Script.ObjectRemoteValueSchema,Script.FunctionRemoteValueSchema,Script.RegExpRemoteValueSchema,Script.DateRemoteValueSchema,Script.MapRemoteValueSchema,Script.SetRemoteValueSchema,Script.WeakMapRemoteValueSchema,Script.WeakSetRemoteValueSchema,Script.GeneratorRemoteValueSchema,Script.ErrorRemoteValueSchema,Script.ProxyRemoteValueSchema,Script.PromiseRemoteValueSchema,Script.TypedArrayRemoteValueSchema,Script.ArrayBufferRemoteValueSchema,Script.NodeListRemoteValueSchema,Script.HtmlCollectionRemoteValueSchema,Script.NodeRemoteValueSchema,Script.WindowProxyRemoteValueSchema]));
 }
 export namespace Script {
   export const ListRemoteValueSchema = z.lazy(() =>
@@ -2440,328 +1534,152 @@ export namespace Script {
   );
 }
 export namespace Script {
-  export const SymbolRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('symbol'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const SymbolRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("symbol"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const ArrayRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('array'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-      value: Script.ListRemoteValueSchema.optional(),
-    }),
-  );
+export const ArrayRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("array"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional(),"value":Script.ListRemoteValueSchema.optional()}));
 }
 export namespace Script {
-  export const ObjectRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('object'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-      value: Script.MappingRemoteValueSchema.optional(),
-    }),
-  );
+export const ObjectRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("object"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional(),"value":Script.MappingRemoteValueSchema.optional()}));
 }
 export namespace Script {
-  export const FunctionRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('function'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const FunctionRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("function"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const RegExpRemoteValueSchema = z.lazy(() =>
-    Script.RegExpLocalValueSchema.and(
-      z.object({
-        handle: Script.HandleSchema.optional(),
-        internalId: Script.InternalIdSchema.optional(),
-      }),
-    ),
-  );
+export const RegExpRemoteValueSchema = z.lazy(() => Script.RegExpLocalValueSchema.and(
+z.object({
+"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}))
+);
 }
 export namespace Script {
-  export const DateRemoteValueSchema = z.lazy(() =>
-    Script.DateLocalValueSchema.and(
-      z.object({
-        handle: Script.HandleSchema.optional(),
-        internalId: Script.InternalIdSchema.optional(),
-      }),
-    ),
-  );
+export const DateRemoteValueSchema = z.lazy(() => Script.DateLocalValueSchema.and(
+z.object({
+"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}))
+);
 }
 export namespace Script {
-  export const MapRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('map'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-      value: Script.MappingRemoteValueSchema.optional(),
-    }),
-  );
+export const MapRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("map"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional(),"value":Script.MappingRemoteValueSchema.optional()}));
 }
 export namespace Script {
-  export const SetRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('set'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-      value: Script.ListRemoteValueSchema.optional(),
-    }),
-  );
+export const SetRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("set"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional(),"value":Script.ListRemoteValueSchema.optional()}));
 }
 export namespace Script {
-  export const WeakMapRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('weakmap'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const WeakMapRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("weakmap"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const WeakSetRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('weakset'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const WeakSetRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("weakset"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const GeneratorRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('generator'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const GeneratorRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("generator"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const ErrorRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('error'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const ErrorRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("error"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const ProxyRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('proxy'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const ProxyRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("proxy"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const PromiseRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('promise'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const PromiseRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("promise"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const TypedArrayRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('typedarray'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const TypedArrayRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("typedarray"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const ArrayBufferRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('arraybuffer'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const ArrayBufferRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("arraybuffer"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const NodeListRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('nodelist'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-      value: Script.ListRemoteValueSchema.optional(),
-    }),
-  );
+export const NodeListRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("nodelist"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional(),"value":Script.ListRemoteValueSchema.optional()}));
 }
 export namespace Script {
-  export const HtmlCollectionRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('htmlcollection'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-      value: Script.ListRemoteValueSchema.optional(),
-    }),
-  );
+export const HtmlCollectionRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("htmlcollection"),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional(),"value":Script.ListRemoteValueSchema.optional()}));
 }
 export namespace Script {
-  export const NodeRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('node'),
-      sharedId: Script.SharedIdSchema.optional(),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-      value: Script.NodePropertiesSchema.optional(),
-    }),
-  );
+export const NodeRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("node"),"sharedId":Script.SharedIdSchema.optional(),"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional(),"value":Script.NodePropertiesSchema.optional()}));
 }
 export namespace Script {
-  export const NodePropertiesSchema = z.lazy(() =>
-    z.object({
-      nodeType: JsUintSchema,
-      childNodeCount: JsUintSchema,
-      attributes: z.record(z.string(), z.string()).optional(),
-      children: z.array(Script.NodeRemoteValueSchema).optional(),
-      localName: z.string().optional(),
-      mode: z.enum(['open', 'closed']).optional(),
-      namespaceURI: z.string().optional(),
-      nodeValue: z.string().optional(),
-      shadowRoot: z.union([Script.NodeRemoteValueSchema, z.null()]).optional(),
-    }),
-  );
+export const NodePropertiesSchema = z.lazy(() => z.object({
+"nodeType":JsUintSchema,"childNodeCount":JsUintSchema,"attributes":z.record(
+z.string(),z.string()).optional(),"children":z.array(Script.NodeRemoteValueSchema).optional(),"localName":z.string().optional(),"mode":z.enum(["open","closed",]).optional(),"namespaceURI":z.string().optional(),"nodeValue":z.string().optional(),"shadowRoot":z.union([Script.NodeRemoteValueSchema,z.null()]).optional()}));
 }
 export namespace Script {
-  export const WindowProxyRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('window'),
-      value: Script.WindowProxyPropertiesSchema,
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    }),
-  );
+export const WindowProxyRemoteValueSchema = z.lazy(() => z.object({
+"type":z.literal("window"),"value":Script.WindowProxyPropertiesSchema,"handle":Script.HandleSchema.optional(),"internalId":Script.InternalIdSchema.optional()}));
 }
 export namespace Script {
-  export const WindowProxyPropertiesSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-    }),
-  );
+export const WindowProxyPropertiesSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema}));
 }
 export namespace Script {
-  export const ResultOwnershipSchema = z.lazy(() => z.enum(['root', 'none']));
+export const ResultOwnershipSchema = z.lazy(() => z.enum(["root","none",]));
 }
 export namespace Script {
-  export const SerializationOptionsSchema = z.lazy(() =>
-    z.object({
-      maxDomDepth: z.union([JsUintSchema, z.null()]).default(0).optional(),
-      maxObjectDepth: z
-        .union([JsUintSchema, z.null()])
-        .default(null)
-        .optional(),
-      includeShadowTree: z
-        .enum(['none', 'open', 'all'])
-        .default('none')
-        .optional(),
-    }),
-  );
+export const SerializationOptionsSchema = z.lazy(() => z.object({
+"maxDomDepth":z.union([JsUintSchema,z.null()]).default(0).optional(),"maxObjectDepth":z.union([JsUintSchema,z.null()]).default(null).optional(),"includeShadowTree":z.enum(["none","open","all",]).default("none").optional()}));
 }
 export namespace Script {
-  export const SharedIdSchema = z.lazy(() => z.string());
+export const SharedIdSchema = z.lazy(() => z.string());
 }
 export namespace Script {
-  export const StackFrameSchema = z.lazy(() =>
-    z.object({
-      columnNumber: JsUintSchema,
-      functionName: z.string(),
-      lineNumber: JsUintSchema,
-      url: z.string(),
-    }),
-  );
+export const StackFrameSchema = z.lazy(() => z.object({
+"columnNumber":JsUintSchema,"functionName":z.string(),"lineNumber":JsUintSchema,"url":z.string()}));
 }
 export namespace Script {
-  export const StackTraceSchema = z.lazy(() =>
-    z.object({
-      callFrames: z.array(Script.StackFrameSchema),
-    }),
-  );
+export const StackTraceSchema = z.lazy(() => z.object({
+"callFrames":z.array(Script.StackFrameSchema)}));
 }
 export namespace Script {
-  export const SourceSchema = z.lazy(() =>
-    z.object({
-      realm: Script.RealmSchema,
-      context: BrowsingContext.BrowsingContextSchema.optional(),
-    }),
-  );
+export const SourceSchema = z.lazy(() => z.object({
+"realm":Script.RealmSchema,"context":BrowsingContext.BrowsingContextSchema.optional()}));
 }
 export namespace Script {
-  export const RealmTargetSchema = z.lazy(() =>
-    z.object({
-      realm: Script.RealmSchema,
-    }),
-  );
+export const RealmTargetSchema = z.lazy(() => z.object({
+"realm":Script.RealmSchema}));
 }
 export namespace Script {
-  export const ContextTargetSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      sandbox: z.string().optional(),
-    }),
-  );
+export const ContextTargetSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"sandbox":z.string().optional()}));
 }
 export namespace Script {
-  export const TargetSchema = z.lazy(() =>
-    z.union([Script.ContextTargetSchema, Script.RealmTargetSchema]),
-  );
+export const TargetSchema = z.lazy(() => z.union([Script.ContextTargetSchema,Script.RealmTargetSchema]));
 }
 export namespace Script {
-  export const AddPreloadScriptSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('script.addPreloadScript'),
-      params: Script.AddPreloadScriptParametersSchema,
-    }),
-  );
+export const 
+AddPreloadScriptSchema = z.lazy(() => z.object({
+"method":z.literal("script.addPreloadScript"),"params":Script.AddPreloadScriptParametersSchema}));
 }
 export namespace Script {
-  export const AddPreloadScriptParametersSchema = z.lazy(() =>
-    z.object({
-      functionDeclaration: z.string(),
-      arguments: z.array(Script.ChannelValueSchema).optional(),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-      sandbox: z.string().optional(),
-    }),
-  );
+export const AddPreloadScriptParametersSchema = z.lazy(() => z.object({
+"functionDeclaration":z.string(),"arguments":z.array(Script.ChannelValueSchema).optional(),"contexts":z.array(BrowsingContext.BrowsingContextSchema).min(1).optional(),"userContexts":z.array(Browser.UserContextSchema).min(1).optional(),"sandbox":z.string().optional()}));
 }
 export namespace Script {
-  export const AddPreloadScriptResultSchema = z.lazy(() =>
-    z.object({
-      script: Script.PreloadScriptSchema,
-    }),
-  );
+export const AddPreloadScriptResultSchema = z.lazy(() => z.object({
+"script":Script.PreloadScriptSchema}));
 }
 export namespace Script {
-  export const DisownSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('script.disown'),
-      params: Script.DisownParametersSchema,
-    }),
-  );
+export const 
+DisownSchema = z.lazy(() => z.object({
+"method":z.literal("script.disown"),"params":Script.DisownParametersSchema}));
 }
 export namespace Script {
-  export const DisownParametersSchema = z.lazy(() =>
-    z.object({
-      handles: z.array(Script.HandleSchema),
-      target: Script.TargetSchema,
-    }),
-  );
+export const DisownParametersSchema = z.lazy(() => z.object({
+"handles":z.array(Script.HandleSchema),"target":Script.TargetSchema}));
 }
 export namespace Script {
   export const CallFunctionSchema = z.lazy(() =>
@@ -2786,62 +1704,35 @@ export namespace Script {
   );
 }
 export namespace Script {
-  export const EvaluateSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('script.evaluate'),
-      params: Script.EvaluateParametersSchema,
-    }),
-  );
+export const 
+EvaluateSchema = z.lazy(() => z.object({
+"method":z.literal("script.evaluate"),"params":Script.EvaluateParametersSchema}));
 }
 export namespace Script {
-  export const EvaluateParametersSchema = z.lazy(() =>
-    z.object({
-      expression: z.string(),
-      target: Script.TargetSchema,
-      awaitPromise: z.boolean(),
-      resultOwnership: Script.ResultOwnershipSchema.optional(),
-      serializationOptions: Script.SerializationOptionsSchema.optional(),
-      userActivation: z.boolean().default(false).optional(),
-    }),
-  );
+export const EvaluateParametersSchema = z.lazy(() => z.object({
+"expression":z.string(),"target":Script.TargetSchema,"awaitPromise":z.boolean(),"resultOwnership":Script.ResultOwnershipSchema.optional(),"serializationOptions":Script.SerializationOptionsSchema.optional(),"userActivation":z.boolean().default(false).optional()}));
 }
 export namespace Script {
-  export const GetRealmsSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('script.getRealms'),
-      params: Script.GetRealmsParametersSchema,
-    }),
-  );
+export const 
+GetRealmsSchema = z.lazy(() => z.object({
+"method":z.literal("script.getRealms"),"params":Script.GetRealmsParametersSchema}));
 }
 export namespace Script {
-  export const GetRealmsParametersSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema.optional(),
-      type: Script.RealmTypeSchema.optional(),
-    }),
-  );
+export const GetRealmsParametersSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema.optional(),"type":Script.RealmTypeSchema.optional()}));
 }
 export namespace Script {
-  export const GetRealmsResultSchema = z.lazy(() =>
-    z.object({
-      realms: z.array(Script.RealmInfoSchema),
-    }),
-  );
+export const GetRealmsResultSchema = z.lazy(() => z.object({
+"realms":z.array(Script.RealmInfoSchema)}));
 }
 export namespace Script {
-  export const RemovePreloadScriptSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('script.removePreloadScript'),
-      params: Script.RemovePreloadScriptParametersSchema,
-    }),
-  );
+export const 
+RemovePreloadScriptSchema = z.lazy(() => z.object({
+"method":z.literal("script.removePreloadScript"),"params":Script.RemovePreloadScriptParametersSchema}));
 }
 export namespace Script {
-  export const RemovePreloadScriptParametersSchema = z.lazy(() =>
-    z.object({
-      script: Script.PreloadScriptSchema,
-    }),
-  );
+export const RemovePreloadScriptParametersSchema = z.lazy(() => z.object({
+"script":Script.PreloadScriptSchema}));
 }
 export namespace Script {
   export const MessageSchema = z.lazy(() =>
@@ -2869,228 +1760,117 @@ export namespace Script {
   );
 }
 export namespace Script {
-  export const RealmDestroyedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('script.realmDestroyed'),
-      params: Script.RealmDestroyedParametersSchema,
-    }),
-  );
+export const 
+RealmDestroyedSchema = z.lazy(() => z.object({
+"method":z.literal("script.realmDestroyed"),"params":Script.RealmDestroyedParametersSchema}));
 }
 export namespace Script {
-  export const RealmDestroyedParametersSchema = z.lazy(() =>
-    z.object({
-      realm: Script.RealmSchema,
-    }),
-  );
+export const RealmDestroyedParametersSchema = z.lazy(() => z.object({
+"realm":Script.RealmSchema}));
 }
-export const StorageCommandSchema = z.lazy(() =>
-  z.union([
-    Storage.DeleteCookiesSchema,
-    Storage.GetCookiesSchema,
-    Storage.SetCookieSchema,
-  ]),
+export const 
+StorageCommandSchema = z.lazy(() => z.union([Storage.DeleteCookiesSchema,Storage.GetCookiesSchema,Storage.SetCookieSchema]));
+export const StorageResultSchema = z.lazy(() => z.union([Storage.DeleteCookiesResultSchema,Storage.GetCookiesResultSchema,Storage.SetCookieResultSchema]));
+export namespace Storage {
+export const PartitionKeySchema = z.lazy(() => z.object({
+"userContext":z.string().optional(),"sourceOrigin":z.string().optional()}).and(
+ExtensibleSchema)
 );
-export const StorageResultSchema = z.lazy(() =>
-  z.union([
-    Storage.DeleteCookiesResultSchema,
-    Storage.GetCookiesResultSchema,
-    Storage.SetCookieResultSchema,
-  ]),
+}
+export namespace Storage {
+export const 
+GetCookiesSchema = z.lazy(() => z.object({
+"method":z.literal("storage.getCookies"),"params":Storage.GetCookiesParametersSchema}));
+}
+export namespace Storage {
+export const CookieFilterSchema = z.lazy(() => z.object({
+"name":z.string().optional(),"value":Network.BytesValueSchema.optional(),"domain":z.string().optional(),"path":z.string().optional(),"size":JsUintSchema.optional(),"httpOnly":z.boolean().optional(),"secure":z.boolean().optional(),"sameSite":Network.SameSiteSchema.optional(),"expiry":JsUintSchema.optional()}).and(
+ExtensibleSchema)
 );
-export namespace Storage {
-  export const PartitionKeySchema = z.lazy(() =>
-    z
-      .object({
-        userContext: z.string().optional(),
-        sourceOrigin: z.string().optional(),
-      })
-      .and(ExtensibleSchema),
-  );
 }
 export namespace Storage {
-  export const GetCookiesSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('storage.getCookies'),
-      params: Storage.GetCookiesParametersSchema,
-    }),
-  );
+export const BrowsingContextPartitionDescriptorSchema = z.lazy(() => z.object({
+"type":z.literal("context"),"context":BrowsingContext.BrowsingContextSchema}));
 }
 export namespace Storage {
-  export const CookieFilterSchema = z.lazy(() =>
-    z
-      .object({
-        name: z.string().optional(),
-        value: Network.BytesValueSchema.optional(),
-        domain: z.string().optional(),
-        path: z.string().optional(),
-        size: JsUintSchema.optional(),
-        httpOnly: z.boolean().optional(),
-        secure: z.boolean().optional(),
-        sameSite: Network.SameSiteSchema.optional(),
-        expiry: JsUintSchema.optional(),
-      })
-      .and(ExtensibleSchema),
-  );
+export const StorageKeyPartitionDescriptorSchema = z.lazy(() => z.object({
+"type":z.literal("storageKey"),"userContext":z.string().optional(),"sourceOrigin":z.string().optional()}).and(
+ExtensibleSchema)
+);
 }
 export namespace Storage {
-  export const BrowsingContextPartitionDescriptorSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('context'),
-      context: BrowsingContext.BrowsingContextSchema,
-    }),
-  );
+export const PartitionDescriptorSchema = z.lazy(() => z.union([Storage.BrowsingContextPartitionDescriptorSchema,Storage.StorageKeyPartitionDescriptorSchema]));
 }
 export namespace Storage {
-  export const StorageKeyPartitionDescriptorSchema = z.lazy(() =>
-    z
-      .object({
-        type: z.literal('storageKey'),
-        userContext: z.string().optional(),
-        sourceOrigin: z.string().optional(),
-      })
-      .and(ExtensibleSchema),
-  );
+export const GetCookiesParametersSchema = z.lazy(() => z.object({
+"filter":Storage.CookieFilterSchema.optional(),"partition":Storage.PartitionDescriptorSchema.optional()}));
 }
 export namespace Storage {
-  export const PartitionDescriptorSchema = z.lazy(() =>
-    z.union([
-      Storage.BrowsingContextPartitionDescriptorSchema,
-      Storage.StorageKeyPartitionDescriptorSchema,
-    ]),
-  );
+export const GetCookiesResultSchema = z.lazy(() => z.object({
+"cookies":z.array(Network.CookieSchema),"partitionKey":Storage.PartitionKeySchema}));
 }
 export namespace Storage {
-  export const GetCookiesParametersSchema = z.lazy(() =>
-    z.object({
-      filter: Storage.CookieFilterSchema.optional(),
-      partition: Storage.PartitionDescriptorSchema.optional(),
-    }),
-  );
+export const 
+SetCookieSchema = z.lazy(() => z.object({
+"method":z.literal("storage.setCookie"),"params":Storage.SetCookieParametersSchema}));
 }
 export namespace Storage {
-  export const GetCookiesResultSchema = z.lazy(() =>
-    z.object({
-      cookies: z.array(Network.CookieSchema),
-      partitionKey: Storage.PartitionKeySchema,
-    }),
-  );
+export const PartialCookieSchema = z.lazy(() => z.object({
+"name":z.string(),"value":Network.BytesValueSchema,"domain":z.string(),"path":z.string().optional(),"httpOnly":z.boolean().optional(),"secure":z.boolean().optional(),"sameSite":Network.SameSiteSchema.optional(),"expiry":JsUintSchema.optional()}).and(
+ExtensibleSchema)
+);
 }
 export namespace Storage {
-  export const SetCookieSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('storage.setCookie'),
-      params: Storage.SetCookieParametersSchema,
-    }),
-  );
+export const SetCookieParametersSchema = z.lazy(() => z.object({
+"cookie":Storage.PartialCookieSchema,"partition":Storage.PartitionDescriptorSchema.optional()}));
 }
 export namespace Storage {
-  export const PartialCookieSchema = z.lazy(() =>
-    z
-      .object({
-        name: z.string(),
-        value: Network.BytesValueSchema,
-        domain: z.string(),
-        path: z.string().optional(),
-        httpOnly: z.boolean().optional(),
-        secure: z.boolean().optional(),
-        sameSite: Network.SameSiteSchema.optional(),
-        expiry: JsUintSchema.optional(),
-      })
-      .and(ExtensibleSchema),
-  );
+export const SetCookieResultSchema = z.lazy(() => z.object({
+"partitionKey":Storage.PartitionKeySchema}));
 }
 export namespace Storage {
-  export const SetCookieParametersSchema = z.lazy(() =>
-    z.object({
-      cookie: Storage.PartialCookieSchema,
-      partition: Storage.PartitionDescriptorSchema.optional(),
-    }),
-  );
+export const 
+DeleteCookiesSchema = z.lazy(() => z.object({
+"method":z.literal("storage.deleteCookies"),"params":Storage.DeleteCookiesParametersSchema}));
 }
 export namespace Storage {
-  export const SetCookieResultSchema = z.lazy(() =>
-    z.object({
-      partitionKey: Storage.PartitionKeySchema,
-    }),
-  );
+export const DeleteCookiesParametersSchema = z.lazy(() => z.object({
+"filter":Storage.CookieFilterSchema.optional(),"partition":Storage.PartitionDescriptorSchema.optional()}));
 }
 export namespace Storage {
-  export const DeleteCookiesSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('storage.deleteCookies'),
-      params: Storage.DeleteCookiesParametersSchema,
-    }),
-  );
+export const DeleteCookiesResultSchema = z.lazy(() => z.object({
+"partitionKey":Storage.PartitionKeySchema}));
 }
-export namespace Storage {
-  export const DeleteCookiesParametersSchema = z.lazy(() =>
-    z.object({
-      filter: Storage.CookieFilterSchema.optional(),
-      partition: Storage.PartitionDescriptorSchema.optional(),
-    }),
-  );
-}
-export namespace Storage {
-  export const DeleteCookiesResultSchema = z.lazy(() =>
-    z.object({
-      partitionKey: Storage.PartitionKeySchema,
-    }),
-  );
-}
-export const LogEventSchema = z.lazy(() => Log.EntryAddedSchema);
+export const 
+LogEventSchema = z.lazy(() => Log.EntryAddedSchema);
 export namespace Log {
-  export const LevelSchema = z.lazy(() =>
-    z.enum(['debug', 'info', 'warn', 'error']),
-  );
+export const LevelSchema = z.lazy(() => z.enum(["debug","info","warn","error",]));
 }
 export namespace Log {
-  export const EntrySchema = z.lazy(() =>
-    z.union([
-      Log.GenericLogEntrySchema,
-      Log.ConsoleLogEntrySchema,
-      Log.JavascriptLogEntrySchema,
-    ]),
-  );
+export const EntrySchema = z.lazy(() => z.union([Log.GenericLogEntrySchema,Log.ConsoleLogEntrySchema,Log.JavascriptLogEntrySchema]));
 }
 export namespace Log {
-  export const BaseLogEntrySchema = z.lazy(() =>
-    z.object({
-      level: Log.LevelSchema,
-      source: Script.SourceSchema,
-      text: z.union([z.string(), z.null()]),
-      timestamp: JsUintSchema,
-      stackTrace: Script.StackTraceSchema.optional(),
-    }),
-  );
+export const 
+BaseLogEntrySchema = z.lazy(() => z.object({
+"level":Log.LevelSchema,"source":Script.SourceSchema,"text":z.union([z.string(),z.null()]),"timestamp":JsUintSchema,"stackTrace":Script.StackTraceSchema.optional()}));
 }
 export namespace Log {
-  export const GenericLogEntrySchema = z.lazy(() =>
-    Log.BaseLogEntrySchema.and(
-      z.object({
-        type: z.string(),
-      }),
-    ),
-  );
+export const GenericLogEntrySchema = z.lazy(() => Log.BaseLogEntrySchema.and(
+z.object({
+"type":z.string()}))
+);
 }
 export namespace Log {
-  export const ConsoleLogEntrySchema = z.lazy(() =>
-    Log.BaseLogEntrySchema.and(
-      z.object({
-        type: z.literal('console'),
-        method: z.string(),
-        args: z.array(Script.RemoteValueSchema),
-      }),
-    ),
-  );
+export const ConsoleLogEntrySchema = z.lazy(() => Log.BaseLogEntrySchema.and(
+z.object({
+"type":z.literal("console"),"method":z.string(),"args":z.array(Script.RemoteValueSchema)}))
+);
 }
 export namespace Log {
-  export const JavascriptLogEntrySchema = z.lazy(() =>
-    Log.BaseLogEntrySchema.and(
-      z.object({
-        type: z.literal('javascript'),
-      }),
-    ),
-  );
+export const JavascriptLogEntrySchema = z.lazy(() => Log.BaseLogEntrySchema.and(
+z.object({
+"type":z.literal("javascript")}))
+);
 }
 export namespace Log {
   export const EntryAddedSchema = z.lazy(() =>
@@ -3173,19 +1953,11 @@ export namespace Input {
   );
 }
 export namespace Input {
-  export const PointerSourceActionsSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('pointer'),
-      id: z.string(),
-      parameters: Input.PointerParametersSchema.optional(),
-      actions: z.array(Input.PointerSourceActionSchema),
-    }),
-  );
+export const PointerSourceActionsSchema = z.lazy(() => z.object({
+"type":z.literal("pointer"),"id":z.string(),"parameters":Input.PointerParametersSchema.optional(),"actions":z.array(Input.PointerSourceActionSchema)}));
 }
 export namespace Input {
-  export const PointerTypeSchema = z.lazy(() =>
-    z.enum(['mouse', 'pen', 'touch']),
-  );
+export const PointerTypeSchema = z.lazy(() => z.enum(["mouse","pen","touch",]));
 }
 export namespace Input {
   export const PointerParametersSchema = z.lazy(() =>
@@ -3358,30 +2130,19 @@ export namespace Input {
   );
 }
 export namespace Input {
-  export const FileDialogOpenedSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('input.fileDialogOpened'),
-      params: Input.FileDialogInfoSchema,
-    }),
-  );
+export const 
+FileDialogOpenedSchema = z.lazy(() => z.object({
+"method":z.literal("input.fileDialogOpened"),"params":Input.FileDialogInfoSchema}));
 }
 export namespace Input {
-  export const FileDialogInfoSchema = z.lazy(() =>
-    z.object({
-      context: BrowsingContext.BrowsingContextSchema,
-      element: Script.SharedReferenceSchema.optional(),
-      multiple: z.boolean(),
-    }),
-  );
+export const FileDialogInfoSchema = z.lazy(() => z.object({
+"context":BrowsingContext.BrowsingContextSchema,"element":Script.SharedReferenceSchema.optional(),"multiple":z.boolean()}));
 }
-export const WebExtensionCommandSchema = z.lazy(() =>
-  z.union([WebExtension.InstallSchema, WebExtension.UninstallSchema]),
-);
-export const WebExtensionResultSchema = z.lazy(
-  () => WebExtension.InstallResultSchema,
-);
+export const 
+WebExtensionCommandSchema = z.lazy(() => z.union([WebExtension.InstallSchema,WebExtension.UninstallSchema]));
+export const WebExtensionResultSchema = z.lazy(() => WebExtension.InstallResultSchema);
 export namespace WebExtension {
-  export const ExtensionSchema = z.lazy(() => z.string());
+export const ExtensionSchema = z.lazy(() => z.string());
 }
 export namespace WebExtension {
   export const InstallSchema = z.lazy(() =>
@@ -3399,57 +2160,30 @@ export namespace WebExtension {
   );
 }
 export namespace WebExtension {
-  export const ExtensionDataSchema = z.lazy(() =>
-    z.union([
-      WebExtension.ExtensionArchivePathSchema,
-      WebExtension.ExtensionBase64EncodedSchema,
-      WebExtension.ExtensionPathSchema,
-    ]),
-  );
+export const ExtensionDataSchema = z.lazy(() => z.union([WebExtension.ExtensionArchivePathSchema,WebExtension.ExtensionBase64EncodedSchema,WebExtension.ExtensionPathSchema]));
 }
 export namespace WebExtension {
-  export const ExtensionPathSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('path'),
-      path: z.string(),
-    }),
-  );
+export const ExtensionPathSchema = z.lazy(() => z.object({
+"type":z.literal("path"),"path":z.string()}));
 }
 export namespace WebExtension {
-  export const ExtensionArchivePathSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('archivePath'),
-      path: z.string(),
-    }),
-  );
+export const ExtensionArchivePathSchema = z.lazy(() => z.object({
+"type":z.literal("archivePath"),"path":z.string()}));
 }
 export namespace WebExtension {
-  export const ExtensionBase64EncodedSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('base64'),
-      value: z.string(),
-    }),
-  );
+export const ExtensionBase64EncodedSchema = z.lazy(() => z.object({
+"type":z.literal("base64"),"value":z.string()}));
 }
 export namespace WebExtension {
-  export const InstallResultSchema = z.lazy(() =>
-    z.object({
-      extension: WebExtension.ExtensionSchema,
-    }),
-  );
+export const InstallResultSchema = z.lazy(() => z.object({
+"extension":WebExtension.ExtensionSchema}));
 }
 export namespace WebExtension {
-  export const UninstallSchema = z.lazy(() =>
-    z.object({
-      method: z.literal('webExtension.uninstall'),
-      params: WebExtension.UninstallParametersSchema,
-    }),
-  );
+export const 
+UninstallSchema = z.lazy(() => z.object({
+"method":z.literal("webExtension.uninstall"),"params":WebExtension.UninstallParametersSchema}));
 }
 export namespace WebExtension {
-  export const UninstallParametersSchema = z.lazy(() =>
-    z.object({
-      extension: WebExtension.ExtensionSchema,
-    }),
-  );
+export const UninstallParametersSchema = z.lazy(() => z.object({
+"extension":WebExtension.ExtensionSchema}));
 }

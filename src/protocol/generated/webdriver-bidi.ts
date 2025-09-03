@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2024 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -75,42 +76,42 @@ export type Extensible = {
 /**
  * Must be between `-9007199254740991` and `9007199254740991`, inclusive.
  */
-export type JsInt = number;
+export type JsInt = (number);
 
 /**
  * Must be between `0` and `9007199254740991`, inclusive.
  */
-export type JsUint = number;
-export const enum ErrorCode {
-  InvalidArgument = 'invalid argument',
-  InvalidSelector = 'invalid selector',
-  InvalidSessionId = 'invalid session id',
-  InvalidWebExtension = 'invalid web extension',
-  MoveTargetOutOfBounds = 'move target out of bounds',
-  NoSuchAlert = 'no such alert',
-  NoSuchNetworkCollector = 'no such network collector',
-  NoSuchElement = 'no such element',
-  NoSuchFrame = 'no such frame',
-  NoSuchHandle = 'no such handle',
-  NoSuchHistoryEntry = 'no such history entry',
-  NoSuchIntercept = 'no such intercept',
-  NoSuchNetworkData = 'no such network data',
-  NoSuchNode = 'no such node',
-  NoSuchRequest = 'no such request',
-  NoSuchScript = 'no such script',
-  NoSuchStoragePartition = 'no such storage partition',
-  NoSuchUserContext = 'no such user context',
-  NoSuchWebExtension = 'no such web extension',
-  SessionNotCreated = 'session not created',
-  UnableToCaptureScreen = 'unable to capture screen',
-  UnableToCloseBrowser = 'unable to close browser',
-  UnableToSetCookie = 'unable to set cookie',
-  UnableToSetFileInput = 'unable to set file input',
-  UnavailableNetworkData = 'unavailable network data',
-  UnderspecifiedStoragePartition = 'underspecified storage partition',
-  UnknownCommand = 'unknown command',
-  UnknownError = 'unknown error',
-  UnsupportedOperation = 'unsupported operation',
+export type JsUint = (number);
+export const enum ErrorCode {InvalidArgument = "invalid argument",
+InvalidSelector = "invalid selector",
+InvalidElementState = "invalid element state",
+InvalidSessionId = "invalid session id",
+InvalidWebExtension = "invalid web extension",
+MoveTargetOutOfBounds = "move target out of bounds",
+NoSuchAlert = "no such alert",
+NoSuchNetworkCollector = "no such network collector",
+NoSuchElement = "no such element",
+NoSuchFrame = "no such frame",
+NoSuchHandle = "no such handle",
+NoSuchHistoryEntry = "no such history entry",
+NoSuchIntercept = "no such intercept",
+NoSuchNetworkData = "no such network data",
+NoSuchNode = "no such node",
+NoSuchRequest = "no such request",
+NoSuchScript = "no such script",
+NoSuchStoragePartition = "no such storage partition",
+NoSuchUserContext = "no such user context",
+NoSuchWebExtension = "no such web extension",
+SessionNotCreated = "session not created",
+UnableToCaptureScreen = "unable to capture screen",
+UnableToCloseBrowser = "unable to close browser",
+UnableToSetCookie = "unable to set cookie",
+UnableToSetFileInput = "unable to set file input",
+UnavailableNetworkData = "unavailable network data",
+UnderspecifiedStoragePartition = "underspecified storage partition",
+UnknownCommand = "unknown command",
+UnknownError = "unknown error",
+UnsupportedOperation = "unsupported operation",
 }
 export type SessionCommand =
   | Session.End
@@ -123,20 +124,13 @@ export type SessionResult =
   | Session.StatusResult
   | Session.SubscribeResult;
 export namespace Session {
-  export type CapabilitiesRequest = {
-    alwaysMatch?: Session.CapabilityRequest;
-    firstMatch?: [...Session.CapabilityRequest[]];
-  };
+export type CapabilitiesRequest = (({
+"alwaysMatch"?:(Session.CapabilityRequest),"firstMatch"?:([
+...((Session.CapabilityRequest)[])])}));
 }
 export namespace Session {
-  export type CapabilityRequest = {
-    acceptInsecureCerts?: boolean;
-    browserName?: string;
-    browserVersion?: string;
-    platformName?: string;
-    proxy?: Session.ProxyConfiguration;
-    unhandledPromptBehavior?: Session.UserPromptHandler;
-  } & Extensible;
+export type CapabilityRequest = (({
+"acceptInsecureCerts"?:(boolean),"browserName"?:(string),"browserVersion"?:(string),"platformName"?:(string),"proxy"?:(Session.ProxyConfiguration),"unhandledPromptBehavior"?:(Session.UserPromptHandler)}&Extensible));
 }
 export namespace Session {
   export type ProxyConfiguration =
@@ -175,238 +169,156 @@ export namespace Session {
   };
 }
 export namespace Session {
-  export type PacProxyConfiguration = {
-    proxyType: 'pac';
-    proxyAutoconfigUrl: string;
-  } & Extensible;
+export type PacProxyConfiguration = ({
+"proxyType":("pac"),"proxyAutoconfigUrl":(string)}&Extensible);
 }
 export namespace Session {
-  export type SystemProxyConfiguration = {
-    proxyType: 'system';
-  } & Extensible;
+export type SystemProxyConfiguration = ({
+"proxyType":("system")}&Extensible);
 }
 export namespace Session {
-  export type UserPromptHandler = {
-    alert?: Session.UserPromptHandlerType;
-    beforeUnload?: Session.UserPromptHandlerType;
-    confirm?: Session.UserPromptHandlerType;
-    default?: Session.UserPromptHandlerType;
-    file?: Session.UserPromptHandlerType;
-    prompt?: Session.UserPromptHandlerType;
-  };
+export type UserPromptHandler = (({
+"alert"?:(Session.UserPromptHandlerType),"beforeUnload"?:(Session.UserPromptHandlerType),"confirm"?:(Session.UserPromptHandlerType),"default"?:(Session.UserPromptHandlerType),"file"?:(Session.UserPromptHandlerType),"prompt"?:(Session.UserPromptHandlerType)}));
 }
 export namespace Session {
-  export const enum UserPromptHandlerType {
-    Accept = 'accept',
-    Dismiss = 'dismiss',
-    Ignore = 'ignore',
-  }
+export const enum UserPromptHandlerType {Accept = "accept",
+Dismiss = "dismiss",
+Ignore = "ignore",
+}
 }
 export namespace Session {
-  export type Subscription = string;
+export type Subscription = (string);
 }
 export namespace Session {
-  export type SubscriptionRequest = {
-    events: [string, ...string[]];
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SubscriptionRequest = (({
+"events":([
+(string),...(string)[]]),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace Session {
-  export type UnsubscribeByIdRequest = {
-    subscriptions: [Session.Subscription, ...Session.Subscription[]];
-  };
+export type UnsubscribeByIdRequest = (({
+"subscriptions":([
+(Session.Subscription),...(Session.Subscription)[]])}));
 }
 export namespace Session {
-  export type UnsubscribeByAttributesRequest = {
-    events: [string, ...string[]];
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-  };
+export type UnsubscribeByAttributesRequest = (({
+"events":([
+(string),...(string)[]]),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]])}));
 }
 export namespace Session {
-  export type Status = {
-    method: 'session.status';
-    params: EmptyParams;
-  };
+export type Status = ({
+"method":("session.status"),"params":(EmptyParams)});
 }
 export namespace Session {
-  export type StatusResult = {
-    ready: boolean;
-    message: string;
-  };
+export type StatusResult = (({
+"ready":(boolean),"message":(string)}));
 }
 export namespace Session {
-  export type New = {
-    method: 'session.new';
-    params: Session.NewParameters;
-  };
+export type New = ({
+"method":("session.new"),"params":(Session.NewParameters)});
 }
 export namespace Session {
-  export type NewParameters = {
-    capabilities: Session.CapabilitiesRequest;
-  };
+export type NewParameters = (({
+"capabilities":(Session.CapabilitiesRequest)}));
 }
 export namespace Session {
-  export type NewResult = {
-    sessionId: string;
-    capabilities: {
-      acceptInsecureCerts: boolean;
-      browserName: string;
-      browserVersion: string;
-      platformName: string;
-      setWindowRect: boolean;
-      userAgent: string;
-      proxy?: Session.ProxyConfiguration;
-      unhandledPromptBehavior?: Session.UserPromptHandler;
-      webSocketUrl?: string;
-    } & Extensible;
-  };
+export type NewResult = (({
+"sessionId":(string),"capabilities":(({
+"acceptInsecureCerts":(boolean),"browserName":(string),"browserVersion":(string),"platformName":(string),"setWindowRect":(boolean),"userAgent":(string),"proxy"?:(Session.ProxyConfiguration),"unhandledPromptBehavior"?:(Session.UserPromptHandler),"webSocketUrl"?:(string)}&Extensible))}));
 }
 export namespace Session {
-  export type End = {
-    method: 'session.end';
-    params: EmptyParams;
-  };
+export type End = ({
+"method":("session.end"),"params":(EmptyParams)});
 }
 export namespace Session {
-  export type Subscribe = {
-    method: 'session.subscribe';
-    params: Session.SubscriptionRequest;
-  };
+export type Subscribe = ({
+"method":("session.subscribe"),"params":(Session.SubscriptionRequest)});
 }
 export namespace Session {
-  export type SubscribeResult = {
-    subscription: Session.Subscription;
-  };
+export type SubscribeResult = (({
+"subscription":(Session.Subscription)}));
 }
 export namespace Session {
-  export type Unsubscribe = {
-    method: 'session.unsubscribe';
-    params: Session.UnsubscribeParameters;
-  };
+export type Unsubscribe = ({
+"method":("session.unsubscribe"),"params":(Session.UnsubscribeParameters)});
 }
 export namespace Session {
-  export type UnsubscribeParameters =
-    | Session.UnsubscribeByAttributesRequest
-    | Session.UnsubscribeByIdRequest;
+export type UnsubscribeParameters = (Session.UnsubscribeByAttributesRequest| Session.UnsubscribeByIdRequest);
 }
-export type BrowserCommand =
-  | Browser.Close
-  | Browser.CreateUserContext
-  | Browser.GetClientWindows
-  | Browser.GetUserContexts
-  | Browser.RemoveUserContext
-  | Browser.SetClientWindowState;
-export type BrowserResult =
-  | Browser.CreateUserContextResult
-  | Browser.GetUserContextsResult;
+export type BrowserCommand = (Browser.Close| Browser.CreateUserContext| Browser.GetClientWindows| Browser.GetUserContexts| Browser.RemoveUserContext| Browser.SetClientWindowState);
+export type BrowserResult = ((Browser.CreateUserContextResult| Browser.GetUserContextsResult));
 export namespace Browser {
-  export type ClientWindow = string;
+export type ClientWindow = (string);
 }
 export namespace Browser {
-  export type ClientWindowInfo = {
-    active: boolean;
-    clientWindow: Browser.ClientWindow;
-    height: JsUint;
-    state: 'fullscreen' | 'maximized' | 'minimized' | 'normal';
-    width: JsUint;
-    x: JsInt;
-    y: JsInt;
-  };
+export type ClientWindowInfo = (({
+"active":(boolean),"clientWindow":(Browser.ClientWindow),"height":(JsUint),"state":("fullscreen"| "maximized"| "minimized"| "normal"),"width":(JsUint),"x":(JsInt),"y":(JsInt)}));
 }
 export namespace Browser {
-  export type UserContext = string;
+export type UserContext = (string);
 }
 export namespace Browser {
-  export type UserContextInfo = {
-    userContext: Browser.UserContext;
-  };
+export type UserContextInfo = (({
+"userContext":(Browser.UserContext)}));
 }
 export namespace Browser {
-  export type Close = {
-    method: 'browser.close';
-    params: EmptyParams;
-  };
+export type Close = ({
+"method":("browser.close"),"params":(EmptyParams)});
 }
 export namespace Browser {
-  export type CreateUserContext = {
-    method: 'browser.createUserContext';
-    params: Browser.CreateUserContextParameters;
-  };
+export type CreateUserContext = ({
+"method":("browser.createUserContext"),"params":(Browser.CreateUserContextParameters)});
 }
 export namespace Browser {
-  export type CreateUserContextParameters = {
-    acceptInsecureCerts?: boolean;
-    proxy?: Session.ProxyConfiguration;
-    unhandledPromptBehavior?: Session.UserPromptHandler;
-  };
+export type CreateUserContextParameters = (({
+"acceptInsecureCerts"?:(boolean),"proxy"?:(Session.ProxyConfiguration),"unhandledPromptBehavior"?:(Session.UserPromptHandler)}));
 }
 export namespace Browser {
-  export type CreateUserContextResult = Browser.UserContextInfo;
+export type CreateUserContextResult = (Browser.UserContextInfo);
 }
 export namespace Browser {
-  export type GetClientWindows = {
-    method: 'browser.getClientWindows';
-    params: EmptyParams;
-  };
+export type GetClientWindows = ({
+"method":("browser.getClientWindows"),"params":(EmptyParams)});
 }
 export namespace Browser {
-  export type GetClientWindowsResult = {
-    clientWindows: [...Browser.ClientWindowInfo[]];
-  };
+export type GetClientWindowsResult = (({
+"clientWindows":([
+...((Browser.ClientWindowInfo)[])])}));
 }
 export namespace Browser {
-  export type GetUserContexts = {
-    method: 'browser.getUserContexts';
-    params: EmptyParams;
-  };
+export type GetUserContexts = ({
+"method":("browser.getUserContexts"),"params":(EmptyParams)});
 }
 export namespace Browser {
-  export type GetUserContextsResult = {
-    userContexts: [Browser.UserContextInfo, ...Browser.UserContextInfo[]];
-  };
+export type GetUserContextsResult = (({
+"userContexts":([
+(Browser.UserContextInfo),...(Browser.UserContextInfo)[]])}));
 }
 export namespace Browser {
-  export type RemoveUserContext = {
-    method: 'browser.removeUserContext';
-    params: Browser.RemoveUserContextParameters;
-  };
+export type RemoveUserContext = ({
+"method":("browser.removeUserContext"),"params":(Browser.RemoveUserContextParameters)});
 }
 export namespace Browser {
-  export type RemoveUserContextParameters = {
-    userContext: Browser.UserContext;
-  };
+export type RemoveUserContextParameters = (({
+"userContext":(Browser.UserContext)}));
 }
 export namespace Browser {
-  export type SetClientWindowState = {
-    method: 'browser.setClientWindowState';
-    params: Browser.SetClientWindowStateParameters;
-  };
+export type SetClientWindowState = ({
+"method":("browser.setClientWindowState"),"params":(Browser.SetClientWindowStateParameters)});
 }
 export namespace Browser {
-  export type SetClientWindowStateParameters = {
-    clientWindow: Browser.ClientWindow;
-  } & (Browser.ClientWindowNamedState | Browser.ClientWindowRectState);
+export type SetClientWindowStateParameters = (({
+"clientWindow":(Browser.ClientWindow)}&(Browser.ClientWindowNamedState| Browser.ClientWindowRectState)));
 }
 export namespace Browser {
-  export type ClientWindowNamedState = {
-    state: 'fullscreen' | 'maximized' | 'minimized';
-  };
+export type ClientWindowNamedState = ({
+"state":("fullscreen"| "maximized"| "minimized")});
 }
 export namespace Browser {
-  export type ClientWindowRectState = {
-    state: 'normal';
-    width?: JsUint;
-    height?: JsUint;
-    x?: JsInt;
-    y?: JsInt;
-  };
+export type ClientWindowRectState = ({
+"state":("normal"),"width"?:(JsUint),"height"?:(JsUint),"x"?:(JsInt),"y"?:(JsInt)});
 }
 export type BrowsingContextCommand =
   | BrowsingContext.Activate
@@ -445,102 +357,67 @@ export type BrowsingContextEvent =
   | BrowsingContext.UserPromptClosed
   | BrowsingContext.UserPromptOpened;
 export namespace BrowsingContext {
-  export type BrowsingContext = string;
+export type BrowsingContext = (string);
 }
 export namespace BrowsingContext {
-  export type InfoList = [...BrowsingContext.Info[]];
+export type InfoList = ([
+...((BrowsingContext.Info)[])]);
 }
 export namespace BrowsingContext {
-  export type Info = {
-    children: BrowsingContext.InfoList | null;
-    clientWindow: Browser.ClientWindow;
-    context: BrowsingContext.BrowsingContext;
-    originalOpener: BrowsingContext.BrowsingContext | null;
-    url: string;
-    userContext: Browser.UserContext;
-    parent?: BrowsingContext.BrowsingContext | null;
-  };
+export type Info = (({
+"children":(BrowsingContext.InfoList| null),"clientWindow":(Browser.ClientWindow),"context":(BrowsingContext.BrowsingContext),"originalOpener":(BrowsingContext.BrowsingContext| null),"url":(string),"userContext":(Browser.UserContext),"parent"?:(BrowsingContext.BrowsingContext| null)}));
 }
 export namespace BrowsingContext {
-  export type Locator =
-    | BrowsingContext.AccessibilityLocator
-    | BrowsingContext.CssLocator
-    | BrowsingContext.ContextLocator
-    | BrowsingContext.InnerTextLocator
-    | BrowsingContext.XPathLocator;
+export type Locator = ((BrowsingContext.AccessibilityLocator| BrowsingContext.CssLocator| BrowsingContext.ContextLocator| BrowsingContext.InnerTextLocator| BrowsingContext.XPathLocator));
 }
 export namespace BrowsingContext {
-  export type AccessibilityLocator = {
-    type: 'accessibility';
-    value: {
-      name?: string;
-      role?: string;
-    };
-  };
+export type AccessibilityLocator = (({
+"type":("accessibility"),"value":(({
+"name"?:(string),"role"?:(string)}))}));
 }
 export namespace BrowsingContext {
-  export type CssLocator = {
-    type: 'css';
-    value: string;
-  };
+export type CssLocator = (({
+"type":("css"),"value":(string)}));
 }
 export namespace BrowsingContext {
-  export type ContextLocator = {
-    type: 'context';
-    value: {
-      context: BrowsingContext.BrowsingContext;
-    };
-  };
+export type ContextLocator = (({
+"type":("context"),"value":(({
+"context":(BrowsingContext.BrowsingContext)}))}));
 }
 export namespace BrowsingContext {
-  export type InnerTextLocator = {
-    type: 'innerText';
-    value: string;
-    ignoreCase?: boolean;
-    matchType?: 'full' | 'partial';
-    maxDepth?: JsUint;
-  };
+export type InnerTextLocator = (({
+"type":("innerText"),"value":(string),"ignoreCase"?:(boolean),"matchType"?:("full"| "partial"),"maxDepth"?:(JsUint)}));
 }
 export namespace BrowsingContext {
-  export type XPathLocator = {
-    type: 'xpath';
-    value: string;
-  };
+export type XPathLocator = (({
+"type":("xpath"),"value":(string)}));
 }
 export namespace BrowsingContext {
-  export type Navigation = string;
+export type Navigation = (string);
 }
 export namespace BrowsingContext {
-  export type BaseNavigationInfo = {
-    context: BrowsingContext.BrowsingContext;
-    navigation: BrowsingContext.Navigation | null;
-    timestamp: JsUint;
-    url: string;
-  };
+export type BaseNavigationInfo = ({
+"context":(BrowsingContext.BrowsingContext),"navigation":(BrowsingContext.Navigation| null),"timestamp":(JsUint),"url":(string)});
 }
 export namespace BrowsingContext {
-  export type NavigationInfo = BrowsingContext.BaseNavigationInfo;
+export type NavigationInfo = ((BrowsingContext.BaseNavigationInfo));
 }
 export namespace BrowsingContext {
-  export const enum ReadinessState {
-    None = 'none',
-    Interactive = 'interactive',
-    Complete = 'complete',
-  }
+export const enum ReadinessState {None = "none",
+Interactive = "interactive",
+Complete = "complete",
+}
 }
 export namespace BrowsingContext {
-  export const enum UserPromptType {
-    Alert = 'alert',
-    Beforeunload = 'beforeunload',
-    Confirm = 'confirm',
-    Prompt = 'prompt',
-  }
+export const enum UserPromptType {Alert = "alert",
+Beforeunload = "beforeunload",
+Confirm = "confirm",
+Prompt = "prompt",
+}
 }
 export namespace BrowsingContext {
-  export type Activate = {
-    method: 'browsingContext.activate';
-    params: BrowsingContext.ActivateParameters;
-  };
+export type Activate = ({
+"method":("browsingContext.activate"),"params":(BrowsingContext.ActivateParameters)});
 }
 export namespace BrowsingContext {
   export type ActivateParameters = {
@@ -554,115 +431,84 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
-  export type CaptureScreenshotParameters = {
-    context: BrowsingContext.BrowsingContext;
-    /**
-     * @defaultValue `"viewport"`
-     */
-    origin?: 'viewport' | 'document';
-    format?: BrowsingContext.ImageFormat;
-    clip?: BrowsingContext.ClipRectangle;
-  };
+export type CaptureScreenshotParameters = (({
+"context":(BrowsingContext.BrowsingContext),
+/**
+ * @defaultValue `"viewport"`
+ */
+"origin"?:(("viewport"| "document")),"format"?:(BrowsingContext.ImageFormat),"clip"?:(BrowsingContext.ClipRectangle)}));
 }
 export namespace BrowsingContext {
-  export type ImageFormat = {
-    type: string;
-    /**
-     * Must be between `0` and `1`, inclusive.
-     */
-    quality?: number;
-  };
+export type ImageFormat = (({
+"type":(string),
+/**
+ * Must be between `0` and `1`, inclusive.
+ */
+"quality"?:(number)}));
 }
 export namespace BrowsingContext {
-  export type ClipRectangle =
-    | BrowsingContext.BoxClipRectangle
-    | BrowsingContext.ElementClipRectangle;
+export type ClipRectangle = ((BrowsingContext.BoxClipRectangle| BrowsingContext.ElementClipRectangle));
 }
 export namespace BrowsingContext {
-  export type ElementClipRectangle = {
-    type: 'element';
-    element: Script.SharedReference;
-  };
+export type ElementClipRectangle = (({
+"type":("element"),"element":(Script.SharedReference)}));
 }
 export namespace BrowsingContext {
-  export type BoxClipRectangle = {
-    type: 'box';
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
+export type BoxClipRectangle = (({
+"type":("box"),"x":(number),"y":(number),"width":(number),"height":(number)}));
 }
 export namespace BrowsingContext {
-  export type CaptureScreenshotResult = {
-    data: string;
-  };
+export type CaptureScreenshotResult = (({
+"data":(string)}));
 }
 export namespace BrowsingContext {
-  export type Close = {
-    method: 'browsingContext.close';
-    params: BrowsingContext.CloseParameters;
-  };
+export type Close = ({
+"method":("browsingContext.close"),"params":(BrowsingContext.CloseParameters)});
 }
 export namespace BrowsingContext {
-  export type CloseParameters = {
-    context: BrowsingContext.BrowsingContext;
-    /**
-     * @defaultValue `false`
-     */
-    promptUnload?: boolean;
-  };
+export type CloseParameters = (({
+"context":(BrowsingContext.BrowsingContext),
+/**
+ * @defaultValue `false`
+ */
+"promptUnload"?:(boolean)}));
 }
 export namespace BrowsingContext {
-  export type Create = {
-    method: 'browsingContext.create';
-    params: BrowsingContext.CreateParameters;
-  };
+export type Create = ({
+"method":("browsingContext.create"),"params":(BrowsingContext.CreateParameters)});
 }
 export namespace BrowsingContext {
-  export const enum CreateType {
-    Tab = 'tab',
-    Window = 'window',
-  }
+export const enum CreateType {Tab = "tab",
+Window = "window",
+}
 }
 export namespace BrowsingContext {
-  export type CreateParameters = {
-    type: BrowsingContext.CreateType;
-    referenceContext?: BrowsingContext.BrowsingContext;
-    /**
-     * @defaultValue `false`
-     */
-    background?: boolean;
-    userContext?: Browser.UserContext;
-  };
+export type CreateParameters = (({
+"type":(BrowsingContext.CreateType),"referenceContext"?:(BrowsingContext.BrowsingContext),
+/**
+ * @defaultValue `false`
+ */
+"background"?:(boolean),"userContext"?:(Browser.UserContext)}));
 }
 export namespace BrowsingContext {
-  export type CreateResult = {
-    context: BrowsingContext.BrowsingContext;
-  };
+export type CreateResult = (({
+"context":(BrowsingContext.BrowsingContext)}));
 }
 export namespace BrowsingContext {
-  export type GetTree = {
-    method: 'browsingContext.getTree';
-    params: BrowsingContext.GetTreeParameters;
-  };
+export type GetTree = ({
+"method":("browsingContext.getTree"),"params":(BrowsingContext.GetTreeParameters)});
 }
 export namespace BrowsingContext {
-  export type GetTreeParameters = {
-    maxDepth?: JsUint;
-    root?: BrowsingContext.BrowsingContext;
-  };
+export type GetTreeParameters = (({
+"maxDepth"?:(JsUint),"root"?:(BrowsingContext.BrowsingContext)}));
 }
 export namespace BrowsingContext {
-  export type GetTreeResult = {
-    contexts: BrowsingContext.InfoList;
-  };
+export type GetTreeResult = (({
+"contexts":(BrowsingContext.InfoList)}));
 }
 export namespace BrowsingContext {
-  export type HandleUserPrompt = {
-    method: 'browsingContext.handleUserPrompt';
-    params: BrowsingContext.HandleUserPromptParameters;
-  };
+export type HandleUserPrompt = ({
+"method":("browsingContext.handleUserPrompt"),"params":(BrowsingContext.HandleUserPromptParameters)});
 }
 export namespace BrowsingContext {
   export type HandleUserPromptParameters = {
@@ -678,480 +524,349 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
-  export type LocateNodesParameters = {
-    context: BrowsingContext.BrowsingContext;
-    locator: BrowsingContext.Locator;
-    /**
-     * Must be greater than or equal to `1`.
-     */
-    maxNodeCount?: JsUint;
-    serializationOptions?: Script.SerializationOptions;
-    startNodes?: [Script.SharedReference, ...Script.SharedReference[]];
-  };
+export type LocateNodesParameters = (({
+"context":(BrowsingContext.BrowsingContext),"locator":(BrowsingContext.Locator),
+/**
+ * Must be greater than or equal to `1`.
+ */
+"maxNodeCount"?:((JsUint)),"serializationOptions"?:(Script.SerializationOptions),"startNodes"?:([
+(Script.SharedReference),...(Script.SharedReference)[]])}));
 }
 export namespace BrowsingContext {
-  export type LocateNodesResult = {
-    nodes: [...Script.NodeRemoteValue[]];
-  };
+export type LocateNodesResult = (({
+"nodes":([
+...((Script.NodeRemoteValue)[])])}));
 }
 export namespace BrowsingContext {
-  export type Navigate = {
-    method: 'browsingContext.navigate';
-    params: BrowsingContext.NavigateParameters;
-  };
+export type Navigate = ({
+"method":("browsingContext.navigate"),"params":(BrowsingContext.NavigateParameters)});
 }
 export namespace BrowsingContext {
-  export type NavigateParameters = {
-    context: BrowsingContext.BrowsingContext;
-    url: string;
-    wait?: BrowsingContext.ReadinessState;
-  };
+export type NavigateParameters = (({
+"context":(BrowsingContext.BrowsingContext),"url":(string),"wait"?:(BrowsingContext.ReadinessState)}));
 }
 export namespace BrowsingContext {
-  export type NavigateResult = {
-    navigation: BrowsingContext.Navigation | null;
-    url: string;
-  };
+export type NavigateResult = (({
+"navigation":(BrowsingContext.Navigation| null),"url":(string)}));
 }
 export namespace BrowsingContext {
-  export type Print = {
-    method: 'browsingContext.print';
-    params: BrowsingContext.PrintParameters;
-  };
+export type Print = ({
+"method":("browsingContext.print"),"params":(BrowsingContext.PrintParameters)});
 }
 export namespace BrowsingContext {
-  export type PrintParameters = {
-    context: BrowsingContext.BrowsingContext;
-    /**
-     * @defaultValue `false`
-     */
-    background?: boolean;
-    margin?: BrowsingContext.PrintMarginParameters;
-    /**
-     * @defaultValue `"portrait"`
-     */
-    orientation?: 'portrait' | 'landscape';
-    page?: BrowsingContext.PrintPageParameters;
-    pageRanges?: [...(JsUint | string)[]];
-    /**
-     * Must be between `0.1` and `2`, inclusive.
-     *
-     * @defaultValue `1`
-     */
-    scale?: number;
-    /**
-     * @defaultValue `true`
-     */
-    shrinkToFit?: boolean;
-  };
+export type PrintParameters = (({
+"context":(BrowsingContext.BrowsingContext),
+/**
+ * @defaultValue `false`
+ */
+"background"?:(boolean),"margin"?:(BrowsingContext.PrintMarginParameters),
+/**
+ * @defaultValue `"portrait"`
+ */
+"orientation"?:(("portrait"| "landscape")),"page"?:(BrowsingContext.PrintPageParameters),"pageRanges"?:([
+...((JsUint| string)[])]),
+/**
+ * Must be between `0.1` and `2`, inclusive.
+ *
+ * @defaultValue `1`
+ */
+"scale"?:((number)),
+/**
+ * @defaultValue `true`
+ */
+"shrinkToFit"?:(boolean)}));
 }
 export namespace BrowsingContext {
-  export type PrintMarginParameters = {
-    /**
-     * Must be greater than or equal to `0`.
-     *
-     * @defaultValue `1`
-     */
-    bottom?: number;
-    /**
-     * Must be greater than or equal to `0`.
-     *
-     * @defaultValue `1`
-     */
-    left?: number;
-    /**
-     * Must be greater than or equal to `0`.
-     *
-     * @defaultValue `1`
-     */
-    right?: number;
-    /**
-     * Must be greater than or equal to `0`.
-     *
-     * @defaultValue `1`
-     */
-    top?: number;
-  };
+export type PrintMarginParameters = (({
+
+/**
+ * Must be greater than or equal to `0`.
+ *
+ * @defaultValue `1`
+ */
+"bottom"?:((number)),
+/**
+ * Must be greater than or equal to `0`.
+ *
+ * @defaultValue `1`
+ */
+"left"?:((number)),
+/**
+ * Must be greater than or equal to `0`.
+ *
+ * @defaultValue `1`
+ */
+"right"?:((number)),
+/**
+ * Must be greater than or equal to `0`.
+ *
+ * @defaultValue `1`
+ */
+"top"?:((number))}));
 }
 export namespace BrowsingContext {
-  export type PrintPageParameters = {
-    /**
-     * Must be greater than or equal to `0.0352`.
-     *
-     * @defaultValue `27.94`
-     */
-    height?: number;
-    /**
-     * Must be greater than or equal to `0.0352`.
-     *
-     * @defaultValue `21.59`
-     */
-    width?: number;
-  };
+export type PrintPageParameters = (({
+
+/**
+ * Must be greater than or equal to `0.0352`.
+ *
+ * @defaultValue `27.94`
+ */
+"height"?:((number)),
+/**
+ * Must be greater than or equal to `0.0352`.
+ *
+ * @defaultValue `21.59`
+ */
+"width"?:((number))}));
 }
 export namespace BrowsingContext {
-  export type PrintResult = {
-    data: string;
-  };
+export type PrintResult = (({
+"data":(string)}));
 }
 export namespace BrowsingContext {
-  export type Reload = {
-    method: 'browsingContext.reload';
-    params: BrowsingContext.ReloadParameters;
-  };
+export type Reload = ({
+"method":("browsingContext.reload"),"params":(BrowsingContext.ReloadParameters)});
 }
 export namespace BrowsingContext {
-  export type ReloadParameters = {
-    context: BrowsingContext.BrowsingContext;
-    ignoreCache?: boolean;
-    wait?: BrowsingContext.ReadinessState;
-  };
+export type ReloadParameters = (({
+"context":(BrowsingContext.BrowsingContext),"ignoreCache"?:(boolean),"wait"?:(BrowsingContext.ReadinessState)}));
 }
 export namespace BrowsingContext {
-  export type SetViewport = {
-    method: 'browsingContext.setViewport';
-    params: BrowsingContext.SetViewportParameters;
-  };
+export type SetViewport = ({
+"method":("browsingContext.setViewport"),"params":(BrowsingContext.SetViewportParameters)});
 }
 export namespace BrowsingContext {
-  export type SetViewportParameters = {
-    context?: BrowsingContext.BrowsingContext;
-    viewport?: BrowsingContext.Viewport | null;
-    /**
-     * Must be greater than `0`.
-     */
-    devicePixelRatio?: number | null;
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SetViewportParameters = (({
+"context"?:(BrowsingContext.BrowsingContext),"viewport"?:(BrowsingContext.Viewport| null),
+/**
+ * Must be greater than `0`.
+ */
+"devicePixelRatio"?:((number)| null),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace BrowsingContext {
-  export type Viewport = {
-    width: JsUint;
-    height: JsUint;
-  };
+export type Viewport = (({
+"width":(JsUint),"height":(JsUint)}));
 }
 export namespace BrowsingContext {
-  export type TraverseHistory = {
-    method: 'browsingContext.traverseHistory';
-    params: BrowsingContext.TraverseHistoryParameters;
-  };
+export type TraverseHistory = ({
+"method":("browsingContext.traverseHistory"),"params":(BrowsingContext.TraverseHistoryParameters)});
 }
 export namespace BrowsingContext {
-  export type TraverseHistoryParameters = {
-    context: BrowsingContext.BrowsingContext;
-    delta: JsInt;
-  };
+export type TraverseHistoryParameters = (({
+"context":(BrowsingContext.BrowsingContext),"delta":(JsInt)}));
 }
 export namespace BrowsingContext {
-  export type TraverseHistoryResult = Record<string, never>;
+export type TraverseHistoryResult = ((Record<string, never>
+));
 }
 export namespace BrowsingContext {
-  export type ContextCreated = {
-    method: 'browsingContext.contextCreated';
-    params: BrowsingContext.Info;
-  };
+export type ContextCreated = ({
+"method":("browsingContext.contextCreated"),"params":(BrowsingContext.Info)});
 }
 export namespace BrowsingContext {
-  export type ContextDestroyed = {
-    method: 'browsingContext.contextDestroyed';
-    params: BrowsingContext.Info;
-  };
+export type ContextDestroyed = ({
+"method":("browsingContext.contextDestroyed"),"params":(BrowsingContext.Info)});
 }
 export namespace BrowsingContext {
-  export type NavigationStarted = {
-    method: 'browsingContext.navigationStarted';
-    params: BrowsingContext.NavigationInfo;
-  };
+export type NavigationStarted = ({
+"method":("browsingContext.navigationStarted"),"params":(BrowsingContext.NavigationInfo)});
 }
 export namespace BrowsingContext {
-  export type FragmentNavigated = {
-    method: 'browsingContext.fragmentNavigated';
-    params: BrowsingContext.NavigationInfo;
-  };
+export type FragmentNavigated = ({
+"method":("browsingContext.fragmentNavigated"),"params":(BrowsingContext.NavigationInfo)});
 }
 export namespace BrowsingContext {
-  export type HistoryUpdated = {
-    method: 'browsingContext.historyUpdated';
-    params: BrowsingContext.HistoryUpdatedParameters;
-  };
+export type HistoryUpdated = ({
+"method":("browsingContext.historyUpdated"),"params":(BrowsingContext.HistoryUpdatedParameters)});
 }
 export namespace BrowsingContext {
-  export type HistoryUpdatedParameters = {
-    context: BrowsingContext.BrowsingContext;
-    timestamp: JsUint;
-    url: string;
-  };
+export type HistoryUpdatedParameters = (({
+"context":(BrowsingContext.BrowsingContext),"timestamp":(JsUint),"url":(string)}));
 }
 export namespace BrowsingContext {
-  export type DomContentLoaded = {
-    method: 'browsingContext.domContentLoaded';
-    params: BrowsingContext.NavigationInfo;
-  };
+export type DomContentLoaded = ({
+"method":("browsingContext.domContentLoaded"),"params":(BrowsingContext.NavigationInfo)});
 }
 export namespace BrowsingContext {
-  export type Load = {
-    method: 'browsingContext.load';
-    params: BrowsingContext.NavigationInfo;
-  };
+export type Load = ({
+"method":("browsingContext.load"),"params":(BrowsingContext.NavigationInfo)});
 }
 export namespace BrowsingContext {
-  export type DownloadWillBegin = {
-    method: 'browsingContext.downloadWillBegin';
-    params: BrowsingContext.DownloadWillBeginParams;
-  };
+export type DownloadWillBegin = ({
+"method":("browsingContext.downloadWillBegin"),"params":(BrowsingContext.DownloadWillBeginParams)});
 }
 export namespace BrowsingContext {
-  export type DownloadWillBeginParams = {
-    suggestedFilename: string;
-  } & BrowsingContext.BaseNavigationInfo;
+export type DownloadWillBeginParams = (({
+"suggestedFilename":(string)}&BrowsingContext.BaseNavigationInfo));
 }
 export namespace BrowsingContext {
-  export type DownloadEnd = {
-    method: 'browsingContext.downloadEnd';
-    params: BrowsingContext.DownloadEndParams;
-  };
+export type DownloadEnd = ({
+"method":("browsingContext.downloadEnd"),"params":(BrowsingContext.DownloadEndParams)});
 }
 export namespace BrowsingContext {
-  export type DownloadEndParams =
-    | BrowsingContext.DownloadCanceledParams
-    | BrowsingContext.DownloadCompleteParams;
+export type DownloadEndParams = (((BrowsingContext.DownloadCanceledParams| BrowsingContext.DownloadCompleteParams)));
 }
 export namespace BrowsingContext {
-  export type DownloadCanceledParams = {
-    status: 'canceled';
-  } & BrowsingContext.BaseNavigationInfo;
+export type DownloadCanceledParams = ({
+"status":("canceled")}&BrowsingContext.BaseNavigationInfo);
 }
 export namespace BrowsingContext {
-  export type DownloadCompleteParams = {
-    status: 'complete';
-    filepath: string | null;
-  } & BrowsingContext.BaseNavigationInfo;
+export type DownloadCompleteParams = ({
+"status":("complete"),"filepath":(string| null)}&BrowsingContext.BaseNavigationInfo);
 }
 export namespace BrowsingContext {
-  export type NavigationAborted = {
-    method: 'browsingContext.navigationAborted';
-    params: BrowsingContext.NavigationInfo;
-  };
+export type NavigationAborted = ({
+"method":("browsingContext.navigationAborted"),"params":(BrowsingContext.NavigationInfo)});
 }
 export namespace BrowsingContext {
-  export type NavigationCommitted = {
-    method: 'browsingContext.navigationCommitted';
-    params: BrowsingContext.NavigationInfo;
-  };
+export type NavigationCommitted = ({
+"method":("browsingContext.navigationCommitted"),"params":(BrowsingContext.NavigationInfo)});
 }
 export namespace BrowsingContext {
-  export type NavigationFailed = {
-    method: 'browsingContext.navigationFailed';
-    params: BrowsingContext.NavigationInfo;
-  };
+export type NavigationFailed = ({
+"method":("browsingContext.navigationFailed"),"params":(BrowsingContext.NavigationInfo)});
 }
 export namespace BrowsingContext {
-  export type UserPromptClosed = {
-    method: 'browsingContext.userPromptClosed';
-    params: BrowsingContext.UserPromptClosedParameters;
-  };
+export type UserPromptClosed = ({
+"method":("browsingContext.userPromptClosed"),"params":(BrowsingContext.UserPromptClosedParameters)});
 }
 export namespace BrowsingContext {
-  export type UserPromptClosedParameters = {
-    context: BrowsingContext.BrowsingContext;
-    accepted: boolean;
-    type: BrowsingContext.UserPromptType;
-    userText?: string;
-  };
+export type UserPromptClosedParameters = (({
+"context":(BrowsingContext.BrowsingContext),"accepted":(boolean),"type":(BrowsingContext.UserPromptType),"userText"?:(string)}));
 }
 export namespace BrowsingContext {
-  export type UserPromptOpened = {
-    method: 'browsingContext.userPromptOpened';
-    params: BrowsingContext.UserPromptOpenedParameters;
-  };
+export type UserPromptOpened = ({
+"method":("browsingContext.userPromptOpened"),"params":(BrowsingContext.UserPromptOpenedParameters)});
 }
 export namespace BrowsingContext {
-  export type UserPromptOpenedParameters = {
-    context: BrowsingContext.BrowsingContext;
-    handler: Session.UserPromptHandlerType;
-    message: string;
-    type: BrowsingContext.UserPromptType;
-    defaultValue?: string;
-  };
+export type UserPromptOpenedParameters = (({
+"context":(BrowsingContext.BrowsingContext),"handler":(Session.UserPromptHandlerType),"message":(string),"type":(BrowsingContext.UserPromptType),"defaultValue"?:(string)}));
 }
-export type EmulationCommand =
-  | Emulation.SetForcedColorsModeThemeOverride
-  | Emulation.SetGeolocationOverride
-  | Emulation.SetLocaleOverride
-  | Emulation.SetScreenOrientationOverride
-  | Emulation.SetScriptingEnabled
-  | Emulation.SetTimezoneOverride;
+export type EmulationCommand = (Emulation.SetForcedColorsModeThemeOverride| Emulation.SetGeolocationOverride| Emulation.SetLocaleOverride| Emulation.SetScreenOrientationOverride| Emulation.SetScriptingEnabled| Emulation.SetTimezoneOverride);
 export namespace Emulation {
-  export type SetForcedColorsModeThemeOverride = {
-    method: 'emulation.setForcedColorsModeThemeOverride';
-    params: Emulation.SetForcedColorsModeThemeOverrideParameters;
-  };
+export type SetForcedColorsModeThemeOverride = ({
+"method":("emulation.setForcedColorsModeThemeOverride"),"params":(Emulation.SetForcedColorsModeThemeOverrideParameters)});
 }
 export namespace Emulation {
-  export type SetForcedColorsModeThemeOverrideParameters = {
-    theme: Emulation.ForcedColorsModeTheme | null;
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SetForcedColorsModeThemeOverrideParameters = (({
+"theme":(Emulation.ForcedColorsModeTheme| null),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace Emulation {
-  export const enum ForcedColorsModeTheme {
-    Light = 'light',
-    Dark = 'dark',
-  }
+export const enum ForcedColorsModeTheme {Light = "light",
+Dark = "dark",
+}
 }
 export namespace Emulation {
-  export type SetGeolocationOverride = {
-    method: 'emulation.setGeolocationOverride';
-    params: Emulation.SetGeolocationOverrideParameters;
-  };
+export type SetGeolocationOverride = ({
+"method":("emulation.setGeolocationOverride"),"params":(Emulation.SetGeolocationOverrideParameters)});
 }
 export namespace Emulation {
-  export type SetGeolocationOverrideParameters = (
-    | {
-        coordinates: Emulation.GeolocationCoordinates | null;
-      }
-    | {
-        error: Emulation.GeolocationPositionError;
-      }
-  ) & {
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SetGeolocationOverrideParameters = (((({
+"coordinates":(Emulation.GeolocationCoordinates| null)})| ({
+"error":(Emulation.GeolocationPositionError)}))&{
+"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace Emulation {
-  export type GeolocationCoordinates = {
-    /**
-     * Must be between `-90` and `90`, inclusive.
-     */
-    latitude: number;
-    /**
-     * Must be between `-180` and `180`, inclusive.
-     */
-    longitude: number;
-    /**
-     * Must be greater than or equal to `0`.
-     *
-     * @defaultValue `1`
-     */
-    accuracy?: number;
-    /**
-     * @defaultValue `null`
-     */
-    altitude?: number | null;
-    /**
-     * Must be greater than or equal to `0`.
-     *
-     * @defaultValue `null`
-     */
-    altitudeAccuracy?: number | null;
-    /**
-     * Must be between `0` and `360`.
-     *
-     * @defaultValue `null`
-     */
-    heading?: number | null;
-    /**
-     * Must be greater than or equal to `0`.
-     *
-     * @defaultValue `null`
-     */
-    speed?: number | null;
-  };
+export type GeolocationCoordinates = (({
+
+/**
+ * Must be between `-90` and `90`, inclusive.
+ */
+"latitude":(number),
+/**
+ * Must be between `-180` and `180`, inclusive.
+ */
+"longitude":(number),
+/**
+ * Must be greater than or equal to `0`.
+ *
+ * @defaultValue `1`
+ */
+"accuracy"?:((number)),
+/**
+ * @defaultValue `null`
+ */
+"altitude"?:(number| null),
+/**
+ * Must be greater than or equal to `0`.
+ *
+ * @defaultValue `null`
+ */
+"altitudeAccuracy"?:((number)| null),
+/**
+ * Must be between `0` and `360`.
+ *
+ * @defaultValue `null`
+ */
+"heading"?:((number)| null),
+/**
+ * Must be greater than or equal to `0`.
+ *
+ * @defaultValue `null`
+ */
+"speed"?:((number)| null)}));
 }
 export namespace Emulation {
-  export type GeolocationPositionError = {
-    type: 'positionUnavailable';
-  };
+export type GeolocationPositionError = (({
+"type":("positionUnavailable")}));
 }
 export namespace Emulation {
-  export type SetLocaleOverride = {
-    method: 'emulation.setLocaleOverride';
-    params: Emulation.SetLocaleOverrideParameters;
-  };
+export type SetLocaleOverride = ({
+"method":("emulation.setLocaleOverride"),"params":(Emulation.SetLocaleOverrideParameters)});
 }
 export namespace Emulation {
-  export type SetLocaleOverrideParameters = {
-    locale: string | null;
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SetLocaleOverrideParameters = (({
+"locale":(string| null),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace Emulation {
-  export type SetScreenOrientationOverride = {
-    method: 'emulation.setScreenOrientationOverride';
-    params: Emulation.SetScreenOrientationOverrideParameters;
-  };
+export type SetScreenOrientationOverride = ({
+"method":("emulation.setScreenOrientationOverride"),"params":(Emulation.SetScreenOrientationOverrideParameters)});
 }
 export namespace Emulation {
-  export const enum ScreenOrientationNatural {
-    Portrait = 'portrait',
-    Landscape = 'landscape',
-  }
+export const enum ScreenOrientationNatural {Portrait = "portrait",
+Landscape = "landscape",
+}
 }
 export namespace Emulation {
-  export type ScreenOrientationType =
-    | 'portrait-primary'
-    | 'portrait-secondary'
-    | 'landscape-primary'
-    | 'landscape-secondary';
+export type ScreenOrientationType = ("portrait-primary"| "portrait-secondary"| "landscape-primary"| "landscape-secondary");
 }
 export namespace Emulation {
-  export type ScreenOrientation = {
-    natural: Emulation.ScreenOrientationNatural;
-    type: Emulation.ScreenOrientationType;
-  };
+export type ScreenOrientation = (({
+"natural":(Emulation.ScreenOrientationNatural),"type":(Emulation.ScreenOrientationType)}));
 }
 export namespace Emulation {
-  export type SetScreenOrientationOverrideParameters = {
-    screenOrientation: Emulation.ScreenOrientation | null;
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SetScreenOrientationOverrideParameters = (({
+"screenOrientation":(Emulation.ScreenOrientation| null),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace Emulation {
-  export type SetScriptingEnabled = {
-    method: 'emulation.setScriptingEnabled';
-    params: Emulation.SetScriptingEnabledParameters;
-  };
+export type SetScriptingEnabled = ({
+"method":("emulation.setScriptingEnabled"),"params":(Emulation.SetScriptingEnabledParameters)});
 }
 export namespace Emulation {
-  export type SetScriptingEnabledParameters = {
-    enabled: false | null;
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SetScriptingEnabledParameters = (({
+"enabled":(false| null),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace Emulation {
-  export type SetTimezoneOverride = {
-    method: 'emulation.setTimezoneOverride';
-    params: Emulation.SetTimezoneOverrideParameters;
-  };
+export type SetTimezoneOverride = ({
+"method":("emulation.setTimezoneOverride"),"params":(Emulation.SetTimezoneOverrideParameters)});
 }
 export namespace Emulation {
-  export type SetTimezoneOverrideParameters = {
-    timezone: string | null;
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SetTimezoneOverrideParameters = (({
+"timezone":(string| null),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export type NetworkCommand =
   | Network.AddDataCollector
@@ -1175,214 +890,122 @@ export type NetworkEvent =
   | Network.ResponseCompleted
   | Network.ResponseStarted;
 export namespace Network {
-  export type AuthChallenge = {
-    scheme: string;
-    realm: string;
-  };
+export type AuthChallenge = (({
+"scheme":(string),"realm":(string)}));
 }
 export namespace Network {
-  export type AuthCredentials = {
-    type: 'password';
-    username: string;
-    password: string;
-  };
+export type AuthCredentials = (({
+"type":("password"),"username":(string),"password":(string)}));
 }
 export namespace Network {
-  export type BaseParameters = {
-    context: BrowsingContext.BrowsingContext | null;
-    isBlocked: boolean;
-    navigation: BrowsingContext.Navigation | null;
-    redirectCount: JsUint;
-    request: Network.RequestData;
-    timestamp: JsUint;
-    intercepts?: [Network.Intercept, ...Network.Intercept[]];
-  };
+export type BaseParameters = ({
+"context":(BrowsingContext.BrowsingContext| null),"isBlocked":(boolean),"navigation":(BrowsingContext.Navigation| null),"redirectCount":(JsUint),"request":(Network.RequestData),"timestamp":(JsUint),"intercepts"?:([
+(Network.Intercept),...(Network.Intercept)[]])});
 }
 export namespace Network {
-  export type BytesValue = Network.StringValue | Network.Base64Value;
+export type BytesValue = (Network.StringValue| Network.Base64Value);
 }
 export namespace Network {
-  export type StringValue = {
-    type: 'string';
-    value: string;
-  };
+export type StringValue = (({
+"type":("string"),"value":(string)}));
 }
 export namespace Network {
-  export type Base64Value = {
-    type: 'base64';
-    value: string;
-  };
+export type Base64Value = (({
+"type":("base64"),"value":(string)}));
 }
 export namespace Network {
-  export type Collector = string;
+export type Collector = (string);
 }
 export namespace Network {
-  export const enum CollectorType {
-    Blob = 'blob',
-  }
+export const enum CollectorType {Blob = "blob",
+}
 }
 export namespace Network {
-  export const enum SameSite {
-    Strict = 'strict',
-    Lax = 'lax',
-    None = 'none',
-    Default = 'default',
-  }
+export const enum SameSite {Strict = "strict",
+Lax = "lax",
+None = "none",
+Default = "default",
+}
 }
 export namespace Network {
-  export type Cookie = {
-    name: string;
-    value: Network.BytesValue;
-    domain: string;
-    path: string;
-    size: JsUint;
-    httpOnly: boolean;
-    secure: boolean;
-    sameSite: Network.SameSite;
-    expiry?: JsUint;
-  } & Extensible;
+export type Cookie = (({
+"name":(string),"value":(Network.BytesValue),"domain":(string),"path":(string),"size":(JsUint),"httpOnly":(boolean),"secure":(boolean),"sameSite":(Network.SameSite),"expiry"?:(JsUint)}&Extensible));
 }
 export namespace Network {
-  export type CookieHeader = {
-    name: string;
-    value: Network.BytesValue;
-  };
+export type CookieHeader = (({
+"name":(string),"value":(Network.BytesValue)}));
 }
 export namespace Network {
-  export const enum DataType {
-    Response = 'response',
-  }
+export const enum DataType {Response = "response",
+}
 }
 export namespace Network {
-  export type FetchTimingInfo = {
-    timeOrigin: number;
-    requestTime: number;
-    redirectStart: number;
-    redirectEnd: number;
-    fetchStart: number;
-    dnsStart: number;
-    dnsEnd: number;
-    connectStart: number;
-    connectEnd: number;
-    tlsStart: number;
-    requestStart: number;
-    responseStart: number;
-    responseEnd: number;
-  };
+export type FetchTimingInfo = (({
+"timeOrigin":(number),"requestTime":(number),"redirectStart":(number),"redirectEnd":(number),"fetchStart":(number),"dnsStart":(number),"dnsEnd":(number),"connectStart":(number),"connectEnd":(number),"tlsStart":(number),"requestStart":(number),"responseStart":(number),"responseEnd":(number)}));
 }
 export namespace Network {
-  export type Header = {
-    name: string;
-    value: Network.BytesValue;
-  };
+export type Header = (({
+"name":(string),"value":(Network.BytesValue)}));
 }
 export namespace Network {
-  export type Initiator = {
-    columnNumber?: JsUint;
-    lineNumber?: JsUint;
-    request?: Network.Request;
-    stackTrace?: Script.StackTrace;
-    type?: 'parser' | 'script' | 'preflight' | 'other';
-  };
+export type Initiator = (({
+"columnNumber"?:(JsUint),"lineNumber"?:(JsUint),"request"?:(Network.Request),"stackTrace"?:(Script.StackTrace),"type"?:("parser"| "script"| "preflight"| "other")}));
 }
 export namespace Network {
-  export type Intercept = string;
+export type Intercept = (string);
 }
 export namespace Network {
-  export type Request = string;
+export type Request = (string);
 }
 export namespace Network {
-  export type RequestData = {
-    request: Network.Request;
-    url: string;
-    method: string;
-    headers: [...Network.Header[]];
-    cookies: [...Network.Cookie[]];
-    headersSize: JsUint;
-    bodySize: JsUint | null;
-    destination: string;
-    initiatorType: string | null;
-    timings: Network.FetchTimingInfo;
-  };
+export type RequestData = (({
+"request":(Network.Request),"url":(string),"method":(string),"headers":([
+...((Network.Header)[])]),"cookies":([
+...((Network.Cookie)[])]),"headersSize":(JsUint),"bodySize":(JsUint| null),"destination":(string),"initiatorType":(string| null),"timings":(Network.FetchTimingInfo)}));
 }
 export namespace Network {
-  export type ResponseContent = {
-    size: JsUint;
-  };
+export type ResponseContent = (({
+"size":(JsUint)}));
 }
 export namespace Network {
-  export type ResponseData = {
-    url: string;
-    protocol: string;
-    status: JsUint;
-    statusText: string;
-    fromCache: boolean;
-    headers: [...Network.Header[]];
-    mimeType: string;
-    bytesReceived: JsUint;
-    headersSize: JsUint | null;
-    bodySize: JsUint | null;
-    content: Network.ResponseContent;
-    authChallenges?: [...Network.AuthChallenge[]];
-  };
+export type ResponseData = (({
+"url":(string),"protocol":(string),"status":(JsUint),"statusText":(string),"fromCache":(boolean),"headers":([
+...((Network.Header)[])]),"mimeType":(string),"bytesReceived":(JsUint),"headersSize":(JsUint| null),"bodySize":(JsUint| null),"content":(Network.ResponseContent),"authChallenges"?:([
+...((Network.AuthChallenge)[])])}));
 }
 export namespace Network {
-  export type SetCookieHeader = {
-    name: string;
-    value: Network.BytesValue;
-    domain?: string;
-    httpOnly?: boolean;
-    expiry?: string;
-    maxAge?: JsInt;
-    path?: string;
-    sameSite?: Network.SameSite;
-    secure?: boolean;
-  };
+export type SetCookieHeader = (({
+"name":(string),"value":(Network.BytesValue),"domain"?:(string),"httpOnly"?:(boolean),"expiry"?:(string),"maxAge"?:(JsInt),"path"?:(string),"sameSite"?:(Network.SameSite),"secure"?:(boolean)}));
 }
 export namespace Network {
-  export type UrlPattern = Network.UrlPatternPattern | Network.UrlPatternString;
+export type UrlPattern = ((Network.UrlPatternPattern| Network.UrlPatternString));
 }
 export namespace Network {
-  export type UrlPatternPattern = {
-    type: 'pattern';
-    protocol?: string;
-    hostname?: string;
-    port?: string;
-    pathname?: string;
-    search?: string;
-  };
+export type UrlPatternPattern = (({
+"type":("pattern"),"protocol"?:(string),"hostname"?:(string),"port"?:(string),"pathname"?:(string),"search"?:(string)}));
 }
 export namespace Network {
-  export type UrlPatternString = {
-    type: 'string';
-    pattern: string;
-  };
+export type UrlPatternString = (({
+"type":("string"),"pattern":(string)}));
 }
 export namespace Network {
-  export type AddDataCollector = {
-    method: 'network.addDataCollector';
-    params: Network.AddDataCollectorParameters;
-  };
+export type AddDataCollector = ({
+"method":("network.addDataCollector"),"params":(Network.AddDataCollectorParameters)});
 }
 export namespace Network {
-  export type AddDataCollectorParameters = {
-    dataTypes: [Network.DataType, ...Network.DataType[]];
-    maxEncodedDataSize: JsUint;
-    /**
-     * @defaultValue `"blob"`
-     */
-    collectorType?: Network.CollectorType;
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type AddDataCollectorParameters = (({
+"dataTypes":([
+(Network.DataType),...(Network.DataType)[]]),"maxEncodedDataSize":(JsUint),
+/**
+ * @defaultValue `"blob"`
+ */
+"collectorType"?:(Network.CollectorType),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace Network {
-  export type AddDataCollectorResult = {
-    collector: Network.Collector;
-  };
+export type AddDataCollectorResult = (({
+"collector":(Network.Collector)}));
 }
 export namespace Network {
   export type AddIntercept = {
@@ -1401,188 +1024,128 @@ export namespace Network {
   };
 }
 export namespace Network {
-  export const enum InterceptPhase {
-    BeforeRequestSent = 'beforeRequestSent',
-    ResponseStarted = 'responseStarted',
-    AuthRequired = 'authRequired',
-  }
+export const enum InterceptPhase {BeforeRequestSent = "beforeRequestSent",
+ResponseStarted = "responseStarted",
+AuthRequired = "authRequired",
+}
 }
 export namespace Network {
-  export type AddInterceptResult = {
-    intercept: Network.Intercept;
-  };
+export type AddInterceptResult = (({
+"intercept":(Network.Intercept)}));
 }
 export namespace Network {
-  export type ContinueRequest = {
-    method: 'network.continueRequest';
-    params: Network.ContinueRequestParameters;
-  };
+export type ContinueRequest = ({
+"method":("network.continueRequest"),"params":(Network.ContinueRequestParameters)});
 }
 export namespace Network {
-  export type ContinueRequestParameters = {
-    request: Network.Request;
-    body?: Network.BytesValue;
-    cookies?: [...Network.CookieHeader[]];
-    headers?: [...Network.Header[]];
-    method?: string;
-    url?: string;
-  };
+export type ContinueRequestParameters = (({
+"request":(Network.Request),"body"?:(Network.BytesValue),"cookies"?:([
+...((Network.CookieHeader)[])]),"headers"?:([
+...((Network.Header)[])]),"method"?:(string),"url"?:(string)}));
 }
 export namespace Network {
-  export type ContinueResponse = {
-    method: 'network.continueResponse';
-    params: Network.ContinueResponseParameters;
-  };
+export type ContinueResponse = ({
+"method":("network.continueResponse"),"params":(Network.ContinueResponseParameters)});
 }
 export namespace Network {
-  export type ContinueResponseParameters = {
-    request: Network.Request;
-    cookies?: [...Network.SetCookieHeader[]];
-    credentials?: Network.AuthCredentials;
-    headers?: [...Network.Header[]];
-    reasonPhrase?: string;
-    statusCode?: JsUint;
-  };
+export type ContinueResponseParameters = (({
+"request":(Network.Request),"cookies"?:([
+...((Network.SetCookieHeader)[])]),"credentials"?:(Network.AuthCredentials),"headers"?:([
+...((Network.Header)[])]),"reasonPhrase"?:(string),"statusCode"?:(JsUint)}));
 }
 export namespace Network {
-  export type ContinueWithAuth = {
-    method: 'network.continueWithAuth';
-    params: Network.ContinueWithAuthParameters;
-  };
+export type ContinueWithAuth = ({
+"method":("network.continueWithAuth"),"params":(Network.ContinueWithAuthParameters)});
 }
 export namespace Network {
-  export type ContinueWithAuthParameters = {
-    request: Network.Request;
-  } & (
-    | Network.ContinueWithAuthCredentials
-    | Network.ContinueWithAuthNoCredentials
-  );
+export type ContinueWithAuthParameters = (({
+"request":(Network.Request)}&(Network.ContinueWithAuthCredentials| Network.ContinueWithAuthNoCredentials)));
 }
 export namespace Network {
-  export type ContinueWithAuthCredentials = {
-    action: 'provideCredentials';
-    credentials: Network.AuthCredentials;
-  };
+export type ContinueWithAuthCredentials = ({
+"action":("provideCredentials"),"credentials":(Network.AuthCredentials)});
 }
 export namespace Network {
-  export type ContinueWithAuthNoCredentials = {
-    action: 'default' | 'cancel';
-  };
+export type ContinueWithAuthNoCredentials = ({
+"action":("default"| "cancel")});
 }
 export namespace Network {
-  export type DisownData = {
-    method: 'network.disownData';
-    params: Network.DisownDataParameters;
-  };
+export type DisownData = ({
+"method":("network.disownData"),"params":(Network.DisownDataParameters)});
 }
 export namespace Network {
-  export type DisownDataParameters = {
-    dataType: Network.DataType;
-    collector: Network.Collector;
-    request: Network.Request;
-  };
+export type DisownDataParameters = (({
+"dataType":(Network.DataType),"collector":(Network.Collector),"request":(Network.Request)}));
 }
 export namespace Network {
-  export type FailRequest = {
-    method: 'network.failRequest';
-    params: Network.FailRequestParameters;
-  };
+export type FailRequest = ({
+"method":("network.failRequest"),"params":(Network.FailRequestParameters)});
 }
 export namespace Network {
-  export type FailRequestParameters = {
-    request: Network.Request;
-  };
+export type FailRequestParameters = (({
+"request":(Network.Request)}));
 }
 export namespace Network {
-  export type GetData = {
-    method: 'network.getData';
-    params: Network.GetDataParameters;
-  };
+export type GetData = ({
+"method":("network.getData"),"params":(Network.GetDataParameters)});
 }
 export namespace Network {
-  export type GetDataParameters = {
-    dataType: Network.DataType;
-    collector?: Network.Collector;
-    /**
-     * @defaultValue `false`
-     */
-    disown?: boolean;
-    request: Network.Request;
-  };
+export type GetDataParameters = (({
+"dataType":(Network.DataType),"collector"?:(Network.Collector),
+/**
+ * @defaultValue `false`
+ */
+"disown"?:(boolean),"request":(Network.Request)}));
 }
 export namespace Network {
-  export type GetDataResult = {
-    bytes: Network.BytesValue;
-  };
+export type GetDataResult = (({
+"bytes":(Network.BytesValue)}));
 }
 export namespace Network {
-  export type ProvideResponse = {
-    method: 'network.provideResponse';
-    params: Network.ProvideResponseParameters;
-  };
+export type ProvideResponse = ({
+"method":("network.provideResponse"),"params":(Network.ProvideResponseParameters)});
 }
 export namespace Network {
-  export type ProvideResponseParameters = {
-    request: Network.Request;
-    body?: Network.BytesValue;
-    cookies?: [...Network.SetCookieHeader[]];
-    headers?: [...Network.Header[]];
-    reasonPhrase?: string;
-    statusCode?: JsUint;
-  };
+export type ProvideResponseParameters = (({
+"request":(Network.Request),"body"?:(Network.BytesValue),"cookies"?:([
+...((Network.SetCookieHeader)[])]),"headers"?:([
+...((Network.Header)[])]),"reasonPhrase"?:(string),"statusCode"?:(JsUint)}));
 }
 export namespace Network {
-  export type RemoveDataCollector = {
-    method: 'network.removeDataCollector';
-    params: Network.RemoveDataCollectorParameters;
-  };
+export type RemoveDataCollector = ({
+"method":("network.removeDataCollector"),"params":(Network.RemoveDataCollectorParameters)});
 }
 export namespace Network {
-  export type RemoveDataCollectorParameters = {
-    collector: Network.Collector;
-  };
+export type RemoveDataCollectorParameters = (({
+"collector":(Network.Collector)}));
 }
 export namespace Network {
-  export type RemoveIntercept = {
-    method: 'network.removeIntercept';
-    params: Network.RemoveInterceptParameters;
-  };
+export type RemoveIntercept = ({
+"method":("network.removeIntercept"),"params":(Network.RemoveInterceptParameters)});
 }
 export namespace Network {
-  export type RemoveInterceptParameters = {
-    intercept: Network.Intercept;
-  };
+export type RemoveInterceptParameters = (({
+"intercept":(Network.Intercept)}));
 }
 export namespace Network {
-  export type SetCacheBehavior = {
-    method: 'network.setCacheBehavior';
-    params: Network.SetCacheBehaviorParameters;
-  };
+export type SetCacheBehavior = ({
+"method":("network.setCacheBehavior"),"params":(Network.SetCacheBehaviorParameters)});
 }
 export namespace Network {
-  export type SetCacheBehaviorParameters = {
-    cacheBehavior: 'default' | 'bypass';
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-  };
+export type SetCacheBehaviorParameters = (({
+"cacheBehavior":("default"| "bypass"),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]])}));
 }
 export namespace Network {
-  export type SetExtraHeaders = {
-    method: 'network.setExtraHeaders';
-    params: Network.SetExtraHeadersParameters;
-  };
+export type SetExtraHeaders = ({
+"method":("network.setExtraHeaders"),"params":(Network.SetExtraHeadersParameters)});
 }
 export namespace Network {
-  export type SetExtraHeadersParameters = {
-    headers: [...Network.Header[]];
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-  };
+export type SetExtraHeadersParameters = (({
+"headers":([
+...((Network.Header)[])]),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]])}));
 }
 export namespace Network {
   export type AuthRequired = {
@@ -1591,9 +1154,8 @@ export namespace Network {
   };
 }
 export namespace Network {
-  export type AuthRequiredParameters = Network.BaseParameters & {
-    response: Network.ResponseData;
-  };
+export type AuthRequiredParameters = ((Network.BaseParameters&{
+"response":(Network.ResponseData)}));
 }
 export namespace Network {
   export type BeforeRequestSent = {
@@ -1655,25 +1217,18 @@ export type ScriptEvent =
   | Script.RealmCreated
   | Script.RealmDestroyed;
 export namespace Script {
-  export type Channel = string;
+export type Channel = (string);
 }
 export namespace Script {
-  export type ChannelValue = {
-    type: 'channel';
-    value: Script.ChannelProperties;
-  };
+export type ChannelValue = (({
+"type":("channel"),"value":(Script.ChannelProperties)}));
 }
 export namespace Script {
-  export type ChannelProperties = {
-    channel: Script.Channel;
-    serializationOptions?: Script.SerializationOptions;
-    ownership?: Script.ResultOwnership;
-  };
+export type ChannelProperties = (({
+"channel":(Script.Channel),"serializationOptions"?:(Script.SerializationOptions),"ownership"?:(Script.ResultOwnership)}));
 }
 export namespace Script {
-  export type EvaluateResult =
-    | Script.EvaluateResultSuccess
-    | Script.EvaluateResultException;
+export type EvaluateResult = ((Script.EvaluateResultSuccess| Script.EvaluateResultException));
 }
 export namespace Script {
   export type EvaluateResultSuccess = {
@@ -1705,16 +1260,7 @@ export namespace Script {
   export type InternalId = string;
 }
 export namespace Script {
-  export type LocalValue =
-    | Script.RemoteReference
-    | Script.PrimitiveProtocolValue
-    | Script.ChannelValue
-    | Script.ArrayLocalValue
-    | Script.DateLocalValue
-    | Script.MapLocalValue
-    | Script.ObjectLocalValue
-    | Script.RegExpLocalValue
-    | Script.SetLocalValue;
+export type LocalValue = ((Script.RemoteReference| Script.PrimitiveProtocolValue| Script.ChannelValue| Script.ArrayLocalValue| (Script.DateLocalValue)| Script.MapLocalValue| Script.ObjectLocalValue| (Script.RegExpLocalValue)| Script.SetLocalValue));
 }
 export namespace Script {
   export type ListLocalValue = [...Script.LocalValue[]];
@@ -1907,28 +1453,7 @@ export namespace Script {
   } & Extensible;
 }
 export namespace Script {
-  export type RemoteValue =
-    | Script.PrimitiveProtocolValue
-    | Script.SymbolRemoteValue
-    | Script.ArrayRemoteValue
-    | Script.ObjectRemoteValue
-    | Script.FunctionRemoteValue
-    | Script.RegExpRemoteValue
-    | Script.DateRemoteValue
-    | Script.MapRemoteValue
-    | Script.SetRemoteValue
-    | Script.WeakMapRemoteValue
-    | Script.WeakSetRemoteValue
-    | Script.GeneratorRemoteValue
-    | Script.ErrorRemoteValue
-    | Script.ProxyRemoteValue
-    | Script.PromiseRemoteValue
-    | Script.TypedArrayRemoteValue
-    | Script.ArrayBufferRemoteValue
-    | Script.NodeListRemoteValue
-    | Script.HtmlCollectionRemoteValue
-    | Script.NodeRemoteValue
-    | Script.WindowProxyRemoteValue;
+export type RemoteValue = ((Script.PrimitiveProtocolValue| Script.SymbolRemoteValue| Script.ArrayRemoteValue| Script.ObjectRemoteValue| Script.FunctionRemoteValue| Script.RegExpRemoteValue| Script.DateRemoteValue| Script.MapRemoteValue| Script.SetRemoteValue| Script.WeakMapRemoteValue| Script.WeakSetRemoteValue| Script.GeneratorRemoteValue| Script.ErrorRemoteValue| Script.ProxyRemoteValue| Script.PromiseRemoteValue| Script.TypedArrayRemoteValue| Script.ArrayBufferRemoteValue| Script.NodeListRemoteValue| Script.HtmlCollectionRemoteValue| Script.NodeRemoteValue| Script.WindowProxyRemoteValue));
 }
 export namespace Script {
   export type ListRemoteValue = [...Script.RemoteValue[]];
@@ -1939,258 +1464,161 @@ export namespace Script {
   ];
 }
 export namespace Script {
-  export type SymbolRemoteValue = {
-    type: 'symbol';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type SymbolRemoteValue = (({
+"type":("symbol"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type ArrayRemoteValue = {
-    type: 'array';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-    value?: Script.ListRemoteValue;
-  };
+export type ArrayRemoteValue = (({
+"type":("array"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId),"value"?:(Script.ListRemoteValue)}));
 }
 export namespace Script {
-  export type ObjectRemoteValue = {
-    type: 'object';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-    value?: Script.MappingRemoteValue;
-  };
+export type ObjectRemoteValue = (({
+"type":("object"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId),"value"?:(Script.MappingRemoteValue)}));
 }
 export namespace Script {
-  export type FunctionRemoteValue = {
-    type: 'function';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type FunctionRemoteValue = (({
+"type":("function"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type RegExpRemoteValue = Script.RegExpLocalValue & {
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type RegExpRemoteValue = ((Script.RegExpLocalValue&{
+"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type DateRemoteValue = Script.DateLocalValue & {
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type DateRemoteValue = ((Script.DateLocalValue&{
+"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type MapRemoteValue = {
-    type: 'map';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-    value?: Script.MappingRemoteValue;
-  };
+export type MapRemoteValue = (({
+"type":("map"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId),"value"?:(Script.MappingRemoteValue)}));
 }
 export namespace Script {
-  export type SetRemoteValue = {
-    type: 'set';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-    value?: Script.ListRemoteValue;
-  };
+export type SetRemoteValue = (({
+"type":("set"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId),"value"?:(Script.ListRemoteValue)}));
 }
 export namespace Script {
-  export type WeakMapRemoteValue = {
-    type: 'weakmap';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type WeakMapRemoteValue = (({
+"type":("weakmap"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type WeakSetRemoteValue = {
-    type: 'weakset';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type WeakSetRemoteValue = (({
+"type":("weakset"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type GeneratorRemoteValue = {
-    type: 'generator';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type GeneratorRemoteValue = (({
+"type":("generator"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type ErrorRemoteValue = {
-    type: 'error';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type ErrorRemoteValue = (({
+"type":("error"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type ProxyRemoteValue = {
-    type: 'proxy';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type ProxyRemoteValue = (({
+"type":("proxy"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type PromiseRemoteValue = {
-    type: 'promise';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type PromiseRemoteValue = (({
+"type":("promise"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type TypedArrayRemoteValue = {
-    type: 'typedarray';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type TypedArrayRemoteValue = (({
+"type":("typedarray"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type ArrayBufferRemoteValue = {
-    type: 'arraybuffer';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type ArrayBufferRemoteValue = (({
+"type":("arraybuffer"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type NodeListRemoteValue = {
-    type: 'nodelist';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-    value?: Script.ListRemoteValue;
-  };
+export type NodeListRemoteValue = (({
+"type":("nodelist"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId),"value"?:(Script.ListRemoteValue)}));
 }
 export namespace Script {
-  export type HtmlCollectionRemoteValue = {
-    type: 'htmlcollection';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-    value?: Script.ListRemoteValue;
-  };
+export type HtmlCollectionRemoteValue = (({
+"type":("htmlcollection"),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId),"value"?:(Script.ListRemoteValue)}));
 }
 export namespace Script {
-  export type NodeRemoteValue = {
-    type: 'node';
-    sharedId?: Script.SharedId;
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-    value?: Script.NodeProperties;
-  };
+export type NodeRemoteValue = (({
+"type":("node"),"sharedId"?:(Script.SharedId),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId),"value"?:(Script.NodeProperties)}));
 }
 export namespace Script {
-  export type NodeProperties = {
-    nodeType: JsUint;
-    childNodeCount: JsUint;
-    attributes?: {
-      [key: string]: string;
-    };
-    children?: [...Script.NodeRemoteValue[]];
-    localName?: string;
-    mode?: 'open' | 'closed';
-    namespaceURI?: string;
-    nodeValue?: string;
-    shadowRoot?: Script.NodeRemoteValue | null;
-  };
+export type NodeProperties = (({
+"nodeType":(JsUint),"childNodeCount":(JsUint),"attributes"?:(({
+[key: string]:(string)})),"children"?:([
+...((Script.NodeRemoteValue)[])]),"localName"?:(string),"mode"?:("open"| "closed"),"namespaceURI"?:(string),"nodeValue"?:(string),"shadowRoot"?:(Script.NodeRemoteValue| null)}));
 }
 export namespace Script {
-  export type WindowProxyRemoteValue = {
-    type: 'window';
-    value: Script.WindowProxyProperties;
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
+export type WindowProxyRemoteValue = (({
+"type":("window"),"value":(Script.WindowProxyProperties),"handle"?:(Script.Handle),"internalId"?:(Script.InternalId)}));
 }
 export namespace Script {
-  export type WindowProxyProperties = {
-    context: BrowsingContext.BrowsingContext;
-  };
+export type WindowProxyProperties = (({
+"context":(BrowsingContext.BrowsingContext)}));
 }
 export namespace Script {
-  export const enum ResultOwnership {
-    Root = 'root',
-    None = 'none',
-  }
+export const enum ResultOwnership {Root = "root",
+None = "none",
+}
 }
 export namespace Script {
-  export type SerializationOptions = {
-    /**
-     * @defaultValue `0`
-     */
-    maxDomDepth?: JsUint | null;
-    /**
-     * @defaultValue `null`
-     */
-    maxObjectDepth?: JsUint | null;
-    /**
-     * @defaultValue `"none"`
-     */
-    includeShadowTree?: 'none' | 'open' | 'all';
-  };
+export type SerializationOptions = (({
+
+/**
+ * @defaultValue `0`
+ */
+"maxDomDepth"?:((JsUint| null)),
+/**
+ * @defaultValue `null`
+ */
+"maxObjectDepth"?:((JsUint| null)),
+/**
+ * @defaultValue `"none"`
+ */
+"includeShadowTree"?:(("none"| "open"| "all"))}));
 }
 export namespace Script {
-  export type SharedId = string;
+export type SharedId = (string);
 }
 export namespace Script {
-  export type StackFrame = {
-    columnNumber: JsUint;
-    functionName: string;
-    lineNumber: JsUint;
-    url: string;
-  };
+export type StackFrame = (({
+"columnNumber":(JsUint),"functionName":(string),"lineNumber":(JsUint),"url":(string)}));
 }
 export namespace Script {
-  export type StackTrace = {
-    callFrames: [...Script.StackFrame[]];
-  };
+export type StackTrace = (({
+"callFrames":([
+...((Script.StackFrame)[])])}));
 }
 export namespace Script {
-  export type Source = {
-    realm: Script.Realm;
-    context?: BrowsingContext.BrowsingContext;
-  };
+export type Source = (({
+"realm":(Script.Realm),"context"?:(BrowsingContext.BrowsingContext)}));
 }
 export namespace Script {
-  export type RealmTarget = {
-    realm: Script.Realm;
-  };
+export type RealmTarget = (({
+"realm":(Script.Realm)}));
 }
 export namespace Script {
-  export type ContextTarget = {
-    context: BrowsingContext.BrowsingContext;
-    sandbox?: string;
-  };
+export type ContextTarget = (({
+"context":(BrowsingContext.BrowsingContext),"sandbox"?:(string)}));
 }
 export namespace Script {
-  export type Target = Script.ContextTarget | Script.RealmTarget;
+export type Target = ((Script.ContextTarget| Script.RealmTarget));
 }
 export namespace Script {
-  export type AddPreloadScript = {
-    method: 'script.addPreloadScript';
-    params: Script.AddPreloadScriptParameters;
-  };
+export type AddPreloadScript = ({
+"method":("script.addPreloadScript"),"params":(Script.AddPreloadScriptParameters)});
 }
 export namespace Script {
-  export type AddPreloadScriptParameters = {
-    functionDeclaration: string;
-    arguments?: [...Script.ChannelValue[]];
-    contexts?: [
-      BrowsingContext.BrowsingContext,
-      ...BrowsingContext.BrowsingContext[],
-    ];
-    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
-    sandbox?: string;
-  };
+export type AddPreloadScriptParameters = (({
+"functionDeclaration":(string),"arguments"?:([
+...((Script.ChannelValue)[])]),"contexts"?:([
+(BrowsingContext.BrowsingContext),...(BrowsingContext.BrowsingContext)[]]),"userContexts"?:([
+(Browser.UserContext),...(Browser.UserContext)[]]),"sandbox"?:(string)}));
 }
 export namespace Script {
-  export type AddPreloadScriptResult = {
-    script: Script.PreloadScript;
-  };
+export type AddPreloadScriptResult = (({
+"script":(Script.PreloadScript)}));
 }
 export namespace Script {
-  export type Disown = {
-    method: 'script.disown';
-    params: Script.DisownParameters;
-  };
+export type Disown = ({
+"method":("script.disown"),"params":(Script.DisownParameters)});
 }
 export namespace Script {
   export type DisownParameters = {
@@ -2205,66 +1633,46 @@ export namespace Script {
   };
 }
 export namespace Script {
-  export type CallFunctionParameters = {
-    functionDeclaration: string;
-    awaitPromise: boolean;
-    target: Script.Target;
-    arguments?: [...Script.LocalValue[]];
-    resultOwnership?: Script.ResultOwnership;
-    serializationOptions?: Script.SerializationOptions;
-    this?: Script.LocalValue;
-    /**
-     * @defaultValue `false`
-     */
-    userActivation?: boolean;
-  };
+export type CallFunctionParameters = (({
+"functionDeclaration":(string),"awaitPromise":(boolean),"target":(Script.Target),"arguments"?:([
+...((Script.LocalValue)[])]),"resultOwnership"?:(Script.ResultOwnership),"serializationOptions"?:(Script.SerializationOptions),"this"?:(Script.LocalValue),
+/**
+ * @defaultValue `false`
+ */
+"userActivation"?:(boolean)}));
 }
 export namespace Script {
-  export type Evaluate = {
-    method: 'script.evaluate';
-    params: Script.EvaluateParameters;
-  };
+export type Evaluate = ({
+"method":("script.evaluate"),"params":(Script.EvaluateParameters)});
 }
 export namespace Script {
-  export type EvaluateParameters = {
-    expression: string;
-    target: Script.Target;
-    awaitPromise: boolean;
-    resultOwnership?: Script.ResultOwnership;
-    serializationOptions?: Script.SerializationOptions;
-    /**
-     * @defaultValue `false`
-     */
-    userActivation?: boolean;
-  };
+export type EvaluateParameters = (({
+"expression":(string),"target":(Script.Target),"awaitPromise":(boolean),"resultOwnership"?:(Script.ResultOwnership),"serializationOptions"?:(Script.SerializationOptions),
+/**
+ * @defaultValue `false`
+ */
+"userActivation"?:(boolean)}));
 }
 export namespace Script {
-  export type GetRealms = {
-    method: 'script.getRealms';
-    params: Script.GetRealmsParameters;
-  };
+export type GetRealms = ({
+"method":("script.getRealms"),"params":(Script.GetRealmsParameters)});
 }
 export namespace Script {
-  export type GetRealmsParameters = {
-    context?: BrowsingContext.BrowsingContext;
-    type?: Script.RealmType;
-  };
+export type GetRealmsParameters = (({
+"context"?:(BrowsingContext.BrowsingContext),"type"?:(Script.RealmType)}));
 }
 export namespace Script {
-  export type GetRealmsResult = {
-    realms: [...Script.RealmInfo[]];
-  };
+export type GetRealmsResult = (({
+"realms":([
+...((Script.RealmInfo)[])])}));
 }
 export namespace Script {
-  export type RemovePreloadScript = {
-    method: 'script.removePreloadScript';
-    params: Script.RemovePreloadScriptParameters;
-  };
+export type RemovePreloadScript = ({
+"method":("script.removePreloadScript"),"params":(Script.RemovePreloadScriptParameters)});
 }
 export namespace Script {
-  export type RemovePreloadScriptParameters = {
-    script: Script.PreloadScript;
-  };
+export type RemovePreloadScriptParameters = (({
+"script":(Script.PreloadScript)}));
 }
 export namespace Script {
   export type Message = {
@@ -2286,182 +1694,112 @@ export namespace Script {
   };
 }
 export namespace Script {
-  export type RealmDestroyed = {
-    method: 'script.realmDestroyed';
-    params: Script.RealmDestroyedParameters;
-  };
+export type RealmDestroyed = ({
+"method":("script.realmDestroyed"),"params":(Script.RealmDestroyedParameters)});
 }
 export namespace Script {
-  export type RealmDestroyedParameters = {
-    realm: Script.Realm;
-  };
+export type RealmDestroyedParameters = (({
+"realm":(Script.Realm)}));
 }
-export type StorageCommand =
-  | Storage.DeleteCookies
-  | Storage.GetCookies
-  | Storage.SetCookie;
-export type StorageResult =
-  | Storage.DeleteCookiesResult
-  | Storage.GetCookiesResult
-  | Storage.SetCookieResult;
+export type StorageCommand = (Storage.DeleteCookies| Storage.GetCookies| Storage.SetCookie);
+export type StorageResult = ((Storage.DeleteCookiesResult| Storage.GetCookiesResult| Storage.SetCookieResult));
 export namespace Storage {
-  export type PartitionKey = {
-    userContext?: string;
-    sourceOrigin?: string;
-  } & Extensible;
+export type PartitionKey = (({
+"userContext"?:(string),"sourceOrigin"?:(string)}&Extensible));
 }
 export namespace Storage {
-  export type GetCookies = {
-    method: 'storage.getCookies';
-    params: Storage.GetCookiesParameters;
-  };
+export type GetCookies = ({
+"method":("storage.getCookies"),"params":(Storage.GetCookiesParameters)});
 }
 export namespace Storage {
-  export type CookieFilter = {
-    name?: string;
-    value?: Network.BytesValue;
-    domain?: string;
-    path?: string;
-    size?: JsUint;
-    httpOnly?: boolean;
-    secure?: boolean;
-    sameSite?: Network.SameSite;
-    expiry?: JsUint;
-  } & Extensible;
+export type CookieFilter = (({
+"name"?:(string),"value"?:(Network.BytesValue),"domain"?:(string),"path"?:(string),"size"?:(JsUint),"httpOnly"?:(boolean),"secure"?:(boolean),"sameSite"?:(Network.SameSite),"expiry"?:(JsUint)}&Extensible));
 }
 export namespace Storage {
-  export type BrowsingContextPartitionDescriptor = {
-    type: 'context';
-    context: BrowsingContext.BrowsingContext;
-  };
+export type BrowsingContextPartitionDescriptor = (({
+"type":("context"),"context":(BrowsingContext.BrowsingContext)}));
 }
 export namespace Storage {
-  export type StorageKeyPartitionDescriptor = {
-    type: 'storageKey';
-    userContext?: string;
-    sourceOrigin?: string;
-  } & Extensible;
+export type StorageKeyPartitionDescriptor = (({
+"type":("storageKey"),"userContext"?:(string),"sourceOrigin"?:(string)}&Extensible));
 }
 export namespace Storage {
-  export type PartitionDescriptor =
-    | Storage.BrowsingContextPartitionDescriptor
-    | Storage.StorageKeyPartitionDescriptor;
+export type PartitionDescriptor = ((Storage.BrowsingContextPartitionDescriptor| Storage.StorageKeyPartitionDescriptor));
 }
 export namespace Storage {
-  export type GetCookiesParameters = {
-    filter?: Storage.CookieFilter;
-    partition?: Storage.PartitionDescriptor;
-  };
+export type GetCookiesParameters = (({
+"filter"?:(Storage.CookieFilter),"partition"?:(Storage.PartitionDescriptor)}));
 }
 export namespace Storage {
-  export type GetCookiesResult = {
-    cookies: [...Network.Cookie[]];
-    partitionKey: Storage.PartitionKey;
-  };
+export type GetCookiesResult = (({
+"cookies":([
+...((Network.Cookie)[])]),"partitionKey":(Storage.PartitionKey)}));
 }
 export namespace Storage {
-  export type SetCookie = {
-    method: 'storage.setCookie';
-    params: Storage.SetCookieParameters;
-  };
+export type SetCookie = ({
+"method":("storage.setCookie"),"params":(Storage.SetCookieParameters)});
 }
 export namespace Storage {
-  export type PartialCookie = {
-    name: string;
-    value: Network.BytesValue;
-    domain: string;
-    path?: string;
-    httpOnly?: boolean;
-    secure?: boolean;
-    sameSite?: Network.SameSite;
-    expiry?: JsUint;
-  } & Extensible;
+export type PartialCookie = (({
+"name":(string),"value":(Network.BytesValue),"domain":(string),"path"?:(string),"httpOnly"?:(boolean),"secure"?:(boolean),"sameSite"?:(Network.SameSite),"expiry"?:(JsUint)}&Extensible));
 }
 export namespace Storage {
-  export type SetCookieParameters = {
-    cookie: Storage.PartialCookie;
-    partition?: Storage.PartitionDescriptor;
-  };
+export type SetCookieParameters = (({
+"cookie":(Storage.PartialCookie),"partition"?:(Storage.PartitionDescriptor)}));
 }
 export namespace Storage {
-  export type SetCookieResult = {
-    partitionKey: Storage.PartitionKey;
-  };
+export type SetCookieResult = (({
+"partitionKey":(Storage.PartitionKey)}));
 }
 export namespace Storage {
-  export type DeleteCookies = {
-    method: 'storage.deleteCookies';
-    params: Storage.DeleteCookiesParameters;
-  };
+export type DeleteCookies = ({
+"method":("storage.deleteCookies"),"params":(Storage.DeleteCookiesParameters)});
 }
 export namespace Storage {
-  export type DeleteCookiesParameters = {
-    filter?: Storage.CookieFilter;
-    partition?: Storage.PartitionDescriptor;
-  };
+export type DeleteCookiesParameters = (({
+"filter"?:(Storage.CookieFilter),"partition"?:(Storage.PartitionDescriptor)}));
 }
 export namespace Storage {
-  export type DeleteCookiesResult = {
-    partitionKey: Storage.PartitionKey;
-  };
+export type DeleteCookiesResult = (({
+"partitionKey":(Storage.PartitionKey)}));
 }
-export type LogEvent = Log.EntryAdded;
+export type LogEvent = (Log.EntryAdded);
 export namespace Log {
-  export const enum Level {
-    Debug = 'debug',
-    Info = 'info',
-    Warn = 'warn',
-    Error = 'error',
-  }
+export const enum Level {Debug = "debug",
+Info = "info",
+Warn = "warn",
+Error = "error",
+}
 }
 export namespace Log {
-  export type Entry =
-    | Log.GenericLogEntry
-    | Log.ConsoleLogEntry
-    | Log.JavascriptLogEntry;
+export type Entry = ((Log.GenericLogEntry| Log.ConsoleLogEntry| Log.JavascriptLogEntry));
 }
 export namespace Log {
-  export type BaseLogEntry = {
-    level: Log.Level;
-    source: Script.Source;
-    text: string | null;
-    timestamp: JsUint;
-    stackTrace?: Script.StackTrace;
-  };
+export type BaseLogEntry = ({
+"level":(Log.Level),"source":(Script.Source),"text":(string| null),"timestamp":(JsUint),"stackTrace"?:(Script.StackTrace)});
 }
 export namespace Log {
-  export type GenericLogEntry = Log.BaseLogEntry & {
-    type: string;
-  };
+export type GenericLogEntry = ((Log.BaseLogEntry&{
+"type":(string)}));
 }
 export namespace Log {
-  export type ConsoleLogEntry = Log.BaseLogEntry & {
-    type: 'console';
-    method: string;
-    args: [...Script.RemoteValue[]];
-  };
+export type ConsoleLogEntry = ((Log.BaseLogEntry&{
+"type":("console"),"method":(string),"args":([
+...((Script.RemoteValue)[])])}));
 }
 export namespace Log {
-  export type JavascriptLogEntry = Log.BaseLogEntry & {
-    type: 'javascript';
-  };
+export type JavascriptLogEntry = ((Log.BaseLogEntry&{
+"type":("javascript")}));
 }
 export namespace Log {
-  export type EntryAdded = {
-    method: 'log.entryAdded';
-    params: Log.Entry;
-  };
+export type EntryAdded = ({
+"method":("log.entryAdded"),"params":(Log.Entry)});
 }
-export type InputCommand =
-  | Input.PerformActions
-  | Input.ReleaseActions
-  | Input.SetFiles;
-export type InputEvent = Input.FileDialogOpened;
+export type InputCommand = (Input.PerformActions| Input.ReleaseActions| Input.SetFiles);
+export type InputEvent = (Input.FileDialogOpened);
 export namespace Input {
-  export type ElementOrigin = {
-    type: 'element';
-    element: Script.SharedReference;
-  };
+export type ElementOrigin = (({
+"type":("element"),"element":(Script.SharedReference)}));
 }
 export namespace Input {
   export type PerformActions = {
@@ -2514,26 +1852,21 @@ export namespace Input {
   };
 }
 export namespace Input {
-  export const enum PointerType {
-    Mouse = 'mouse',
-    Pen = 'pen',
-    Touch = 'touch',
-  }
+export const enum PointerType {Mouse = "mouse",
+Pen = "pen",
+Touch = "touch",
+}
 }
 export namespace Input {
-  export type PointerParameters = {
-    /**
-     * @defaultValue `"mouse"`
-     */
-    pointerType?: Input.PointerType;
-  };
+export type PointerParameters = (({
+
+/**
+ * @defaultValue `"mouse"`
+ */
+"pointerType"?:(Input.PointerType)}));
 }
 export namespace Input {
-  export type PointerSourceAction =
-    | Input.PauseAction
-    | Input.PointerDownAction
-    | Input.PointerUpAction
-    | Input.PointerMoveAction;
+export type PointerSourceAction = ((Input.PauseAction| Input.PointerDownAction| Input.PointerUpAction| Input.PointerMoveAction));
 }
 export namespace Input {
   export type WheelSourceActions = {
@@ -2599,87 +1932,100 @@ export namespace Input {
   };
 }
 export namespace Input {
-  export type PointerCommonProperties = {
-    /**
-     * @defaultValue `1`
-     */
-    width?: JsUint;
-    /**
-     * @defaultValue `1`
-     */
-    height?: JsUint;
-    /**
-     * @defaultValue `0`
-     */
-    pressure?: number;
-    /**
-     * @defaultValue `0`
-     */
-    tangentialPressure?: number;
-    /**
-     * Must be between `0` and `359`, inclusive.
-     *
-     * @defaultValue `0`
-     */
-    twist?: number;
-    /**
-     * Must be between `0` and `1.5707963267948966`, inclusive.
-     *
-     * @defaultValue `0`
-     */
-    altitudeAngle?: number;
-    /**
-     * Must be between `0` and `6.283185307179586`, inclusive.
-     *
-     * @defaultValue `0`
-     */
-    azimuthAngle?: number;
-  };
+export type PointerCommonProperties = ({
+
+/**
+ * @defaultValue `1`
+ */
+"width"?:(JsUint),
+/**
+ * @defaultValue `1`
+ */
+"height"?:(JsUint),
+/**
+ * @defaultValue `0`
+ */
+"pressure"?:(number),
+/**
+ * @defaultValue `0`
+ */
+"tangentialPressure"?:(number),
+/**
+ * Must be between `0` and `359`, inclusive.
+ *
+ * @defaultValue `0`
+ */
+"twist"?:((number)),
+/**
+ * Must be between `0` and `1.5707963267948966`, inclusive.
+ *
+ * @defaultValue `0`
+ */
+"altitudeAngle"?:((number)),
+/**
+ * Must be between `0` and `6.283185307179586`, inclusive.
+ *
+ * @defaultValue `0`
+ */
+"azimuthAngle"?:((number))});
 }
 export namespace Input {
-  export type Origin = 'viewport' | 'pointer' | Input.ElementOrigin;
+export type Origin = ("viewport"| "pointer"| Input.ElementOrigin);
 }
 export namespace Input {
-  export type ReleaseActions = {
-    method: 'input.releaseActions';
-    params: Input.ReleaseActionsParameters;
-  };
+export type ReleaseActions = ({
+"method":("input.releaseActions"),"params":(Input.ReleaseActionsParameters)});
 }
 export namespace Input {
-  export type ReleaseActionsParameters = {
-    context: BrowsingContext.BrowsingContext;
-  };
+export type ReleaseActionsParameters = (({
+"context":(BrowsingContext.BrowsingContext)}));
 }
 export namespace Input {
-  export type SetFiles = {
-    method: 'input.setFiles';
-    params: Input.SetFilesParameters;
-  };
+export type SetFiles = ({
+"method":("input.setFiles"),"params":(Input.SetFilesParameters)});
 }
 export namespace Input {
-  export type SetFilesParameters = {
-    context: BrowsingContext.BrowsingContext;
-    element: Script.SharedReference;
-    files: [...string[]];
-  };
+export type SetFilesParameters = (({
+"context":(BrowsingContext.BrowsingContext),"element":(Script.SharedReference),"files":([
+...((string)[])])}));
+}
+export type AutofillCommand = (Autofill.Trigger);
+export namespace Autofill {
+export type Trigger = ({
+"method":("autofill.trigger"),"params":(Autofill.TriggerParameters)});
+}
+export namespace Autofill {
+export type TriggerParameters = (({
+"context":(BrowsingContext.BrowsingContext),"element":(Script.SharedReference),"field":(Autofill.Field),"card":(Autofill.Card),"address":(Autofill.Address)}));
+}
+export namespace Autofill {
+export type Field = (({
+"name":(Autofill.FieldName),"value":(string)}));
+}
+export namespace Autofill {
+export type Card = (({
+"number":(string),"name":(string),"expiryMonth":(string),"expiryYear":(string),"cvc":(string)}));
+}
+export namespace Autofill {
+export type Address = (({
+"fields":([
+...((Autofill.Field)[])])}));
+}
+export namespace Autofill {
+export type FieldName = (string);
 }
 export namespace Input {
-  export type FileDialogOpened = {
-    method: 'input.fileDialogOpened';
-    params: Input.FileDialogInfo;
-  };
+export type FileDialogOpened = ({
+"method":("input.fileDialogOpened"),"params":(Input.FileDialogInfo)});
 }
 export namespace Input {
-  export type FileDialogInfo = {
-    context: BrowsingContext.BrowsingContext;
-    element?: Script.SharedReference;
-    multiple: boolean;
-  };
+export type FileDialogInfo = (({
+"context":(BrowsingContext.BrowsingContext),"element"?:(Script.SharedReference),"multiple":(boolean)}));
 }
-export type WebExtensionCommand = WebExtension.Install | WebExtension.Uninstall;
-export type WebExtensionResult = WebExtension.InstallResult;
+export type WebExtensionCommand = (WebExtension.Install| WebExtension.Uninstall);
+export type WebExtensionResult = ((WebExtension.InstallResult));
 export namespace WebExtension {
-  export type Extension = string;
+export type Extension = (string);
 }
 export namespace WebExtension {
   export type Install = {
@@ -2693,42 +2039,29 @@ export namespace WebExtension {
   };
 }
 export namespace WebExtension {
-  export type ExtensionData =
-    | WebExtension.ExtensionArchivePath
-    | WebExtension.ExtensionBase64Encoded
-    | WebExtension.ExtensionPath;
+export type ExtensionData = ((WebExtension.ExtensionArchivePath| WebExtension.ExtensionBase64Encoded| WebExtension.ExtensionPath));
 }
 export namespace WebExtension {
-  export type ExtensionPath = {
-    type: 'path';
-    path: string;
-  };
+export type ExtensionPath = (({
+"type":("path"),"path":(string)}));
 }
 export namespace WebExtension {
-  export type ExtensionArchivePath = {
-    type: 'archivePath';
-    path: string;
-  };
+export type ExtensionArchivePath = (({
+"type":("archivePath"),"path":(string)}));
 }
 export namespace WebExtension {
-  export type ExtensionBase64Encoded = {
-    type: 'base64';
-    value: string;
-  };
+export type ExtensionBase64Encoded = (({
+"type":("base64"),"value":(string)}));
 }
 export namespace WebExtension {
-  export type InstallResult = {
-    extension: WebExtension.Extension;
-  };
+export type InstallResult = (({
+"extension":(WebExtension.Extension)}));
 }
 export namespace WebExtension {
-  export type Uninstall = {
-    method: 'webExtension.uninstall';
-    params: WebExtension.UninstallParameters;
-  };
+export type Uninstall = ({
+"method":("webExtension.uninstall"),"params":(WebExtension.UninstallParameters)});
 }
 export namespace WebExtension {
-  export type UninstallParameters = {
-    extension: WebExtension.Extension;
-  };
+export type UninstallParameters = (({
+"extension":(WebExtension.Extension)}));
 }

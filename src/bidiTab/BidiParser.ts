@@ -32,6 +32,13 @@ import type {
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
 export class BidiParser implements BidiCommandParameterParser {
+  // Autofill module
+  // keep-sorted start block=yes
+  parseAutofillTriggerParams(params: unknown): Autofill.TriggerParameters {
+    return Parser.Autofill.parseTriggerParameters(params);
+  }
+  // keep-sorted end
+
   // Bluetooth module
   // keep-sorted start block=yes
   parseDisableSimulationParameters(

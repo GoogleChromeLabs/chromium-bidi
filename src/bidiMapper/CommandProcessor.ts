@@ -32,6 +32,7 @@ import type {Result} from '../utils/result.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {MapperOptions} from './MapperOptions.js';
+import {AutofillProcessor} from './modules/autofill/AutofillProcessor.js';
 import type {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
 import type {ContextConfigStorage} from './modules/browser/ContextConfigStorage.js';
@@ -66,6 +67,7 @@ interface CommandProcessorEventsMap extends Record<string | symbol, unknown> {
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
+  #autofillProcessor: AutofillProcessor;
   #bluetoothProcessor: BluetoothProcessor;
   #browserCdpClient: CdpClient;
   #browserProcessor: BrowserProcessor;
@@ -105,6 +107,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#logger = logger;
 
     this.#bluetoothProcessor = bluetoothProcessor;
+    this.#autofillProcessor = new AutofillProcessor(browserCdpClient);
 
     // keep-sorted start block=yes
     this.#browserProcessor = new BrowserProcessor(
@@ -165,8 +168,17 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     command: ChromiumBidi.Command,
   ): Promise<ChromiumBidi.ResultData> {
     switch (command.method) {
+      // Autofill module
+      // keep-sorted start block=yes
+      case 'autofill.trigger':
+        return await this.#autofillProcessor.trigger(
+          this.#parser.parseAutofillTriggerParams(command.params),
+        );
+      // keep-sorted end
+
       // Bluetooth module
       // keep-sorted start block=yes
+
       case 'bluetooth.disableSimulation':
         return await this.#bluetoothProcessor.disableSimulation(
           this.#parser.parseDisableSimulationParameters(command.params),
