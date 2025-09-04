@@ -16,6 +16,7 @@
  */
 import type {BidiCommandParameterParser} from '../bidiMapper/BidiMapper.js';
 import type {
+  Autofill,
   Bluetooth,
   Browser,
   BrowsingContext,

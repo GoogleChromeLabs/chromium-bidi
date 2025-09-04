@@ -40,7 +40,9 @@ export class AutofillProcessor {
    */
   async trigger(params: Autofill.TriggerParameters): Promise<EmptyResult> {
     try {
-      await this.#browserCdpClient.sendCommand('Autofill.trigger', {
+      // Cast to `any` as a temporary workaround for prototyping, since the TypeScript types
+      // for CDP in "Chromium BiDi" aren't automatically updated with local changes.
+      await (this.#browserCdpClient as any).sendCommand('Autofill.trigger', {
         fieldId: Number(params.element.sharedId),
         frameId: undefined,
         card: params.card,

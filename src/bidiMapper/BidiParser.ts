@@ -16,6 +16,7 @@
  */
 
 import type {
+  Autofill,
   Bluetooth,
   Browser,
   BrowsingContext,
