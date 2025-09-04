@@ -44,7 +44,7 @@ export class AutofillProcessor {
         fieldId: Number(params.element.sharedId),
         frameId: undefined,
         card: params.card,
-        address: params.address
+        address: params.address,
       });
       return {};
     } catch (err) {
