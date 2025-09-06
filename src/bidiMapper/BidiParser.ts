@@ -16,6 +16,7 @@
  */
 
 import type {
+  Autofill,
   Bluetooth,
   Browser,
   BrowsingContext,
@@ -31,6 +32,11 @@ import type {
 } from '../protocol/protocol.js';
 
 export interface BidiCommandParameterParser {
+  // Autofill module
+  // keep-sorted start block=yes
+  parseAutofillTriggerParams(params: unknown): Autofill.TriggerParameters;
+  // keep-sorted end
+
   // Bluetooth module
   // keep-sorted start block=yes
   parseDisableSimulationParameters(
