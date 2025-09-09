@@ -19,17 +19,20 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
   type Autofill,
   type EmptyResult,
+  NoSuchNodeException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import {parseSharedId} from '../script/SharedId.js';
 
 /**
  * Responsible for handling the `autofill` module.
  */
 export class AutofillProcessor {
-  readonly #browserCdpClient: CdpClient;
+  readonly #browsingContextStorage: BrowsingContextStorage;
 
-  constructor(browserCdpClient: CdpClient) {
-    this.#browserCdpClient = browserCdpClient;
+  constructor(browsingContextStorage: BrowsingContextStorage) {
+    this.#browsingContextStorage = browsingContextStorage;
   }
 
   /**
@@ -40,14 +43,54 @@ export class AutofillProcessor {
    */
   async trigger(params: Autofill.TriggerParameters): Promise<EmptyResult> {
     try {
+      // Get the browsing context from the parameters
+      const context = this.#browsingContextStorage.getContext(params.context);
+
+      // Parse the shared ID to get frame, document, and backend node ID
+      const parsedSharedId = parseSharedId(params.element.sharedId);
+      if (parsedSharedId === null) {
+        throw new NoSuchNodeException(
+          `SharedId "${params.element.sharedId}" was not found.`,
+        );
+      }
+
+      const {frameId, documentId, backendNodeId} = parsedSharedId;
+
+      // Assert that the frame matches the current context (if frameId is available)
+      if (frameId !== undefined && frameId !== params.context) {
+        throw new NoSuchNodeException(
+          `SharedId "${params.element.sharedId}" belongs to different frame. Current frame is ${params.context}.`,
+        );
+      }
+
+      // Assert that the document matches the current context's navigable ID
+      if (context.navigableId !== documentId) {
+        throw new NoSuchNodeException(
+          `SharedId "${params.element.sharedId}" belongs to different document. Current document is ${context.navigableId}.`,
+        );
+      }
+
       // Cast to `any` as a temporary workaround for prototyping, since the TypeScript types
       // for CDP in "Chromium BiDi" aren't automatically updated with local changes.
-      await (this.#browserCdpClient as any).sendCommand('Autofill.trigger', {
-        fieldId: Number(params.element.sharedId),
-        frameId: undefined,
-        card: params.card,
-        address: params.address,
+
+      // Based on the Autofill.pdl definition, call the correct CDP method
+      // The PDL shows: command trigger with fieldId as DOM.BackendNodeId
+
+      // First, we need to enable the Autofill domain
+      try {
+        await context.cdpTarget.cdpClient.sendCommand('Autofill.enable');
+      } catch (enableErr) {
+        console.log('Failed to enable Autofill domain:', (enableErr as Error).message);
+      }
+
+      // Call the trigger method with the correct parameters from PDL
+      await (context.cdpTarget.cdpClient as any).sendCommand('Autofill.trigger', {
+        fieldId: backendNodeId, // DOM.BackendNodeId from parsed shared ID
+        frameId: frameId, // Page.FrameId from parsed shared ID
+        card: params.card,  // optional CreditCard
+        address: params.address, // optional Address
       });
+
       return {};
     } catch (err) {
       if ((err as Error).message.includes('command was not found')) {

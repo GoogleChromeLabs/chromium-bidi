@@ -107,7 +107,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#logger = logger;
 
     this.#bluetoothProcessor = bluetoothProcessor;
-    this.#autofillProcessor = new AutofillProcessor(browserCdpClient);
+    this.#autofillProcessor = new AutofillProcessor(browsingContextStorage);
 
     // keep-sorted start block=yes
     this.#browserProcessor = new BrowserProcessor(
