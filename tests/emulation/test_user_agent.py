@@ -124,28 +124,39 @@ def assert_user_agent(assert_navigator_user_agent, assert_network_user_agent):
 
 
 @pytest.mark.asyncio
-async def test_user_agent_set_and_clear(websocket, context_id,
-                                        default_user_agent, assert_user_agent):
+async def test_user_agent_global_set_and_clear(websocket, context_id,
+                                               default_user_agent,
+                                               assert_user_agent,
+                                               user_context_id,
+                                               create_context):
+    # Set global override.
     await execute_command(
         websocket, {
             'method': 'emulation.setUserAgentOverride',
             'params': {
-                'contexts': [context_id],
                 'userAgent': SOME_USER_AGENT
             }
         })
 
+    # Assert the override applies to the existing context.
     await assert_user_agent(context_id, SOME_USER_AGENT)
 
-    await execute_command(
-        websocket, {
-            'method': 'emulation.setUserAgentOverride',
-            'params': {
-                'contexts': [context_id],
-                'userAgent': None
-            }
-        })
+    # Assert the override applies to new browsing contexts.
+    browsing_context_id_1 = await create_context()
+    await assert_user_agent(browsing_context_id_1, SOME_USER_AGENT)
+
+    browsing_context_id_2 = await create_context(user_context_id)
+    await assert_user_agent(browsing_context_id_2, SOME_USER_AGENT)
+
+    await execute_command(websocket, {
+        'method': 'emulation.setUserAgentOverride',
+        'params': {
+            'userAgent': None
+        }
+    })
     await assert_user_agent(context_id, default_user_agent)
+    await assert_user_agent(browsing_context_id_1, default_user_agent)
+    await assert_user_agent(browsing_context_id_2, default_user_agent)
 
 
 @pytest.mark.asyncio

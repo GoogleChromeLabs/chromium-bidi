@@ -215,8 +215,12 @@ export class EmulationProcessor {
   async #getRelatedTopLevelBrowsingContexts(
     browsingContextIds?: string[],
     userContextIds?: string[],
+    allowGlobal = false,
   ): Promise<BrowsingContextImpl[]> {
     if (browsingContextIds === undefined && userContextIds === undefined) {
+      if (allowGlobal) {
+        return this.#browsingContextStorage.getTopLevelContexts();
+      }
       throw new InvalidArgumentException(
         'Either user contexts or browsing contexts must be provided',
       );
@@ -322,6 +326,7 @@ export class EmulationProcessor {
     const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
       params.contexts,
       params.userContexts,
+      true,
     );
 
     for (const browsingContextId of params.contexts ?? []) {
@@ -334,6 +339,12 @@ export class EmulationProcessor {
     }
     for (const userContextId of params.userContexts ?? []) {
       this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        userAgent: params.userAgent,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
         userAgent: params.userAgent,
       });
     }
