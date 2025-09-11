@@ -215,8 +215,9 @@ async def test_user_agent_per_browsing_context(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_user_agent_iframe(websocket, context_id, iframe_id, html,
-                                 default_user_agent, assert_user_agent):
+async def test_user_agent_affects_iframe(websocket, context_id, iframe_id,
+                                         html, default_user_agent,
+                                         assert_user_agent):
     await execute_command(
         websocket, {
             'method': 'emulation.setUserAgentOverride',
@@ -256,7 +257,26 @@ async def test_user_agent_iframe(websocket, context_id, iframe_id, html,
 
 
 @pytest.mark.asyncio
-async def test_user_agent_invalid(websocket, context_id):
+async def test_user_agent_per_iframe(websocket, context_id, iframe_id, html,
+                                     default_user_agent, assert_user_agent):
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": "The command is only supported on the top-level context"
+            })):
+        await execute_command(
+            websocket, {
+                'method': 'emulation.setUserAgentOverride',
+                'params': {
+                    'contexts': [iframe_id],
+                    'userAgent': SOME_USER_AGENT
+                }
+            })
+
+
+@pytest.mark.asyncio
+async def test_user_agent_invalid_value(websocket, context_id):
     invalid_user_agent = ""
     with pytest.raises(
             Exception,
