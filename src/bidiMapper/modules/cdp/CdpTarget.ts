@@ -18,7 +18,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import {Bluetooth} from '../../../protocol/chromium-bidi.js';
+import {Bluetooth, Speculation} from '../../../protocol/chromium-bidi.js';
 import {
   type Browser,
   type BrowsingContext,
@@ -41,6 +41,7 @@ import type {ChannelProxy} from '../script/ChannelProxy.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
+import type {SpeculationProcessor} from '../speculation/SpeculationProcessor.js';
 
 interface FetchStages {
   request: boolean;
@@ -83,6 +84,7 @@ export class CdpTarget {
 
   #deviceAccessEnabled = false;
   #cacheDisableState = false;
+  #preloadEnabled = false;
   #fetchDomainStages: FetchStages = {
     request: false,
     response: false,
@@ -246,6 +248,7 @@ export class CdpTarget {
       // Resume tab execution as well if it was paused by the debugger.
       this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
       this.toggleDeviceAccessIfNeeded(),
+      this.togglePreloadIfNeeded(),
     ]);
     for (const result of results) {
       if (result instanceof Error) {
@@ -412,6 +415,28 @@ export class CdpTarget {
     } catch (err) {
       this.#logger?.(LogType.debugError, err);
       this.#deviceAccessEnabled = !enabled;
+      if (!this.#isExpectedError(err)) {
+        throw err;
+      }
+    }
+  }
+
+    async togglePreloadIfNeeded(): Promise<void> {
+    const enabled = this.isSubscribedTo(
+      Speculation.EventNames.PrefetchStatusUpdated,
+    );
+    if (this.#preloadEnabled === enabled) {
+      return;
+    }
+
+    this.#preloadEnabled = enabled;
+    try {
+      await this.#cdpClient.sendCommand(
+        enabled ? 'Preload.enable' : 'Preload.disable',
+      );
+    } catch (err) {
+      this.#logger?.(LogType.debugError, err);
+      this.#preloadEnabled = !enabled;
       if (!this.#isExpectedError(err)) {
         throw err;
       }

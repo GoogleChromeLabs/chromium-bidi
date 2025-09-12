@@ -3474,3 +3474,28 @@ export namespace WebExtension {
     }),
   );
 }
+export namespace Speculation {
+  export const PreloadingStatusSchema = z.lazy(() =>
+    z.enum(['pending', 'ready', 'success', 'failure']),
+  );
+}
+export const SpeculationEventSchema = z.lazy(
+  () => Speculation.PrefetchStatusUpdatedSchema,
+);
+export namespace Speculation {
+  export const PrefetchStatusUpdatedParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      url: z.string(),
+      status: Speculation.PreloadingStatusSchema,
+    }),
+  );
+}
+export namespace Speculation {
+  export const PrefetchStatusUpdatedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('speculation.prefetchStatusUpdated'),
+      params: Speculation.PrefetchStatusUpdatedParametersSchema,
+    }),
+  );
+}
