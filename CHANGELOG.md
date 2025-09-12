@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.0.0...chromium-bidi-v9.1.0) (2025-09-12)
+
+
+### Features
+
+* `emulation.setUserAgentOverride` ([#3661](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3661)) ([3df5567](https://github.com/GoogleChromeLabs/chromium-bidi/commit/3df5567018e94fbec855719539468e81a57d4b58))
+
 ## [9.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v8.1.0...chromium-bidi-v9.0.0) (2025-09-09)
 
 
