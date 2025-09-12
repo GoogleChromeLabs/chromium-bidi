@@ -39,7 +39,8 @@ export type EventData =
   | InputEvent
   | LogEvent
   | NetworkEvent
-  | ScriptEvent;
+  | ScriptEvent
+  | SpeculationEvent;
 export type CommandData =
   | BrowserCommand
   | BrowsingContextCommand
@@ -2655,5 +2656,27 @@ export namespace WebExtension {
 export namespace WebExtension {
   export type UninstallParameters = {
     extension: WebExtension.Extension;
+  };
+}
+export namespace Speculation {
+  export const enum PreloadingStatus {
+    Pending = 'pending',
+    Ready = 'ready',
+    Success = 'success',
+    Failure = 'failure',
+  }
+}
+export type SpeculationEvent = Speculation.PrefetchStatusUpdated;
+export namespace Speculation {
+  export type PrefetchStatusUpdatedParameters = {
+    context: string;
+    url: string;
+    status: Speculation.PreloadingStatus;
+  };
+}
+export namespace Speculation {
+  export type PrefetchStatusUpdated = {
+    method: 'speculation.prefetchStatusUpdated';
+    params: Speculation.PrefetchStatusUpdatedParameters;
   };
 }

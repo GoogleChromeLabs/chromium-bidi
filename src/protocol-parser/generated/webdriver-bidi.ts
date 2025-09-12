@@ -58,6 +58,7 @@ export const EventDataSchema = z.lazy(() =>
     LogEventSchema,
     NetworkEventSchema,
     ScriptEventSchema,
+    SpeculationEventSchema,
   ]),
 );
 export const CommandDataSchema = z.lazy(() =>
@@ -459,6 +460,7 @@ export namespace Browser {
     z.object({
       acceptInsecureCerts: z.boolean().optional(),
       proxy: Session.ProxyConfigurationSchema.optional(),
+      unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
     }),
   );
 }
@@ -3360,6 +3362,31 @@ export namespace WebExtension {
   export const UninstallParametersSchema = z.lazy(() =>
     z.object({
       extension: WebExtension.ExtensionSchema,
+    }),
+  );
+}
+export namespace Speculation {
+  export const PreloadingStatusSchema = z.lazy(() =>
+    z.enum(['pending', 'ready', 'success', 'failure']),
+  );
+}
+export const SpeculationEventSchema = z.lazy(
+  () => Speculation.PrefetchStatusUpdatedSchema,
+);
+export namespace Speculation {
+  export const PrefetchStatusUpdatedParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      url: z.string(),
+      status: Speculation.PreloadingStatusSchema,
+    }),
+  );
+}
+export namespace Speculation {
+  export const PrefetchStatusUpdatedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('speculation.prefetchStatusUpdated'),
+      params: Speculation.PrefetchStatusUpdatedParametersSchema,
     }),
   );
 }

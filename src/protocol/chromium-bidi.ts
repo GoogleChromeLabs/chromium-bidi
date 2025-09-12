@@ -29,7 +29,8 @@ export type EventNames =
   | `${Input.EventNames}`
   | `${Log.EventNames}`
   | `${Network.EventNames}`
-  | `${Script.EventNames}`;
+  | `${Script.EventNames}`
+  | `${Speculation.EventNames}`;
 // keep-sorted end
 
 export enum BiDiModule {
@@ -43,6 +44,7 @@ export enum BiDiModule {
   Network = 'network',
   Script = 'script',
   Session = 'session',
+  Speculation = 'speculation',
   // keep-sorted end
 }
 
@@ -112,6 +114,12 @@ export namespace Bluetooth {
   }
 }
 
+export namespace Speculation {
+  export enum EventNames {
+    PrefetchStatusUpdated = 'speculation.prefetchStatusUpdated',
+  }
+}
+
 type ExternalSpecCommand<T> = {
   // id is defined by the main WebDriver BiDi spec and extension specs do
   // not re-define it. Therefore, it's not part of generated types.
@@ -152,6 +160,7 @@ export const EVENT_NAMES = new Set([
   ...Object.values(Log.EventNames),
   ...Object.values(Network.EventNames),
   ...Object.values(Script.EventNames),
+  ...Object.values(Speculation.EventNames),
   // keep-sorted end
 ]);
 

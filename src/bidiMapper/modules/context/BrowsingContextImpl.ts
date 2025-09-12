@@ -1395,6 +1395,7 @@ export class BrowsingContextImpl {
     await Promise.all([
       this.#cdpTarget.toggleNetworkIfNeeded(),
       this.#cdpTarget.toggleDeviceAccessIfNeeded(),
+      this.#cdpTarget.togglePreloadIfNeeded(),
     ]);
   }
 

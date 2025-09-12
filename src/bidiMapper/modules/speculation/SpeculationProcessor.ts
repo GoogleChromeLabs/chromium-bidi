@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { Speculation } from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -27,14 +28,32 @@ export class SpeculationProcessor {
 
   onCdpTargetCreated(cdpTarget: CdpTarget) {
     cdpTarget.cdpClient.on('Preload.prefetchStatusUpdated', (event) => {
+      let prefetchStatus: Speculation.PreloadingStatus;
+      switch (event.status) {
+        case 'Running':
+          prefetchStatus = Speculation.PreloadingStatus.Pending;
+          break;
+        case 'Ready':
+          prefetchStatus = Speculation.PreloadingStatus.Ready;
+          break;
+        case 'Success':
+          prefetchStatus = Speculation.PreloadingStatus.Success;
+          break;
+        case 'Failure':
+          prefetchStatus = Speculation.PreloadingStatus.Failure;
+          break;
+        default:
+          // If status is not recognized, skip the event
+          return;
+      }
       this.#eventManager.registerEvent(
         {
           type: 'event',
           method: 'speculation.prefetchStatusUpdated',
           params: {
-            initiatingFrameId: event.initiatingFrameId,
+            context: event.initiatingFrameId,
             url: event.prefetchUrl,
-            status: event.status,
+            status: prefetchStatus,
           },
         },
         cdpTarget.id,

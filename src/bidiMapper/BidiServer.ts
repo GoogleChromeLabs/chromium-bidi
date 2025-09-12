@@ -38,6 +38,7 @@ import {
   EventManager,
   EventManagerEvents,
 } from './modules/session/EventManager.js';
+import {SpeculationProcessor} from './modules/speculation/SpeculationProcessor.js';
 import type {OutgoingMessage} from './OutgoingMessage.js';
 
 interface BidiServerEvent extends Record<string | symbol, unknown> {
@@ -54,6 +55,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   #realmStorage = new RealmStorage();
   #preloadScriptStorage = new PreloadScriptStorage();
   #bluetoothProcessor: BluetoothProcessor;
+  #speculationProcessor: SpeculationProcessor;
 
   #logger?: LoggerFn;
 
@@ -106,6 +108,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#eventManager,
       this.#browsingContextStorage,
     );
+    this.#speculationProcessor = new SpeculationProcessor(this.#eventManager);
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,
@@ -137,6 +140,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           this.#realmStorage,
           networkStorage,
           this.#bluetoothProcessor,
+          this.#speculationProcessor,
           this.#preloadScriptStorage,
           defaultUserContextId,
           options?.['goog:prerenderingDisabled'] ?? false,
