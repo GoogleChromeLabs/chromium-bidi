@@ -154,8 +154,8 @@ async def test_locale_set_in_opened_window(websocket, context_id,
     # Get the new context id.
     new_context_id = resp["result"]["value"]["context"]
 
-    # Assert the locale emulation inherited.
-    assert (await get_locale(websocket, new_context_id)) == some_locale
+    # Assert the locale emulation is not inherited.
+    assert (await get_locale(websocket, new_context_id)) == default_locale
 
     # Assert the locale can be overridden.
     await execute_command(
