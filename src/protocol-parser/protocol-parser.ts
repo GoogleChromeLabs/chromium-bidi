@@ -65,7 +65,7 @@ export namespace Browser {
     return parseObject(
       params,
       WebDriverBidi.Browser.RemoveUserContextParametersSchema,
-    ) as Protocol.Browser.RemoveUserContextParameters;
+    );
   }
   export function parseSetClientWindowStateParameters(
     params: unknown,
