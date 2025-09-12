@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Speculation } from '../../../protocol/protocol.js';
+import {Speculation} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 

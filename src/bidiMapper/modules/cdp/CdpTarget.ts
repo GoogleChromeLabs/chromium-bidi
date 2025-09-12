@@ -40,7 +40,6 @@ import type {ChannelProxy} from '../script/ChannelProxy.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
-import type {SpeculationProcessor} from '../speculation/SpeculationProcessor.js';
 
 interface FetchStages {
   request: boolean;
@@ -442,7 +441,7 @@ export class CdpTarget {
     }
   }
 
-    async togglePreloadIfNeeded(): Promise<void> {
+  async togglePreloadIfNeeded(): Promise<void> {
     const enabled = this.isSubscribedTo(
       Speculation.EventNames.PrefetchStatusUpdated,
     );
