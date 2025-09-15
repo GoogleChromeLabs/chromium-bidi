@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC.
+# Copyright 2025 Google LLC.
 # Copyright (c) Microsoft Corporation.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import asyncio
-import time
-
 import pytest
 from test_helpers import (goto_url, read_JSON_message, send_JSON_command,
-                          subscribe, wait_for_event)
+                          subscribe)
 
 from . import wait_for_prefetch_event_with_timeout
 
