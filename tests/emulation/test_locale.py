@@ -117,8 +117,7 @@ async def test_locale_set_and_clear(websocket, context_id, default_locale,
 async def test_locale_set_in_opened_window(websocket, context_id,
                                            default_locale, some_locale,
                                            another_locale):
-    pytest.xfail(
-        "https://github.com/GoogleChromeLabs/chromium-bidi/issues/3698")
+    pytest.xfail("crbug.com/444674636")
     await execute_command(
         websocket, {
             "method": "session.subscribe",
