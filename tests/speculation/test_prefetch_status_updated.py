@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 import asyncio
 import time
-from test_helpers import (read_JSON_message, send_JSON_command, subscribe, wait_for_event, goto_url)
+
+import pytest
+from test_helpers import (goto_url, read_JSON_message, send_JSON_command,
+                          subscribe, wait_for_event)
+
 from . import wait_for_prefetch_event_with_timeout
 
 
@@ -29,9 +32,11 @@ async def test_speculation_subscribe_to_all_events(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_speculation_subscribe_to_prefetch_status_updated(websocket, context_id):
+async def test_speculation_subscribe_to_prefetch_status_updated(
+        websocket, context_id):
     """Test subscribing specifically to speculation.prefetchStatusUpdated events."""
-    subscription_response = await subscribe(websocket, ["speculation.prefetchStatusUpdated"])
+    subscription_response = await subscribe(
+        websocket, ["speculation.prefetchStatusUpdated"])
     assert "subscription" in subscription_response
     assert isinstance(subscription_response["subscription"], str)
 
@@ -42,7 +47,7 @@ async def test_speculation_unsubscribe(websocket, context_id):
     # First subscribe
     subscribe_response = await subscribe(websocket, ["speculation"])
     subscription_id = subscribe_response["subscription"]
-    
+
     # Then unsubscribe
     await send_JSON_command(
         websocket, {
@@ -62,16 +67,15 @@ async def test_speculation_unsubscribe(websocket, context_id):
 async def test_speculation_context_subscription(websocket, context_id):
     """Test subscribing to speculation events for a specific context."""
     subscription_response = await subscribe(
-        websocket, 
-        ["speculation.prefetchStatusUpdated"], 
-        context_ids=[context_id]
-    )
+        websocket, ["speculation.prefetchStatusUpdated"],
+        context_ids=[context_id])
     assert "subscription" in subscription_response
     assert isinstance(subscription_response["subscription"], str)
 
 
 @pytest.mark.asyncio
-async def test_speculation_subscription_with_invalid_event(websocket, context_id):
+async def test_speculation_subscription_with_invalid_event(
+        websocket, context_id):
     """Test that subscribing to invalid speculation events fails with an error."""
     await send_JSON_command(
         websocket, {
@@ -93,14 +97,14 @@ async def test_speculation_subscription_with_invalid_event(websocket, context_id
 @pytest.mark.asyncio
 async def test_speculation_rules_generate_events(websocket, context_id, html):
     """Test that speculation rules actually generate prefetch status events."""
-    await subscribe(websocket, ["speculation.prefetchStatusUpdated"]) 
-    
+    await subscribe(websocket, ["speculation.prefetchStatusUpdated"])
+
     # Create a simple target page to prefetch
     target_page = html("""
         <h1>Target Page</h1>
         <p>This is the page that should be prefetched</p>
     """)
-    
+
     # Create a main page with speculation rules pointing to the target page
     main_page = html(f"""
         <head>
@@ -109,7 +113,7 @@ async def test_speculation_rules_generate_events(websocket, context_id, html):
         <body>
             <h1>Speculation Rules Test</h1>
             <a href="{target_page}" id="prefetch-page">Go to Target Page</a>
-            
+
             <script type="speculationrules">
             {{
                 "prefetch": [
@@ -127,19 +131,19 @@ async def test_speculation_rules_generate_events(websocket, context_id, html):
 
     # Wait for prefetch events - expecting multiple events (pending -> ready)
     events = []
-    
+
     # Collect events for a reasonable time period
-    for i in range(3):  
+    for i in range(3):
         event = await wait_for_prefetch_event_with_timeout(websocket, 2.0)
         if event is None:
             break  # No more events
         events.append(event)
-    
+
     # Verify all events have correct structure
     for event in events:
         assert event["type"] == "event"
         assert event["method"] == "speculation.prefetchStatusUpdated"
-        
+
         params = event["params"]
         assert "url" in params
         assert "status" in params
@@ -147,6 +151,7 @@ async def test_speculation_rules_generate_events(websocket, context_id, html):
         assert params["status"] in ["pending", "ready", "success", "failure"]
 
     # Verify the correct order of events
-    assert len(events) >= 2, "Expected at least 2 prefetch events (pending and ready)"
+    assert len(
+        events) >= 2, "Expected at least 2 prefetch events (pending and ready)"
     assert events[0]["params"]["status"] == "pending"
     assert events[1]["params"]["status"] == "ready"

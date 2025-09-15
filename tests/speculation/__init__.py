@@ -15,15 +15,16 @@
 """Shared utilities for Speculation BiDi tests."""
 
 import asyncio
+
 from test_helpers import wait_for_event
 
 
-async def wait_for_prefetch_event_with_timeout(websocket, timeout: float = 3.0):
+async def wait_for_prefetch_event_with_timeout(websocket,
+                                               timeout: float = 3.0):
     """Wait for a prefetch status event with a timeout, returning None if timeout occurs."""
     try:
-        return await asyncio.wait_for(
-            wait_for_event(websocket, "speculation.prefetchStatusUpdated"),
-            timeout=timeout
-        )
+        return await asyncio.wait_for(wait_for_event(
+            websocket, "speculation.prefetchStatusUpdated"),
+                                      timeout=timeout)
     except asyncio.TimeoutError:
         return None
