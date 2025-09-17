@@ -246,6 +246,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );
+      case 'browser.setDownloadBehavior':
+        this.#parser.parseSetDownloadBehaviorParameters(command.params);
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       // keep-sorted end
 
       // Browsing Context module
