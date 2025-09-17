@@ -180,7 +180,6 @@ export class SessionProcessor {
     }
     await this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],
-      [],
       googChannel,
     );
     return {};
