@@ -24,6 +24,7 @@ import {
   type ChromiumBidi,
   type Script,
   NoSuchFrameException,
+  type Session,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
@@ -486,8 +487,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           command['goog:channel'],
         );
       case 'session.unsubscribe':
+        // Will be removed in https://github.com/GoogleChromeLabs/chromium-bidi/pull/3733.
+        void this.#parser.parseUnsubscribeParams(command.params);
         return await this.#sessionProcessor.unsubscribe(
-          this.#parser.parseUnsubscribeParams(command.params),
+          // Will be removed in https://github.com/GoogleChromeLabs/chromium-bidi/pull/3733.
+          command.params as Session.UnsubscribeParameters,
           command['goog:channel'],
         );
       // keep-sorted end
