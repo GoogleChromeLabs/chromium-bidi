@@ -650,3 +650,17 @@ export namespace WebModule {
   }
   // keep-sorted end
 }
+
+export namespace Autofill {
+  // keep-sorted start block=yes
+
+  export function parseTriggerParameters(
+    params: unknown,
+  ): Protocol.Autofill.TriggerParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Autofill.TriggerParametersSchema,
+    ) as Protocol.Autofill.TriggerParameters;
+  }
+  // keep-sorted end
+}
