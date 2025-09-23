@@ -18,6 +18,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {
+  Browser,
   BrowsingContext,
   Emulation,
   Session,
@@ -29,9 +30,10 @@ import type {
  * config. `null` values means the value should be default regardless of the upstream.
  */
 export class ContextConfig {
+  // keep-sorted start block=yes
   acceptInsecureCerts?: boolean;
-  viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
+  downloadBehavior?: Browser.DownloadBehavior | null;
   // Extra headers are kept in CDP format.
   extraHeaders?: Protocol.Network.Headers;
   geolocation?:
@@ -44,13 +46,16 @@ export class ContextConfig {
   scriptingEnabled?: false | null;
   // Timezone is kept in CDP format with GMT prefix for offset values.
   timezone?: string | null;
+  userAgent?: string | null;
   userPromptHandler?: Session.UserPromptHandler;
+  viewport?: BrowsingContext.Viewport | null;
+  // keep-sorted end
 
   /**
-   * Merges multiple `ContextConfig` objects. The configs are merged in the
-   * order they are provided. For each property, the value from the last config
-   * that defines it (i.e., the value is not `undefined`) will be used.
-   * The final result will not contain any `undefined` properties.
+   * Merges multiple `ContextConfig` objects. The configs are merged in the order they are
+   * provided. For each property, the value from the last config that defines it will be
+   * used. The final result will not contain any `undefined` or `null` properties.
+   * `undefined` values are ignored. `null` values remove the already set value.
    */
   static merge(...configs: (ContextConfig | undefined)[]): ContextConfig {
     const result = new ContextConfig();
@@ -61,7 +66,9 @@ export class ContextConfig {
       }
       for (const key in config) {
         const value = config[key as keyof ContextConfig];
-        if (value !== undefined) {
+        if (value === null) {
+          delete (result as any)[key];
+        } else if (value !== undefined) {
           (result as any)[key] = value;
         }
       }

@@ -17,6 +17,7 @@
 
 import type * as Cdp from './cdp.js';
 import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
+import type * as WebDriverBidiSpeculation from './generated/webdriver-bidi-nav-speculation.ts';
 import type * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
@@ -149,7 +150,15 @@ export type BluetoothEvent =
   | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.GattConnectionAttempted>
   | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.CharacteristicEventGenerated>
   | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.DescriptorEventGenerated>;
-export type Event = WebDriverBidi.Event | Cdp.Event | BluetoothEvent;
+
+export type SpeculationEvent =
+  ExternalSpecEvent<WebDriverBidiSpeculation.Speculation.PrefetchStatusUpdated>;
+
+export type Event =
+  | WebDriverBidi.Event
+  | Cdp.Event
+  | BluetoothEvent
+  | SpeculationEvent;
 
 export const EVENT_NAMES = new Set([
   // keep-sorted start
@@ -168,6 +177,11 @@ export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 
 export type GoogChannel = string | null;
 
-export type Message = (WebDriverBidi.Message | Cdp.Message | BluetoothEvent) & {
+export type Message = (
+  | WebDriverBidi.Message
+  | Cdp.Message
+  | BluetoothEvent
+  | SpeculationEvent
+) & {
   'goog:channel'?: GoogChannel;
 };
