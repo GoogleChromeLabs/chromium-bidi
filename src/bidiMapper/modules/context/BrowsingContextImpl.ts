@@ -1942,6 +1942,14 @@ export class BrowsingContextImpl {
       ),
     );
   }
+
+  async setUserAgentOverrideParams(userAgent: string | null) {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setUserAgent(userAgent),
+      ),
+    );
+  }
 }
 
 export function serializeOrigin(origin: string) {
