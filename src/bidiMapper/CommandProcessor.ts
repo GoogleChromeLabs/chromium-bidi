@@ -24,7 +24,6 @@ import {
   type ChromiumBidi,
   type Script,
   NoSuchFrameException,
-  type Session,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
@@ -248,9 +247,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           `Method ${command.method} is not implemented.`,
         );
       case 'browser.setDownloadBehavior':
-        this.#parser.parseSetDownloadBehaviorParameters(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#browserProcessor.setDownloadBehavior(
+          this.#parser.parseSetDownloadBehaviorParameters(command.params),
         );
       // keep-sorted end
 
@@ -487,11 +485,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           command['goog:channel'],
         );
       case 'session.unsubscribe':
-        // Will be removed in https://github.com/GoogleChromeLabs/chromium-bidi/pull/3733.
-        void this.#parser.parseUnsubscribeParams(command.params);
         return await this.#sessionProcessor.unsubscribe(
-          // Will be removed in https://github.com/GoogleChromeLabs/chromium-bidi/pull/3733.
-          command.params as Session.UnsubscribeParameters,
+          this.#parser.parseUnsubscribeParams(command.params),
           command['goog:channel'],
         );
       // keep-sorted end
