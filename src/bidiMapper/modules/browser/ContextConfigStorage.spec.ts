@@ -104,20 +104,20 @@ describe('ContextConfigStorage', () => {
         expected: {acceptInsecureCerts: true},
         name: 'should ignore undefined when updating browsing context config',
       },
-      // Null in user context falls back to global.
+      // Null in user context overrides global.
       {
         global: {viewport: {width: 1, height: 1}},
         user: {viewport: null},
-        expected: {viewport: {width: 1, height: 1}},
-        name: 'null should remove previously set value',
+        expected: {viewport: null},
+        name: 'should override with null from user context config',
       },
-      // Null in browsing context falls back to user context.
+      // Null in browsing context overrides user context.
       {
         global: {viewport: {width: 1, height: 1}},
         user: {viewport: {width: 2, height: 2}},
         browsing: {viewport: null},
-        expected: {viewport: {width: 2, height: 2}},
-        name: 'null should remove previously set values',
+        expected: {viewport: null},
+        name: 'should override with null from browsing context config',
       },
       // Value in browsing context overrides null in user context.
       {

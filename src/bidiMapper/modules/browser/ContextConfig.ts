@@ -52,10 +52,10 @@ export class ContextConfig {
   // keep-sorted end
 
   /**
-   * Merges multiple `ContextConfig` objects. The configs are merged in the order they are
-   * provided. For each property, the value from the last config that defines it will be
-   * used. The final result will not contain any `undefined` or `null` properties.
-   * `undefined` values are ignored. `null` values remove the already set value.
+   * Merges multiple `ContextConfig` objects. The configs are merged in the
+   * order they are provided. For each property, the value from the last config
+   * that defines it (i.e., the value is not `undefined`) will be used.
+   * The final result will not contain any `undefined` properties.
    */
   static merge(...configs: (ContextConfig | undefined)[]): ContextConfig {
     const result = new ContextConfig();
@@ -66,9 +66,7 @@ export class ContextConfig {
       }
       for (const key in config) {
         const value = config[key as keyof ContextConfig];
-        if (value === null) {
-          delete (result as any)[key];
-        } else if (value !== undefined) {
+        if (value !== undefined) {
           (result as any)[key] = value;
         }
       }
