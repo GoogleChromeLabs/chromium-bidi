@@ -42,10 +42,14 @@ export class NetworkCollectorsStorage extends EventEmitter<RequestDisowned> {
   }
 
   addDataCollector(params: Network.AddDataCollectorParameters) {
-    const collector = new NetworkCollector(params);
+    const collector = new NetworkCollector(params, this.#logger);
     collector.on('requestDisowned', (requestId) => {
       this.#collectedRequests.get(requestId)?.delete(collector);
       if (!this.isCollected(requestId)) {
+        this.#logger?.(
+          LogType.debug,
+          `Request ${requestId} is not owned anymore.`,
+        );
         this.emit('requestDisowned', requestId);
         this.#collectedRequests.delete(requestId);
       }
@@ -90,6 +94,7 @@ export class NetworkCollectorsStorage extends EventEmitter<RequestDisowned> {
     topLevelBrowsingContext: BrowsingContext.BrowsingContext,
     userContext: Browser.UserContext,
   ) {
+    const affectedCollectors = [];
     for (const collector of this.#collectors.values()) {
       if (collector.shouldCollect(topLevelBrowsingContext, userContext)) {
         collector.collect(request);
@@ -98,12 +103,21 @@ export class NetworkCollectorsStorage extends EventEmitter<RequestDisowned> {
           this.#collectedRequests.set(request.id, new Set());
         }
         this.#collectedRequests.get(request.id)?.add(collector);
+        affectedCollectors.push(collector);
 
         this.#logger?.(
           LogType.debug,
           `Request ${request.id} collected by ${collector.id}`,
         );
       }
+    }
+
+    // Free up affected collectors only after all the collectors collected the request.
+    // Otherwise, request can be falsy claimed as not collected and removed before another
+    // collector collected it.
+    for (const collector of affectedCollectors) {
+      // Free up.
+      collector.freeUp();
     }
   }
 

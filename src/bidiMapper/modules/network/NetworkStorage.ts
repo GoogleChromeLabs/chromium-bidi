@@ -425,7 +425,6 @@ export class NetworkStorage {
     }
     // TODO: dispose Network data from Chromium once there is a CDP command for that.
     this.#requests.delete(id);
-    console.log(`!!@@## Request disposed ${id}`);
   }
 
   /**

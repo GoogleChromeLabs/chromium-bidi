@@ -58,9 +58,15 @@ export class NetworkCollector extends EventEmitter<RequestDisowned> {
       this.#logger?.(LogType.debug, `Warn! Request ${request.id} has 0 bytes.`);
     }
     this.#collectedSize += request.bytesReceived;
-    // Disown old requests until the collected size fits the maximum allowed size.
+  }
+
+  freeUp() {
     while (this.#collectedSize > this.#maxEncodedDataSize) {
       for (const request of this.#collectedRequests.values()) {
+        this.#logger?.(
+          LogType.debug,
+          `The collected size ${this.#collectedSize}, while ${this.#maxEncodedDataSize}. Removing ${request.id}`,
+        );
         this.disown(request.id);
       }
     }
@@ -76,6 +82,10 @@ export class NetworkCollector extends EventEmitter<RequestDisowned> {
     this.#collectedSize -= freedBytes;
     this.#collectedRequests.delete(requestId);
     this.emit('requestDisowned', requestId);
+    this.#logger?.(
+      LogType.debug,
+      `Collector ${this.id} disowned request ${requestId}, freed up ${freedBytes} bytes.`,
+    );
   }
 
   shouldCollect(
