@@ -14,12 +14,13 @@
 #  limitations under the License.
 
 import pytest
-from test_helpers import (goto_url, read_JSON_message, send_JSON_command,
-                          subscribe, wait_for_events)
+from test_helpers import (goto_url, send_JSON_command, subscribe,
+                          wait_for_events)
 
 
 @pytest.mark.asyncio
-async def test_speculation_rules_generate_ready_events(websocket, context_id, html):
+async def test_speculation_rules_generate_ready_events(websocket, context_id,
+                                                       html):
     """Test that speculation rules actually generate prefetch status events."""
     await subscribe(websocket, ["speculation.prefetchStatusUpdated"])
 
@@ -51,14 +52,18 @@ async def test_speculation_rules_generate_ready_events(websocket, context_id, ht
         </body>
     """)
 
+    # Start listening for events before navigating to avoid race conditions
+    event_futures = []
+    for i in range(2):
+        event_futures.append(wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
+
+    # Now navigate to trigger the events
     await goto_url(websocket, context_id, main_page)
 
-    # Wait for prefetch events - expecting multiple events (pending -> ready)
+    # Wait for all the events
     events = []
-
-    # Collect events for a reasonable time period
-    for i in range(2):
-        event = await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+    for future in event_futures:
+        event = await future
         events.append(event)
 
     # Verify all events have correct structure
@@ -73,13 +78,14 @@ async def test_speculation_rules_generate_ready_events(websocket, context_id, ht
         assert params["status"] in ["pending", "ready", "success", "failure"]
 
     # Verify the correct order of events
-    assert len(
-        events) == 2, "Expected 2 prefetch events (pending and ready)"
+    assert len(events) == 2, "Expected 2 prefetch events (pending and ready)"
     assert events[0]["params"]["status"] == "pending"
     assert events[1]["params"]["status"] == "ready"
 
+
 @pytest.mark.asyncio
-async def test_speculation_rules_generate_events_with_navigation(websocket, context_id, html):
+async def test_speculation_rules_generate_events_with_navigation(
+        websocket, context_id, html):
     """Test that speculation rules generate prefetch status events including success events when navigating."""
     await subscribe(websocket, ["speculation.prefetchStatusUpdated"])
 
@@ -111,15 +117,22 @@ async def test_speculation_rules_generate_events_with_navigation(websocket, cont
         </body>
     """)
 
+    # Start listening for initial events before navigating to avoid race conditions
+    initial_event_futures = []
+    for i in range(2):
+        initial_event_futures.append(wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
+
+    # Now navigate to trigger the initial events
     await goto_url(websocket, context_id, main_page)
 
-    # Wait for prefetch events - expecting multiple events (pending -> ready -> success)
+    # Wait for initial events (pending and ready)
     events = []
-
-    # Collect initial events (pending and ready)
-    for i in range(2):
-        event = await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+    for future in initial_event_futures:
+        event = await future
         events.append(event)
+
+    # Start listening for success event before clicking
+    success_event_future = wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
 
     # Navigate by clicking the link (user-initiated navigation to trigger success event)
     click_script = """
@@ -132,14 +145,16 @@ async def test_speculation_rules_generate_events_with_navigation(websocket, cont
         "method": "script.evaluate",
         "params": {
             "expression": click_script,
-            "target": {"context": context_id},
+            "target": {
+                "context": context_id
+            },
             "awaitPromise": False
         }
     }
     await send_JSON_command(websocket, click_command)
 
     # Wait for success event after navigation
-    success_event = await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+    success_event = await success_event_future
     events.append(success_event)
 
     # Verify all events have correct structure
@@ -154,13 +169,17 @@ async def test_speculation_rules_generate_events_with_navigation(websocket, cont
         assert params["status"] in ["pending", "ready", "success", "failure"]
 
     # Verify the complete sequence of events
-    assert len(events) == 3, f"Expected 3 prefetch events (pending, ready, and success), got {len(events)}"
+    assert len(
+        events
+    ) == 3, f"Expected 3 prefetch events (pending, ready, and success), got {len(events)}"
     assert events[0]["params"]["status"] == "pending"
     assert events[1]["params"]["status"] == "ready"
     assert events[2]["params"]["status"] == "success"
 
+
 @pytest.mark.asyncio
-async def test_speculation_rules_generate_failure_events(websocket, context_id, html):
+async def test_speculation_rules_generate_failure_events(
+        websocket, context_id, html):
     """Test that speculation rules generate failure status events for failed prefetch."""
     await subscribe(websocket, ["speculation.prefetchStatusUpdated"])
 
@@ -190,14 +209,18 @@ async def test_speculation_rules_generate_failure_events(websocket, context_id, 
         </body>
     """)
 
+    # Start listening for events before navigating to avoid race conditions
+    event_futures = []
+    for i in range(2):
+        event_futures.append(wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
+
+    # Now navigate to trigger the events
     await goto_url(websocket, context_id, main_page)
 
-    # Wait for prefetch events - expecting failure event for cross-origin prefetch
+    # Wait for all the events
     events = []
-
-    # Collect events - should get pending and then failure
-    for i in range(2):
-        event = await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+    for future in event_futures:
+        event = await future
         events.append(event)
 
     # Verify all events have correct structure
@@ -212,6 +235,8 @@ async def test_speculation_rules_generate_failure_events(websocket, context_id, 
         assert params["status"] in ["pending", "ready", "success", "failure"]
 
     # Verify the sequence of events - should be pending then failure
-    assert len(events) >= 2, f"Expected at least 2 prefetch events (pending and failure), got {len(events)}"
+    assert len(
+        events
+    ) == 2, f"Expected 2 prefetch events (pending and failure), got {len(events)}"
     assert events[0]["params"]["status"] == "pending"
     assert events[1]["params"]["status"] == "failure"
