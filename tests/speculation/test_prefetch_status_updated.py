@@ -55,7 +55,8 @@ async def test_speculation_rules_generate_ready_events(websocket, context_id,
     # Start listening for events before navigating to avoid race conditions
     event_futures = []
     for i in range(2):
-        event_futures.append(wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
+        event_futures.append(
+            wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
 
     # Now navigate to trigger the events
     await goto_url(websocket, context_id, main_page)
@@ -120,7 +121,8 @@ async def test_speculation_rules_generate_events_with_navigation(
     # Start listening for initial events before navigating to avoid race conditions
     initial_event_futures = []
     for i in range(2):
-        initial_event_futures.append(wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
+        initial_event_futures.append(
+            wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
 
     # Now navigate to trigger the initial events
     await goto_url(websocket, context_id, main_page)
@@ -132,7 +134,8 @@ async def test_speculation_rules_generate_events_with_navigation(
         events.append(event)
 
     # Start listening for success event before clicking
-    success_event_future = wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+    success_event_future = wait_for_events(
+        websocket, ["speculation.prefetchStatusUpdated"])
 
     # Navigate by clicking the link (user-initiated navigation to trigger success event)
     click_script = """
@@ -212,7 +215,8 @@ async def test_speculation_rules_generate_failure_events(
     # Start listening for events before navigating to avoid race conditions
     event_futures = []
     for i in range(2):
-        event_futures.append(wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
+        event_futures.append(
+            wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
 
     # Now navigate to trigger the events
     await goto_url(websocket, context_id, main_page)
