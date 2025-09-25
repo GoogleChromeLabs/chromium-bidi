@@ -50,8 +50,10 @@ export type ErrorResponse = {
   stacktrace?: string;
 } & Extensible;
 export type ResultData =
+  | BrowserResult
   | BrowsingContextResult
-  | EmptyResult
+  | EmulationResult
+  | InputResult
   | NetworkResult
   | ScriptResult
   | SessionResult
@@ -120,9 +122,11 @@ export type SessionCommand =
   | Session.Subscribe
   | Session.Unsubscribe;
 export type SessionResult =
+  | Session.EndResult
   | Session.NewResult
   | Session.StatusResult
-  | Session.SubscribeResult;
+  | Session.SubscribeResult
+  | Session.UnsubscribeResult;
 export namespace Session {
   export type CapabilitiesRequest = {
     alwaysMatch?: Session.CapabilityRequest;
@@ -272,6 +276,9 @@ export namespace Session {
   };
 }
 export namespace Session {
+  export type EndResult = EmptyResult;
+}
+export namespace Session {
   export type Subscribe = {
     method: 'session.subscribe';
     params: Session.SubscriptionRequest;
@@ -293,6 +300,9 @@ export namespace Session {
     | Session.UnsubscribeByAttributesRequest
     | Session.UnsubscribeByIdRequest;
 }
+export namespace Session {
+  export type UnsubscribeResult = EmptyResult;
+}
 export type BrowserCommand =
   | Browser.Close
   | Browser.CreateUserContext
@@ -302,8 +312,13 @@ export type BrowserCommand =
   | Browser.SetClientWindowState
   | Browser.SetDownloadBehavior;
 export type BrowserResult =
+  | Browser.CloseResult
   | Browser.CreateUserContextResult
-  | Browser.GetUserContextsResult;
+  | Browser.GetClientWindowsResult
+  | Browser.GetUserContextsResult
+  | Browser.RemoveUserContextResult
+  | Browser.SetClientWindowStateResult
+  | Browser.SetDownloadBehaviorResult;
 export namespace Browser {
   export type ClientWindow = string;
 }
@@ -331,6 +346,9 @@ export namespace Browser {
     method: 'browser.close';
     params: EmptyParams;
   };
+}
+export namespace Browser {
+  export type CloseResult = EmptyResult;
 }
 export namespace Browser {
   export type CreateUserContext = {
@@ -382,6 +400,9 @@ export namespace Browser {
   };
 }
 export namespace Browser {
+  export type RemoveUserContextResult = EmptyResult;
+}
+export namespace Browser {
   export type SetClientWindowState = {
     method: 'browser.setClientWindowState';
     params: Browser.SetClientWindowStateParameters;
@@ -407,6 +428,9 @@ export namespace Browser {
   };
 }
 export namespace Browser {
+  export type SetClientWindowStateResult = Browser.ClientWindowInfo;
+}
+export namespace Browser {
   export type SetDownloadBehavior = {
     method: 'browser.setDownloadBehavior';
     params: Browser.SetDownloadBehaviorParameters;
@@ -426,13 +450,16 @@ export namespace Browser {
 export namespace Browser {
   export type DownloadBehaviorAllowed = {
     type: 'allowed';
-    destinationFolder?: string;
+    destinationFolder: string;
   };
 }
 export namespace Browser {
   export type DownloadBehaviorDenied = {
     type: 'denied';
   };
+}
+export namespace Browser {
+  export type SetDownloadBehaviorResult = EmptyResult;
 }
 export type BrowsingContextCommand =
   | BrowsingContext.Activate
@@ -448,12 +475,17 @@ export type BrowsingContextCommand =
   | BrowsingContext.SetViewport
   | BrowsingContext.TraverseHistory;
 export type BrowsingContextResult =
+  | BrowsingContext.ActivateResult
   | BrowsingContext.CaptureScreenshotResult
+  | BrowsingContext.CloseResult
   | BrowsingContext.CreateResult
   | BrowsingContext.GetTreeResult
+  | BrowsingContext.HandleUserPromptResult
   | BrowsingContext.LocateNodesResult
   | BrowsingContext.NavigateResult
   | BrowsingContext.PrintResult
+  | BrowsingContext.ReloadResult
+  | BrowsingContext.SetViewportResult
   | BrowsingContext.TraverseHistoryResult;
 export type BrowsingContextEvent =
   | BrowsingContext.ContextCreated
@@ -574,6 +606,9 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
+  export type ActivateResult = EmptyResult;
+}
+export namespace BrowsingContext {
   export type CaptureScreenshot = {
     method: 'browsingContext.captureScreenshot';
     params: BrowsingContext.CaptureScreenshotParameters;
@@ -640,6 +675,9 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
+  export type CloseResult = EmptyResult;
+}
+export namespace BrowsingContext {
   export type Create = {
     method: 'browsingContext.create';
     params: BrowsingContext.CreateParameters;
@@ -696,6 +734,9 @@ export namespace BrowsingContext {
     accept?: boolean;
     userText?: string;
   };
+}
+export namespace BrowsingContext {
+  export type HandleUserPromptResult = EmptyResult;
 }
 export namespace BrowsingContext {
   export type LocateNodes = {
@@ -834,6 +875,9 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
+  export type ReloadResult = BrowsingContext.NavigateResult;
+}
+export namespace BrowsingContext {
   export type SetViewport = {
     method: 'browsingContext.setViewport';
     params: BrowsingContext.SetViewportParameters;
@@ -857,6 +901,9 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
+  export type SetViewportResult = EmptyResult;
+}
+export namespace BrowsingContext {
   export type TraverseHistory = {
     method: 'browsingContext.traverseHistory';
     params: BrowsingContext.TraverseHistoryParameters;
@@ -869,7 +916,7 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
-  export type TraverseHistoryResult = Record<string, never>;
+  export type TraverseHistoryResult = EmptyResult;
 }
 export namespace BrowsingContext {
   export type ContextCreated = {
@@ -1008,6 +1055,14 @@ export type EmulationCommand =
   | Emulation.SetScriptingEnabled
   | Emulation.SetTimezoneOverride
   | Emulation.SetUserAgentOverride;
+export type EmulationResult =
+  | Emulation.SetForcedColorsModeThemeOverrideResult
+  | Emulation.SetGeolocationOverrideResult
+  | Emulation.SetLocaleOverrideResult
+  | Emulation.SetScreenOrientationOverrideResult
+  | Emulation.SetScriptingEnabledResult
+  | Emulation.SetTimezoneOverrideResult
+  | Emulation.SetUserAgentOverrideResult;
 export namespace Emulation {
   export type SetForcedColorsModeThemeOverride = {
     method: 'emulation.setForcedColorsModeThemeOverride';
@@ -1029,6 +1084,9 @@ export namespace Emulation {
     Light = 'light',
     Dark = 'dark',
   }
+}
+export namespace Emulation {
+  export type SetForcedColorsModeThemeOverrideResult = EmptyResult;
 }
 export namespace Emulation {
   export type SetGeolocationOverride = {
@@ -1098,6 +1156,9 @@ export namespace Emulation {
   };
 }
 export namespace Emulation {
+  export type SetGeolocationOverrideResult = EmptyResult;
+}
+export namespace Emulation {
   export type SetLocaleOverride = {
     method: 'emulation.setLocaleOverride';
     params: Emulation.SetLocaleOverrideParameters;
@@ -1112,6 +1173,9 @@ export namespace Emulation {
     ];
     userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
+}
+export namespace Emulation {
+  export type SetLocaleOverrideResult = EmptyResult;
 }
 export namespace Emulation {
   export type SetScreenOrientationOverride = {
@@ -1149,6 +1213,9 @@ export namespace Emulation {
   };
 }
 export namespace Emulation {
+  export type SetScreenOrientationOverrideResult = EmptyResult;
+}
+export namespace Emulation {
   export type SetUserAgentOverride = {
     method: 'emulation.setUserAgentOverride';
     params: Emulation.SetUserAgentOverrideParameters;
@@ -1163,6 +1230,9 @@ export namespace Emulation {
     ];
     userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
+}
+export namespace Emulation {
+  export type SetUserAgentOverrideResult = EmptyResult;
 }
 export namespace Emulation {
   export type SetScriptingEnabled = {
@@ -1181,6 +1251,9 @@ export namespace Emulation {
   };
 }
 export namespace Emulation {
+  export type SetScriptingEnabledResult = EmptyResult;
+}
+export namespace Emulation {
   export type SetTimezoneOverride = {
     method: 'emulation.setTimezoneOverride';
     params: Emulation.SetTimezoneOverrideParameters;
@@ -1196,6 +1269,9 @@ export namespace Emulation {
     userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
 }
+export namespace Emulation {
+  export type SetTimezoneOverrideResult = EmptyResult;
+}
 export type NetworkCommand =
   | Network.AddDataCollector
   | Network.AddIntercept
@@ -1210,7 +1286,20 @@ export type NetworkCommand =
   | Network.RemoveIntercept
   | Network.SetCacheBehavior
   | Network.SetExtraHeaders;
-export type NetworkResult = Network.AddInterceptResult;
+export type NetworkResult =
+  | Network.AddDataCollectorResult
+  | Network.AddInterceptResult
+  | Network.ContinueRequestResult
+  | Network.ContinueResponseResult
+  | Network.ContinueWithAuthResult
+  | Network.DisownDataResult
+  | Network.FailRequestResult
+  | Network.GetDataResult
+  | Network.ProvideResponseResult
+  | Network.RemoveDataCollectorResult
+  | Network.RemoveInterceptResult
+  | Network.SetCacheBehaviorResult
+  | Network.SetExtraHeadersResult;
 export type NetworkEvent =
   | Network.AuthRequired
   | Network.BeforeRequestSent
@@ -1472,6 +1561,9 @@ export namespace Network {
   };
 }
 export namespace Network {
+  export type ContinueRequestResult = EmptyResult;
+}
+export namespace Network {
   export type ContinueResponse = {
     method: 'network.continueResponse';
     params: Network.ContinueResponseParameters;
@@ -1486,6 +1578,9 @@ export namespace Network {
     reasonPhrase?: string;
     statusCode?: JsUint;
   };
+}
+export namespace Network {
+  export type ContinueResponseResult = EmptyResult;
 }
 export namespace Network {
   export type ContinueWithAuth = {
@@ -1513,6 +1608,9 @@ export namespace Network {
   };
 }
 export namespace Network {
+  export type ContinueWithAuthResult = EmptyResult;
+}
+export namespace Network {
   export type DisownData = {
     method: 'network.disownData';
     params: Network.DisownDataParameters;
@@ -1526,6 +1624,9 @@ export namespace Network {
   };
 }
 export namespace Network {
+  export type DisownDataResult = EmptyResult;
+}
+export namespace Network {
   export type FailRequest = {
     method: 'network.failRequest';
     params: Network.FailRequestParameters;
@@ -1535,6 +1636,9 @@ export namespace Network {
   export type FailRequestParameters = {
     request: Network.Request;
   };
+}
+export namespace Network {
+  export type FailRequestResult = EmptyResult;
 }
 export namespace Network {
   export type GetData = {
@@ -1575,6 +1679,9 @@ export namespace Network {
   };
 }
 export namespace Network {
+  export type ProvideResponseResult = EmptyResult;
+}
+export namespace Network {
   export type RemoveDataCollector = {
     method: 'network.removeDataCollector';
     params: Network.RemoveDataCollectorParameters;
@@ -1586,6 +1693,9 @@ export namespace Network {
   };
 }
 export namespace Network {
+  export type RemoveDataCollectorResult = EmptyResult;
+}
+export namespace Network {
   export type RemoveIntercept = {
     method: 'network.removeIntercept';
     params: Network.RemoveInterceptParameters;
@@ -1595,6 +1705,9 @@ export namespace Network {
   export type RemoveInterceptParameters = {
     intercept: Network.Intercept;
   };
+}
+export namespace Network {
+  export type RemoveInterceptResult = EmptyResult;
 }
 export namespace Network {
   export type SetCacheBehavior = {
@@ -1612,6 +1725,9 @@ export namespace Network {
   };
 }
 export namespace Network {
+  export type SetCacheBehaviorResult = EmptyResult;
+}
+export namespace Network {
   export type SetExtraHeaders = {
     method: 'network.setExtraHeaders';
     params: Network.SetExtraHeadersParameters;
@@ -1626,6 +1742,9 @@ export namespace Network {
     ];
     userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
+}
+export namespace Network {
+  export type SetExtraHeadersResult = EmptyResult;
 }
 export namespace Network {
   export type AuthRequired = {
@@ -1691,8 +1810,11 @@ export type ScriptCommand =
   | Script.RemovePreloadScript;
 export type ScriptResult =
   | Script.AddPreloadScriptResult
+  | Script.CallFunctionResult
+  | Script.DisownResult
   | Script.EvaluateResult
-  | Script.GetRealmsResult;
+  | Script.GetRealmsResult
+  | Script.RemovePreloadScriptResult;
 export type ScriptEvent =
   | Script.Message
   | Script.RealmCreated
@@ -2242,6 +2364,9 @@ export namespace Script {
   };
 }
 export namespace Script {
+  export type DisownResult = EmptyResult;
+}
+export namespace Script {
   export type CallFunction = {
     method: 'script.callFunction';
     params: Script.CallFunctionParameters;
@@ -2261,6 +2386,9 @@ export namespace Script {
      */
     userActivation?: boolean;
   };
+}
+export namespace Script {
+  export type CallFunctionResult = Script.EvaluateResult;
 }
 export namespace Script {
   export type Evaluate = {
@@ -2308,6 +2436,9 @@ export namespace Script {
   export type RemovePreloadScriptParameters = {
     script: Script.PreloadScript;
   };
+}
+export namespace Script {
+  export type RemovePreloadScriptResult = EmptyResult;
 }
 export namespace Script {
   export type Message = {
@@ -2499,6 +2630,10 @@ export type InputCommand =
   | Input.PerformActions
   | Input.ReleaseActions
   | Input.SetFiles;
+export type InputResult =
+  | Input.PerformActionsResult
+  | Input.ReleaseActionsResult
+  | Input.SetFilesResult;
 export type InputEvent = Input.FileDialogOpened;
 export namespace Input {
   export type ElementOrigin = {
@@ -2683,6 +2818,9 @@ export namespace Input {
   export type Origin = 'viewport' | 'pointer' | Input.ElementOrigin;
 }
 export namespace Input {
+  export type PerformActionsResult = EmptyResult;
+}
+export namespace Input {
   export type ReleaseActions = {
     method: 'input.releaseActions';
     params: Input.ReleaseActionsParameters;
@@ -2692,6 +2830,9 @@ export namespace Input {
   export type ReleaseActionsParameters = {
     context: BrowsingContext.BrowsingContext;
   };
+}
+export namespace Input {
+  export type ReleaseActionsResult = EmptyResult;
 }
 export namespace Input {
   export type SetFiles = {
@@ -2707,6 +2848,9 @@ export namespace Input {
   };
 }
 export namespace Input {
+  export type SetFilesResult = EmptyResult;
+}
+export namespace Input {
   export type FileDialogOpened = {
     method: 'input.fileDialogOpened';
     params: Input.FileDialogInfo;
@@ -2720,7 +2864,9 @@ export namespace Input {
   };
 }
 export type WebExtensionCommand = WebExtension.Install | WebExtension.Uninstall;
-export type WebExtensionResult = WebExtension.InstallResult;
+export type WebExtensionResult =
+  | WebExtension.InstallResult
+  | WebExtension.UninstallResult;
 export namespace WebExtension {
   export type Extension = string;
 }
@@ -2775,25 +2921,6 @@ export namespace WebExtension {
     extension: WebExtension.Extension;
   };
 }
-export namespace Speculation {
-  export const enum PreloadingStatus {
-    Pending = 'pending',
-    Ready = 'ready',
-    Success = 'success',
-    Failure = 'failure',
-  }
-}
-export type SpeculationEvent = Speculation.PrefetchStatusUpdated;
-export namespace Speculation {
-  export type PrefetchStatusUpdatedParameters = {
-    context: string;
-    url: string;
-    status: Speculation.PreloadingStatus;
-  };
-}
-export namespace Speculation {
-  export type PrefetchStatusUpdated = {
-    method: 'speculation.prefetchStatusUpdated';
-    params: Speculation.PrefetchStatusUpdatedParameters;
-  };
+export namespace WebExtension {
+  export type UninstallResult = EmptyResult;
 }
