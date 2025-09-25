@@ -23,8 +23,8 @@ import type {
 } from '../../../../protocol/generated/webdriver-bidi.js';
 import {EventEmitter} from '../../../../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../../../../utils/log.js';
-
 import type {NetworkRequest} from '../NetworkRequest.js';
+
 import {NetworkCollector, type RequestDisowned} from './NetworkCollector.js';
 
 export class NetworkCollectorsStorage extends EventEmitter<RequestDisowned> {
@@ -92,7 +92,7 @@ export class NetworkCollectorsStorage extends EventEmitter<RequestDisowned> {
   ) {
     for (const collector of this.#collectors.values()) {
       if (collector.shouldCollect(topLevelBrowsingContext, userContext)) {
-        collector.collect(request.id);
+        collector.collect(request);
 
         if (!this.#collectedRequests.has(request.id)) {
           this.#collectedRequests.set(request.id, new Set());

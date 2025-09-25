@@ -22,39 +22,48 @@ import type {
   Network,
 } from '../../../../protocol/generated/webdriver-bidi.js';
 import {EventEmitter} from '../../../../utils/EventEmitter.js';
+import {type LoggerFn, LogType} from '../../../../utils/log';
 import {uuidv4} from '../../../../utils/uuid.js';
+import type {NetworkRequest} from '../NetworkRequest';
 
 export interface RequestDisowned extends Record<string | symbol, unknown> {
   requestDisowned: Network.Request;
 }
 
 export class NetworkCollector extends EventEmitter<RequestDisowned> {
-  readonly dataTypes: [Network.DataType, ...Network.DataType[]];
-  readonly maxEncodedDataSize: JsUint;
-  /**
-   * @defaultValue `"blob"`
-   */
-  readonly collectorType?: Network.CollectorType;
-  readonly contexts?: [
+  readonly id = uuidv4();
+  readonly #contexts?: [
     BrowsingContext.BrowsingContext,
     ...BrowsingContext.BrowsingContext[],
   ];
-  readonly userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  readonly #maxEncodedDataSize: JsUint;
+  readonly #userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
 
-  readonly id = uuidv4();
-  readonly #collectedRequests = new Set<Network.Request>();
+  readonly #collectedRequests = new Map<Network.Request, NetworkRequest>();
+  readonly #logger?: LoggerFn;
+  // Track the size of all collected network requests.
+  #collectedSize = 0;
 
-  constructor(params: Network.AddDataCollectorParameters) {
+  constructor(params: Network.AddDataCollectorParameters, logger?: LoggerFn) {
     super();
-    this.dataTypes = params.dataTypes;
-    this.maxEncodedDataSize = params.maxEncodedDataSize;
-    this.collectorType = params.collectorType;
-    this.contexts = params.contexts;
-    this.userContexts = params.userContexts;
+    this.#logger = logger;
+    this.#maxEncodedDataSize = params.maxEncodedDataSize;
+    this.#contexts = params.contexts;
+    this.#userContexts = params.userContexts;
   }
 
-  collect(requestId: Network.Request) {
-    this.#collectedRequests.add(requestId);
+  collect(request: NetworkRequest) {
+    this.#collectedRequests.set(request.id, request);
+    if (request.bytesReceived === 0) {
+      this.#logger?.(LogType.debug, `Warn! Request ${request.id} has 0 bytes.`);
+    }
+    this.#collectedSize += request.bytesReceived;
+    // Disown old requests until the collected size fits the maximum allowed size.
+    while (this.#collectedSize > this.#maxEncodedDataSize) {
+      for (const request of this.#collectedRequests.values()) {
+        this.disown(request.id);
+      }
+    }
   }
 
   isCollected(requestId: Network.Request) {
@@ -62,6 +71,9 @@ export class NetworkCollector extends EventEmitter<RequestDisowned> {
   }
 
   disown(requestId: Network.Request) {
+    const freedBytes =
+      this.#collectedRequests.get(requestId)?.bytesReceived ?? 0;
+    this.#collectedSize -= freedBytes;
     this.#collectedRequests.delete(requestId);
     this.emit('requestDisowned', requestId);
   }
@@ -70,22 +82,22 @@ export class NetworkCollector extends EventEmitter<RequestDisowned> {
     topLevelBrowsingContext: BrowsingContext.BrowsingContext,
     userContext: Browser.UserContext,
   ): boolean {
-    if (!this.userContexts && !this.contexts) {
+    if (!this.#userContexts && !this.#contexts) {
       // A global collector.
       return true;
     }
-    if (this.contexts?.includes(topLevelBrowsingContext)) {
+    if (this.#contexts?.includes(topLevelBrowsingContext)) {
       return true;
     }
-    if (this.userContexts?.includes(userContext)) {
+    if (this.#userContexts?.includes(userContext)) {
       return true;
     }
     return false;
   }
 
   dispose(): void {
-    for (const requestId of this.#collectedRequests.values()) {
-      this.disown(requestId);
+    for (const request of this.#collectedRequests.values()) {
+      this.disown(request.id);
     }
   }
 }
