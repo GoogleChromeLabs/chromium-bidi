@@ -57,10 +57,6 @@ export class NetworkCollector extends EventEmitter<RequestDisowned> {
     this.#collectedRequests.add(requestId);
   }
 
-  collectedRequests(): Network.Request[] {
-    return new Array(...this.#collectedRequests.values());
-  }
-
   isCollected(requestId: Network.Request) {
     return this.#collectedRequests.has(requestId);
   }

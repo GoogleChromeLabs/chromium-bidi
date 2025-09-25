@@ -24,7 +24,7 @@ import type {
 import {EventEmitter} from '../../../../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../../../../utils/log.js';
 
-import type {NetworkRequest} from './../NetworkRequest.js';
+import type {NetworkRequest} from '../NetworkRequest.js';
 import {NetworkCollector, type RequestDisowned} from './NetworkCollector.js';
 
 export class NetworkCollectorsStorage extends EventEmitter<RequestDisowned> {
