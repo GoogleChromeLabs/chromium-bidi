@@ -22,9 +22,9 @@ import type {
   Network,
 } from '../../../../protocol/generated/webdriver-bidi.js';
 import {EventEmitter} from '../../../../utils/EventEmitter.js';
-import {type LoggerFn, LogType} from '../../../../utils/log';
+import {type LoggerFn, LogType} from '../../../../utils/log.js';
 import {uuidv4} from '../../../../utils/uuid.js';
-import type {NetworkRequest} from '../NetworkRequest';
+import type {NetworkRequest} from '../NetworkRequest.js';
 
 export interface RequestDisowned extends Record<string | symbol, unknown> {
   requestDisowned: Network.Request;
