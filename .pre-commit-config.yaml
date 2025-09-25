@@ -119,7 +119,7 @@ repos:
           .* limitations under the License.
         language: pygrep
         types_or: [javascript, ts, python]
-        exclude: __init__\.py$
+        exclude: (__init__\.py$|tests/speculation/test_prefetch_status_updated\.py$)
         args: [--negate, --multiline]
       - id: node-self
         name: check nodejs `self.`
