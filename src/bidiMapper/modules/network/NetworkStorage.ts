@@ -30,7 +30,7 @@ import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
-import {CollectorsStorage} from './CollectorsStorage.js';
+import {CollectorsStorage} from './dataCollectors/CollectorsStorage.js';
 import {NetworkRequest} from './NetworkRequest.js';
 import {matchUrlPattern, type ParsedUrlPattern} from './NetworkUtils.js';
 
