@@ -25,14 +25,15 @@ import {EventEmitter} from '../../../../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../../../../utils/log.js';
 
 import type {NetworkRequest} from './../NetworkRequest.js';
-import {Collector} from './Collector.js';
+import {NetworkCollector, type RequestDisowned} from './NetworkCollector.js';
 
-interface RequestDisowned extends Record<string | symbol, unknown> {
-  requestId: Network.Request;
-}
-
-export class CollectorsStorage extends EventEmitter<RequestDisowned> {
-  readonly #collectors = new Map<string, Collector>();
+export class NetworkCollectorsStorage extends EventEmitter<RequestDisowned> {
+  readonly #collectors = new Map<string, NetworkCollector>();
+  // Lookup map to speed up `isCollected`.
+  readonly #collectedRequests = new Map<
+    Network.Request,
+    Set<NetworkCollector>
+  >();
   readonly #logger?: LoggerFn;
 
   constructor(logger?: LoggerFn) {
@@ -41,12 +42,22 @@ export class CollectorsStorage extends EventEmitter<RequestDisowned> {
   }
 
   addDataCollector(params: Network.AddDataCollectorParameters) {
-    const collector = new Collector(params);
+    const collector = new NetworkCollector(params);
+    collector.on('requestDisowned', (requestId) => {
+      this.#collectedRequests.get(requestId)?.delete(collector);
+      if (!this.isCollected(requestId)) {
+        this.emit('requestDisowned', requestId);
+        this.#collectedRequests.delete(requestId);
+      }
+    });
     this.#collectors.set(collector.id, collector);
     return collector.id;
   }
 
-  #getCollectors(collectorId?: string): Collector[] {
+  #getCollectors(
+    requestId: Network.Request,
+    collectorId?: string,
+  ): NetworkCollector[] {
     if (collectorId !== undefined) {
       if (!this.#collectors.has(collectorId)) {
         throw new NoSuchNetworkCollectorException(
@@ -55,11 +66,11 @@ export class CollectorsStorage extends EventEmitter<RequestDisowned> {
       }
       return [this.#collectors.get(collectorId)!];
     }
-    return [...this.#collectors.values()];
+    return [...(this.#collectedRequests.get(requestId)?.values() ?? [])];
   }
 
   isCollected(requestId: Network.Request, collectorId?: string): boolean {
-    for (const collector of this.#getCollectors(collectorId)) {
+    for (const collector of this.#getCollectors(requestId, collectorId)) {
       if (collector.isCollected(requestId)) {
         return true;
       }
@@ -69,7 +80,7 @@ export class CollectorsStorage extends EventEmitter<RequestDisowned> {
   }
 
   disown(requestId: Network.Request, collectorId?: string) {
-    for (const collector of this.#getCollectors(collectorId)) {
+    for (const collector of this.#getCollectors(requestId, collectorId)) {
       collector.disown(requestId);
     }
   }
@@ -80,29 +91,31 @@ export class CollectorsStorage extends EventEmitter<RequestDisowned> {
     userContext: Browser.UserContext,
   ) {
     for (const collector of this.#collectors.values()) {
-      collector.collectIfNeeded(
-        request.id,
-        topLevelBrowsingContext,
-        userContext,
-      );
-      this.#logger?.(
-        LogType.debug,
-        `Request ${request.id} collected by ${collector.id}`,
-      );
+      if (collector.shouldCollect(topLevelBrowsingContext, userContext)) {
+        collector.collect(request.id);
+
+        if (!this.#collectedRequests.has(request.id)) {
+          this.#collectedRequests.set(request.id, new Set());
+        }
+        this.#collectedRequests.get(request.id)?.add(collector);
+
+        this.#logger?.(
+          LogType.debug,
+          `Request ${request.id} collected by ${collector.id}`,
+        );
+      }
     }
   }
 
-  removeDataCollector(collectorId: Network.Collector): Network.Request[] {
+  removeDataCollector(collectorId: Network.Collector) {
     if (!this.#collectors.has(collectorId)) {
       throw new NoSuchNetworkCollectorException(
         `Collector ${collectorId} does not exist`,
       );
     }
-    const collectorsRequests =
-      this.#collectors.get(collectorId)?.collectedRequests() ?? [];
+    const collector = this.#collectors.get(collectorId)!;
+    collector.dispose();
+    // TODO: collector.off('requestDisowned', ...);
     this.#collectors.delete(collectorId);
-
-    // Return the requests that are not collected.
-    return collectorsRequests.filter((r) => !this.isCollected(r));
   }
 }

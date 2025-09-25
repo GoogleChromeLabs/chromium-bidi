@@ -21,9 +21,14 @@ import type {
   JsUint,
   Network,
 } from '../../../../protocol/generated/webdriver-bidi.js';
+import {EventEmitter} from '../../../../utils/EventEmitter.js';
 import {uuidv4} from '../../../../utils/uuid.js';
 
-export class Collector {
+export interface RequestDisowned extends Record<string | symbol, unknown> {
+  requestDisowned: Network.Request;
+}
+
+export class NetworkCollector extends EventEmitter<RequestDisowned> {
   readonly dataTypes: [Network.DataType, ...Network.DataType[]];
   readonly maxEncodedDataSize: JsUint;
   /**
@@ -40,6 +45,7 @@ export class Collector {
   readonly #collectedRequests = new Set<Network.Request>();
 
   constructor(params: Network.AddDataCollectorParameters) {
+    super();
     this.dataTypes = params.dataTypes;
     this.maxEncodedDataSize = params.maxEncodedDataSize;
     this.collectorType = params.collectorType;
@@ -47,14 +53,7 @@ export class Collector {
     this.userContexts = params.userContexts;
   }
 
-  collectIfNeeded(
-    requestId: Network.Request,
-    topLevelBrowsingContext: BrowsingContext.BrowsingContext,
-    userContext: Browser.UserContext,
-  ) {
-    if (!this.#shouldCollect(topLevelBrowsingContext, userContext)) {
-      return;
-    }
+  collect(requestId: Network.Request) {
     this.#collectedRequests.add(requestId);
   }
 
@@ -67,10 +66,11 @@ export class Collector {
   }
 
   disown(requestId: Network.Request) {
-    return this.#collectedRequests.delete(requestId);
+    this.#collectedRequests.delete(requestId);
+    this.emit('requestDisowned', requestId);
   }
 
-  #shouldCollect(
+  shouldCollect(
     topLevelBrowsingContext: BrowsingContext.BrowsingContext,
     userContext: Browser.UserContext,
   ): boolean {
@@ -85,5 +85,11 @@ export class Collector {
       return true;
     }
     return false;
+  }
+
+  dispose(): void {
+    for (const requestId of this.#collectedRequests.values()) {
+      this.disown(requestId);
+    }
   }
 }

@@ -30,7 +30,7 @@ import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
-import {CollectorsStorage} from './dataCollectors/CollectorsStorage.js';
+import {NetworkCollectorsStorage} from './dataCollectors/NetworkCollectorsStorage';
 import {NetworkRequest} from './NetworkRequest.js';
 import {matchUrlPattern, type ParsedUrlPattern} from './NetworkUtils.js';
 
@@ -45,7 +45,7 @@ type NetworkInterception = Omit<
 export class NetworkStorage {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #eventManager: EventManager;
-  readonly #collectorsStorage: CollectorsStorage;
+  readonly #collectorsStorage: NetworkCollectorsStorage;
 
   readonly #logger?: LoggerFn;
 
@@ -69,7 +69,10 @@ export class NetworkStorage {
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
-    this.#collectorsStorage = new CollectorsStorage(logger);
+    this.#collectorsStorage = new NetworkCollectorsStorage(logger);
+    this.#collectorsStorage.on('requestDisowned', (requestId) => {
+      this.disposeRequest(requestId);
+    });
 
     browserClient.on('Target.detachedFromTarget', ({sessionId}) => {
       this.disposeRequestMap(sessionId);
@@ -422,6 +425,7 @@ export class NetworkStorage {
     }
     // TODO: dispose Network data from Chromium once there is a CDP command for that.
     this.#requests.delete(id);
+    console.log(`!!@@## Request disposed ${id}`);
   }
 
   /**
@@ -451,10 +455,7 @@ export class NetworkStorage {
   }
 
   removeDataCollector(params: Network.RemoveDataCollectorParameters) {
-    const releasedRequests = this.#collectorsStorage.removeDataCollector(
-      params.collector,
-    );
-    releasedRequests.map((request) => this.disposeRequest(request));
+    this.#collectorsStorage.removeDataCollector(params.collector);
   }
 
   disownData(params: Network.DisownDataParameters) {
