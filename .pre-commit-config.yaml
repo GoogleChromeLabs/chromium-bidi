@@ -120,7 +120,7 @@ repos:
         language: pygrep
         types_or: [javascript, ts, python]
         exclude: __init__\.py$
-        args: [--negate, --multiline]
+        args: [--multiline]
       - id: node-self
         name: check nodejs `self.`
         entry: '\bself\.'
