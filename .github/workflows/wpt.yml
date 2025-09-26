@@ -254,6 +254,8 @@ jobs:
       # Just checkout the repo. No need in setting up Node.js or Python.
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
       - name: Download Artifact
         # There is no way to download artifacts by wildcard, so we need to download
         # all of them. The `updated-wpt-metadata` directory should contain all the
