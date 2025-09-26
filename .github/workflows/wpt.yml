@@ -269,12 +269,13 @@ jobs:
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
       - name: Commit updated expectations
         uses: stefanzweifel/git-auto-commit-action@v6.0.1
-        commit_message: Update WPT expectations
-        commit_options: -n --signoff
-        commit_user_name: Browser Automation Bot
-        commit_user_email: browser-automation-bot@google.com
-        commit_author: Browser Automation Bot <browser-automation-bot@google.com>
-        file_pattern: wpt-metadata/**/*.ini
+        with:
+          commit_message: Update WPT expectations
+          commit_options: -n --signoff
+          commit_user_name: Browser Automation Bot
+          commit_user_email: browser-automation-bot@google.com
+          commit_author: Browser Automation Bot <browser-automation-bot@google.com>
+          file_pattern: wpt-metadata/**/*.ini
 
   update_report:
     name: WPT report
