@@ -48,7 +48,7 @@ export class CollectorsStorage {
       // 200 MB is the default limit in CDP:
       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_network_agent.cc;drc=da1f749634c9a401cc756f36c2e6ce233e1c9b4d;l=133
       throw new InvalidArgumentException(
-        `Max encoded data size should be between 1 and ${200 * 1000 * 1000}`,
+        `Max encoded data size should be between 1 and ${200_000_000}`,
       );
     }
     const collectorId = uuidv4();
