@@ -267,8 +267,8 @@ jobs:
         run: |
           rm -rf wpt-metadata/chromedriver wpt-metadata/mapper
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
-      - name: Auto-commit WPT expectations
-        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6.0.1
+      - name: Commit updated expectations
+        uses: stefanzweifel/git-auto-commit-action@v6.0.1
         commit_message: Update WPT expectations
         commit_options: -n --signoff
         commit_user_name: Browser Automation Bot
