@@ -197,7 +197,7 @@ export class NetworkRequest {
     return this.url.startsWith('data:');
   }
 
-  #isNotInterpretable(): boolean {
+  #isNonInterceptable(): boolean {
     return (
       // We can't intercept data urls from CDP
       this.#isDataUrl() ||
@@ -427,7 +427,7 @@ export class NetworkRequest {
 
   #interceptsInPhase(phase: Network.InterceptPhase) {
     if (
-      this.#isNotInterpretable() ||
+      this.#isNonInterceptable() ||
       !this.#cdpTarget.isSubscribedTo(`network.${phase}`)
     ) {
       return new Set();
@@ -468,7 +468,7 @@ export class NetworkRequest {
       // is the only place we can find out
       Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
-    const noInterceptionExpected = this.#isNotInterpretable();
+    const noInterceptionExpected = this.#isNonInterceptable();
 
     const requestInterceptionExpected =
       !noInterceptionExpected &&
