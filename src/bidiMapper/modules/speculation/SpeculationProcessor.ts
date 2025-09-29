@@ -16,14 +16,18 @@
  */
 
 import {Speculation} from '../../../protocol/protocol.js';
+import type {LoggerFn} from '../../../utils/log.js';
+import {LogType} from '../../../utils/log.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
 export class SpeculationProcessor {
   #eventManager: EventManager;
+  readonly #logger: LoggerFn | undefined;
 
-  constructor(eventManager: EventManager) {
+  constructor(eventManager: EventManager, logger: LoggerFn | undefined) {
     this.#eventManager = eventManager;
+    this.#logger = logger;
   }
 
   onCdpTargetCreated(cdpTarget: CdpTarget) {
@@ -44,6 +48,7 @@ export class SpeculationProcessor {
           break;
         default:
           // If status is not recognized, skip the event
+          this.#logger?.(LogType.debugWarn, `Unknown prefetch status: ${event.status}`);
           return;
       }
       this.#eventManager.registerEvent(

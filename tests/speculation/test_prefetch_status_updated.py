@@ -52,20 +52,20 @@ async def test_speculation_rules_generate_ready_events(websocket, context_id,
         </body>
     """)
 
-    # Start listening for events before navigating to avoid race conditions
-    event_futures = []
-    for i in range(2):
-        event_futures.append(
-            wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
-
-    # Now navigate to trigger the events
-    await goto_url(websocket, context_id, main_page)
+    # Initiate navigation but don't wait for the command to be finished.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": main_page,
+                "context": context_id,
+                "wait": "none"
+            }
+    })
 
     # Wait for all the events
-    events = []
-    for future in event_futures:
-        event = await future
-        events.append(event)
+    events = [await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]),
+              await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])]
 
     # Verify all events have correct structure
     for event in events:
@@ -118,24 +118,21 @@ async def test_speculation_rules_generate_events_with_navigation(
         </body>
     """)
 
-    # Start listening for initial events before navigating to avoid race conditions
-    initial_event_futures = []
-    for i in range(2):
-        initial_event_futures.append(
-            wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
+    # Initiate navigation but don't wait for the command to be finished.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": main_page,
+                "context": context_id,
+                "wait": "none"
+            }
+    })
 
-    # Now navigate to trigger the initial events
-    await goto_url(websocket, context_id, main_page)
+    # Wait for initial events
+    events = [await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]),
+              await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])]
 
-    # Wait for initial events (pending and ready)
-    events = []
-    for future in initial_event_futures:
-        event = await future
-        events.append(event)
-
-    # Start listening for success event before clicking
-    success_event_future = wait_for_events(
-        websocket, ["speculation.prefetchStatusUpdated"])
 
     # Navigate by clicking the link (user-initiated navigation to trigger success event)
     click_script = """
@@ -152,13 +149,12 @@ async def test_speculation_rules_generate_events_with_navigation(
                 "context": context_id
             },
             "awaitPromise": False
-        }
+        },
+        "wait": "none"
     }
     await send_JSON_command(websocket, click_command)
 
-    # Wait for success event after navigation
-    success_event = await success_event_future
-    events.append(success_event)
+    events.append(await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
 
     # Verify all events have correct structure
     for event in events:
@@ -212,20 +208,20 @@ async def test_speculation_rules_generate_failure_events(
         </body>
     """)
 
-    # Start listening for events before navigating to avoid race conditions
-    event_futures = []
-    for i in range(2):
-        event_futures.append(
-            wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
-
-    # Now navigate to trigger the events
-    await goto_url(websocket, context_id, main_page)
+    # Initiate navigation but don't wait for the command to be finished.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": main_page,
+                "context": context_id,
+                "wait": "none"
+            }
+    })
 
     # Wait for all the events
-    events = []
-    for future in event_futures:
-        event = await future
-        events.append(event)
+    events = [await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]),
+              await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])]
 
     # Verify all events have correct structure
     for event in events:
