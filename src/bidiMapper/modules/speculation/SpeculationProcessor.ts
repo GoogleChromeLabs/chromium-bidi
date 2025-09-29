@@ -48,7 +48,10 @@ export class SpeculationProcessor {
           break;
         default:
           // If status is not recognized, skip the event
-          this.#logger?.(LogType.debugWarn, `Unknown prefetch status: ${event.status}`);
+          this.#logger?.(
+            LogType.debugWarn,
+            `Unknown prefetch status: ${event.status}`,
+          );
           return;
       }
       this.#eventManager.registerEvent(

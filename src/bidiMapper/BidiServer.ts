@@ -109,7 +109,10 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#eventManager,
       this.#browsingContextStorage,
     );
-    this.#speculationProcessor = new SpeculationProcessor(this.#eventManager, this.#logger);
+    this.#speculationProcessor = new SpeculationProcessor(
+      this.#eventManager,
+      this.#logger,
+    );
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,

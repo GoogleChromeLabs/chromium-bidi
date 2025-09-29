@@ -14,8 +14,7 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import (goto_url, send_JSON_command, subscribe,
-                          wait_for_events)
+from test_helpers import send_JSON_command, subscribe, wait_for_events
 
 
 @pytest.mark.asyncio
@@ -61,11 +60,12 @@ async def test_speculation_rules_generate_ready_events(websocket, context_id,
                 "context": context_id,
                 "wait": "none"
             }
-    })
+        })
 
     # Wait for all the events
-    events = [await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]),
-              await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])]
+    events = [
+        await wait_for_events(websocket,["speculation.prefetchStatusUpdated"]), await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+    ]
 
     # Verify all events have correct structure
     for event in events:
@@ -127,12 +127,12 @@ async def test_speculation_rules_generate_events_with_navigation(
                 "context": context_id,
                 "wait": "none"
             }
-    })
+        })
 
     # Wait for initial events
-    events = [await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]),
-              await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])]
-
+    events = [
+        await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]), await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+    ]
 
     # Navigate by clicking the link (user-initiated navigation to trigger success event)
     click_script = """
@@ -217,11 +217,12 @@ async def test_speculation_rules_generate_failure_events(
                 "context": context_id,
                 "wait": "none"
             }
-    })
+        })
 
     # Wait for all the events
-    events = [await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]),
-              await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])]
+    events = [
+        await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]), await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+    ]
 
     # Verify all events have correct structure
     for event in events:
