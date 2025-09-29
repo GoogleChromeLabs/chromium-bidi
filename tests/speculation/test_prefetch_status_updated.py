@@ -64,7 +64,9 @@ async def test_speculation_rules_generate_ready_events(websocket, context_id,
 
     # Wait for all the events
     events = [
-        await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]), await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+        await wait_for_events(websocket,
+                              ["speculation.prefetchStatusUpdated"]), await
+        wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
     ]
 
     # Verify all events have correct structure
