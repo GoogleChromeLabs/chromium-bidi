@@ -64,7 +64,7 @@ async def test_speculation_rules_generate_ready_events(websocket, context_id,
 
     # Wait for all the events
     events = [
-        await wait_for_events(websocket,["speculation.prefetchStatusUpdated"]), await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+        await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]), await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
     ]
 
     # Verify all events have correct structure
@@ -131,7 +131,9 @@ async def test_speculation_rules_generate_events_with_navigation(
 
     # Wait for initial events
     events = [
-        await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]), await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+        await wait_for_events(websocket,
+                              ["speculation.prefetchStatusUpdated"]), await
+        wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
     ]
 
     # Navigate by clicking the link (user-initiated navigation to trigger success event)
@@ -154,7 +156,8 @@ async def test_speculation_rules_generate_events_with_navigation(
     }
     await send_JSON_command(websocket, click_command)
 
-    events.append(await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]))
+    events.append(await wait_for_events(websocket,
+                                        ["speculation.prefetchStatusUpdated"]))
 
     # Verify all events have correct structure
     for event in events:
@@ -221,7 +224,9 @@ async def test_speculation_rules_generate_failure_events(
 
     # Wait for all the events
     events = [
-        await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"]), await wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
+        await wait_for_events(websocket,
+                              ["speculation.prefetchStatusUpdated"]), await
+        wait_for_events(websocket, ["speculation.prefetchStatusUpdated"])
     ]
 
     # Verify all events have correct structure
