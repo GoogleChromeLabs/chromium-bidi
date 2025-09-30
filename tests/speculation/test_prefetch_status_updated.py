@@ -70,20 +70,24 @@ async def test_speculation_rules_generate_ready_events(websocket, context_id,
     ]
 
     # Verify all events have correct structure
-    for event in events:
-        assert event["type"] == "event"
-        assert event["method"] == "speculation.prefetchStatusUpdated"
-
-        params = event["params"]
-        assert "url" in params
-        assert "status" in params
-        assert "context" in params
-        assert params["status"] in ["pending", "ready", "success", "failure"]
-
-    # Verify the correct order of events
     assert len(events) == 2, "Expected 2 prefetch events (pending and ready)"
-    assert events[0]["params"]["status"] == "pending"
-    assert events[1]["params"]["status"] == "ready"
+    assert events == [{
+        "type": "event",
+        "method": "speculation.prefetchStatusUpdated",
+        "params": {
+            "url": target_page,
+            "status": "pending",
+            "context": context_id
+        }
+    }, {
+        "type": "event",
+        "method": "speculation.prefetchStatusUpdated",
+        "params": {
+            "url": target_page,
+            "status": "ready",
+            "context": context_id
+        }
+    }]
 
 
 @pytest.mark.asyncio
@@ -162,23 +166,34 @@ async def test_speculation_rules_generate_events_with_navigation(
                                         ["speculation.prefetchStatusUpdated"]))
 
     # Verify all events have correct structure
-    for event in events:
-        assert event["type"] == "event"
-        assert event["method"] == "speculation.prefetchStatusUpdated"
-
-        params = event["params"]
-        assert "url" in params
-        assert "status" in params
-        assert "context" in params
-        assert params["status"] in ["pending", "ready", "success", "failure"]
-
-    # Verify the complete sequence of events
     assert len(
         events
     ) == 3, f"Expected 3 prefetch events (pending, ready, and success), got {len(events)}"
-    assert events[0]["params"]["status"] == "pending"
-    assert events[1]["params"]["status"] == "ready"
-    assert events[2]["params"]["status"] == "success"
+    assert events == [{
+        "type": "event",
+        "method": "speculation.prefetchStatusUpdated",
+        "params": {
+            "url": target_page,
+            "status": "pending",
+            "context": context_id
+        }
+    }, {
+        "type": "event",
+        "method": "speculation.prefetchStatusUpdated",
+        "params": {
+            "url": target_page,
+            "status": "ready",
+            "context": context_id
+        }
+    }, {
+        "type": "event",
+        "method": "speculation.prefetchStatusUpdated",
+        "params": {
+            "url": target_page,
+            "status": "success",
+            "context": context_id
+        }
+    }]
 
 
 @pytest.mark.asyncio
@@ -232,19 +247,23 @@ async def test_speculation_rules_generate_failure_events(
     ]
 
     # Verify all events have correct structure
-    for event in events:
-        assert event["type"] == "event"
-        assert event["method"] == "speculation.prefetchStatusUpdated"
-
-        params = event["params"]
-        assert "url" in params
-        assert "status" in params
-        assert "context" in params
-        assert params["status"] in ["pending", "ready", "success", "failure"]
-
-    # Verify the sequence of events - should be pending then failure
     assert len(
         events
     ) == 2, f"Expected 2 prefetch events (pending and failure), got {len(events)}"
-    assert events[0]["params"]["status"] == "pending"
-    assert events[1]["params"]["status"] == "failure"
+    assert events == [{
+        "type": "event",
+        "method": "speculation.prefetchStatusUpdated",
+        "params": {
+            "url": failed_target,
+            "status": "pending",
+            "context": context_id
+        }
+    }, {
+        "type": "event",
+        "method": "speculation.prefetchStatusUpdated",
+        "params": {
+            "url": failed_target,
+            "status": "failure",
+            "context": context_id
+        }
+    }]
