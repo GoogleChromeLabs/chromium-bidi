@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC.
+ * Copyright 2025 Google LLC.
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,8 +38,7 @@ export class PermissionsProcessor {
         params.userContext;
       await this.#browserCdpClient.sendCommand('Browser.setPermission', {
         origin: params.origin,
-        embeddingOrigin:
-          params.topLevelOrigin ? params.topLevelOrigin : undefined,
+        embeddingOrigin: params.topLevelOrigin,
         browserContextId:
           userContextId && userContextId !== 'default'
             ? userContextId
