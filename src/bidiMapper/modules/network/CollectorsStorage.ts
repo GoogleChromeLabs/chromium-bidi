@@ -94,7 +94,7 @@ export class CollectorsStorage {
     return true;
   }
 
-  isRequestCollected() {
+  isRequestCollected(_requestId: Network.Request, _collectorId?: string) {
     // Request data collectors are not implemented.
     return false;
   }
