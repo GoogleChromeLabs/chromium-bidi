@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.2.1...chromium-bidi-v10.0.0) (2025-10-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 143.0.7447.0 ([#3802](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3802))
+
+### Features
+
+* **chrome:** update the pinned browser version to 143.0.7447.0 ([#3802](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3802)) ([d40b75f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d40b75f0ae7e0b9ce7e58a72ac849f898b88d2f0))
+* speculation module implementation  ([#3731](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3731)) ([66d3585](https://github.com/GoogleChromeLabs/chromium-bidi/commit/66d3585e0062f21adcabcc85ceb686ee515f687f))
+
 ## [9.2.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.2.0...chromium-bidi-v9.2.1) (2025-10-02)
 
 
