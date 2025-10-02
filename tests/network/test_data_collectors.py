@@ -127,8 +127,8 @@ async def test_network_collector_get_data_response_required_params(
 
 
 @pytest.mark.asyncio
-async def test_network_collector_get_data_response_collector(websocket, context_id,
-        init_response):
+async def test_network_collector_get_data_response_collector(
+        websocket, context_id, init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -282,7 +282,7 @@ async def test_network_collector_get_data_response_disown_removes_data(
 
 @pytest.mark.asyncio
 async def test_network_collector_remove_data_collector(websocket, context_id,
-        init_response):
+                                                       init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -354,7 +354,7 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_network_collector_disown_data(websocket, context_id,
-        init_response):
+                                             init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -414,7 +414,7 @@ async def test_network_collector_disown_data(websocket, context_id,
 @pytest.mark.asyncio
 async def test_network_collector_scoped_to_context(websocket, context_id,
                                                    another_context_id,
-        init_response):
+                                                   init_response):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -446,7 +446,8 @@ async def test_network_collector_scoped_to_context(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_network_collector_get_data_response_oopif(websocket, context_id, html):
+async def test_network_collector_get_data_response_oopif(
+        websocket, context_id, html):
     await goto_url(websocket, context_id, html())
 
     await subscribe(websocket, ['network.responseCompleted'])
