@@ -435,7 +435,7 @@ export class NetworkStorage {
   disposeRequest(id: Network.Request) {
     if (
       this.#collectorsStorage.isResponseCollected(id) ||
-      this.#collectorsStorage.isRequestCollected()
+      this.#collectorsStorage.isRequestCollected(id)
     ) {
       // Keep request, as it's data can be accessed later.
       return;
