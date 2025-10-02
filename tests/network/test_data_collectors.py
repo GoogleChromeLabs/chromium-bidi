@@ -22,7 +22,7 @@ from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
 SOME_CONTENT = "some downloadable content"
 NETWORK_RESPONSE_STARTED_EVENT = "network.responseStarted"
 SOME_UNKNOWN_COLLECTOR_ID = "SOME_UNKNOWN_COLLECTOR_ID"
-MAX_TOTAL_COLLECTED_SIZE = 200 * 1000 * 1000  # Default CDP limit.
+MAX_TOTAL_COLLECTED_SIZE = 200_000_000  # Default CDP limit.
 
 
 @pytest.fixture
