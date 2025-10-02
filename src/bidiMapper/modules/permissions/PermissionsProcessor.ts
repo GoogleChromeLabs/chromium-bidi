@@ -38,6 +38,7 @@ export class PermissionsProcessor {
         params.userContext;
       await this.#browserCdpClient.sendCommand('Browser.setPermission', {
         origin: params.origin,
+        embeddingOrigin: params.topLevelOrigin,
         browserContextId:
           userContextId && userContextId !== 'default'
             ? userContextId
