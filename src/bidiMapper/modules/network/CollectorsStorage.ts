@@ -189,7 +189,7 @@ export class CollectorsStorage {
 
     this.#logger?.(
       LogType.debug,
-      `Collector ${collectorId} collected request ${request.id}`,
+      `Collector ${collectorId} collected ${dataType} of ${request.id}`,
     );
     return true;
   }
@@ -240,7 +240,7 @@ export class CollectorsStorage {
       if (collectorIds.has(collectorId)) {
         collectorIds.delete(collectorId);
         if (collectorIds.size === 0) {
-          this.#responseCollectors.delete(requestId);
+          this.#requestBodyCollectors.delete(requestId);
           affectedRequests.push(requestId);
         }
       }
