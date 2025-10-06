@@ -365,12 +365,11 @@ async def test_network_collector_get_data_response_disown_removes_data(
     }
 
     # Assert data is not available anymore.
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "no such network data",
-                "message": f"No collected data for request {request_id}"
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "no such network data",
+                           "message": "No collected response data"
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.getData",
@@ -437,12 +436,11 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
             })
 
     # Assert the collected data is removed.
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "no such network data",
-                "message": f"No collected data for request {request_id}"
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "no such network data",
+                           "message": "No collected response data"
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.getData",
@@ -496,12 +494,11 @@ async def test_network_collector_disown_data(websocket, context_id,
         })
 
     # Assert the collected data is not available anymore.
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "no such network data",
-                "message": f"No collected data for request {request_id}"
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "no such network data",
+                           "message": "No collected response data"
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.getData",
@@ -530,12 +527,11 @@ async def test_network_collector_scoped_to_context(websocket, context_id,
     request_id = await init_response(context_id, SOME_CONTENT)
 
     # Assert the data is not collected.
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "no such network data",
-                "message": f"No collected data for request {request_id}"
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "no such network data",
+                           "message": "No collected response data"
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.getData",
