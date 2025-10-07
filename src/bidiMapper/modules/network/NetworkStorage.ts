@@ -457,6 +457,9 @@ export class NetworkStorage {
     this.#requests.set(request.id, request);
   }
 
+  /**
+   * Disposes the given request, if no collectors targeting it are left.
+   */
   disposeRequest(id: Network.Request) {
     if (this.#collectorsStorage.isCollected(id)) {
       // Keep request, as it's data can be accessed later.
