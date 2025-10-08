@@ -90,8 +90,8 @@ async def test_permissions_set_permission_in_user_context(
 async def test_permissions_set_permission_per_top_level_origin(
         websocket, context_id, url_example, iframe_id, html):
     origin = get_origin(url_example)
-    resp = await goto_url(websocket, iframe_id, html(same_origin=False))
-    frame_url = resp['url']
+    frame_url = html(same_origin=False)  
+    await goto_url(websocket, iframe_id, frame_url)  
 
     # Default permission is `prompt`.
     assert await query_permission(websocket, iframe_id,
@@ -108,8 +108,8 @@ async def test_permissions_set_permission_per_top_level_origin(
                                   'storage-access') == 'prompt'
 
     # Set permission for the iframe within top-level origin.
-    resp = await set_permission(websocket, frame_url, {'name': 'storage-access'},
-                                'granted', topLevelOrigin=origin)
+    resp = await set_permission(websocket, origin, {'name': 'storage-access'},
+                                'granted', embedded_origin=frame_url)
     assert resp == {}
     # Assert the permission is applied in the iframe.
     assert await query_permission(websocket, iframe_id,
