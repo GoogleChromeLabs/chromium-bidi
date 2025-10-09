@@ -47,13 +47,13 @@ async def set_permission(websocket,
     return await execute_command(
         websocket, {
             'method': 'permissions.setPermission',
-            'params': {  
-                'origin': origin,  
-                'descriptor': descriptor,  
-                'state': state,  
-                'goog:userContext': user_context,  
-                **({} if embedded_origin is None else {  
-                       "embeddedOrigin": embedded_origin  
+            'params': {
+                'origin': origin,
+                'descriptor': descriptor,
+                'state': state,
+                'goog:userContext': user_context,
+                **({} if embedded_origin is None else {
+                       "embeddedOrigin": embedded_origin
                    })
             }
         })
