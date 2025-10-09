@@ -34,6 +34,8 @@ from tools.local_http_server import LocalHttpServer
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+GOOD_SSL_CERT_SPKI = "QQDsUATYj6FX2oHvQ5/cyDW9CutD2sp9z+qeLfNGHHw="
+
 
 @pytest_asyncio.fixture(scope='session')
 def local_server_http() -> Generator[LocalHttpServer, None, None]:
@@ -66,7 +68,19 @@ def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
 @pytest_asyncio.fixture(scope='session')
 def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
     """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
-    server = LocalHttpServer(protocol='https')
+    server = LocalHttpServer(ssl_cert_prefix="ssl_bad")
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
+def local_server_good_ssl() -> Generator[LocalHttpServer, None, None]:
+    """ Returns an instance of a LocalHttpServer with a valid SSL certificate. """
+    server = LocalHttpServer(ssl_cert_prefix="ssl_good")
     yield server
 
     server.clear()
@@ -118,6 +132,8 @@ async def websocket(test_headless_mode, capabilities, request):
             "webSocketUrl": True,
             "goog:chromeOptions": {
                 "args": [
+                    # Required for navigating to `local_server_good_ssl`.
+                    f"--ignore-certificate-errors-spki-list={GOOD_SSL_CERT_SPKI}",
                     "--disable-infobars",
                     # Required to prevent automatic switch to https.
                     "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades,LocalNetworkAccessChecks",
@@ -375,10 +391,31 @@ def url_bad_ssl(local_server_bad_ssl):
     return local_server_bad_ssl.url_200()
 
 
+@pytest.fixture(scope="session")
+def url_secure_context(local_server_good_ssl):
+    return local_server_good_ssl.url_200()
+
+
 @pytest.fixture
 def url_cacheable(local_server_http):
     """Return a generic example URL that can be cached."""
     return local_server_http.url_cacheable()
+
+
+@pytest.fixture
+def get_url_echo(local_server_http, local_server_http_another_host):
+    def get_url_echo(same_origin=True):
+        if same_origin:
+            return local_server_http.url_echo()
+        return local_server_http_another_host.url_echo()
+
+    return get_url_echo
+
+
+@pytest.fixture
+def url_echo(get_url_echo):
+    """Returns a URL that, when fetched, echoes back the details of the request."""
+    return get_url_echo()
 
 
 @pytest.fixture
@@ -530,8 +567,9 @@ def get_cdp_session_id(websocket):
 
 @pytest.fixture
 def query_selector(websocket, context_id):
-    """Return an element matching the given selector"""
-    async def query_selector(selector: str) -> str:
+    """ Return an element matching the given selector in the default or provided
+    browsing context. """
+    async def query_selector(selector: str, context_id=context_id) -> str:
         result = await execute_command(
             websocket, {
                 "method": "script.evaluate",
@@ -551,15 +589,41 @@ def query_selector(websocket, context_id):
 
 @pytest.fixture
 def activate_main_tab(websocket, context_id, get_cdp_session_id):
-    """Actives the main tab"""
-    async def activate_main_tab():
-        session_id = await get_cdp_session_id(context_id)
+    """
+    Activates the tab for the default or given browsing context.
+    """
+    async def get_top_level_context_id(context_id_):
+        """ Returns the top-level context id for the given context id."""
+
+        context_to_top_level_map = {}
+
+        # Build a map from each context_id to its top-level context_id.
+        # This handles nested contexts (e.g., iframes within iframes).
+        def populate_map(contexts, top_level_id):
+            for context_ in contexts:
+                context_to_top_level_map[context_["context"]] = top_level_id
+                if "children" in context_:
+                    populate_map(context_["children"], top_level_id)
+
+        resp = await get_tree(websocket)
+        for context in resp["contexts"]:
+            # Iterate through top-level contexts.
+            populate_map([context], context["context"])
+
+        if context_id_ not in context_to_top_level_map:
+            raise Exception(f"Unknown context_id: {context_id_}")
+
+        # If the initial_context_id is found in the map, return its
+        # corresponding top-level context_id. Otherwise, return the original.
+        return context_to_top_level_map.get(context_id_, context_id_)
+
+    async def activate_main_tab(context_id_=context_id):
+        top_level_context_id = await get_top_level_context_id(context_id_)
         await execute_command(
             websocket, {
-                "method": "goog:cdp.sendCommand",
+                "method": "browsingContext.activate",
                 "params": {
-                    "method": "Page.bringToFront",
-                    "session": session_id
+                    "context": top_level_context_id
                 }
             })
 
@@ -572,7 +636,7 @@ def url_download(local_server_http):
     def url_download(file_name="file-name.txt", content="download content"):
         return local_server_http.url_200(
             content,
-            content_type="text/html",
+            content_type="application/octet-stream",
             headers={
                 "Content-Disposition": f"attachment;  filename=\"{file_name}\""
             })
@@ -581,13 +645,25 @@ def url_download(local_server_http):
 
 
 @pytest.fixture
+def url_hang_forever_download(local_server_http):
+    """Return a URL that triggers a download which hangs forever."""
+    try:
+        yield local_server_http.url_hang_forever_download
+    finally:
+        local_server_http.hang_forever_stop()
+
+
+@pytest.fixture
 def html(local_server_http, local_server_http_another_host):
     """Return a factory for URL with the given content."""
-    def html(content="", same_origin=True):
+    def html(content="",
+             same_origin=True,
+             headers: dict[str, str] | None = None):
         if same_origin:
-            return local_server_http.url_200(content=content)
+            return local_server_http.url_200(content=content, headers=headers)
         else:
-            return local_server_http_another_host.url_200(content=content)
+            return local_server_http_another_host.url_200(content=content,
+                                                          headers=headers)
 
     return html
 
@@ -596,7 +672,8 @@ def html(local_server_http, local_server_http_another_host):
 def iframe():
     """Return a factory for <iframe> with the given src."""
     def iframe(src=""):
-        return f'<iframe src="{src}" />'
+        # Geolocation is required for Geolocation testing in iframes.
+        return f'<iframe allow="geolocation *" src="{src}" />'
 
     return iframe
 
@@ -618,14 +695,22 @@ async def iframe_id(websocket, context_id, html, iframe):
 
 
 @pytest_asyncio.fixture
-async def user_context_id(websocket):
-    """Create a new user context and return its id."""
-    result = await execute_command(websocket, {
-        "method": "browser.createUserContext",
-        "params": {}
-    })
+async def create_user_context(websocket):
+    async def create_user_context(params={}):
+        """Create a new user context and return its id."""
+        result = await execute_command(websocket, {
+            "method": "browser.createUserContext",
+            "params": params
+        })
+        return result['userContext']
 
-    return result['userContext']
+    return create_user_context
+
+
+@pytest_asyncio.fixture
+async def user_context_id(create_user_context):
+    """Create a new user context and return its id."""
+    return await create_user_context()
 
 
 @pytest.fixture

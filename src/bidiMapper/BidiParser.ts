@@ -79,6 +79,12 @@ export interface BidiCommandParameterParser {
   parseRemoveUserContextParameters(
     params: unknown,
   ): Browser.RemoveUserContextParameters;
+  parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Browser.SetClientWindowStateParameters;
+  parseSetDownloadBehaviorParameters(
+    params: unknown,
+  ): Browser.SetDownloadBehaviorParameters;
   // keep-sorted end
 
   // Browsing Context module
@@ -116,9 +122,30 @@ export interface BidiCommandParameterParser {
 
   // Emulation module
   // keep-sorted start block=yes
+  parseSetForcedColorsModeThemeOverrideParams(
+    params: unknown,
+  ): Emulation.SetForcedColorsModeThemeOverrideParameters;
   parseSetGeolocationOverrideParams(
     params: unknown,
   ): Emulation.SetGeolocationOverrideParameters;
+  parseSetLocaleOverrideParams(
+    params: unknown,
+  ): Emulation.SetLocaleOverrideParameters;
+  parseSetNetworkConditionsParams(
+    params: unknown,
+  ): Emulation.SetNetworkConditionsParameters;
+  parseSetScreenOrientationOverrideParams(
+    params: unknown,
+  ): Emulation.SetScreenOrientationOverrideParameters;
+  parseSetScriptingEnabledParams(
+    params: unknown,
+  ): Emulation.SetScriptingEnabledParameters;
+  parseSetTimezoneOverrideParams(
+    params: unknown,
+  ): Emulation.SetTimezoneOverrideParameters;
+  parseSetUserAgentOverrideParams(
+    params: unknown,
+  ): Emulation.SetUserAgentOverrideParameters;
   // keep-sorted end
 
   // Input module
@@ -137,6 +164,9 @@ export interface BidiCommandParameterParser {
 
   // Network module
   // keep-sorted start block=yes
+  parseAddDataCollectorParams(
+    params: unknown,
+  ): Network.AddDataCollectorParameters;
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters;
   parseContinueRequestParams(
     params: unknown,
@@ -147,14 +177,24 @@ export interface BidiCommandParameterParser {
   parseContinueWithAuthParams(
     params: unknown,
   ): Network.ContinueWithAuthParameters;
+  parseDisownDataParams(params: unknown): Network.DisownDataParameters;
   parseFailRequestParams(params: unknown): Network.FailRequestParameters;
+  parseGetDataParams(params: unknown): Network.GetDataParameters;
   parseProvideResponseParams(
     params: unknown,
   ): Network.ProvideResponseParameters;
+  parseRemoveDataCollectorParams(
+    params: unknown,
+  ): Network.RemoveDataCollectorParameters;
   parseRemoveInterceptParams(
     params: unknown,
   ): Network.RemoveInterceptParameters;
-  parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters;
+  parseSetCacheBehaviorParams(
+    params: unknown,
+  ): Network.SetCacheBehaviorParameters;
+  parseSetExtraHeadersParams(
+    params: unknown,
+  ): Network.SetExtraHeadersParameters;
   // keep-sorted end block=yes
 
   // Script module

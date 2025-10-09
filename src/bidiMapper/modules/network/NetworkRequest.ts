@@ -174,6 +174,17 @@ export class NetworkRequest {
     return this.#cdpTarget;
   }
 
+  /** CdpTarget can be changed when frame is moving out of process. */
+  updateCdpTarget(cdpTarget: CdpTarget) {
+    if (cdpTarget !== this.#cdpTarget) {
+      this.#logger?.(
+        LogType.debugInfo,
+        `Request ${this.id} was moved from ${this.#cdpTarget.id} to ${cdpTarget.id}`,
+      );
+      this.#cdpTarget = cdpTarget;
+    }
+  }
+
   get cdpClient() {
     return this.#cdpTarget.cdpClient;
   }
@@ -184,6 +195,15 @@ export class NetworkRequest {
 
   #isDataUrl(): boolean {
     return this.url.startsWith('data:');
+  }
+
+  #isNonInterceptable(): boolean {
+    return (
+      // We can't intercept data urls from CDP
+      this.#isDataUrl() ||
+      // Cached requests never hit the network
+      this.#servedFromCache
+    );
   }
 
   get #method(): string | undefined {
@@ -225,7 +245,7 @@ export class NetworkRequest {
     return cookies;
   }
 
-  get #bodySize() {
+  get bodySize() {
     let bodySize = 0;
     if (typeof this.#requestOverrides?.bodySize === 'number') {
       bodySize = this.#requestOverrides.bodySize;
@@ -237,14 +257,33 @@ export class NetworkRequest {
     return bodySize;
   }
 
-  get #context() {
-    return (
+  get #context(): string | null {
+    const result =
       this.#response.paused?.frameId ??
       this.#request.info?.frameId ??
       this.#request.paused?.frameId ??
-      this.#request.auth?.frameId ??
-      null
-    );
+      this.#request.auth?.frameId;
+
+    if (result !== undefined) {
+      return result;
+    }
+
+    // Heuristic for associating a preflight request with context via it's initiator
+    // request. Useful for preflight requests.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3570
+    if (
+      this.#request?.info?.initiator.type === 'preflight' &&
+      this.#request?.info?.initiator.requestId !== undefined
+    ) {
+      const maybeInitiator = this.#networkStorage.getRequestById(
+        this.#request?.info?.initiator.requestId,
+      );
+      if (maybeInitiator !== undefined) {
+        return maybeInitiator.#request.info?.frameId ?? null;
+      }
+    }
+
+    return null;
   }
 
   /** Returns the HTTP status code associated with this request if any. */
@@ -387,7 +426,10 @@ export class NetworkRequest {
   }
 
   #interceptsInPhase(phase: Network.InterceptPhase) {
-    if (!this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
+    if (
+      this.#isNonInterceptable() ||
+      !this.#cdpTarget.isSubscribedTo(`network.${phase}`)
+    ) {
       return new Set();
     }
 
@@ -426,11 +468,7 @@ export class NetworkRequest {
       // is the only place we can find out
       Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
-    const noInterceptionExpected =
-      // We can't intercept data urls from CDP
-      this.#isDataUrl() ||
-      // Cached requests never hit the network
-      this.#servedFromCache;
+    const noInterceptionExpected = this.#isNonInterceptable();
 
     const requestInterceptionExpected =
       !noInterceptionExpected &&
@@ -476,12 +514,13 @@ export class NetworkRequest {
       responseInterceptionCompleted
     ) {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
-      this.#networkStorage.deleteRequest(this.id);
+      this.#networkStorage.disposeRequest(this.id);
     }
   }
 
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#request.info = event;
+    this.#networkStorage.collectIfNeeded(this, Network.DataType.Request);
     this.#emitEventsIfReady();
   }
 
@@ -513,6 +552,7 @@ export class NetworkRequest {
   onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent) {
     this.#response.hasExtraInfo = event.hasExtraInfo;
     this.#response.info = event.response;
+    this.#networkStorage.collectIfNeeded(this, Network.DataType.Response);
     this.#emitEventsIfReady();
   }
 
@@ -877,17 +917,13 @@ export class NetworkRequest {
       this.#response.extraInfo = undefined;
     }
 
-    const headers = [
-      ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.info?.headers),
-      ...bidiNetworkHeadersFromCdpNetworkHeaders(
-        this.#response.extraInfo?.headers,
-      ),
-      // TODO: Verify how to dedupe these
-      // ...bidiNetworkHeadersFromCdpNetworkHeadersEntries(
-      //   this.#response.paused?.responseHeaders
-      // ),
-    ];
-
+    // TODO: Also this.#response.paused?.responseHeaders have to be merged here.
+    const cdpHeaders = this.#response.info?.headers ?? {};
+    const cdpRawHeaders = this.#response.extraInfo?.headers ?? {};
+    for (const [key, value] of Object.entries(cdpRawHeaders)) {
+      cdpHeaders[key] = value;
+    }
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(cdpHeaders);
     const authChallenges = this.#authChallenges;
 
     const response: Network.ResponseData = {
@@ -904,7 +940,7 @@ export class NetworkRequest {
         this.#servedFromCache,
       headers: this.#responseOverrides?.headers ?? headers,
       mimeType: this.#response.info?.mimeType || '',
-      bytesReceived: this.#response.info?.encodedDataLength || 0,
+      bytesReceived: this.bytesReceived,
       headersSize: computeHeadersSize(headers),
       // TODO: consider removing from spec.
       bodySize: 0,
@@ -921,6 +957,10 @@ export class NetworkRequest {
     } as Network.ResponseData;
   }
 
+  get bytesReceived() {
+    return this.#response.info?.encodedDataLength || 0;
+  }
+
   #getRequestData(): Network.RequestData {
     const headers = this.#requestHeaders;
 
@@ -931,7 +971,7 @@ export class NetworkRequest {
       headers,
       cookies: this.#cookies,
       headersSize: computeHeadersSize(headers),
-      bodySize: this.#bodySize,
+      bodySize: this.bodySize,
       // TODO: populate
       destination: this.#getDestination(),
       // TODO: populate

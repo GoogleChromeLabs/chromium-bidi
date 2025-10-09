@@ -35,8 +35,9 @@ export class MockCdpNetworkEvents {
   requestId: string;
   fetchId: string;
   private loaderId: string;
-  private frameId: string;
+  private frameId: string | undefined;
   private type: Protocol.Network.ResourceType;
+  private initiator: Protocol.Network.Initiator;
 
   constructor(
     cdpClient: CdpClient,
@@ -47,13 +48,15 @@ export class MockCdpNetworkEvents {
       url,
       frameId,
       type,
+      initiator,
     }: Partial<{
       requestId: string;
       fetchId: string;
       loaderId: string;
       url: string;
-      frameId: string;
+      frameId: string | null;
       type: Protocol.Network.ResourceType;
+      initiator: Protocol.Network.Initiator;
     }> = {},
   ) {
     this.cdpClient = cdpClient;
@@ -62,8 +65,23 @@ export class MockCdpNetworkEvents {
     this.fetchId = fetchId ?? 'interception-job-1.0';
     this.loaderId = loaderId ?? '7760711DEFCFA23132D98ABA6B4E175C';
     this.url = url ?? MockCdpNetworkEvents.defaultUrl;
-    this.frameId = frameId ?? MockCdpNetworkEvents.defaultFrameId;
+    this.frameId =
+      frameId === null ? undefined : MockCdpNetworkEvents.defaultFrameId;
     this.type = type ?? 'XHR';
+    this.initiator = initiator ?? {
+      type: 'script',
+      stack: {
+        callFrames: [
+          {
+            functionName: '',
+            scriptId: '5',
+            url: '',
+            lineNumber: 0,
+            columnNumber: 0,
+          },
+        ],
+      },
+    };
   }
 
   requestWillBeSent() {
@@ -89,20 +107,7 @@ export class MockCdpNetworkEvents {
       },
       timestamp: 2111.55635,
       wallTime: 1637315638.473634,
-      initiator: {
-        type: 'script',
-        stack: {
-          callFrames: [
-            {
-              functionName: '',
-              scriptId: '5',
-              url: '',
-              lineNumber: 0,
-              columnNumber: 0,
-            },
-          ],
-        },
-      },
+      initiator: this.initiator,
       redirectHasExtraInfo: false,
       type: this.type,
       frameId: this.frameId,
@@ -210,7 +215,7 @@ export class MockCdpNetworkEvents {
       connectTiming: {requestTime: 2111.557593},
       clientSecurityState: {
         initiatorIsSecureContext: true,
-        initiatorIPAddressSpace: 'Local',
+        initiatorIPAddressSpace: 'Public',
         privateNetworkRequestPolicy: 'PreflightWarn',
       },
       siteHasCookieInOtherPartition: false,
@@ -235,7 +240,7 @@ export class MockCdpNetworkEvents {
         'Keep-Alive': 'timeout=5',
         'Content-Length': '0',
       },
-      resourceIPAddressSpace: 'Local',
+      resourceIPAddressSpace: 'Public',
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\r\nCache-Control: no-cache, no-store\r\nContent-Type: text/html; charset=utf-8\r\nDate: Fri, 19 Nov 2021 09:53:58 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\nContent-Length: 0\r\n\r\n',
@@ -252,7 +257,7 @@ export class MockCdpNetworkEvents {
         'Transfer-Encoding': 'chunked',
         location: this.url,
       },
-      resourceIPAddressSpace: 'Local',
+      resourceIPAddressSpace: 'Public',
       statusCode: 302,
       headersText:
         'HTTP/1.1 302 Found\r\nlocation: http://localhost:37363/empty.html\r\nDate: Mon, 15 Apr 2024 11:53:20 GMT\r\nConnection: keep-alive\r\nTransfer-Encoding: chunked\r\n\r\n',
@@ -342,7 +347,8 @@ export class MockCdpNetworkEvents {
         initialPriority: 'High',
         referrerPolicy: 'strict-origin-when-cross-origin',
       },
-      frameId: this.frameId,
+      // FrameId is required in fetch.
+      frameId: this.frameId ?? MockCdpNetworkEvents.defaultFrameId,
       resourceType: this.type,
       networkId: this.requestId,
     });
@@ -362,7 +368,8 @@ export class MockCdpNetworkEvents {
       responseStatusCode: 200,
       responseStatusText: '',
       responseHeaders: [],
-      frameId: this.frameId,
+      // FrameId is required in fetch.
+      frameId: this.frameId ?? MockCdpNetworkEvents.defaultFrameId,
       resourceType: this.type,
       networkId: this.requestId,
     });
@@ -386,7 +393,8 @@ export class MockCdpNetworkEvents {
         initialPriority: 'High',
         referrerPolicy: 'strict-origin-when-cross-origin',
       },
-      frameId: this.frameId,
+      // FrameId is required in fetch.
+      frameId: this.frameId ?? MockCdpNetworkEvents.defaultFrameId,
       resourceType: this.type,
       authChallenge: {
         source: 'Server',
@@ -480,6 +488,10 @@ export class MockCdpTarget {
   enableFetchIfNeeded() {
     this.#logger('Fetch.enabled called');
     return Promise.resolve();
+  }
+
+  get topLevelId() {
+    return MockCdpNetworkEvents.defaultFrameId;
   }
 
   isSubscribedTo() {

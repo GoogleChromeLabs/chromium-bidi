@@ -18,16 +18,20 @@ import type {Protocol} from 'devtools-protocol';
 
 import {
   type BrowsingContext,
+  InvalidArgumentException,
   Network,
   NoSuchInterceptException,
+  NoSuchNetworkDataException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
+import {CollectorsStorage} from './CollectorsStorage.js';
 import {NetworkRequest} from './NetworkRequest.js';
 import {matchUrlPattern, type ParsedUrlPattern} from './NetworkUtils.js';
 
@@ -42,6 +46,8 @@ type NetworkInterception = Omit<
 export class NetworkStorage {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #eventManager: EventManager;
+  readonly #collectorsStorage: CollectorsStorage;
+
   readonly #logger?: LoggerFn;
 
   /**
@@ -64,6 +70,7 @@ export class NetworkStorage {
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
+    this.#collectorsStorage = new CollectorsStorage(logger);
 
     browserClient.on('Target.detachedFromTarget', ({sessionId}) => {
       this.disposeRequestMap(sessionId);
@@ -109,10 +116,10 @@ export class NetworkStorage {
         'Network.requestWillBeSent',
         (params: Protocol.Network.RequestWillBeSentEvent) => {
           const request = this.getRequestById(params.requestId);
-
+          request?.updateCdpTarget(cdpTarget);
           if (request && request.isRedirecting()) {
             request.handleRedirect(params);
-            this.deleteRequest(params.requestId);
+            this.disposeRequest(params.requestId);
             this.#getOrCreateNetworkRequest(
               params.requestId,
               cdpTarget,
@@ -129,56 +136,68 @@ export class NetworkStorage {
       [
         'Network.requestWillBeSentExtraInfo',
         (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onRequestWillBeSentExtraInfoEvent(params);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onRequestWillBeSentExtraInfoEvent(params);
         },
       ],
       [
         'Network.responseReceived',
         (params: Protocol.Network.ResponseReceivedEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onResponseReceivedEvent(params);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onResponseReceivedEvent(params);
         },
       ],
       [
         'Network.responseReceivedExtraInfo',
         (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onResponseReceivedExtraInfoEvent(params);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onResponseReceivedExtraInfoEvent(params);
         },
       ],
       [
         'Network.requestServedFromCache',
         (params: Protocol.Network.RequestServedFromCacheEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onServedFromCache();
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onServedFromCache();
         },
       ],
       [
         'Network.loadingFailed',
         (params: Protocol.Network.LoadingFailedEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onLoadingFailedEvent(params);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onLoadingFailedEvent(params);
         },
       ],
       [
         'Fetch.requestPaused',
         (event: Protocol.Fetch.RequestPausedEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             // CDP quirk if the Network domain is not present this is undefined
             event.networkId ?? event.requestId,
             cdpTarget,
-          ).onRequestPaused(event);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onRequestPaused(event);
         },
       ],
       [
@@ -191,8 +210,20 @@ export class NetworkStorage {
               cdpTarget,
             );
           }
-
+          request.updateCdpTarget(cdpTarget);
           request.onAuthRequired(event);
+        },
+      ],
+      [
+        'Network.dataReceived',
+        (params: Protocol.Network.DataReceivedEvent) => {
+          this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
+        },
+      ],
+      [
+        'Network.loadingFinished',
+        (params: Protocol.Network.LoadingFinishedEvent) => {
+          this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
         },
       ],
     ] as const;
@@ -200,6 +231,105 @@ export class NetworkStorage {
     for (const [event, listener] of listeners) {
       cdpClient.on(event, listener as any);
     }
+  }
+
+  async getCollectedData(
+    params: Network.GetDataParameters,
+  ): Promise<Network.GetDataResult> {
+    if (
+      !this.#collectorsStorage.isCollected(
+        params.request,
+        params.dataType,
+        params.collector,
+      )
+    ) {
+      throw new NoSuchNetworkDataException(
+        params.collector === undefined
+          ? `No collected ${params.dataType} data`
+          : `Collector ${params.collector} didn't collect ${params.dataType} data`,
+      );
+    }
+
+    if (params.disown && params.collector === undefined) {
+      throw new InvalidArgumentException(
+        'Cannot disown collected data without collector ID',
+      );
+    }
+
+    const request = this.getRequestById(params.request);
+    if (request === undefined) {
+      throw new NoSuchNetworkDataException(`No data for ${params.request}`);
+    }
+
+    let result: Network.GetDataResult | undefined = undefined;
+    switch (params.dataType) {
+      case Network.DataType.Response:
+        result = await this.#getCollectedResponseData(request);
+        break;
+      case Network.DataType.Request:
+        result = await this.#getCollectedRequestData(request);
+        break;
+      default:
+        throw new UnsupportedOperationException(
+          `Unsupported data type ${params.dataType}`,
+        );
+    }
+
+    if (params.disown && params.collector !== undefined) {
+      this.#collectorsStorage.disownData(
+        request.id,
+        params.dataType,
+        params.collector,
+      );
+      // `disposeRequest` disposes request only if no other collectors for it are left.
+      this.disposeRequest(request.id);
+    }
+
+    return result;
+  }
+
+  async #getCollectedResponseData(
+    request: NetworkRequest,
+  ): Promise<Network.GetDataResult> {
+    // TODO: handle CDP error in case of the renderer is gone.
+    const responseBody = await request.cdpClient.sendCommand(
+      'Network.getResponseBody',
+      {requestId: request.id},
+    );
+
+    return {
+      bytes: {
+        type: responseBody.base64Encoded ? 'base64' : 'string',
+        value: responseBody.body,
+      },
+    };
+  }
+
+  async #getCollectedRequestData(
+    request: NetworkRequest,
+  ): Promise<Network.GetDataResult> {
+    // TODO: handle CDP error in case of the renderer is gone.
+    const requestPostData = await request.cdpClient.sendCommand(
+      'Network.getRequestPostData',
+      {requestId: request.id},
+    );
+
+    return {
+      bytes: {
+        type: 'string',
+        value: requestPostData.postData,
+      },
+    };
+  }
+
+  collectIfNeeded(request: NetworkRequest, dataType: Network.DataType) {
+    this.#collectorsStorage.collectIfNeeded(
+      request,
+      dataType,
+      request.cdpTarget.topLevelId,
+      this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
+        .userContext,
+    );
   }
 
   getInterceptionStages(browsingContextId: BrowsingContext.BrowsingContext) {
@@ -327,7 +457,15 @@ export class NetworkStorage {
     this.#requests.set(request.id, request);
   }
 
-  deleteRequest(id: Network.Request) {
+  /**
+   * Disposes the given request, if no collectors targeting it are left.
+   */
+  disposeRequest(id: Network.Request) {
+    if (this.#collectorsStorage.isCollected(id)) {
+      // Keep request, as it's data can be accessed later.
+      return;
+    }
+    // TODO: dispose Network data from Chromium once there is a CDP command for that.
     this.#requests.delete(id);
   }
 
@@ -351,5 +489,38 @@ export class NetworkStorage {
 
   get defaultCacheBehavior() {
     return this.#defaultCacheBehavior;
+  }
+
+  addDataCollector(params: Network.AddDataCollectorParameters): string {
+    return this.#collectorsStorage.addDataCollector(params);
+  }
+
+  removeDataCollector(params: Network.RemoveDataCollectorParameters) {
+    const releasedRequests = this.#collectorsStorage.removeDataCollector(
+      params.collector,
+    );
+    releasedRequests.map((request) => this.disposeRequest(request));
+  }
+
+  disownData(params: Network.DisownDataParameters) {
+    if (
+      !this.#collectorsStorage.isCollected(
+        params.request,
+        params.dataType,
+        params.collector,
+      )
+    ) {
+      throw new NoSuchNetworkDataException(
+        `Collector ${params.collector} didn't collect ${params.dataType} data`,
+      );
+    }
+
+    this.#collectorsStorage.disownData(
+      params.request,
+      params.dataType,
+      params.collector,
+    );
+    // `disposeRequest` disposes request only if no other collectors for it are left.
+    this.disposeRequest(params.request);
   }
 }

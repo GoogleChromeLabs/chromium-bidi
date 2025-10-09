@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 import {
   BrowsingContext,
   ChromiumBidi,
+  type Emulation,
   InvalidArgumentException,
   InvalidSelectorException,
   NoSuchElementException,
@@ -37,6 +38,7 @@ import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {uuidv4} from '../../../utils/uuid.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -62,6 +64,7 @@ export class BrowsingContextImpl {
   readonly userContext: string;
   // Used for running helper scripts.
   readonly #hiddenSandbox = uuidv4();
+  readonly #downloadIdToUrlMap = new Map<string, string>();
 
   /**
    * The ID of the parent browsing context.
@@ -83,8 +86,7 @@ export class BrowsingContextImpl {
   readonly #logger?: LoggerFn;
   readonly #navigationTracker: NavigationTracker;
   readonly #realmStorage: RealmStorage;
-  // The deferred will be resolved when the default realm is created.
-  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
+  readonly #configStorage: ContextConfigStorage;
 
   // Set when the user prompt is opened. Required to provide the type in closing event.
   #lastUserPromptType?: BrowsingContext.UserPromptType;
@@ -97,9 +99,9 @@ export class BrowsingContextImpl {
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    configStorage: ContextConfigStorage,
     url: string,
     originalOpener?: string,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
     this.#cdpTarget = cdpTarget;
@@ -109,7 +111,7 @@ export class BrowsingContextImpl {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
-    this.#unhandledPromptBehavior = unhandledPromptBehavior;
+    this.#configStorage = configStorage;
     this.#logger = logger;
     this.#originalOpener = originalOpener;
 
@@ -132,9 +134,9 @@ export class BrowsingContextImpl {
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    configStorage: ContextConfigStorage,
     url: string,
     originalOpener?: string,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
@@ -145,9 +147,9 @@ export class BrowsingContextImpl {
       eventManager,
       browsingContextStorage,
       realmStorage,
+      configStorage,
       url,
       originalOpener,
-      unhandledPromptBehavior,
       logger,
     );
 
@@ -796,6 +798,8 @@ export class BrowsingContextImpl {
           return;
         }
 
+        this.#downloadIdToUrlMap.set(params.guid, params.url);
+
         this.#eventManager.registerEvent(
           {
             type: 'event',
@@ -810,6 +814,64 @@ export class BrowsingContextImpl {
           },
           this.id,
         );
+      },
+    );
+
+    this.#cdpTarget.browserCdpClient.on(
+      'Browser.downloadProgress',
+      (params) => {
+        if (!this.#downloadIdToUrlMap.has(params.guid)) {
+          // The event is not related to this browsing context.
+          return;
+        }
+
+        if (params.state === 'inProgress') {
+          // No need in reporting progress.
+          return;
+        }
+
+        const url = this.#downloadIdToUrlMap.get(params.guid)!;
+
+        switch (params.state) {
+          case 'canceled':
+            this.#eventManager.registerEvent(
+              {
+                type: 'event',
+                method: ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,
+                params: {
+                  status: 'canceled',
+                  context: this.id,
+                  navigation: params.guid,
+                  timestamp: getTimestamp(),
+                  url,
+                },
+              },
+              this.id,
+            );
+            break;
+          case 'completed':
+            this.#eventManager.registerEvent(
+              {
+                type: 'event',
+                method: ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,
+                params: {
+                  filepath: params.filePath ?? null,
+                  status: 'complete',
+                  context: this.id,
+                  navigation: params.guid,
+                  timestamp: getTimestamp(),
+                  url,
+                },
+              },
+              this.id,
+            );
+            break;
+          default:
+            // Unreachable.
+            throw new UnknownErrorException(
+              `Unknown download state: ${params.state}`,
+            );
+        }
       },
     );
   }
@@ -829,21 +891,29 @@ export class BrowsingContextImpl {
     }
   }
 
+  /**
+   * Returns either custom UserContext's prompt handler, global or default one.
+   */
   #getPromptHandler(
     promptType: BrowsingContext.UserPromptType,
   ): Session.UserPromptHandlerType {
     const defaultPromptHandler = Session.UserPromptHandlerType.Dismiss;
+    const contextConfig = this.#configStorage.getActiveConfig(
+      this.top.id,
+      this.userContext,
+    );
+
     switch (promptType) {
       case BrowsingContext.UserPromptType.Alert:
         return (
-          this.#unhandledPromptBehavior?.alert ??
-          this.#unhandledPromptBehavior?.default ??
+          contextConfig.userPromptHandler?.alert ??
+          contextConfig.userPromptHandler?.default ??
           defaultPromptHandler
         );
       case BrowsingContext.UserPromptType.Beforeunload:
         return (
-          this.#unhandledPromptBehavior?.beforeUnload ??
-          this.#unhandledPromptBehavior?.default ??
+          contextConfig.userPromptHandler?.beforeUnload ??
+          contextConfig.userPromptHandler?.default ??
           // In WebDriver Classic spec, `beforeUnload` prompt should be accepted by
           // default. Step 4 of "Get the prompt handler" algorithm
           // (https://w3c.github.io/webdriver/#dfn-get-the-prompt-handler):
@@ -853,14 +923,14 @@ export class BrowsingContextImpl {
         );
       case BrowsingContext.UserPromptType.Confirm:
         return (
-          this.#unhandledPromptBehavior?.confirm ??
-          this.#unhandledPromptBehavior?.default ??
+          contextConfig.userPromptHandler?.confirm ??
+          contextConfig.userPromptHandler?.default ??
           defaultPromptHandler
         );
       case BrowsingContext.UserPromptType.Prompt:
         return (
-          this.#unhandledPromptBehavior?.prompt ??
-          this.#unhandledPromptBehavior?.default ??
+          contextConfig.userPromptHandler?.prompt ??
+          contextConfig.userPromptHandler?.default ??
           defaultPromptHandler
         );
     }
@@ -1067,10 +1137,13 @@ export class BrowsingContextImpl {
   }
 
   async handleUserPrompt(accept?: boolean, userText?: string): Promise<void> {
-    await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
-      accept: accept ?? true,
-      promptText: userText,
-    });
+    await this.top.#cdpTarget.cdpClient.sendCommand(
+      'Page.handleJavaScriptDialog',
+      {
+        accept: accept ?? true,
+        promptText: userText,
+      },
+    );
   }
 
   async activate(): Promise<void> {
@@ -1334,6 +1407,7 @@ export class BrowsingContextImpl {
     await Promise.all([
       this.#cdpTarget.toggleNetworkIfNeeded(),
       this.#cdpTarget.toggleDeviceAccessIfNeeded(),
+      this.#cdpTarget.togglePreloadIfNeeded(),
     ]);
   }
 
@@ -1375,11 +1449,12 @@ export class BrowsingContextImpl {
                   !(
                     element instanceof HTMLElement ||
                     element instanceof Document ||
-                    element instanceof DocumentFragment
+                    element instanceof DocumentFragment ||
+                    element instanceof SVGElement
                   )
                 ) {
                   throw new Error(
-                    'startNodes in css selector should be HTMLElement, Document or DocumentFragment',
+                    'startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment',
                   );
                 }
                 return [...element.querySelectorAll(cssSelector)];
@@ -1786,10 +1861,10 @@ export class BrowsingContextImpl {
       // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
       if (
         locatorResult.exceptionDetails.text ===
-        'Error: startNodes in css selector should be HTMLElement, Document or DocumentFragment'
+        'Error: startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment'
       ) {
         throw new InvalidArgumentException(
-          'startNodes in css selector should be HTMLElement, Document or DocumentFragment',
+          'startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment',
         );
       }
       throw new UnknownErrorException(
@@ -1816,6 +1891,75 @@ export class BrowsingContextImpl {
     );
 
     return {nodes};
+  }
+
+  #getAllRelatedCdpTargets() {
+    const targets = new Set<CdpTarget>();
+    targets.add(this.cdpTarget);
+    this.allChildren.forEach((c) => targets.add(c.cdpTarget));
+    return Array.from(targets);
+  }
+
+  async setTimezoneOverride(timezone: string | null): Promise<void> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setTimezoneOverride(timezone),
+      ),
+    );
+  }
+  async setLocaleOverride(locale: string | null): Promise<void> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setLocaleOverride(locale),
+      ),
+    );
+  }
+
+  async setGeolocationOverride(
+    geolocation:
+      | Emulation.GeolocationCoordinates
+      | Emulation.GeolocationPositionError
+      | null,
+  ): Promise<void> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) =>
+          await cdpTarget.setGeolocationOverride(geolocation),
+      ),
+    );
+  }
+  async setScreenOrientationOverride(
+    screenOrientation: Emulation.ScreenOrientation | null,
+  ): Promise<void> {
+    await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
+  }
+
+  async setScriptingEnabled(scriptingEnabled: false | null) {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) =>
+          await cdpTarget.setScriptingEnabled(scriptingEnabled),
+      ),
+    );
+  }
+
+  async setUserAgentOverride(userAgent: string | null) {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setUserAgent(userAgent),
+      ),
+    );
+  }
+
+  async setEmulatedNetworkConditions(
+    networkConditions: Emulation.NetworkConditions | null,
+  ) {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) =>
+          await cdpTarget.setEmulatedNetworkConditions(networkConditions),
+      ),
+    );
   }
 }
 

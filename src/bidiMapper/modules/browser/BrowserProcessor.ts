@@ -27,26 +27,26 @@ import {
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
-import type {MapperOptionsStorage} from '../../MapperOptions.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+import type {ContextConfigStorage} from './ContextConfigStorage.js';
 import type {UserContextStorage} from './UserContextStorage.js';
 
 export class BrowserProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #configStorage: ContextConfigStorage;
   readonly #userContextStorage: UserContextStorage;
-  readonly #mapperOptionsStorage: MapperOptionsStorage;
 
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
-    mapperOptionsStorage: MapperOptionsStorage,
+    configStorage: ContextConfigStorage,
     userContextStorage: UserContextStorage,
   ) {
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#mapperOptionsStorage = mapperOptionsStorage;
+    this.#configStorage = configStorage;
     this.#userContextStorage = userContextStorage;
   }
 
@@ -68,10 +68,11 @@ export class BrowserProcessor {
 
     const w3cParams = params as Browser.CreateUserContextParameters;
 
+    const globalConfig = this.#configStorage.getGlobalConfig();
     if (w3cParams.acceptInsecureCerts !== undefined) {
       if (
         w3cParams.acceptInsecureCerts === false &&
-        this.#mapperOptionsStorage.mapperOptions?.acceptInsecureCerts === true
+        globalConfig.acceptInsecureCerts === true
       )
         // TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3398
         throw new UnknownErrorException(
@@ -106,9 +107,15 @@ export class BrowserProcessor {
       request,
     );
 
-    this.#userContextStorage.getConfig(
+    await this.#applyDownloadBehavior(
+      globalConfig.downloadBehavior ?? null,
       context.browserContextId,
-    ).acceptInsecureCerts = params['acceptInsecureCerts'];
+    );
+
+    this.#configStorage.updateUserContextConfig(context.browserContextId, {
+      acceptInsecureCerts: params['acceptInsecureCerts'],
+      userPromptHandler: params['unhandledPromptBehavior'],
+    });
 
     return {
       userContext: context.browserContextId,
@@ -183,6 +190,90 @@ export class BrowserProcessor {
       }
     }
     return {clientWindows: uniqueClientWindows};
+  }
+
+  #toCdpDownloadBehavior(
+    downloadBehavior: Browser.DownloadBehavior | null,
+  ): Protocol.Browser.SetDownloadBehaviorRequest {
+    if (downloadBehavior === null)
+      // CDP "default" behavior.
+      return {
+        behavior: 'default',
+      };
+
+    if (downloadBehavior?.type === 'denied')
+      // Deny all the downloads.
+      return {
+        behavior: 'deny',
+      };
+
+    if (downloadBehavior?.type === 'allowed') {
+      // CDP behavior "allow" means "save downloaded files to the specific download path".
+      return {
+        behavior: 'allow',
+        downloadPath: downloadBehavior.destinationFolder,
+      };
+    }
+
+    // Unreachable. Handled by params parser.
+    throw new UnknownErrorException('Unexpected download behavior');
+  }
+
+  async #applyDownloadBehavior(
+    downloadBehavior: Browser.DownloadBehavior | null,
+    userContext: Browser.UserContext,
+  ) {
+    await this.#browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
+      ...this.#toCdpDownloadBehavior(downloadBehavior),
+      browserContextId: userContext === 'default' ? undefined : userContext,
+      // Required for enabling download events.
+      eventsEnabled: true,
+    });
+  }
+
+  async setDownloadBehavior(
+    params: Browser.SetDownloadBehaviorParameters,
+  ): Promise<EmptyResult> {
+    let userContexts: string[];
+    if (params.userContexts === undefined) {
+      // Global download behavior.
+      userContexts = (await this.#userContextStorage.getUserContexts()).map(
+        (c) => c.userContext,
+      );
+    } else {
+      // Download behavior for the specific user contexts.
+      userContexts = Array.from(
+        await this.#userContextStorage.verifyUserContextIdList(
+          params.userContexts,
+        ),
+      );
+    }
+
+    if (params.userContexts === undefined) {
+      // Store the global setting to be applied for the future user contexts.
+      this.#configStorage.updateGlobalConfig({
+        downloadBehavior: params.downloadBehavior,
+      });
+    } else {
+      params.userContexts.map((userContext) =>
+        this.#configStorage.updateUserContextConfig(userContext, {
+          downloadBehavior: params.downloadBehavior,
+        }),
+      );
+    }
+
+    await Promise.all(
+      userContexts.map(async (userContext) => {
+        // Download behavior can be already set per user context, in which case the global
+        // one should not be applied.
+        const downloadBehavior =
+          this.#configStorage.getActiveConfig(undefined, userContext)
+            .downloadBehavior ?? null;
+        await this.#applyDownloadBehavior(downloadBehavior, userContext);
+      }),
+    );
+
+    return {};
   }
 }
 

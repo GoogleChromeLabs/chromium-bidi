@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
+import type {Protocol} from 'devtools-protocol';
+
 import {
   Network,
   type EmptyResult,
   NoSuchRequestException,
   InvalidArgumentException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
+import type {UserContextStorage} from '../browser/UserContextStorage.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
@@ -31,13 +37,19 @@ import {isSpecialScheme, type ParsedUrlPattern} from './NetworkUtils.js';
 export class NetworkProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
+  readonly #userContextStorage: UserContextStorage;
+  readonly #contextConfigStorage: ContextConfigStorage;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
+    userContextStorage: UserContextStorage,
+    contextConfigStorage: ContextConfigStorage,
   ) {
+    this.#userContextStorage = userContextStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#networkStorage = networkStorage;
+    this.#contextConfigStorage = contextConfigStorage;
   }
 
   async addIntercept(
@@ -55,11 +67,8 @@ export class NetworkProcessor {
       contexts: params.contexts,
     });
 
-    await Promise.all(
-      this.#browsingContextStorage.getAllContexts().map((context) => {
-        return context.cdpTarget.toggleNetwork();
-      }),
-    );
+    // Adding interception may require enabling CDP Network domains.
+    await this.#toggleNetwork();
 
     return {
       intercept,
@@ -174,16 +183,26 @@ export class NetworkProcessor {
     return {};
   }
 
-  async removeIntercept(
-    params: Network.RemoveInterceptParameters,
-  ): Promise<EmptyResult> {
-    this.#networkStorage.removeIntercept(params.intercept);
-
+  /**
+   * In some states CDP Network and Fetch domains are not required, but in some they have
+   * to be updated. Whenever potential change in these kinds of states is introduced,
+   * update the states of all the CDP targets.
+   */
+  async #toggleNetwork() {
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map((context) => {
         return context.cdpTarget.toggleNetwork();
       }),
     );
+  }
+
+  async removeIntercept(
+    params: Network.RemoveInterceptParameters,
+  ): Promise<EmptyResult> {
+    this.#networkStorage.removeIntercept(params.intercept);
+
+    // Removing interception may allow for disabling CDP Network domains.
+    await this.#toggleNetwork();
 
     return {};
   }
@@ -467,6 +486,124 @@ export class NetworkProcessor {
     }
     return error;
   }
+
+  async addDataCollector(
+    params: Network.AddDataCollectorParameters,
+  ): Promise<Network.AddDataCollectorResult> {
+    if (params.userContexts !== undefined && params.contexts !== undefined) {
+      throw new InvalidArgumentException(
+        "'contexts' and 'userContexts' are mutually exclusive",
+      );
+    }
+    if (params.userContexts !== undefined) {
+      // Assert the user contexts exist.
+      await this.#userContextStorage.verifyUserContextIdList(
+        params.userContexts,
+      );
+    }
+    if (params.contexts !== undefined) {
+      for (const browsingContextId of params.contexts) {
+        // Assert the browsing context exists and are top-level.
+        const browsingContext =
+          this.#browsingContextStorage.getContext(browsingContextId);
+        if (!browsingContext.isTopLevelContext()) {
+          throw new InvalidArgumentException(
+            `Data collectors are available only on top-level browsing contexts`,
+          );
+        }
+      }
+    }
+    const collectorId = this.#networkStorage.addDataCollector(params);
+
+    // Adding data collectors may require enabling CDP Network domains.
+    await this.#toggleNetwork();
+
+    return {collector: collectorId};
+  }
+
+  async getData(
+    params: Network.GetDataParameters,
+  ): Promise<Network.GetDataResult> {
+    return await this.#networkStorage.getCollectedData(params);
+  }
+
+  async removeDataCollector(
+    params: Network.RemoveDataCollectorParameters,
+  ): Promise<EmptyResult> {
+    this.#networkStorage.removeDataCollector(params);
+
+    // Removing data collectors may allow disabling CDP Network domains.
+    await this.#toggleNetwork();
+
+    return {};
+  }
+
+  disownData(params: Network.DisownDataParameters): EmptyResult {
+    this.#networkStorage.disownData(params);
+    return {};
+  }
+
+  async setExtraHeaders(
+    params: Network.SetExtraHeadersParameters,
+  ): Promise<EmptyResult> {
+    if (params.userContexts !== undefined && params.contexts !== undefined) {
+      throw new InvalidArgumentException(
+        'contexts and userContexts are mutually exclusive',
+      );
+    }
+
+    const cdpExtraHeaders = parseBiDiHeaders(params.headers);
+    const affectedCdpTargets = new Set<CdpTarget>();
+
+    if (params.userContexts === undefined && params.contexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        extraHeaders: cdpExtraHeaders,
+      });
+      this.#browsingContextStorage
+        .getAllContexts()
+        .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+    }
+
+    if (params.userContexts !== undefined) {
+      // Assert the user contexts exist.
+      await this.#userContextStorage.verifyUserContextIdList(
+        params.userContexts,
+      );
+      params.userContexts.forEach((userContext) => {
+        this.#contextConfigStorage.updateUserContextConfig(userContext, {
+          extraHeaders: cdpExtraHeaders,
+        });
+        this.#browsingContextStorage
+          .getAllContexts()
+          .filter((c) => c.userContext === userContext)
+          .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+      });
+    }
+    if (params.contexts !== undefined) {
+      this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
+      params.contexts.forEach((browsingContextId) => {
+        this.#contextConfigStorage.updateBrowsingContextConfig(
+          browsingContextId,
+          {extraHeaders: cdpExtraHeaders},
+        );
+
+        affectedCdpTargets.add(
+          this.#browsingContextStorage.getContext(browsingContextId).cdpTarget,
+        );
+        this.#browsingContextStorage
+          .getContext(browsingContextId)
+          .allChildren.forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+      });
+    }
+
+    await Promise.all(
+      Array.from(affectedCdpTargets).map((cdpTarget) =>
+        cdpTarget.setExtraHeaders(cdpExtraHeaders),
+      ),
+    );
+
+    return {};
+  }
 }
 
 /**
@@ -490,4 +627,28 @@ function unescapeURLPattern(pattern: string) {
     isEscaped = false;
   }
   return result;
+}
+
+// Export for testing.
+export function parseBiDiHeaders(
+  headers: Network.Header[],
+): Protocol.Network.Headers {
+  const parsedHeaders: Protocol.Network.Headers = {};
+  for (const bidiHeader of headers) {
+    if (bidiHeader.value.type === 'string') {
+      if (parsedHeaders[bidiHeader.name] === undefined) {
+        parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
+      } else {
+        // Combine headers with the same name, meaning concatenate them with 0x2C 0x20
+        // separator: https://fetch.spec.whatwg.org/#concept-header-list-combine.
+        parsedHeaders[bidiHeader.name] =
+          `${parsedHeaders[bidiHeader.name]}, ${bidiHeader.value.value}`;
+      }
+    } else {
+      throw new UnsupportedOperationException(
+        'Only string headers values are supported',
+      );
+    }
+  }
+  return parsedHeaders;
 }

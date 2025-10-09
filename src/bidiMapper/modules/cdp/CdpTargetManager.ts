@@ -18,10 +18,10 @@ import type Protocol from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {CdpConnection} from '../../../cdp/CdpConnection.js';
-import type {Browser, Session} from '../../../protocol/protocol.js';
+import type {Browser} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
-import type {UserContextStorage} from '../browser/UserContextStorage';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import {
   BrowsingContextImpl,
   serializeOrigin,
@@ -33,6 +33,7 @@ import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import {WorkerRealm, type WorkerRealmType} from '../script/WorkerRealm.js';
 import type {EventManager} from '../session/EventManager.js';
+import type {SpeculationProcessor} from '../speculation/SpeculationProcessor.js';
 
 import {CdpTarget} from './CdpTarget.js';
 
@@ -51,15 +52,14 @@ export class CdpTargetManager {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
-  readonly #userContextStorage: UserContextStorage;
   readonly #bluetoothProcessor: BluetoothProcessor;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
+  readonly #configStorage: ContextConfigStorage;
+  readonly #speculationProcessor: SpeculationProcessor;
 
   readonly #defaultUserContextId: Browser.UserContext;
   readonly #logger?: LoggerFn;
-  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
-  readonly #prerenderingDisabled: boolean;
 
   constructor(
     cdpConnection: CdpConnection,
@@ -67,17 +67,15 @@ export class CdpTargetManager {
     selfTargetId: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
-    userContextStorage: UserContextStorage,
     realmStorage: RealmStorage,
     networkStorage: NetworkStorage,
+    configStorage: ContextConfigStorage,
     bluetoothProcessor: BluetoothProcessor,
+    speculationProcessor: SpeculationProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
-    prerenderingDisabled: boolean,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
-    this.#userContextStorage = userContextStorage;
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
     this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
@@ -86,11 +84,11 @@ export class CdpTargetManager {
     this.#browsingContextStorage = browsingContextStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
+    this.#configStorage = configStorage;
     this.#bluetoothProcessor = bluetoothProcessor;
+    this.#speculationProcessor = speculationProcessor;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
-    this.#prerenderingDisabled = prerenderingDisabled;
-    this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
 
     this.#setEventListeners(browserCdpClient);
@@ -139,11 +137,11 @@ export class CdpTargetManager {
         this.#eventManager,
         this.#browsingContextStorage,
         this.#realmStorage,
+        this.#configStorage,
         // At this point, we don't know the URL of the frame yet, so it will be updated
         // later.
         'about:blank',
         undefined,
-        this.#unhandledPromptBehavior,
         this.#logger,
       );
     }
@@ -249,6 +247,7 @@ export class CdpTargetManager {
             this.#eventManager,
             this.#browsingContextStorage,
             this.#realmStorage,
+            this.#configStorage,
             // Hack: when a new target created, CDP emits targetInfoChanged with an empty
             // url, and navigates it to about:blank later. When the event is emitted for
             // an existing target (reconnect), the url is already known, and navigation
@@ -259,7 +258,6 @@ export class CdpTargetManager {
             // TODO: check who to deal with non-null creator and its `creatorOrigin`.
             targetInfo.url === '' ? 'about:blank' : targetInfo.url,
             targetInfo.openerFrameId ?? targetInfo.openerId,
-            this.#unhandledPromptBehavior,
             this.#logger,
           );
         }
@@ -269,6 +267,7 @@ export class CdpTargetManager {
       case 'worker': {
         const realm = this.#realmStorage.findRealm({
           cdpSessionId: parentSessionCdpClient.sessionId,
+          sandbox: null, // Non-sandboxed realms.
         });
         // If there is no browsing context, this worker is already terminated.
         if (!realm) {
@@ -356,14 +355,14 @@ export class CdpTargetManager {
       this.#preloadScriptStorage,
       this.#browsingContextStorage,
       this.#networkStorage,
-      this.#prerenderingDisabled,
-      this.#userContextStorage.getConfig(userContext),
-      this.#unhandledPromptBehavior,
+      this.#configStorage,
+      userContext,
       this.#logger,
     );
 
     this.#networkStorage.onCdpTargetCreated(target);
     this.#bluetoothProcessor.onCdpTargetCreated(target);
+    this.#speculationProcessor.onCdpTargetCreated(target);
 
     return target;
   }

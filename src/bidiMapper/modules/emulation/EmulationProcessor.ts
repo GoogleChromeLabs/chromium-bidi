@@ -15,11 +15,15 @@
  * limitations under the License.
  */
 
-import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
+import {
+  InvalidArgumentException,
+  UnsupportedOperationException,
+} from '../../../protocol/ErrorResponse.js';
 import type {
   EmptyResult,
   Emulation,
 } from '../../../protocol/generated/webdriver-bidi.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -27,13 +31,16 @@ import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js'
 export class EmulationProcessor {
   #userContextStorage: UserContextStorage;
   #browsingContextStorage: BrowsingContextStorage;
+  #contextConfigStorage: ContextConfigStorage;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     userContextStorage: UserContextStorage,
+    contextConfigStorage: ContextConfigStorage,
   ) {
     this.#userContextStorage = userContextStorage;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#contextConfigStorage = contextConfigStorage;
   }
 
   async setGeolocationOverride(
@@ -80,16 +87,123 @@ export class EmulationProcessor {
       params.userContexts,
     );
 
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          geolocation,
+        },
+      );
+    }
     for (const userContextId of params.userContexts ?? []) {
-      const userContextConfig =
-        this.#userContextStorage.getConfig(userContextId);
-      userContextConfig.geolocation = geolocation;
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        geolocation,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) => await context.setGeolocationOverride(geolocation),
+      ),
+    );
+    return {};
+  }
+
+  async setLocaleOverride(
+    params: Emulation.SetLocaleOverrideParameters,
+  ): Promise<EmptyResult> {
+    const locale = params.locale ?? null;
+
+    if (locale !== null && !isValidLocale(locale)) {
+      throw new InvalidArgumentException(`Invalid locale "${locale}"`);
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          locale,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        locale,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) => await context.setLocaleOverride(locale),
+      ),
+    );
+    return {};
+  }
+
+  async setScriptingEnabled(
+    params: Emulation.SetScriptingEnabledParameters,
+  ): Promise<EmptyResult> {
+    const scriptingEnabled = params.enabled;
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          scriptingEnabled,
+        },
+      );
+    }
+
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        scriptingEnabled,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) => await context.setScriptingEnabled(scriptingEnabled),
+      ),
+    );
+    return {};
+  }
+
+  async setScreenOrientationOverride(
+    params: Emulation.SetScreenOrientationOverrideParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          screenOrientation: params.screenOrientation,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        screenOrientation: params.screenOrientation,
+      });
     }
 
     await Promise.all(
       browsingContexts.map(
         async (context) =>
-          await context.cdpTarget.setGeolocationOverride(geolocation),
+          await context.setScreenOrientationOverride(params.screenOrientation),
       ),
     );
     return {};
@@ -101,8 +215,12 @@ export class EmulationProcessor {
   async #getRelatedTopLevelBrowsingContexts(
     browsingContextIds?: string[],
     userContextIds?: string[],
+    allowGlobal = false,
   ): Promise<BrowsingContextImpl[]> {
     if (browsingContextIds === undefined && userContextIds === undefined) {
+      if (allowGlobal) {
+        return this.#browsingContextStorage.getTopLevelContexts();
+      }
       throw new InvalidArgumentException(
         'Either user contexts or browsing contexts must be provided',
       );
@@ -154,4 +272,175 @@ export class EmulationProcessor {
     // `browsingContextStorage` returns the same instance for the same id.
     return [...new Set(result).values()];
   }
+
+  async setTimezoneOverride(
+    params: Emulation.SetTimezoneOverrideParameters,
+  ): Promise<EmptyResult> {
+    let timezone = params.timezone ?? null;
+
+    if (timezone !== null && !isValidTimezone(timezone)) {
+      throw new InvalidArgumentException(`Invalid timezone "${timezone}"`);
+    }
+
+    if (timezone !== null && isTimeZoneOffsetString(timezone)) {
+      // CDP supports offset timezone with `GMT` prefix.
+      timezone = `GMT${timezone}`;
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          timezone,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        timezone,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) => await context.setTimezoneOverride(timezone),
+      ),
+    );
+    return {};
+  }
+
+  async setUserAgentOverrideParams(
+    params: Emulation.SetUserAgentOverrideParameters,
+  ): Promise<EmptyResult> {
+    if (params.userAgent === '') {
+      throw new UnsupportedOperationException(
+        'empty user agent string is not supported',
+      );
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+      true,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          userAgent: params.userAgent,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        userAgent: params.userAgent,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        userAgent: params.userAgent,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) => await context.setUserAgentOverride(params.userAgent),
+      ),
+    );
+    return {};
+  }
+
+  async setNetworkConditions(
+    params: Emulation.SetNetworkConditionsParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+      true,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          emulatedNetworkConditions: params.networkConditions,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        emulatedNetworkConditions: params.networkConditions,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        emulatedNetworkConditions: params.networkConditions,
+      });
+    }
+
+    if (
+      params.networkConditions !== null &&
+      params.networkConditions.type !== 'offline'
+    ) {
+      throw new UnsupportedOperationException(
+        `Unsupported network conditions ${params.networkConditions.type}`,
+      );
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const emulatedNetworkConditions =
+          this.#contextConfigStorage.getActiveConfig(
+            context.id,
+            context.userContext,
+          ).emulatedNetworkConditions ?? null;
+
+        await context.setEmulatedNetworkConditions(emulatedNetworkConditions);
+      }),
+    );
+    return {};
+  }
+}
+
+// Export for testing.
+export function isValidLocale(locale: string): boolean {
+  try {
+    new Intl.Locale(locale);
+    return true;
+  } catch (e) {
+    if (e instanceof RangeError) {
+      return false;
+    }
+    // Re-throw other errors
+    throw e;
+  }
+}
+
+// Export for testing.
+export function isValidTimezone(timezone: string): boolean {
+  try {
+    Intl.DateTimeFormat(undefined, {timeZone: timezone});
+    return true;
+  } catch (e) {
+    if (e instanceof RangeError) {
+      return false;
+    }
+    // Re-throw other errors
+    throw e;
+  }
+}
+
+// Export for testing.
+export function isTimeZoneOffsetString(timezone: string): boolean {
+  return /^[+-](?:2[0-3]|[01]\d)(?::[0-5]\d)?$/.test(timezone);
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {CdpClient} from '../cdp/CdpClient';
+import type {CdpClient} from '../cdp/CdpClient.js';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
 import {
   Exception,
@@ -24,6 +24,7 @@ import {
   type ChromiumBidi,
   type Script,
   NoSuchFrameException,
+  UnsupportedOperationException,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
@@ -31,9 +32,10 @@ import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
-import type {MapperOptions, MapperOptionsStorage} from './MapperOptions.js';
+import type {MapperOptions} from './MapperOptions.js';
 import type {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
+import type {ContextConfigStorage} from './modules/browser/ContextConfigStorage.js';
 import type {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
@@ -91,7 +93,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     networkStorage: NetworkStorage,
-    mapperOptionsStorage: MapperOptionsStorage,
+    contextConfigStorage: ContextConfigStorage,
     bluetoothProcessor: BluetoothProcessor,
     userContextStorage: UserContextStorage,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
@@ -109,13 +111,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#browserProcessor = new BrowserProcessor(
       browserCdpClient,
       browsingContextStorage,
-      mapperOptionsStorage,
+      contextConfigStorage,
       userContextStorage,
     );
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       browserCdpClient,
       browsingContextStorage,
       userContextStorage,
+      contextConfigStorage,
       eventManager,
     );
     this.#cdpProcessor = new CdpProcessor(
@@ -127,11 +130,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#emulationProcessor = new EmulationProcessor(
       browsingContextStorage,
       userContextStorage,
+      contextConfigStorage,
     );
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
     this.#networkProcessor = new NetworkProcessor(
       browsingContextStorage,
       networkStorage,
+      userContextStorage,
+      contextConfigStorage,
     );
     this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
     this.#scriptProcessor = new ScriptProcessor(
@@ -237,8 +243,13 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseRemoveUserContextParameters(command.params),
         );
       case 'browser.setClientWindowState':
-        throw new UnknownErrorException(
+        this.#parser.parseSetClientWindowStateParameters(command.params);
+        throw new UnsupportedOperationException(
           `Method ${command.method} is not implemented.`,
+        );
+      case 'browser.setDownloadBehavior':
+        return await this.#browserProcessor.setDownloadBehavior(
+          this.#parser.parseSetDownloadBehaviorParameters(command.params),
         );
       // keep-sorted end
 
@@ -312,9 +323,40 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
       // Emulation module
       // keep-sorted start block=yes
+      case 'emulation.setForcedColorsModeThemeOverride':
+        this.#parser.parseSetForcedColorsModeThemeOverrideParams(
+          command.params,
+        );
+        throw new UnsupportedOperationException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'emulation.setGeolocationOverride':
         return await this.#emulationProcessor.setGeolocationOverride(
           this.#parser.parseSetGeolocationOverrideParams(command.params),
+        );
+      case 'emulation.setLocaleOverride':
+        return await this.#emulationProcessor.setLocaleOverride(
+          this.#parser.parseSetLocaleOverrideParams(command.params),
+        );
+      case 'emulation.setNetworkConditions':
+        return await this.#emulationProcessor.setNetworkConditions(
+          this.#parser.parseSetNetworkConditionsParams(command.params),
+        );
+      case 'emulation.setScreenOrientationOverride':
+        return await this.#emulationProcessor.setScreenOrientationOverride(
+          this.#parser.parseSetScreenOrientationOverrideParams(command.params),
+        );
+      case 'emulation.setScriptingEnabled':
+        return await this.#emulationProcessor.setScriptingEnabled(
+          this.#parser.parseSetScriptingEnabledParams(command.params),
+        );
+      case 'emulation.setTimezoneOverride':
+        return await this.#emulationProcessor.setTimezoneOverride(
+          this.#parser.parseSetTimezoneOverrideParams(command.params),
+        );
+      case 'emulation.setUserAgentOverride':
+        return await this.#emulationProcessor.setUserAgentOverrideParams(
+          this.#parser.parseSetUserAgentOverrideParams(command.params),
         );
       // keep-sorted end
 
@@ -336,6 +378,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
       // Network module
       // keep-sorted start block=yes
+      case 'network.addDataCollector':
+        return await this.#networkProcessor.addDataCollector(
+          this.#parser.parseAddDataCollectorParams(command.params),
+        );
       case 'network.addIntercept':
         return await this.#networkProcessor.addIntercept(
           this.#parser.parseAddInterceptParams(command.params),
@@ -352,13 +398,25 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#networkProcessor.continueWithAuth(
           this.#parser.parseContinueWithAuthParams(command.params),
         );
+      case 'network.disownData':
+        return this.#networkProcessor.disownData(
+          this.#parser.parseDisownDataParams(command.params),
+        );
       case 'network.failRequest':
         return await this.#networkProcessor.failRequest(
           this.#parser.parseFailRequestParams(command.params),
         );
+      case 'network.getData':
+        return await this.#networkProcessor.getData(
+          this.#parser.parseGetDataParams(command.params),
+        );
       case 'network.provideResponse':
         return await this.#networkProcessor.provideResponse(
           this.#parser.parseProvideResponseParams(command.params),
+        );
+      case 'network.removeDataCollector':
+        return await this.#networkProcessor.removeDataCollector(
+          this.#parser.parseRemoveDataCollectorParams(command.params),
         );
       case 'network.removeIntercept':
         return await this.#networkProcessor.removeIntercept(
@@ -366,7 +424,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       case 'network.setCacheBehavior':
         return await this.#networkProcessor.setCacheBehavior(
-          this.#parser.parseSetCacheBehavior(command.params),
+          this.#parser.parseSetCacheBehaviorParams(command.params),
+        );
+      case 'network.setExtraHeaders':
+        return await this.#networkProcessor.setExtraHeaders(
+          this.#parser.parseSetExtraHeadersParams(command.params),
         );
       // keep-sorted end
 
@@ -415,7 +477,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Session module
       // keep-sorted start block=yes
       case 'session.end':
-        throw new UnknownErrorException(
+        throw new UnsupportedOperationException(
           `Method ${command.method} is not implemented.`,
         );
       case 'session.new':

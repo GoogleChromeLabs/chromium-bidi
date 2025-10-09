@@ -110,6 +110,16 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Browser.RemoveUserContextParameters {
     return Parser.Browser.parseRemoveUserContextParameters(params);
   }
+  parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Browser.SetClientWindowStateParameters {
+    return Parser.Browser.parseSetClientWindowStateParameters(params);
+  }
+  parseSetDownloadBehaviorParameters(
+    params: unknown,
+  ): Browser.SetDownloadBehaviorParameters {
+    return Parser.Browser.parseSetDownloadBehaviorParameters(params);
+  }
   // keep-sorted end
 
   // Browsing Context module
@@ -177,10 +187,45 @@ export class BidiParser implements BidiCommandParameterParser {
 
   // Emulation module
   // keep-sorted start block=yes
+  parseSetForcedColorsModeThemeOverrideParams(
+    params: unknown,
+  ): Emulation.SetForcedColorsModeThemeOverrideParameters {
+    return Parser.Emulation.parseSetForcedColorsModeThemeOverrideParams(params);
+  }
   parseSetGeolocationOverrideParams(
     params: unknown,
   ): Emulation.SetGeolocationOverrideParameters {
     return Parser.Emulation.parseSetGeolocationOverrideParams(params);
+  }
+  parseSetLocaleOverrideParams(
+    params: unknown,
+  ): Emulation.SetLocaleOverrideParameters {
+    return Parser.Emulation.parseSetLocaleOverrideParams(params);
+  }
+  parseSetNetworkConditionsParams(
+    params: unknown,
+  ): Emulation.SetNetworkConditionsParameters {
+    return Parser.Emulation.parseSetNetworkConditionsParams(params);
+  }
+  parseSetScreenOrientationOverrideParams(
+    params: unknown,
+  ): Emulation.SetScreenOrientationOverrideParameters {
+    return Parser.Emulation.parseSetScreenOrientationOverrideParams(params);
+  }
+  parseSetScriptingEnabledParams(
+    params: unknown,
+  ): Emulation.SetScriptingEnabledParameters {
+    return Parser.Emulation.parseSetScriptingEnabledParams(params);
+  }
+  parseSetTimezoneOverrideParams(
+    params: unknown,
+  ): Emulation.SetTimezoneOverrideParameters {
+    return Parser.Emulation.parseSetTimezoneOverrideParams(params);
+  }
+  parseSetUserAgentOverrideParams(
+    params: unknown,
+  ): Emulation.SetUserAgentOverrideParameters {
+    return Parser.Emulation.parseSetUserAgentOverrideParams(params);
   }
   // keep-sorted end
 
@@ -199,6 +244,11 @@ export class BidiParser implements BidiCommandParameterParser {
 
   // Network module
   // keep-sorted start block=yes
+  parseAddDataCollectorParams(
+    params: unknown,
+  ): Network.AddDataCollectorParameters {
+    return Parser.Network.parseAddDataCollectorParameters(params);
+  }
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
     return Parser.Network.parseAddInterceptParameters(params);
   }
@@ -217,21 +267,39 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Network.ContinueWithAuthParameters {
     return Parser.Network.parseContinueWithAuthParameters(params);
   }
+  parseDisownDataParams(params: unknown): Network.DisownDataParameters {
+    return Parser.Network.parseDisownDataParameters(params);
+  }
   parseFailRequestParams(params: unknown): Network.FailRequestParameters {
     return Parser.Network.parseFailRequestParameters(params);
+  }
+  parseGetDataParams(params: unknown): Network.GetDataParameters {
+    return Parser.Network.parseGetDataParameters(params);
   }
   parseProvideResponseParams(
     params: unknown,
   ): Network.ProvideResponseParameters {
     return Parser.Network.parseProvideResponseParameters(params);
   }
+  parseRemoveDataCollectorParams(
+    params: unknown,
+  ): Network.RemoveDataCollectorParameters {
+    return Parser.Network.parseRemoveDataCollectorParameters(params);
+  }
   parseRemoveInterceptParams(
     params: unknown,
   ): Network.RemoveInterceptParameters {
     return Parser.Network.parseRemoveInterceptParameters(params);
   }
-  parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters {
-    return Parser.Network.parseSetCacheBehavior(params);
+  parseSetCacheBehaviorParams(
+    params: unknown,
+  ): Network.SetCacheBehaviorParameters {
+    return Parser.Network.parseSetCacheBehaviorParameters(params);
+  }
+  parseSetExtraHeadersParams(
+    params: unknown,
+  ): Network.SetExtraHeadersParameters {
+    return Parser.Network.parseSetExtraHeadersParameters(params);
   }
   // keep-sorted end
 

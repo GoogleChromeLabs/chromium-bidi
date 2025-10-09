@@ -109,6 +109,16 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Browser.RemoveUserContextParameters {
     return params as Browser.RemoveUserContextParameters;
   }
+  parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Browser.SetClientWindowStateParameters {
+    return params as Browser.SetClientWindowStateParameters;
+  }
+  parseSetDownloadBehaviorParameters(
+    params: unknown,
+  ): Browser.SetDownloadBehaviorParameters {
+    return params as Browser.SetDownloadBehaviorParameters;
+  }
   // keep-sorted end
 
   // Browsing Context module
@@ -176,10 +186,45 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
 
   // Emulation module
   // keep-sorted start block=yes
+  parseSetForcedColorsModeThemeOverrideParams(
+    params: unknown,
+  ): Emulation.SetForcedColorsModeThemeOverrideParameters {
+    return params as Emulation.SetForcedColorsModeThemeOverrideParameters;
+  }
   parseSetGeolocationOverrideParams(
     params: unknown,
   ): Emulation.SetGeolocationOverrideParameters {
     return params as Emulation.SetGeolocationOverrideParameters;
+  }
+  parseSetLocaleOverrideParams(
+    params: unknown,
+  ): Emulation.SetLocaleOverrideParameters {
+    return params as Emulation.SetLocaleOverrideParameters;
+  }
+  parseSetNetworkConditionsParams(
+    params: unknown,
+  ): Emulation.SetNetworkConditionsParameters {
+    return params as Emulation.SetNetworkConditionsParameters;
+  }
+  parseSetScreenOrientationOverrideParams(
+    params: unknown,
+  ): Emulation.SetScreenOrientationOverrideParameters {
+    return params as Emulation.SetScreenOrientationOverrideParameters;
+  }
+  parseSetScriptingEnabledParams(
+    params: unknown,
+  ): Emulation.SetScriptingEnabledParameters {
+    return params as Emulation.SetScriptingEnabledParameters;
+  }
+  parseSetTimezoneOverrideParams(
+    params: unknown,
+  ): Emulation.SetTimezoneOverrideParameters {
+    return params as Emulation.SetTimezoneOverrideParameters;
+  }
+  parseSetUserAgentOverrideParams(
+    params: unknown,
+  ): Emulation.SetUserAgentOverrideParameters {
+    return params as Emulation.SetUserAgentOverrideParameters;
   }
   // keep-sorted end
 
@@ -224,6 +269,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
 
   // Network module
   // keep-sorted start block=yes
+  parseAddDataCollectorParams(
+    params: unknown,
+  ): Network.AddDataCollectorParameters {
+    return params as Network.AddDataCollectorParameters;
+  }
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
     return params as Network.AddInterceptParameters;
   }
@@ -242,21 +292,39 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Network.ContinueWithAuthParameters {
     return params as Network.ContinueWithAuthParameters;
   }
+  parseDisownDataParams(params: unknown): Network.DisownDataParameters {
+    return params as Network.DisownDataParameters;
+  }
   parseFailRequestParams(params: unknown): Network.FailRequestParameters {
     return params as Network.FailRequestParameters;
+  }
+  parseGetDataParams(params: unknown): Network.GetDataParameters {
+    return params as Network.GetDataParameters;
   }
   parseProvideResponseParams(
     params: unknown,
   ): Network.ProvideResponseParameters {
     return params as Network.ProvideResponseParameters;
   }
+  parseRemoveDataCollectorParams(
+    params: unknown,
+  ): Network.RemoveDataCollectorParameters {
+    return params as Network.RemoveDataCollectorParameters;
+  }
   parseRemoveInterceptParams(
     params: unknown,
   ): Network.RemoveInterceptParameters {
     return params as Network.RemoveInterceptParameters;
   }
-  parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters {
+  parseSetCacheBehaviorParams(
+    params: unknown,
+  ): Network.SetCacheBehaviorParameters {
     return params as Network.SetCacheBehaviorParameters;
+  }
+  parseSetExtraHeadersParams(
+    params: unknown,
+  ): Network.SetExtraHeadersParameters {
+    return params as Network.SetExtraHeadersParameters;
   }
   // keep-sorted end
 

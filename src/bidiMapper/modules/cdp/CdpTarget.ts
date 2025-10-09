@@ -18,11 +18,12 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import {Bluetooth} from '../../../protocol/chromium-bidi.js';
+import {Bluetooth, Speculation} from '../../../protocol/chromium-bidi.js';
 import {
+  type Browser,
   type BrowsingContext,
   type ChromiumBidi,
-  type Emulation,
+  Emulation,
   Session,
   UnknownErrorException,
   UnsupportedOperationException,
@@ -31,7 +32,7 @@ import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
-import type {UserContextConfig} from '../browser/UserContextConfig.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {LogManager} from '../log/LogManager.js';
@@ -48,6 +49,7 @@ interface FetchStages {
 }
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
+  readonly #userContext: Browser.UserContext;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
   readonly #parentCdpClient: CdpClient;
@@ -56,16 +58,21 @@ export class CdpTarget {
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #prerenderingDisabled: boolean;
   readonly #networkStorage: NetworkStorage;
-  readonly #userContextConfig: UserContextConfig;
+  readonly contextConfigStorage: ContextConfigStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
-  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
   readonly #logger: LoggerFn | undefined;
 
   // Keeps track of the previously set viewport.
-  #previousViewport: {width: number; height: number} = {width: 0, height: 0};
+  #previousDeviceMetricsOverride: Protocol.Emulation.SetDeviceMetricsOverrideRequest =
+    {
+      width: 0,
+      height: 0,
+      deviceScaleFactor: 0,
+      mobile: false,
+      dontSetVisibleSize: true,
+    };
 
   /**
    * Target's window id. Is filled when the CDP target is created and do not reflect
@@ -76,6 +83,7 @@ export class CdpTarget {
 
   #deviceAccessEnabled = false;
   #cacheDisableState = false;
+  #preloadEnabled = false;
   #fetchDomainStages: FetchStages = {
     request: false,
     response: false,
@@ -92,9 +100,8 @@ export class CdpTarget {
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
-    prerenderingDisabled: boolean,
-    userContextConfig: UserContextConfig,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
+    configStorage: ContextConfigStorage,
+    userContext: Browser.UserContext,
     logger?: LoggerFn,
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
@@ -106,10 +113,9 @@ export class CdpTarget {
       realmStorage,
       preloadScriptStorage,
       browsingContextStorage,
+      configStorage,
       networkStorage,
-      prerenderingDisabled,
-      userContextConfig,
-      unhandledPromptBehavior,
+      userContext,
       logger,
     );
 
@@ -133,13 +139,12 @@ export class CdpTarget {
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
+    configStorage: ContextConfigStorage,
     networkStorage: NetworkStorage,
-    prerenderingDisabled: boolean,
-    userContextConfig: UserContextConfig,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
-    logger?: LoggerFn,
+    userContext: Browser.UserContext,
+    logger: LoggerFn | undefined,
   ) {
-    this.#userContextConfig = userContextConfig;
+    this.#userContext = userContext;
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
@@ -149,8 +154,7 @@ export class CdpTarget {
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#prerenderingDisabled = prerenderingDisabled;
-    this.#unhandledPromptBehavior = unhandledPromptBehavior;
+    this.contextConfigStorage = configStorage;
     this.#logger = logger;
   }
 
@@ -198,76 +202,61 @@ export class CdpTarget {
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
-    try {
-      await Promise.all([
-        this.#cdpClient.sendCommand('Page.enable', {
-          enableFileChooserOpenedEvent: true,
-        }),
-        ...(this.#ignoreFileDialog()
-          ? []
-          : [
-              this.#cdpClient.sendCommand(
-                'Page.setInterceptFileChooserDialog',
-                {
-                  enabled: true,
-                  // The intercepted dialog should be canceled.
-                  cancel: true,
-                },
-              ),
-            ]),
-        // There can be some existing frames in the target, if reconnecting to an
-        // existing browser instance, e.g. via Puppeteer. Need to restore the browsing
-        // contexts for the frames to correctly handle further events, like
-        // `Runtime.executionContextCreated`.
-        // It's important to schedule this task together with enabling domains commands to
-        // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
-        // coming.
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
-        this.#cdpClient
-          .sendCommand('Page.getFrameTree')
-          .then((frameTree) =>
-            this.#restoreFrameTreeState(frameTree.frameTree),
-          ),
-        this.#cdpClient.sendCommand('Runtime.enable'),
-        this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-          enabled: true,
-        }),
-        this.#cdpClient
-          .sendCommand('Page.setPrerenderingAllowed', {
-            isAllowed: !this.#prerenderingDisabled,
-          })
-          .catch(() => {
-            // Ignore CDP errors, as the command is not supported by iframe targets or
-            // prerendered pages. Generic catch, as the error can vary between CdpClient
-            // implementations: Tab vs Puppeteer.
-          }),
-        // Enabling CDP Network domain is required for navigation detection:
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
-        this.#cdpClient
-          .sendCommand('Network.enable')
-          .then(() => this.toggleNetworkIfNeeded()),
-        this.#cdpClient.sendCommand('Target.setAutoAttach', {
-          autoAttach: true,
-          waitForDebuggerOnStart: true,
-          flatten: true,
-        }),
-        this.#updateWindowId(),
-        this.#setUserContextConfig(),
-        this.#initAndEvaluatePreloadScripts(),
-        this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-        // Resume tab execution as well if it was paused by the debugger.
-        this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-        this.toggleDeviceAccessIfNeeded(),
-      ]);
-    } catch (error: any) {
-      this.#logger?.(LogType.debugError, 'Failed to unblock target', error);
-      // The target might have been closed before the initialization finished.
-      if (!this.#cdpClient.isCloseError(error)) {
-        this.#unblocked.resolve({
-          kind: 'error',
-          error,
-        });
-        return;
+    const results = await Promise.allSettled([
+      this.#cdpClient.sendCommand('Page.enable', {
+        enableFileChooserOpenedEvent: true,
+      }),
+      ...(this.#ignoreFileDialog()
+        ? []
+        : [
+            this.#cdpClient.sendCommand('Page.setInterceptFileChooserDialog', {
+              enabled: true,
+              // The intercepted dialog should be canceled.
+              cancel: true,
+            }),
+          ]),
+      // There can be some existing frames in the target, if reconnecting to an
+      // existing browser instance, e.g. via Puppeteer. Need to restore the browsing
+      // contexts for the frames to correctly handle further events, like
+      // `Runtime.executionContextCreated`.
+      // It's important to schedule this task together with enabling domains commands to
+      // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
+      // coming.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
+      this.#cdpClient
+        .sendCommand('Page.getFrameTree')
+        .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
+      this.#cdpClient.sendCommand('Runtime.enable'),
+      this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+        enabled: true,
+      }),
+      // Enabling CDP Network domain is required for navigation detection:
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
+      this.#cdpClient
+        .sendCommand('Network.enable')
+        .then(() => this.toggleNetworkIfNeeded()),
+      this.#cdpClient.sendCommand('Target.setAutoAttach', {
+        autoAttach: true,
+        waitForDebuggerOnStart: true,
+        flatten: true,
+      }),
+      this.#updateWindowId(),
+      this.#setUserContextConfig(),
+      this.#initAndEvaluatePreloadScripts(),
+      this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+      // Resume tab execution as well if it was paused by the debugger.
+      this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+      this.toggleDeviceAccessIfNeeded(),
+      this.togglePreloadIfNeeded(),
+    ]);
+    for (const result of results) {
+      if (result instanceof Error) {
+        // Ignore errors during configuring targets, just log them.
+        this.#logger?.(
+          LogType.debugError,
+          'Error happened when configuring a new target',
+          result,
+        );
       }
     }
 
@@ -300,14 +289,14 @@ export class CdpTarget {
       BrowsingContextImpl.create(
         frame.id,
         frame.parentId,
-        parentBrowsingContext.userContext,
+        this.#userContext,
         parentBrowsingContext.cdpTarget,
         this.#eventManager,
         this.#browsingContextStorage,
         this.#realmStorage,
+        this.contextConfigStorage,
         frame.url,
         undefined,
-        this.#unhandledPromptBehavior,
         this.#logger,
       );
     }
@@ -432,6 +421,28 @@ export class CdpTarget {
     }
   }
 
+  async togglePreloadIfNeeded(): Promise<void> {
+    const enabled = this.isSubscribedTo(
+      Speculation.EventNames.PrefetchStatusUpdated,
+    );
+    if (this.#preloadEnabled === enabled) {
+      return;
+    }
+
+    this.#preloadEnabled = enabled;
+    try {
+      await this.#cdpClient.sendCommand(
+        enabled ? 'Preload.enable' : 'Preload.disable',
+      );
+    } catch (err) {
+      this.#logger?.(LogType.debugError, err);
+      this.#preloadEnabled = !enabled;
+      if (!this.#isExpectedError(err)) {
+        throw err;
+      }
+    }
+  }
+
   /**
    * Heuristic checking if the error is due to the session being closed. If so, ignore the
    * error.
@@ -513,6 +524,9 @@ export class CdpTarget {
   }
 
   async toggleNetwork() {
+    // TODO: respect the data collectors once CDP Network domain is enabled on-demand:
+    // const networkEnable = this.#networkStorage.getCollectorsForBrowsingContext(this.topLevelId).length > 0;
+
     const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
     const fetchEnable = Object.values(stages).some((value) => value);
     const fetchChanged =
@@ -575,32 +589,30 @@ export class CdpTarget {
       return;
     }
 
-    // CDP's `viewport` is required, so provide either new value, 0 for disabling, or
-    // previous viewport to keep it unchanged.
-    let newViewport;
-    if (viewport === undefined) {
-      // Set previously set viewport, effectively
-      newViewport = this.#previousViewport;
-    } else if (viewport === null) {
+    const newViewport = {...this.#previousDeviceMetricsOverride};
+
+    if (viewport === null) {
       // Disable override.
-      newViewport = {
-        width: 0,
-        height: 0,
-      };
-    } else {
-      // Set the provided viewport
-      newViewport = viewport;
+      newViewport.width = 0;
+      newViewport.height = 0;
+    } else if (viewport !== undefined) {
+      newViewport.width = viewport.width;
+      newViewport.height = viewport.height;
+    }
+
+    if (devicePixelRatio === null) {
+      // Disable override.
+      newViewport.deviceScaleFactor = 0;
+    } else if (devicePixelRatio !== undefined) {
+      newViewport.deviceScaleFactor = devicePixelRatio;
     }
 
     try {
-      await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
-        width: newViewport.width,
-        height: newViewport.height,
-        deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
-        mobile: false,
-        dontSetVisibleSize: true,
-      });
-      this.#previousViewport = newViewport;
+      await this.cdpClient.sendCommand(
+        'Emulation.setDeviceMetricsOverride',
+        newViewport,
+      );
+      this.#previousDeviceMetricsOverride = newViewport;
     } catch (err) {
       if (
         (err as Error).message.startsWith(
@@ -624,32 +636,86 @@ export class CdpTarget {
   async #setUserContextConfig() {
     const promises = [];
 
+    const config = this.contextConfigStorage.getActiveConfig(
+      this.topLevelId,
+      this.#userContext,
+    );
+
+    promises.push(
+      this.#cdpClient
+        .sendCommand('Page.setPrerenderingAllowed', {
+          isAllowed: !config.prerenderingDisabled,
+        })
+        .catch(() => {
+          // Ignore CDP errors, as the command is not supported by iframe targets or
+          // prerendered pages. Generic catch, as the error can vary between CdpClient
+          // implementations: Tab vs Puppeteer.
+        }),
+    );
+
     if (
-      this.#userContextConfig.viewport !== undefined ||
-      this.#userContextConfig.devicePixelRatio !== undefined
+      config.viewport !== undefined ||
+      config.devicePixelRatio !== undefined
     ) {
       promises.push(
-        this.setViewport(
-          this.#userContextConfig.viewport,
-          this.#userContextConfig.devicePixelRatio,
+        this.setViewport(config.viewport, config.devicePixelRatio).catch(() => {
+          // Ignore CDP errors, as the command is not supported by iframe targets. Generic
+          // catch, as the error can vary between CdpClient implementations: Tab vs
+          // Puppeteer.
+        }),
+      );
+    }
+
+    if (
+      config.screenOrientation !== undefined &&
+      config.screenOrientation !== null
+    ) {
+      promises.push(
+        this.setScreenOrientationOverride(config.screenOrientation).catch(
+          () => {
+            // Ignore CDP errors, as the command is not supported by iframe targets.
+            // Generic catch, as the error can vary between CdpClient implementations:
+            // Tab vs Puppeteer.
+          },
         ),
       );
     }
 
-    if (
-      this.#userContextConfig.geolocation !== undefined &&
-      this.#userContextConfig.geolocation !== null
-    ) {
+    if (config.geolocation !== undefined && config.geolocation !== null) {
+      promises.push(this.setGeolocationOverride(config.geolocation));
+    }
+
+    if (config.locale !== undefined) {
+      promises.push(this.setLocaleOverride(config.locale));
+    }
+
+    if (config.timezone !== undefined) {
+      promises.push(this.setTimezoneOverride(config.timezone));
+    }
+
+    if (config.extraHeaders !== undefined) {
+      promises.push(this.setExtraHeaders(config.extraHeaders));
+    }
+
+    if (config.userAgent !== undefined) {
+      promises.push(this.setUserAgent(config.userAgent));
+    }
+
+    if (config.scriptingEnabled !== undefined) {
+      promises.push(this.setScriptingEnabled(config.scriptingEnabled));
+    }
+
+    if (config.acceptInsecureCerts !== undefined) {
       promises.push(
-        this.setGeolocationOverride(this.#userContextConfig.geolocation),
+        this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+          ignore: config.acceptInsecureCerts,
+        }),
       );
     }
 
-    if (this.#userContextConfig.acceptInsecureCerts !== undefined) {
+    if (config.emulatedNetworkConditions !== undefined) {
       promises.push(
-        this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-          ignore: this.#userContextConfig.acceptInsecureCerts,
-        }),
+        this.setEmulatedNetworkConditions(config.emulatedNetworkConditions),
       );
     }
 
@@ -670,9 +736,14 @@ export class CdpTarget {
   }
 
   #ignoreFileDialog(): boolean {
+    const config = this.contextConfigStorage.getActiveConfig(
+      this.topLevelId,
+      this.#userContext,
+    );
+
     return (
-      (this.#unhandledPromptBehavior?.file ??
-        this.#unhandledPromptBehavior?.default ??
+      (config.userPromptHandler?.file ??
+        config.userPromptHandler?.default ??
         Session.UserPromptHandlerType.Ignore) ===
       Session.UserPromptHandlerType.Ignore
     );
@@ -712,5 +783,163 @@ export class CdpTarget {
         'Unexpected geolocation coordinates value',
       );
     }
+  }
+
+  async setScreenOrientationOverride(
+    screenOrientation: Emulation.ScreenOrientation | null,
+  ): Promise<void> {
+    const newViewport = {...this.#previousDeviceMetricsOverride};
+    if (screenOrientation === null) {
+      delete newViewport.screenOrientation;
+    } else {
+      newViewport.screenOrientation =
+        this.#toCdpScreenOrientationAngle(screenOrientation);
+    }
+
+    await this.cdpClient.sendCommand(
+      'Emulation.setDeviceMetricsOverride',
+      newViewport,
+    );
+    this.#previousDeviceMetricsOverride = newViewport;
+  }
+
+  #toCdpScreenOrientationAngle(
+    orientation: Emulation.ScreenOrientation,
+  ): Protocol.Emulation.ScreenOrientation {
+    // https://w3c.github.io/screen-orientation/#the-current-screen-orientation-type-and-angle
+    if (orientation.natural === Emulation.ScreenOrientationNatural.Portrait) {
+      switch (orientation.type) {
+        case 'portrait-primary':
+          return {
+            angle: 0,
+            type: 'portraitPrimary',
+          };
+        case 'landscape-primary':
+          return {
+            angle: 90,
+            type: 'landscapePrimary',
+          };
+        case 'portrait-secondary':
+          return {
+            angle: 180,
+            type: 'portraitSecondary',
+          };
+        case 'landscape-secondary':
+          return {
+            angle: 270,
+            type: 'landscapeSecondary',
+          };
+        default:
+          // Unreachable.
+          throw new UnknownErrorException(
+            `Unexpected screen orientation type ${orientation.type}`,
+          );
+      }
+    }
+    if (orientation.natural === Emulation.ScreenOrientationNatural.Landscape) {
+      switch (orientation.type) {
+        case 'landscape-primary':
+          return {
+            angle: 0,
+            type: 'landscapePrimary',
+          };
+        case 'portrait-primary':
+          return {
+            angle: 90,
+            type: 'portraitPrimary',
+          };
+        case 'landscape-secondary':
+          return {
+            angle: 180,
+            type: 'landscapeSecondary',
+          };
+        case 'portrait-secondary':
+          return {
+            angle: 270,
+            type: 'portraitSecondary',
+          };
+        default:
+          // Unreachable.
+          throw new UnknownErrorException(
+            `Unexpected screen orientation type ${orientation.type}`,
+          );
+      }
+    }
+    // Unreachable.
+    throw new UnknownErrorException(
+      `Unexpected orientation natural ${orientation.natural}`,
+    );
+  }
+
+  async setLocaleOverride(locale: string | null): Promise<void> {
+    if (locale === null) {
+      await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {});
+    } else {
+      await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {
+        locale,
+      });
+    }
+  }
+
+  async setScriptingEnabled(scriptingEnabled: false | null): Promise<void> {
+    await this.cdpClient.sendCommand('Emulation.setScriptExecutionDisabled', {
+      value: scriptingEnabled === false,
+    });
+  }
+
+  async setTimezoneOverride(timezone: string | null): Promise<void> {
+    if (timezone === null) {
+      await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
+        // If empty, disables the override and restores default host system timezone.
+        timezoneId: '',
+      });
+    } else {
+      await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
+        timezoneId: timezone,
+      });
+    }
+  }
+
+  async setExtraHeaders(headers: Protocol.Network.Headers): Promise<void> {
+    await this.cdpClient.sendCommand('Network.setExtraHTTPHeaders', {
+      headers,
+    });
+  }
+
+  async setUserAgent(userAgent: string | null): Promise<void> {
+    await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
+      userAgent: userAgent ?? '',
+    });
+  }
+
+  async setEmulatedNetworkConditions(
+    networkConditions: Emulation.NetworkConditions | null,
+  ): Promise<void> {
+    if (networkConditions !== null && networkConditions.type !== 'offline') {
+      throw new UnsupportedOperationException(
+        `Unsupported network conditions ${networkConditions.type}`,
+      );
+    }
+
+    await Promise.all([
+      this.cdpClient.sendCommand('Network.emulateNetworkConditionsByRule', {
+        offline: networkConditions?.type === 'offline',
+        matchedNetworkConditions: [
+          {
+            urlPattern: '',
+            latency: 0,
+            downloadThroughput: -1,
+            uploadThroughput: -1,
+          },
+        ],
+      }),
+      this.cdpClient.sendCommand('Network.overrideNetworkState', {
+        offline: networkConditions?.type === 'offline',
+        // TODO: restore the original `latency` value when emulation is removed.
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      }),
+    ]);
   }
 }
