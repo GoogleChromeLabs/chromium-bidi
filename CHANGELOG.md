@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.2.0...chromium-bidi-v10.3.0) (2025-10-10)
+
+
+### Features
+
+* `network.getData` survives navigations ([#3826](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3826)) ([047ca85](https://github.com/GoogleChromeLabs/chromium-bidi/commit/047ca85a6b20c8c5b34656ce52a50a1b842aa917))
+* validate headers set in `network.setExtraHeaders` ([#3832](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3832)) ([2f2238c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2f2238ce54fb3dbb51da36b6a2da1b2ab803c3b5))
+
 ## [10.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.1.0...chromium-bidi-v10.2.0) (2025-10-10)
 
 
