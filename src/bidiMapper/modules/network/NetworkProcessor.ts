@@ -630,7 +630,7 @@ function unescapeURLPattern(pattern: string) {
 }
 
 // https://fetch.spec.whatwg.org/#header-name
-const FORBIDDEN_HEADER_NAME_SYMBOLS = [
+const FORBIDDEN_HEADER_NAME_SYMBOLS = new Set([
   ' ',
   '\t',
   '\n',
@@ -651,14 +651,14 @@ const FORBIDDEN_HEADER_NAME_SYMBOLS = [
   ']',
   '{',
   '}',
-];
+]);
 
 // https://fetch.spec.whatwg.org/#header-value
-const FORBIDDEN_HEADER_VALUE_SYMBOLS = ['\0', '\n', '\r'];
+const FORBIDDEN_HEADER_VALUE_SYMBOLS = new Set(['\0', '\n', '\r']);
 
-function includesChar(str: string, chars: string[]) {
+function includesChar(str: string, chars: Set<string>) {
   for (const char of str) {
-    if (chars.includes(char)) {
+    if (chars.has(char)) {
       return true;
     }
   }
