@@ -101,6 +101,8 @@ export class NetworkRequest {
     info?: Protocol.Network.Response;
     extraInfo?: Protocol.Network.ResponseReceivedExtraInfoEvent;
     paused?: Protocol.Fetch.RequestPausedEvent;
+    loadingFinished?: Protocol.Network.LoadingFinishedEvent;
+    loadingFailed?: Protocol.Network.LoadingFailedEvent;
   } = {};
 
   #eventManager: EventManager;
@@ -482,13 +484,12 @@ export class NetworkRequest {
   #emitEventsIfReady(
     options: {
       wasRedirected?: boolean;
-      hasFailed?: boolean;
     } = {},
   ) {
     const requestExtraInfoCompleted =
       // Flush redirects
       options.wasRedirected ||
-      options.hasFailed ||
+      Boolean(this.#response.loadingFailed) ||
       this.#isDataUrl() ||
       Boolean(this.#request.extraInfo) ||
       // Requests from cache don't have extra info
@@ -537,10 +538,15 @@ export class NetworkRequest {
       !responseInterceptionExpected ||
       (responseInterceptionExpected && Boolean(this.#response.paused));
 
+    const loadingFinished =
+      Boolean(this.#response.loadingFailed) ||
+      Boolean(this.#response.loadingFinished);
+
     if (
       Boolean(this.#response.info) &&
       responseExtraInfoCompleted &&
-      responseInterceptionCompleted
+      responseInterceptionCompleted &&
+      (loadingFinished || options.wasRedirected)
     ) {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
       this.#networkStorage.disposeRequest(this.id);
@@ -590,10 +596,14 @@ export class NetworkRequest {
     this.#emitEventsIfReady();
   }
 
+  onLoadingFinishedEvent(event: Protocol.Network.LoadingFinishedEvent) {
+    this.#response.loadingFinished = event;
+    this.#emitEventsIfReady();
+  }
+
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
-    this.#emitEventsIfReady({
-      hasFailed: true,
-    });
+    this.#response.loadingFailed = event;
+    this.#emitEventsIfReady();
 
     this.#emitEvent(() => {
       return {
