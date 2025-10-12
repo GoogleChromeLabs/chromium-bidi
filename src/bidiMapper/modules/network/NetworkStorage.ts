@@ -186,17 +186,6 @@ export class NetworkStorage {
         },
       ],
       [
-        'Network.loadingFailed',
-        (params: Protocol.Network.LoadingFailedEvent) => {
-          const request = this.#getOrCreateNetworkRequest(
-            params.requestId,
-            cdpTarget,
-          );
-          request.updateCdpTarget(cdpTarget);
-          request.onLoadingFailedEvent(params);
-        },
-      ],
-      [
         'Fetch.requestPaused',
         (event: Protocol.Fetch.RequestPausedEvent) => {
           const request = this.#getOrCreateNetworkRequest(
@@ -229,9 +218,22 @@ export class NetworkStorage {
         },
       ],
       [
+        'Network.loadingFailed',
+        (params: Protocol.Network.LoadingFailedEvent) => {
+          const request = this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget,
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onLoadingFailedEvent(params);
+        },
+      ],
+      [
         'Network.loadingFinished',
         (params: Protocol.Network.LoadingFinishedEvent) => {
-          this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
+          const request = this.getRequestById(params.requestId);
+          request?.updateCdpTarget(cdpTarget);
+          request?.onLoadingFinishedEvent(params);
         },
       ],
     ] as const;
