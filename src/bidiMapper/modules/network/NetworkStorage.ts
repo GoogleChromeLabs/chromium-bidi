@@ -215,7 +215,9 @@ export class NetworkStorage {
       [
         'Network.dataReceived',
         (params: Protocol.Network.DataReceivedEvent) => {
-          this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
+          const request = this.getRequestById(params.requestId);
+          request?.updateCdpTarget(cdpTarget);
+          request?.onDataReceivedEvent(params);
         },
       ],
       [
