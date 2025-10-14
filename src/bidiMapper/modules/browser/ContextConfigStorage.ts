@@ -125,6 +125,8 @@ export class ContextConfigStorage {
     );
     if (Object.keys(extraHeaders).length > 0) {
       result.extraHeaders = extraHeaders;
+    } else {
+      delete result.extraHeaders;
     }
 
     return result;
