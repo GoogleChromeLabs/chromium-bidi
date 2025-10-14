@@ -118,11 +118,15 @@ export class ContextConfigStorage {
       );
     }
 
-    // Extra headers is a special case which have to be treated is a special way.
-    result.extraHeaders = this.#getExtraHeaders(
+    // Extra headers is a special case which have to be treated in a special way.
+    const extraHeaders = this.#getExtraHeaders(
       topLevelBrowsingContextId,
       userContext,
     );
+    if (Object.keys(extraHeaders).length > 0) {
+      result.extraHeaders = extraHeaders;
+    }
+
     return result;
   }
 }
