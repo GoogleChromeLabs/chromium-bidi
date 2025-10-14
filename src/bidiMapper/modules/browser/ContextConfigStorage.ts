@@ -123,11 +123,8 @@ export class ContextConfigStorage {
       topLevelBrowsingContextId,
       userContext,
     );
-    if (Object.keys(extraHeaders).length > 0) {
-      result.extraHeaders = extraHeaders;
-    } else {
-      delete result.extraHeaders;
-    }
+    result.extraHeaders =
+      Object.keys(extraHeaders).length > 0 ? extraHeaders : undefined;
 
     return result;
   }
