@@ -12,15 +12,16 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-
 import pytest
 import pytest_asyncio
+from anys import ANY_STR
 from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
 SOME_CONTENT = "some response content"
 SOME_POST_REQUEST_CONTENT = "some post request content"
 NETWORK_RESPONSE_STARTED_EVENT = "network.responseStarted"
+NETWORK_RESPONSE_COMPLETED_EVENT = "network.responseCompleted"
 SOME_UNKNOWN_COLLECTOR_ID = "SOME_UNKNOWN_COLLECTOR_ID"
 MAX_TOTAL_COLLECTED_SIZE = 200_000_000  # Default CDP limit.
 
@@ -573,3 +574,51 @@ async def test_network_collector_get_data_response_oopif(
                 "request": another_process_request_id
             }
         })
+
+
+@pytest.mark.asyncio
+async def test_network_collector_get_data_response_image(
+        websocket, context_id, init_response, html):
+    await subscribe(websocket, NETWORK_RESPONSE_COMPLETED_EVENT, context_id)
+
+    resp = await execute_command(
+        websocket, {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
+            }
+        })
+    assert resp == {"collector": ANY_UUID}
+
+    image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/120px-Google_Favicon_2025.svg.png'
+    url = html(f"<img src='{image_url}' />")
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+                "wait": "none"
+            }
+        })
+
+    [_, image_request] = [
+        await wait_for_event(websocket, NETWORK_RESPONSE_COMPLETED_EVENT),
+        await wait_for_event(websocket, NETWORK_RESPONSE_COMPLETED_EVENT)
+    ]
+
+    image_request_id = image_request["params"]["request"]["request"]
+    assert image_url == image_request["params"]["request"]["url"]
+
+    data = await execute_command(
+        websocket, {
+            "method": "network.getData",
+            "params": {
+                "dataType": "response",
+                "request": image_request_id
+            }
+        })
+
+    assert data == {'bytes': {'type': 'base64', 'value': ANY_STR}}
