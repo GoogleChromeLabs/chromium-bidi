@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.4.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.3.1...chromium-bidi-v10.4.0) (2025-10-15)
+
+
+### Features
+
+* allow for disabling durable messages ([#3848](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3848)) ([e6b28ac](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e6b28ac25990bb997074d4505415d1a8fc9e281a))
+
+## [10.3.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.3.0...chromium-bidi-v10.3.1) (2025-10-15)
+
+
+### Bug Fixes
+
+* don't crash on worker's requests ([#3845](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3845)) ([c0edf96](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c0edf9685d001d52e7e70d2fe063528d8f5e1c22))
+
+## [10.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.2.0...chromium-bidi-v10.3.0) (2025-10-14)
+
+
+### Features
+
+* `network.getData` survives navigations ([#3826](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3826)) ([047ca85](https://github.com/GoogleChromeLabs/chromium-bidi/commit/047ca85a6b20c8c5b34656ce52a50a1b842aa917))
+* validate headers set in `network.setExtraHeaders` ([#3832](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3832)) ([2f2238c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2f2238ce54fb3dbb51da36b6a2da1b2ab803c3b5))
+
+
+### Bug Fixes
+
+* merge `network.setExtraHeaders` for browsing context, user context and global ([#3840](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3840)) ([fbe7018](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fbe7018e32ed84174cd93c96390a9fb5701a7d72))
+
 ## [10.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.1.0...chromium-bidi-v10.2.0) (2025-10-10)
 
 
