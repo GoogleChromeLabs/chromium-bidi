@@ -147,7 +147,7 @@ export class MapperServerCdpConnection {
       'Target.createTarget',
       {
         url: 'about:blank#MAPPER_TARGET',
-        hidden: true,
+        hidden: false,
         background: true,
       } as any,
     );

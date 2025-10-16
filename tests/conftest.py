@@ -211,7 +211,7 @@ async def websocket(test_headless_mode, capabilities, request):
         """
         port = os.getenv("PORT", 8080)
         url = f"ws://localhost:{port}/session"
-        return await websockets.connect(url)
+        return await websockets.connect(url, max_size=200_000_000)
 
     _websocket_connection = await connect_and_create_new_session()
 
