@@ -742,7 +742,7 @@ export function parseBiDiHeaders(
       }
 
       // BiDi spec does not combine but overrides the headers with the same names.
-      // https://www.w3.org/TR/webdriver-bidi/#update-headers.
+      // https://www.w3.org/TR/webdriver-bidi/#update-headers
       parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
     } else {
       throw new UnsupportedOperationException(
