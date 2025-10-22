@@ -65,6 +65,8 @@ export class NetworkRequest {
 
   #fetchId?: Protocol.Fetch.RequestId;
 
+  #finished = false;
+
   /**
    * Indicates the network intercept phase, if the request is currently blocked.
    * Undefined necessarily implies that the request is not blocked.
@@ -540,7 +542,8 @@ export class NetworkRequest {
     if (
       Boolean(this.#response.info) &&
       responseExtraInfoCompleted &&
-      responseInterceptionCompleted
+      responseInterceptionCompleted &&
+      this.#finished
     ) {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
       this.#networkStorage.disposeRequest(this.id);
@@ -591,6 +594,7 @@ export class NetworkRequest {
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
+    this.#finished = true;
     this.#emitEventsIfReady({
       hasFailed: true,
     });
@@ -1170,6 +1174,11 @@ export class NetworkRequest {
       default:
         return 'other';
     }
+  }
+
+  onLoadingFinished(): void {
+    this.#finished = true;
+    this.#emitEventsIfReady();
   }
 }
 
