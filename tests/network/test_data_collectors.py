@@ -12,15 +12,18 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import os
 
 import pytest
 import pytest_asyncio
+from anys import ANY_STR
 from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
 SOME_CONTENT = "some response content"
 SOME_POST_REQUEST_CONTENT = "some post request content"
 NETWORK_RESPONSE_STARTED_EVENT = "network.responseStarted"
+NETWORK_RESPONSE_COMPLETED_EVENT = "network.responseCompleted"
 SOME_UNKNOWN_COLLECTOR_ID = "SOME_UNKNOWN_COLLECTOR_ID"
 MAX_TOTAL_COLLECTED_SIZE = 200_000_000  # Default CDP limit.
 
@@ -573,3 +576,62 @@ async def test_network_collector_get_data_response_oopif(
                 "request": another_process_request_id
             }
         })
+
+
+@pytest.mark.asyncio
+async def test_network_collector_get_data_response_image(
+        websocket, context_id, html, local_server_http):
+    await subscribe(websocket, NETWORK_RESPONSE_COMPLETED_EVENT, context_id)
+
+    resp = await execute_command(
+        websocket, {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
+            }
+        })
+    assert resp == {"collector": ANY_UUID}
+
+    # Get the absolute path to the image file
+    # __file__ gives the path of the current script
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    image_path = os.path.join(current_dir, '..', '..',
+                              'kitten.png')  # Adjust path as needed
+
+    # Read the image file in binary mode
+    with open(image_path, 'rb') as f:
+        image_bytes = f.read()
+
+    image_url = local_server_http.url_200(image_bytes,
+                                          content_type="image/png")
+    url = html(f'<img src="{image_url}" />')
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+                "wait": "none"
+            }
+        })
+
+    await wait_for_event(websocket, NETWORK_RESPONSE_COMPLETED_EVENT)
+    image_request_event = await wait_for_event(websocket,
+                                               NETWORK_RESPONSE_COMPLETED_EVENT
+                                               )  # Image
+
+    image_request_id = image_request_event["params"]["request"]["request"]
+    assert image_url == image_request_event["params"]["request"]["url"]
+
+    data = await execute_command(
+        websocket, {
+            "method": "network.getData",
+            "params": {
+                "dataType": "response",
+                "request": image_request_id
+            }
+        })
+
+    assert data == {'bytes': {'type': 'base64', 'value': ANY_STR}}
