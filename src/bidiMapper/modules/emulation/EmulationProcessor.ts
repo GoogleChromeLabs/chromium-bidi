@@ -102,9 +102,16 @@ export class EmulationProcessor {
     }
 
     await Promise.all(
-      browsingContexts.map(
-        async (context) => await context.setGeolocationOverride(geolocation),
-      ),
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setGeolocationOverride(config.geolocation ?? null);
+      }),
     );
     return {};
   }
@@ -171,9 +178,16 @@ export class EmulationProcessor {
     }
 
     await Promise.all(
-      browsingContexts.map(
-        async (context) => await context.setScriptingEnabled(scriptingEnabled),
-      ),
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setScriptingEnabled(config.scriptingEnabled ?? null);
+      }),
     );
     return {};
   }
@@ -201,10 +215,18 @@ export class EmulationProcessor {
     }
 
     await Promise.all(
-      browsingContexts.map(
-        async (context) =>
-          await context.setScreenOrientationOverride(params.screenOrientation),
-      ),
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setScreenOrientationOverride(
+          config.screenOrientation ?? null,
+        );
+      }),
     );
     return {};
   }
@@ -307,9 +329,15 @@ export class EmulationProcessor {
     }
 
     await Promise.all(
-      browsingContexts.map(
-        async (context) => await context.setTimezoneOverride(timezone),
-      ),
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+        await context.setTimezoneOverride(config.timezone ?? null);
+      }),
     );
     return {};
   }
@@ -399,13 +427,14 @@ export class EmulationProcessor {
       browsingContexts.map(async (context) => {
         // Actual value can be different from the one in params, e.g. in case of already
         // existing more granular setting.
-        const emulatedNetworkConditions =
-          this.#contextConfigStorage.getActiveConfig(
-            context.id,
-            context.userContext,
-          ).emulatedNetworkConditions ?? null;
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
 
-        await context.setEmulatedNetworkConditions(emulatedNetworkConditions);
+        await context.setEmulatedNetworkConditions(
+          config.emulatedNetworkConditions ?? null,
+        );
       }),
     );
     return {};
