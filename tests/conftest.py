@@ -139,9 +139,10 @@ async def websocket(test_headless_mode, capabilities, request):
                     "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades,LocalNetworkAccessChecks",
                     # Required for bluetooth testing.
                     "--enable-features=WebBluetooth",
-                    # Prevent throttling in new headless.
+                    # Prevent throttling.
+                    "--disable-background-networking",
+                    "--disable-background-timer-throttling",
                     "--disable-backgrounding-occluded-windows",
-                    "--disable-renderer-backgrounding"
                 ]
             }
         }
