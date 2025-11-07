@@ -98,7 +98,7 @@ export function parseCommandLineArgs() {
  *
  * @returns {child_process.ChildProcessWithoutNullStreams}
  */
-export function createBiDiServerProcess(port = undefined) {
+export function createBiDiServerProcess() {
   const BROWSER_BIN = installAndGetChromePath();
 
   const CHROMEDRIVER = process.env.CHROMEDRIVER === 'true';
@@ -109,7 +109,7 @@ export function createBiDiServerProcess(port = undefined) {
   const NODE_OPTIONS =
     process.env.NODE_OPTIONS ||
     '--unhandled-rejections=strict --trace-uncaught';
-  const PORT = port || process.env.PORT || '8080';
+  const PORT = process.env.PORT || '8080';
   const VERBOSE = true;
 
   let runParams;

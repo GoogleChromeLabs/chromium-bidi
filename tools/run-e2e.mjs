@@ -21,7 +21,6 @@ import child_process from 'child_process';
 import {createWriteStream} from 'fs';
 import {Transform, PassThrough} from 'stream';
 
-import getPort from 'get-port';
 import {packageDirectorySync} from 'package-directory';
 
 import {
@@ -134,9 +133,7 @@ const syncFileStreams =
   process.env.VERBOSE === 'true' ? new PassThrough() : new SyncFileStreams();
 syncFileStreams.pipe(fileWriteStream);
 
-const port = await getPort();
-
-const serverProcess = createBiDiServerProcess(port);
+const serverProcess = createBiDiServerProcess();
 
 if (serverProcess.stderr) {
   serverProcess.stderr.pipe(syncFileStreams);
@@ -204,7 +201,6 @@ const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
     ...process.env,
     BROWSER_BIN: installAndGetChromePath(HEADLESS === 'old'),
     HEADLESS,
-    PORT: port,
   },
 });
 
