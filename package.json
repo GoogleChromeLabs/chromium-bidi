@@ -197,7 +197,7 @@
     "chai": "4.5.0",
     "chai-as-promised": "7.1.2",
     "debug": "4.4.3",
-    "devtools-protocol": "0.0.1538951",
+    "devtools-protocol": "0.0.1541017",
     "eslint": "9.31.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
@@ -224,7 +224,6 @@
     "webdriverio": "9.20.0",
     "websocket": "1.0.35",
     "wireit": "0.14.12",
-    "ws": "8.18.3",
     "yargs": "18.0.0"
   },
   "dependencies": {
