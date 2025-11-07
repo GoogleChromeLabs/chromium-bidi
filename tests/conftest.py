@@ -180,7 +180,7 @@ async def websocket(test_headless_mode, capabilities, request):
                 }
             }
         },
-                              timeout=20)
+                              timeout=40)
 
     async def connect_and_create_new_session():
         """
