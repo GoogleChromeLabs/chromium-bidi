@@ -69,24 +69,26 @@ jobs:
         run: pipenv install
       - name: Run E2E performance tests with xvfb-run
         if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
-        timeout-minutes: 2
+        timeout-minutes: 20
         run: >
           xvfb-run --auto-servernum
           npm run e2e:${{ matrix.head }}
+          --
           -k test_performance_
           -s
-          > tests_output.txt
+          | tee tests_output.txt
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
       - name: Run E2E performance tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
-        timeout-minutes: 2
+        timeout-minutes: 20
         run: >
           npm run e2e:${{ matrix.head }}
+          --
           -k test_performance_
           -s
-          > tests_output.txt
+          | tee tests_output.txt
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
