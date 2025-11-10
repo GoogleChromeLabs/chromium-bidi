@@ -35,7 +35,7 @@ jobs:
       fail-fast: false
       matrix:
         # TODO(#876): Add Windows CI.
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         head: [headful, 'new-headless', 'old-headless']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
         kind: [cd, node]
