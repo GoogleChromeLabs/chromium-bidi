@@ -310,23 +310,17 @@ jobs:
           merge-multiple: true
       - name: Generate HTML test report
         run: >
+          mkdir -p wpt-report;
           node tools/wpt-report-builder/builder.mjs \
             --bidi $(ls out/wptreport.*.json) \
             --interop $(ls out/wptreport-interop.*.json) \
-            --out out/wptreport.html \
-            --out-label-2023 out/wptreport-2023.html
-      - name: Prepare Pages
-        # TODO: Support merged wpt report as before
-        # cp out/wptreport.json out/site/wptreport.json
-        run: |
-          mkdir -p out/site
-          cp out/wptreport.html wpt-report/index.html
-          cp out/wptreport-2023.html wpt-report/2023.html
+            --out wpt-report/index.html \
+            --out-label-2023 wpt-report/wptreport-2023.html
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: ./wpt-report/
+          folder: wpt-report
           branch: gh-pages
           target-folder: wpt
