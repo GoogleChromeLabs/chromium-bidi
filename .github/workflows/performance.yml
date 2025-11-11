@@ -130,7 +130,6 @@ jobs:
       - name: Combine metrics into a single file
         run: |
           find artifacts -name "performance_metrics.txt" -exec cat {} + > all_performance_metrics.txt
-          sort -o all_performance_metrics.txt all_performance_metrics.txt
           echo "Combined performance metrics:"
           cat all_performance_metrics.txt
 
@@ -159,11 +158,10 @@ jobs:
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         with:
-          # What tool you used (see docs for list, or use 'customLocal')
           tool: 'customSmallerIsBetter'
           output-file-path: all_performance_metrics.json
-          benchmark-data-dir-path: bench/
           gh-pages-branch: gh-pages
+          benchmark-data-dir-path: bench/
           # Access token to push to gh-pages
           github-token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           comment-always: ${{ github.ref != 'refs/heads/main' }}
