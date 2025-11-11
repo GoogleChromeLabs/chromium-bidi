@@ -103,6 +103,8 @@ jobs:
         with:
           name: performance-metrics-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
           path: performance_metrics.txt
+          # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
+          retention-days: 1
   combine_metrics:
     name: Combine performance metrics
     runs-on: ubuntu-latest
