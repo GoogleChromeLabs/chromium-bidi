@@ -107,9 +107,20 @@ jobs:
           retention-days: 1
   combine_metrics:
     name: Combine performance metrics
+    # if: ${{ github.ref == 'refs/heads/main' }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
     needs: performance_metric
     steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Download all performance metrics artifacts
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
@@ -143,3 +154,13 @@ jobs:
           path: |
             all_performance_metrics.txt
             all_performance_metrics.json
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          # What tool you used (see docs for list, or use 'customLocal')
+          tool: 'customSmallerIsBetter'
+          output-file-path: all_performance_metrics.json
+          # Access token to push to gh-pages
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Push and deploy automatically
+          auto-push: true
