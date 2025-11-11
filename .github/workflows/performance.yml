@@ -95,11 +95,30 @@ jobs:
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |
-          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' > performance_metrics.txt
+          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}: /" > performance_metrics.txt
           echo "Extracted performance metrics:"
           cat performance_metrics.txt
       - name: Upload performance result as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: performance-metrics-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
           path: performance_metrics.txt
+  combine_metrics:
+    name: Combine performance metrics
+    runs-on: ubuntu-latest
+    needs: performane_metric
+    steps:
+      - name: Download all performance metrics artifacts
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          path: artifacts
+      - name: Combine metrics into a single file
+        run: |
+          find artifacts -name "performance_metrics.txt" -exec cat {} + > all_performance_metrics.txt
+          echo "Combined performance metrics:"
+          cat all_performance_metrics.txt
+      - name: Upload combined performance metrics
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: all-performance-metrics
+          path: all_performance_metrics.txt
