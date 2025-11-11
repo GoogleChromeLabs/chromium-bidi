@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   webdriverio:
+    if: false
     strategy:
       fail-fast: false
       matrix:

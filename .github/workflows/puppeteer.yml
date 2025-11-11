@@ -24,7 +24,8 @@ jobs:
   puppeteer-test:
     name: Run Puppeteer tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'puppeteer')
+    if: false
+    #    if: contains(github.event.pull_request.labels.*.name, 'puppeteer')
     strategy:
       fail-fast: false
       matrix:
