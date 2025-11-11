@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import time
+from pathlib import Path
 
 import pytest
 from test_helpers import execute_command, goto_url
@@ -32,6 +33,7 @@ async def capture_screenshot(websocket, context_id):
         })
 
 
+@pytest.mark.timeout(60)
 @pytest.mark.asyncio
 async def test_performance_screenshot(websocket, context_id,
                                       current_test_name):
@@ -48,7 +50,9 @@ async def test_performance_screenshot(websocket, context_id,
             }
         })
 
-    await goto_url(websocket, context_id, 'https://example.com')
+    await goto_url(
+        websocket, context_id,
+        f'file://{Path(__file__).parent.resolve()}/resources/long_page.html')
 
     # Pre-warm.
     await capture_screenshot(websocket, context_id)
