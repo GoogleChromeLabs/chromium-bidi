@@ -117,11 +117,29 @@ jobs:
       - name: Combine metrics into a single file
         run: |
           find artifacts -name "performance_metrics.txt" -exec cat {} + > all_performance_metrics.txt
-          echo "Combined performance metrics:"
           sort -o all_performance_metrics.txt all_performance_metrics.txt
+          echo "Combined performance metrics:"
           cat all_performance_metrics.txt
+
+          # Convert to JSON format suitable for github-action-benchmark
+          echo "[" > all_performance_metrics.json
+          first_metric=true
+          while IFS= read -r line; do
+            if [ "$first_metric" = false ]; then
+              echo "," >> all_performance_metrics.json
+            fi
+            key=${line%:*}
+            value=${line##*:}
+            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"ms\"}" >> all_performance_metrics.json
+            first_metric=false
+          done < all_performance_metrics.txt
+          echo "]" >> all_performance_metrics.json
+          echo "Combined performance metrics in JSON format:"
+          cat all_performance_metrics.json
       - name: Upload combined performance metrics
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: all-performance-metrics
-          path: all_performance_metrics.txt
+          path: |
+            all_performance_metrics.txt
+            all_performance_metrics.json
