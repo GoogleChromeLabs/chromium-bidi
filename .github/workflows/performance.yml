@@ -162,6 +162,7 @@ jobs:
           # What tool you used (see docs for list, or use 'customLocal')
           tool: 'customSmallerIsBetter'
           output-file-path: all_performance_metrics.json
+          external-data-json-path: bench/data.js
           # Access token to push to gh-pages
           github-token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           # Push and deploy automatically
