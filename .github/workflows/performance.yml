@@ -163,6 +163,7 @@ jobs:
           tool: 'customSmallerIsBetter'
           output-file-path: all_performance_metrics.json
           external-data-json-path: bench/data.js
+          gh-pages-branch: gh-pages
           # Access token to push to gh-pages
           github-token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           # Push and deploy automatically
