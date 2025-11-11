@@ -37,9 +37,9 @@ jobs:
         # TODO(#876): Add Windows CI.
         os: [ubuntu-latest]
         head: ['new-headless', 'old-headless']
-# TODO: roll back
-#        os: [ubuntu-latest, macos-latest]
-#        head: [headful, 'new-headless', 'old-headless']
+        # TODO: roll back
+        #        os: [ubuntu-latest, macos-latest]
+        #        head: [headful, 'new-headless', 'old-headless']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
         kind: [cd, node]
     runs-on: ${{ matrix.os }}
@@ -169,5 +169,7 @@ jobs:
           gh-pages-branch: gh-pages
           # Access token to push to gh-pages
           github-token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN || secrets.GITHUB_TOKEN }}
-          # Push and deploy automatically
-          auto-push: true
+          comment-always: ${{ github.ref != 'refs/heads/main' }}
+          # Push and deploy automatically on merged to main PRs.
+          auto-push: ${{ github.ref == 'refs/heads/main' }}
+          save-data-file: ${{ github.ref == 'refs/heads/main' }}
