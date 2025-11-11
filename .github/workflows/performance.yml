@@ -29,7 +29,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  performane_metric:
+  performance_metric:
     name: ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}
     strategy:
       fail-fast: false
@@ -106,7 +106,7 @@ jobs:
   combine_metrics:
     name: Combine performance metrics
     runs-on: ubuntu-latest
-    needs: performane_metric
+    needs: performance_metric
     steps:
       - name: Download all performance metrics artifacts
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
@@ -116,6 +116,7 @@ jobs:
         run: |
           find artifacts -name "performance_metrics.txt" -exec cat {} + > all_performance_metrics.txt
           echo "Combined performance metrics:"
+          sort -o all_performance_metrics.txt all_performance_metrics.txt
           cat all_performance_metrics.txt
       - name: Upload combined performance metrics
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
