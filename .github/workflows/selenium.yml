@@ -17,7 +17,6 @@ concurrency:
 
 jobs:
   selenium:
-    if: false
     strategy:
       fail-fast: false
       matrix:

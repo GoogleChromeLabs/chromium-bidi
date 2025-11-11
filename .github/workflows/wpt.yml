@@ -58,7 +58,6 @@ jobs:
       - run: 'exit 0'
 
   wpt:
-    if: false
     name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.kind }}-${{ matrix.head }}
     runs-on: ubuntu-latest
     strategy:
