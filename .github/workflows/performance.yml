@@ -113,6 +113,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
       deployments: write
+      # Add perf metrics to PR's comment
+      pull-requests: write
       contents: write
     runs-on: ubuntu-latest
     needs: performance_metric
