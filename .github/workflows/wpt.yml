@@ -285,9 +285,6 @@ jobs:
     needs: wpt
     # if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     permissions:
       contents: write
     steps:
