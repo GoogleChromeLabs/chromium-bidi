@@ -288,7 +288,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
     permissions:
       contents: write
     steps:
@@ -316,7 +315,7 @@ jobs:
             --out-label-2023 wpt-report/wptreport-2023.html
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-      - name: Deploy to gh-pages
+      - name: Push to `gh-pages` branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: wpt-report
