@@ -163,6 +163,7 @@ jobs:
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: bench/
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-always: true
-          # Push and deploy automatically on merged to main PRs.
+          # Comment only when run in PR.
+          comment-always: ${{ github.ref != 'refs/heads/main' }}
+          # Push and deploy automatically on merge to main.
           auto-push: ${{ github.ref == 'refs/heads/main' }}
