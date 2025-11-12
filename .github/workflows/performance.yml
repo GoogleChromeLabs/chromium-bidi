@@ -165,5 +165,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-always: true
           # Push and deploy automatically on merged to main PRs.
-          auto-push: true
-          # auto-push: ${{ github.ref == 'refs/heads/main' }}
+          auto-push: ${{ github.ref == 'refs/heads/main' }}
