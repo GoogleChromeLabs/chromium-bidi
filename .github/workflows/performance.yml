@@ -106,6 +106,7 @@ jobs:
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   combine_metrics:
+    if: ${{ !cancelled() }}
     name: Combine performance metrics
     environment:
       name: github-pages
