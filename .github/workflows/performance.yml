@@ -159,8 +159,6 @@ jobs:
           output-file-path: all_performance_metrics.json
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: bench/
-          # Access token to push to gh-pages
-          github-token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           comment-always: true
           # Push and deploy automatically on merged to main PRs.
           auto-push: true
