@@ -112,6 +112,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
+      deployments: write
       contents: write
     runs-on: ubuntu-latest
     needs: performance_metric
@@ -159,8 +160,7 @@ jobs:
           output-file-path: all_performance_metrics.json
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: bench/
-          # Required for `auto-push`.
-          github-token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-always: true
           # Push and deploy automatically on merged to main PRs.
           auto-push: true
