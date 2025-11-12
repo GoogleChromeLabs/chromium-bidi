@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762946356850,
+  "lastUpdate": 1762946982141,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -142,6 +142,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 151.77078247070312,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b0dd472c0de4ad5dcf0e61b25b5bf5559d2b28fc",
+          "message": "chore(deps): Bump wpt from `8ac56ca` to `92639a9` (#3909)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `8ac56ca` to\n`92639a9`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/92639a9a19ea98347a4cb8d52def72570bb27dbc\"><code>92639a9</code></a>\nMap various tests to web-features (05) (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/55585\">#55585</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/01af3c61ec65333413f20268bddd795a41e813e7\"><code>01af3c6</code></a>\nMake computed borders not affect the computed value.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a42b9f0fb3146b092b3dc20eeb7bdab03cb69ce4\"><code>a42b9f0</code></a>\n[css-values] Reduce viewport units when scrollbars are\nunconditional</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c1794aaf2954aac447396b32a1c109106c2a8be1\"><code>c1794aa</code></a>\nMake test compliant with earlier test</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/e1b47f0a266517689629f966d8a61ae0a16f340b\"><code>e1b47f0</code></a>\n[wdspec] Add checks for overriding &quot;Accept-Language&quot; header\nwith &quot;emulation.s...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/da5fad35a4948323e4e57db650e9acfaa06b842b\"><code>da5fad3</code></a>\nMap various tests to web-features (04) (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/55481\">#55481</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/0fcc2ec326e516455f15d0a3f0b85146455db538\"><code>0fcc2ec</code></a>\n[Navigation API] Add test for navigation.entries() main frame excluding\nifram...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/9f8490256485e4e9a2729e2896c8ce0336932916\"><code>9f84902</code></a>\nRespect overscroll-behavior when determining scroll bubbling (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/55981\">#55981</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/7fd0c65f58856012a4cc63c28234ee6d6b93e8d0\"><code>7fd0c65</code></a>\nOptimize gfx::Transform's mojo.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/6a0c261485ded794cdf1240c7092457db99b7e40\"><code>6a0c261</code></a>\nRevert &quot;Bug 1848958 - [wdspec] Update tests for dispatching mouse\nevents via ...</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/8ac56ca5bff0294794dfaaef0a9c3ee5b2da2d1b...92639a9a19ea98347a4cb8d52def72570bb27dbc\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\n---------\n\nSigned-off-by: dependabot[bot] <support@github.com>\nSigned-off-by: Browser Automation Bot <browser-automation-bot@google.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>\nCo-authored-by: Browser Automation Bot <browser-automation-bot@google.com>",
+          "timestamp": "2025-11-12T11:27:37Z",
+          "tree_id": "93bcd3491b917daa96b7c1610fcd5893374ede19",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/b0dd472c0de4ad5dcf0e61b25b5bf5559d2b28fc"
+        },
+        "date": 1762946981645,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 167.45381355285645,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 1799.814224243164,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 3356.698751449585,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 285.9618663787842,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 261.20896339416504,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2104.2928218841553,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 293.27917098999023,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.368896484375,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 282.5596332550049,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 168.36910247802734,
             "unit": "ms"
           }
         ]
