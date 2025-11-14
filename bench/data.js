@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1763048132528,
+  "lastUpdate": 1763112685508,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -512,6 +512,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 285.6250762939453,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b0f5c26c78ba135f84aebe9495172467fe2f5870",
+          "message": "chore(deps): Bump wpt from `6a6e90a` to `b5e7146` (#3914)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `6a6e90a` to\n`b5e7146`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/b5e7146b954154d4e2e02b8bd2362d74c2071e0e\"><code>b5e7146</code></a>\nWebKit export of <a\nhref=\"https://bugs.webkit.org/show_bug.cgi?id=256956\">https://bugs.webkit.org/show_bug.cgi?id=256956</a>\n(<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56026\">#56026</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/8940f6bc954131ceebd59b82b102c99f4fbd6dd8\"><code>8940f6b</code></a>\nElements with required acc parent role with presentational role and\nglobal WA...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/6827c6a75645b048ef37f3452b3f9e5bf08943e0\"><code>6827c6a</code></a>\nA couple of fixes for the CSS <code>random()</code> tests (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/55867\">#55867</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/d63e0191c091f21293402e5af8a36bd98d97b910\"><code>d63e019</code></a>\nWebKit export of <a\nhref=\"https://bugs.webkit.org/show_bug.cgi?id=300093\">https://bugs.webkit.org/show_bug.cgi?id=300093</a>\n(<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56023\">#56023</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/90347773f4f137ef43300f8e41a304cae8427132\"><code>9034777</code></a>\nWebKit export of <a\nhref=\"https://bugs.webkit.org/show_bug.cgi?id=294206\">https://bugs.webkit.org/show_bug.cgi?id=294206</a>\n(<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56022\">#56022</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/221e9fcf17a526cd01c62fa45ef6277a5f93a507\"><code>221e9fc</code></a>\nSimplify assertions in navigation-api iframe history test (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56020\">#56020</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c3bb201215849adb80695dfe7fa8ef541cd179f2\"><code>c3bb201</code></a>\nAdd an infrastructure reftest for devicePixelRatio</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/1d940d73dc66c4632575933abe1e4ae8f10eb432\"><code>1d940d7</code></a>\nRevert &quot;Fix reference for anchor-scroll-position-try-012 due to\nmistaken cont...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/f4e2abc22206d81772fc5cb9aad0a35921f2eac3\"><code>f4e2abc</code></a>\nDon't parse anchor functions in flex-basis. (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/55971\">#55971</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/676bf0e691c1173ddbe454056048278cd63a0566\"><code>676bf0e</code></a>\nUpdate sanitizer-boolean-defaults to match current spec. (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/55959\">#55959</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/6a6e90a2df4c71d7592d67e2a417a9a7a7ee09a0...b5e7146b954154d4e2e02b8bd2362d74c2071e0e\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2025-11-14T09:29:48Z",
+          "tree_id": "170d5650e32cb439249befecaec6b30cf305850f",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/b0f5c26c78ba135f84aebe9495172467fe2f5870"
+        },
+        "date": 1763112684943,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 171.31404876708984,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2315.9722328186035,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2447.9100227355957,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2767.826986312866,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 285.3968620300293,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 296.66337966918945,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2438.211965560913,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 373.0233669281006,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 195.0096607208252,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 288.87696266174316,
             "unit": "ms"
           }
         ]
