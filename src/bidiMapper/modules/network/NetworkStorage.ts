@@ -176,6 +176,15 @@ export class NetworkStorage {
         },
       ],
       [
+        'Network.loadingFinished',
+        (params: Protocol.Network.LoadingFinishedEvent) => {
+          this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget,
+          ).onLoadingFinished();
+        },
+      ],
+      [
         'Network.requestServedFromCache',
         (params: Protocol.Network.RequestServedFromCacheEvent) => {
           const request = this.#getOrCreateNetworkRequest(
