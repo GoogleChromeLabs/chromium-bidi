@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1763125410097,
+  "lastUpdate": 1763126200889,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -739,6 +739,85 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 282.6685428619385,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "133232582+browser-automation-bot@users.noreply.github.com",
+            "name": "browser-automation-bot",
+            "username": "browser-automation-bot"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b421d27106b1c42fcf6f910c0e7c68e7f47edf22",
+          "message": "chore(main): release chromium-bidi 11.0.1 (#3916)\n\n:robot: I have created a release *beep* *boop*\n---\n\n\n##\n[11.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.0...chromium-bidi-v11.0.1)\n(2025-11-14)\n\n\n### Bug Fixes\n\n* correctly report data sizes\n([#3836](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3836))\n([154abaa](https://github.com/GoogleChromeLabs/chromium-bidi/commit/154abaaec7e35dc86bcc9dcfd9384d58a65cca08))\n\n---\nThis PR was generated with [Release\nPlease](https://github.com/googleapis/release-please). See\n[documentation](https://github.com/googleapis/release-please#release-please).",
+          "timestamp": "2025-11-14T13:14:24Z",
+          "tree_id": "21d2fac4977769866373c566ed46435d6cb4dacf",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/b421d27106b1c42fcf6f910c0e7c68e7f47edf22"
+        },
+        "date": 1763126199661,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 176.78685188293457,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 1788.959789276123,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 1897.3616123199463,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2431.486749649048,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 278.6120891571045,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 334.95521545410156,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2635.2723598480225,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 239.77899551391602,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 194.17171478271484,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 278.14579010009766,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 171.3338851928711,
             "unit": "ms"
           }
         ]
