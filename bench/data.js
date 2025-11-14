@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1763123655684,
+  "lastUpdate": 1763125410097,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -665,6 +665,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 178.0766487121582,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "OrKoN@users.noreply.github.com",
+            "name": "Alex Rudenko",
+            "username": "OrKoN"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "154abaaec7e35dc86bcc9dcfd9384d58a65cca08",
+          "message": "fix: correctly report data sizes (#3836)\n\nCo-authored-by: Maksim Sadym <sadym@chromium.org>\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>",
+          "timestamp": "2025-11-14T14:00:46+01:00",
+          "tree_id": "96c777863da2f296fce154a70506b60c5ada0215",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/154abaaec7e35dc86bcc9dcfd9384d58a65cca08"
+        },
+        "date": 1763125408885,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 174.59421157836914,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2586.1398220062256,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2975.2789974212646,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2324.6342182159424,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 259.18378829956055,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 338.78560066223145,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 1914.6739482879639,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 339.9763584136963,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 191.50567054748535,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 282.6685428619385,
             "unit": "ms"
           }
         ]
