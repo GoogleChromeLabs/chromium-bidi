@@ -114,19 +114,19 @@
     <div class="headings">
       <h1>
         <span>
-          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/ee07939cb6c32644c7f3b68584b30f8f1dbae023"><code>ee07939c</code></a>)
+          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/1a9848ae3a821d5a45b4de22182c2d2a3bc4710a"><code>1a9848ae</code></a>)
         </span><br>
         <span>
           test results for WPT (<a href="https://github.com/web-platform-tests/wpt/commit/b5e7146b954154d4e2e02b8bd2362d74c2071e0e"><code>b5e7146b</code></a>)
              matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>
         </span><br>
         <span>
-          running Chrome 144.0.7526.3 @ <time>2025-11-17</time>
+          running Chrome 144.0.7529.0 @ <time>2025-11-17</time>
         </span>
       <p>
     Since 2023-12-31,
     the total number of subtests went from 2807 to 3465 (+23.44%),
-    and the number of passing subtests went from 2456 to 3440 (+40.07%).
+    and the number of passing subtests went from 2456 to 3439 (+40.02%).
   </p>
     </div>
       <div>
@@ -136,7 +136,7 @@
       </div>
     </div>
     
-      <h2 id="bidi-tests">BiDi tests - 3440 / 3465 (25 remaining)
+      <h2 id="bidi-tests">BiDi tests - 3439 / 3465 (26 remaining)
       </h2>
       <div>
         
@@ -145,7 +145,7 @@
         <summary class="path part">
           <span class="short-name">browsing_context</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context</span>
-          <span class="stat"><b>832/846</b></span>
+          <span class="stat"><b>831/846</b></span>
         </summary>
         
     <div class="test-card">
@@ -10965,10 +10965,10 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">set_viewport</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport</span>
-          <span class="stat"><b>77/77</b></span>
+          <span class="stat"><b>76/77</b></span>
         </summary>
         
     <div class="test-card">
@@ -11821,10 +11821,10 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">viewport.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport&#47;viewport.py</span>
-          <span class="stat"><b>18/18</b></span>
+          <span class="stat"><b>17/18</b></span>
         </summary>
         
       <div class="test-card test-card-subtest pass">
@@ -11939,17 +11939,17 @@
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_reset_to_default</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py/test_reset_to_default</span>
-          
+          <br /><small>AssertionError: assert {&#39;height&#39;: 333, &#39;width&#39;: 666} == {&#39;height&#39;: 513, &#39;width&#39;: 800}</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
