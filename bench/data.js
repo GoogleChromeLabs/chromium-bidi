@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1763126200889,
+  "lastUpdate": 1763370793520,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -818,6 +818,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 171.3338851928711,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ee07939cb6c32644c7f3b68584b30f8f1dbae023",
+          "message": "chore(deps-dev): Bump js-yaml from 4.1.0 to 4.1.1 (#3918)\n\nBumps [js-yaml](https://github.com/nodeca/js-yaml) from 4.1.0 to 4.1.1.\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/nodeca/js-yaml/blob/master/CHANGELOG.md\">js-yaml's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>[4.1.1] - 2025-11-12</h2>\n<h3>Security</h3>\n<ul>\n<li>Fix prototype pollution issue in yaml merge (&lt;&lt;)\noperator.</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/nodeca/js-yaml/commit/cc482e775913e6625137572a3712d2826170e53a\"><code>cc482e7</code></a>\n4.1.1 released</li>\n<li><a\nhref=\"https://github.com/nodeca/js-yaml/commit/50968b862e75866ef90e626572fe0b2f97b55f9f\"><code>50968b8</code></a>\ndist rebuild</li>\n<li><a\nhref=\"https://github.com/nodeca/js-yaml/commit/d092d866031751cb27c12d93f3e2470ad74d678b\"><code>d092d86</code></a>\nlint fix</li>\n<li><a\nhref=\"https://github.com/nodeca/js-yaml/commit/383665ff4248ec2192d1274e934462bb30426879\"><code>383665f</code></a>\nfix prototype pollution in merge (&lt;&lt;)</li>\n<li><a\nhref=\"https://github.com/nodeca/js-yaml/commit/0d3ca7a27b03a6c974790a30a89e456007d62976\"><code>0d3ca7a</code></a>\nREADME.md: HTTP =&gt; HTTPS (<a\nhref=\"https://redirect.github.com/nodeca/js-yaml/issues/678\">#678</a>)</li>\n<li><a\nhref=\"https://github.com/nodeca/js-yaml/commit/49baadd52af887d2991e2c39a6639baa56d6c71b\"><code>49baadd</code></a>\ndoc: 'empty' style option for !!null</li>\n<li><a\nhref=\"https://github.com/nodeca/js-yaml/commit/ba3460eb9d3e4478edcbc29edabe17c2157fc9ce\"><code>ba3460e</code></a>\nFix demo link (<a\nhref=\"https://redirect.github.com/nodeca/js-yaml/issues/618\">#618</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/nodeca/js-yaml/compare/4.1.0...4.1.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=js-yaml&package-manager=npm_and_yarn&previous-version=4.1.0&new-version=4.1.1)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2025-11-17T10:11:05+01:00",
+          "tree_id": "532663da377e641c3b1bf792b2e43242d3e7285a",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/ee07939cb6c32644c7f3b68584b30f8f1dbae023"
+        },
+        "date": 1763370792422,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 177.9432773590088,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2128.180170059204,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 1911.6455554962158,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2614.3092155456543,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 265.2390956878662,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 252.10914611816403,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2858.966016769409,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 245.7047939300537,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 167.66858100891113,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 281.412935256958,
             "unit": "ms"
           }
         ]
