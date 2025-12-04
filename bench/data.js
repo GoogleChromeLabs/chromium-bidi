@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1764861200461,
+  "lastUpdate": 1764863972054,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -1953,6 +1953,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 281.6542148590088,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "95c691f0b78a67437a961ee8817b9883231ac1cf",
+          "message": "chore(deps): Bump werkzeug from 3.1.3 to 3.1.4 (#3929)\n\nBumps [werkzeug](https://github.com/pallets/werkzeug) from 3.1.3 to\n3.1.4.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/pallets/werkzeug/releases\">werkzeug's\nreleases</a>.</em></p>\n<blockquote>\n<h2>3.1.4</h2>\n<p>This is the Werkzeug 3.1.4 fix release, which fixes bugs but does not\notherwise change behavior and should not result in breaking changes\ncompared to the latest feature release.</p>\n<p>PyPI: <a\nhref=\"https://pypi.org/project/Werkzeug/3.1.4/\">https://pypi.org/project/Werkzeug/3.1.4/</a>\nChanges: <a\nhref=\"https://werkzeug.palletsprojects.com/page/changes/#version-3-1-4\">https://werkzeug.palletsprojects.com/page/changes/#version-3-1-4</a>\nMilestone: <a\nhref=\"https://github.com/pallets/werkzeug/milestone/42?closed=1\">https://github.com/pallets/werkzeug/milestone/42?closed=1</a></p>\n<ul>\n<li><code>safe_join</code> on Windows does not allow special device\nnames. This prevents reading from these when using\n<code>send_from_directory</code>. <code>secure_filename</code> already\nprevented writing to these. <a\nhref=\"https://github.com/pallets/werkzeug/security/advisories/GHSA-hgf8-39gv-g3f2\">ghsa-hgf8-39gv-g3f2</a></li>\n<li>The debugger pin fails after 10 attempts instead of 11. <a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3020\">#3020</a></li>\n<li>The multipart form parser handles a <code>\\r\\n</code> sequence at a\nchunk boundary. <a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3065\">#3065</a></li>\n<li>Improve CPU usage during Watchdog reloader. <a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3054\">#3054</a></li>\n<li><code>Request.json</code> annotation is more accurate. <a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3067\">#3067</a></li>\n<li>Traceback rendering handles when the line number is beyond the\navailable source lines. <a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3044\">#3044</a></li>\n<li><code>HTTPException.get_response</code> annotation and doc better\nconveys the distinction between WSGI and sans-IO responses. <a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3056\">#3056</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/pallets/werkzeug/blob/main/CHANGES.rst\">werkzeug's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>Version 3.1.4</h2>\n<p>Released 2025-11-28</p>\n<ul>\n<li><code>safe_join</code> on Windows does not allow special device\nnames. This prevents\nreading from these when using <code>send_from_directory</code>.\n<code>secure_filename</code>\nalready prevented writing to these.\n:ghsa:<code>hgf8-39gv-g3f2</code></li>\n<li>The debugger pin fails after 10 attempts instead of 11.\n:pr:<code>3020</code></li>\n<li>The multipart form parser handles a <code>\\r\\n</code> sequence at a\nchunk boundary.\n:issue:<code>3065</code></li>\n<li>Improve CPU usage during Watchdog reloader.\n:issue:<code>3054</code></li>\n<li><code>Request.json</code> annotation is more accurate.\n:issue:<code>3067</code></li>\n<li>Traceback rendering handles when the line number is beyond the\navailable\nsource lines. :issue:<code>3044</code></li>\n<li><code>HTTPException.get_response</code> annotation and doc better\nconveys the\ndistinction between WSGI and sans-IO responses.\n:issue:<code>3056</code></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/1c7beb671d1af67a07684ffa1fffdb0fc76c7fa4\"><code>1c7beb6</code></a>\nrelease version 3.1.4</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/9c8b7546c51787c61982d5a87c4b52be6342c62c\"><code>9c8b754</code></a>\ninstall less to run tox</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/474e22f1ac8ee8531d6cb6fae4e062d4d7a5ea8f\"><code>474e22f</code></a>\nupdate dev dependencies</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/4b833376a45c323a189cd11d2362bcffdb1c0c13\"><code>4b83337</code></a>\nMerge commit from fork</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/9bdec46fe4955f085348ffc666b9edafff83aee2\"><code>9bdec46</code></a>\nsafe_join prevents windows special device names</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/b11713e82dd2baad4c48d4baad2ad7d03d653a55\"><code>b11713e</code></a>\nbetter <code>HTTPException.get_response</code> annotation (<a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3072\">#3072</a>)</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/1131dbd4d4aa4a65e12b5f75bd039b67a34787ce\"><code>1131dbd</code></a>\ndistinguish wsgi and sansio response annotation</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/5d9a40366b3a62ac7478b98b3bac9f90633edff0\"><code>5d9a403</code></a>\nskip rendering missing source (<a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3071\">#3071</a>)</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/60ea32c88ee1fc97559872fac55708af9c147a05\"><code>60ea32c</code></a>\nskip rendering missing source</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/c0e67e96384bb0aa4e3165e1efeed1e9835cf260\"><code>c0e67e9</code></a>\n<code>Request.json</code> property is only <code>Any</code> (<a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3070\">#3070</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/pallets/werkzeug/compare/3.1.3...3.1.4\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=werkzeug&package-manager=pip&previous-version=3.1.3&new-version=3.1.4)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\n---------\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>\nCo-authored-by: Maksim Sadym <sadym@chromium.org>",
+          "timestamp": "2025-12-04T16:54:52+01:00",
+          "tree_id": "c185e4b8d7391014f954f2803b71985bc3970382",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/95c691f0b78a67437a961ee8817b9883231ac1cf"
+        },
+        "date": 1764863971169,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 158.4181785583496,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 3728.6643981933594,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2907.435178756714,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 3085.617446899414,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 267.7384376525879,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 276.7747402191162,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 293.3147430419922,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 180.94801902770996,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 269.0968990325928,
             "unit": "ms"
           }
         ]
