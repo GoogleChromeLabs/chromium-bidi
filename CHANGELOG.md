@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.1...chromium-bidi-v12.0.0) (2025-12-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 145.0.7563.0 ([#3933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3933))
+
+### Features
+
+* **chrome:** update the pinned browser version to 145.0.7563.0 ([#3933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3933)) ([dfd6104](https://github.com/GoogleChromeLabs/chromium-bidi/commit/dfd6104b14ca47efce0e9f1f75e4c0445fa6a3d5))
+
 ## [11.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.0...chromium-bidi-v11.0.1) (2025-11-14)
 
 
