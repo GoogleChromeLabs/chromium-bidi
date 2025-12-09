@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1765294066676,
+  "lastUpdate": 1765295675837,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -2170,6 +2170,85 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 278.2092571258545,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "69349599+sadym-chromium@users.noreply.github.com",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "66c46958fa9f8ebe15d119a42b7a8dc9427f18dd",
+          "message": "fix: round cookie expiry field (#3938)\n\nAlign with WebDriver BiDi spec, which requires the `expiry` to be\ninteger.\n\nAddressing https://github.com/GoogleChromeLabs/chromium-bidi/issues/3936",
+          "timestamp": "2025-12-09T15:52:14Z",
+          "tree_id": "9602716eb67d24bbb995fc40a29a011b1a12d7ed",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/66c46958fa9f8ebe15d119a42b7a8dc9427f18dd"
+        },
+        "date": 1765295674678,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 164.8852825164795,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2513.245630264282,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 3250.6125450134277,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2611.059617996216,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 266.90425872802734,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 271.64340019226074,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2793.6301708221436,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 408.79359245300293,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 181.65855407714844,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 272.0542907714844,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 164.4543170928955,
             "unit": "ms"
           }
         ]
