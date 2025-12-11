@@ -96,7 +96,7 @@ jobs:
         working-directory: puppeteer
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-          DEBUG: '*'
+          # DEBUG: '*'
         run: npm run test:chrome:bidi -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}'
 
   puppeteer-test-required:
