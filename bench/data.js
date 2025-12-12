@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1765559200480,
+  "lastUpdate": 1765561004261,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -2619,6 +2619,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 261.76209449768066,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "133232582+browser-automation-bot@users.noreply.github.com",
+            "name": "browser-automation-bot",
+            "username": "browser-automation-bot"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c307ba4d601e890d62e11f279bbf3d2749609893",
+          "message": "chore(main): release chromium-bidi 12.0.0 (#3934)\n\n:robot: I have created a release *beep* *boop*\n---\n\n\n##\n[12.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.1...chromium-bidi-v12.0.0)\n(2025-12-12)\n\n\n### ⚠ BREAKING CHANGES\n\n* **chrome:** update the pinned browser version to 145.0.7563.0\n([#3933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3933))\n\n### Features\n\n* **chrome:** update the pinned browser version to 145.0.7563.0\n([#3933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3933))\n([dfd6104](https://github.com/GoogleChromeLabs/chromium-bidi/commit/dfd6104b14ca47efce0e9f1f75e4c0445fa6a3d5))\n* emulation.setScreenSettingsOverride\n([#3943](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3943))\n([c3ffde0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c3ffde028b11d26f535380a4df26b3b73d27d250))\n\n\n### Bug Fixes\n\n* ensure `network.beforeRequestSent` is emitted before\n`network.authRequired`\n([#3941](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3941))\n([5072f49](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5072f49367bd94678aa12d744cf0df88818b03f0))\n* extra headers can have duplicates\n([#3937](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3937))\n([aabd783](https://github.com/GoogleChromeLabs/chromium-bidi/commit/aabd7831255a90b01afcc59c40992cc0c3e7cdbe))\n* round cookie expiry field\n([#3938](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3938))\n([66c4695](https://github.com/GoogleChromeLabs/chromium-bidi/commit/66c46958fa9f8ebe15d119a42b7a8dc9427f18dd))\n\n\n### Reverts\n\n* \"fix: extra headers can have duplicates\"\n([#3939](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3939))\n([4a9b011](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4a9b011956055a5e4d098912a361c1699d4c39d4))\n\n---\nThis PR was generated with [Release\nPlease](https://github.com/googleapis/release-please). See\n[documentation](https://github.com/googleapis/release-please#release-please).",
+          "timestamp": "2025-12-12T18:34:11+01:00",
+          "tree_id": "4ae9edfff351176a69675e576175af91b8602a35",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/c307ba4d601e890d62e11f279bbf3d2749609893"
+        },
+        "date": 1765561003566,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 164.9801731109619,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 1862.8811836242676,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2491.6240215301514,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.26171875,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 384.8416328430176,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2049.1687774658203,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 206.72383308410645,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 180.95378875732422,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 265.62609672546387,
             "unit": "ms"
           }
         ]
