@@ -347,9 +347,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetScreenOrientationOverrideParams(command.params),
         );
       case 'emulation.setScreenSettingsOverride':
-        this.#parser.parseSetScreenSettingsOverrideParams(command.params);
-        throw new UnsupportedOperationException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setScreenSettingsOverride(
+          this.#parser.parseSetScreenSettingsOverrideParams(command.params),
         );
       case 'emulation.setScriptingEnabled':
         return await this.#emulationProcessor.setScriptingEnabled(
