@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1765795997487,
+  "lastUpdate": 1765809061671,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -2762,6 +2762,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 266.1118507385254,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "69349599+sadym-chromium@users.noreply.github.com",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4184afc241f75bf79d19eb5f38bd568bd4e8e9ec",
+          "message": "fix: reliably detect default user context (#3947)\n\nRely on\n[`Target.getBrowserContexts`](https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-getBrowserContexts)'s\n`defaultBrowserContextId`, introduced in Chromium `145.0.7578.0` by\nhttps://crrev.com/c/7254258.",
+          "timestamp": "2025-12-15T15:28:38+01:00",
+          "tree_id": "1bfe40c59364d6fff62a79f89fa8fb51f4fb721f",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/4184afc241f75bf79d19eb5f38bd568bd4e8e9ec"
+        },
+        "date": 1765809060433,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 137.89057731628418,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2487.3996257781982,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2778.6727905273438,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 1890.6847953796387,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 252.52380371093753,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 265.80657958984375,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 1775.3774166107178,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 226.79271697998047,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 177.354097366333,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 272.5314140319824,
             "unit": "ms"
           }
         ]
