@@ -114,14 +114,14 @@
     <div class="headings">
       <h1>
         <span>
-          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/c307ba4d601e890d62e11f279bbf3d2749609893"><code>c307ba4d</code></a>)
+          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/c139171d0a18c0317abfc6c4de13da021d4477d6"><code>c139171d</code></a>)
         </span><br>
         <span>
           test results for WPT (<a href="https://github.com/web-platform-tests/wpt/commit/b5e7146b954154d4e2e02b8bd2362d74c2071e0e"><code>b5e7146b</code></a>)
              matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>
         </span><br>
         <span>
-          running Chrome 145.0.7575.2 @ <time>2025-12-12</time>
+          running Chrome 145.0.7578.0 @ <time>2025-12-15</time>
         </span>
       <p>
     Since 2023-12-31,
@@ -145,7 +145,7 @@
         <summary class="path part">
           <span class="short-name">browsing_context</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context</span>
-          <span class="stat"><b>831/846</b></span>
+          <span class="stat"><b>832/846</b></span>
         </summary>
         
     <div class="test-card">
@@ -10965,10 +10965,10 @@
 
     <div class="test-card">
       <details>
-        <summary class="path part">
+        <summary class="path pass">
           <span class="short-name">set_viewport</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport</span>
-          <span class="stat"><b>76/77</b></span>
+          <span class="stat"><b>77/77</b></span>
         </summary>
         
     <div class="test-card">
@@ -11821,10 +11821,10 @@
 
     <div class="test-card">
       <details>
-        <summary class="path part">
+        <summary class="path pass">
           <span class="short-name">viewport.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport&#47;viewport.py</span>
-          <span class="stat"><b>17/18</b></span>
+          <span class="stat"><b>18/18</b></span>
         </summary>
         
       <div class="test-card test-card-subtest pass">
@@ -11939,17 +11939,17 @@
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest fail">
+      <div class="test-card test-card-subtest pass">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_reset_to_default</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py/test_reset_to_default</span>
-          <br /><small>AssertionError: assert {&#39;height&#39;: 333, &#39;width&#39;: 666} == {&#39;height&#39;: 513, &#39;width&#39;: 800}</small>
+          
         </p>
         </div>
         <div class="result">
           <span>
-            <b>FAIL</b>
+            <b>PASS</b>
           </span>
         </div>
       </div>
@@ -12842,7 +12842,7 @@
         <summary class="path part">
           <span class="short-name">input</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;input</span>
-          <span class="stat"><b>642/644</b></span>
+          <span class="stat"><b>641/644</b></span>
         </summary>
         
     <div class="test-card">
@@ -21902,10 +21902,10 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">release_actions</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;input&#47;release_actions</span>
-          <span class="stat"><b>9/9</b></span>
+          <span class="stat"><b>8/9</b></span>
         </summary>
         
     <div class="test-card">
@@ -22030,23 +22030,23 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path fail">
           <span class="short-name">release.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;input&#47;release_actions&#47;release.py</span>
-          <span class="stat"><b>1/1</b></span>
+          <span class="stat"><b>0/1</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_release_no_actions_sends_no_events</span>
           <span class="long-name hidden">/webdriver/tests/bidi/input/release_actions/release.py/test_release_no_actions_sends_no_events</span>
-          
+          <br /><small>AssertionError: assert 1 == 0</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
