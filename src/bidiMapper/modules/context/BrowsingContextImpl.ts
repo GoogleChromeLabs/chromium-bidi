@@ -1911,14 +1911,14 @@ export class BrowsingContextImpl {
   }
 
   async setTimezoneOverride(timezone: string | null): Promise<void> {
-    await Promise.allSettled(
+    await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) => await cdpTarget.setTimezoneOverride(timezone),
       ),
     );
   }
   async setLocaleOverride(locale: string | null): Promise<void> {
-    await Promise.allSettled(
+    await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) => await cdpTarget.setLocaleOverride(locale),
       ),
@@ -1931,7 +1931,7 @@ export class BrowsingContextImpl {
       | Emulation.GeolocationPositionError
       | null,
   ): Promise<void> {
-    await Promise.allSettled(
+    await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) =>
           await cdpTarget.setGeolocationOverride(geolocation),
@@ -1940,7 +1940,7 @@ export class BrowsingContextImpl {
   }
 
   async setScriptingEnabled(scriptingEnabled: false | null) {
-    await Promise.allSettled(
+    await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) =>
           await cdpTarget.setScriptingEnabled(scriptingEnabled),
@@ -1952,7 +1952,7 @@ export class BrowsingContextImpl {
     userAgent: string | null | undefined,
     acceptLanguage: string | null | undefined,
   ) {
-    await Promise.allSettled(
+    await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) =>
           await cdpTarget.setUserAgentAndAcceptLanguage(
@@ -1966,7 +1966,7 @@ export class BrowsingContextImpl {
   async setEmulatedNetworkConditions(
     networkConditions: Emulation.NetworkConditions | null,
   ) {
-    await Promise.allSettled(
+    await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) =>
           await cdpTarget.setEmulatedNetworkConditions(networkConditions),
@@ -1985,7 +1985,7 @@ export class BrowsingContextImpl {
   async setExtraHeaders(
     cdpExtraHeaders: Protocol.Network.Headers,
   ): Promise<Promise<any>> {
-    await Promise.allSettled(
+    await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) => await cdpTarget.setExtraHeaders(cdpExtraHeaders),
       ),
