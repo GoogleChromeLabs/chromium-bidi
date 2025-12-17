@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1765970890467,
+  "lastUpdate": 1765979495281,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -3058,6 +3058,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 164.81199264526367,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "69349599+sadym-chromium@users.noreply.github.com",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "abc94c0a8c651c45f913e87c08f8b21469ae228d",
+          "message": "[chore] touch dependabot (#3953)",
+          "timestamp": "2025-12-17T13:49:42Z",
+          "tree_id": "59450510c7120509397c1ec8e0d8c50c4d2e69b5",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/abc94c0a8c651c45f913e87c08f8b21469ae228d"
+        },
+        "date": 1765979493999,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 160.45842170715332,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 3263.548803329468,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2806.3533306121826,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 3182.7030181884766,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.8114643096924,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 226.6335964202881,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 237.2929573059082,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.3466281890869,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 275.27713775634766,
             "unit": "ms"
           }
         ]
