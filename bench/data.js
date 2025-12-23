@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1766055515585,
+  "lastUpdate": 1766482157788,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -3354,6 +3354,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 264.1448974609375,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b961203faaee71714d26a6d2a61cc845d4c40a59",
+          "message": "chore(deps): Bump wpt from `e23f9d6` to `f390b46` (#3958)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `e23f9d6` to\n`f390b46`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/f390b46ed766db69705d87d248314e53a1f7aeeb\"><code>f390b46</code></a>\nMap &quot;History&quot; to web-features</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a7d98ceb3d588912683d532c96e9117021d5feed\"><code>a7d98ce</code></a>\nMap <code>mutationobserver</code> web-feature</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/de57e64c2bae4a0da0ab13ade5cd4488065db76d\"><code>de57e64</code></a>\nRename CustomizableSelectInPage to CustomizableSelectListbox</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/547994831abc813013da20f3459a59919f12138c\"><code>5479948</code></a>\nAdd a WPT for mouse drag on a newly added range input element.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/505d72f2978f4fcad00cb31fca62446b34519f2e\"><code>505d72f</code></a>\n[SAH] Reuse WPT helper instead of duplicating it</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/77ee1f60aa94d5621f2db4cd8f4fb363e9fc2c0c\"><code>77ee1f6</code></a>\n[SAH] Remove assumption of cross-site cookie behavior from SAH WPTs</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/d094f5cc5441a0c644c492fb93430fc2f70bc7d4\"><code>d094f5c</code></a>\nSupport Matroska MIME types in MediaRecorder</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/8f9ce4d8106d729de7d45376e1e5094279cb4276\"><code>8f9ce4d</code></a>\n[scoped-vt] Account for ink-overflow when rendering snapshot.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/bf37c5823c37f313b2594baad710be6fac223a1d\"><code>bf37c58</code></a>\n[Masonry] dense-packing: include open end of tracks when finding\neligible tra...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/18954da801c02004f51ae7f780fbcf4d32bd6a09\"><code>18954da</code></a>\nAdd line-height to position-area-inline-container.html and its -abs\nvariant. ...</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/e23f9d684e00e01a96322b254b7974e518e1dc7d...f390b46ed766db69705d87d248314e53a1f7aeeb\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>",
+          "timestamp": "2025-12-23T10:27:32+01:00",
+          "tree_id": "476984b60f4e4cd438dad92269875d523965786f",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/b961203faaee71714d26a6d2a61cc845d4c40a59"
+        },
+        "date": 1766482156069,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 164.9940013885498,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2937.1402263641357,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2498.6900329589844,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2419.453811645508,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.8838005065918,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 244.98262405395508,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2425.199842453003,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 251.87020301818848,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 178.178071975708,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 265.0038719177246,
             "unit": "ms"
           }
         ]
