@@ -75,9 +75,11 @@ jobs:
         timeout-minutes: 20
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "${{ matrix.head }}" == "headful" ]; then
-             xvfb-run --auto-servernum python3 tools/benchmark.py | tee tests_output.txt
+             set -o pipefail
+             xvfb-run --auto-servernum pipenv run python3 tools/benchmark.py | tee tests_output.txt
           else
-             python3 tools/benchmark.py | tee tests_output.txt
+             set -o pipefail
+             pipenv run python3 tools/benchmark.py | tee tests_output.txt
           fi
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}

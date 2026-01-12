@@ -16,6 +16,7 @@
 import asyncio
 import json
 import os
+import sys
 import time
 
 import websockets
@@ -83,7 +84,7 @@ def run_benchmark():
         import shutil
         current_chromedriver = shutil.which("chromedriver")
         print(f"Current chromedriver in PATH: {current_chromedriver}")
-        return
+        sys.exit(1)
 
     try:
         browser_name = "Chrome"
