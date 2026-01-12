@@ -32,11 +32,15 @@ import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
+import type {ContextConfig} from '../browser/ContextConfig.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {LogManager} from '../log/LogManager.js';
-import type {NetworkStorage} from '../network/NetworkStorage.js';
+import {
+  MAX_TOTAL_COLLECTED_SIZE,
+  type NetworkStorage,
+} from '../network/NetworkStorage.js';
 import type {ChannelProxy} from '../script/ChannelProxy.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -49,7 +53,7 @@ interface FetchStages {
 }
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
-  readonly #userContext: Browser.UserContext;
+  readonly userContext: Browser.UserContext;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
   readonly #parentCdpClient: CdpClient;
@@ -63,16 +67,6 @@ export class CdpTarget {
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #logger: LoggerFn | undefined;
-
-  // Keeps track of the previously set viewport.
-  #previousDeviceMetricsOverride: Protocol.Emulation.SetDeviceMetricsOverrideRequest =
-    {
-      width: 0,
-      height: 0,
-      deviceScaleFactor: 0,
-      mobile: false,
-      dontSetVisibleSize: true,
-    };
 
   /**
    * Target's window id. Is filled when the CDP target is created and do not reflect
@@ -144,7 +138,7 @@ export class CdpTarget {
     userContext: Browser.UserContext,
     logger: LoggerFn | undefined,
   ) {
-    this.#userContext = userContext;
+    this.userContext = userContext;
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
@@ -202,6 +196,11 @@ export class CdpTarget {
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
+    const config = this.contextConfigStorage.getActiveConfig(
+      this.topLevelId,
+      this.userContext,
+    );
+
     const results = await Promise.allSettled([
       this.#cdpClient.sendCommand('Page.enable', {
         enableFileChooserOpenedEvent: true,
@@ -233,7 +232,12 @@ export class CdpTarget {
       // Enabling CDP Network domain is required for navigation detection:
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
       this.#cdpClient
-        .sendCommand('Network.enable')
+        .sendCommand('Network.enable', {
+          // If `googDisableNetworkDurableMessages` flag is set, do not enable durable
+          // messages.
+          enableDurableMessages: config.disableNetworkDurableMessages !== true,
+          maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
+        })
         .then(() => this.toggleNetworkIfNeeded()),
       this.#cdpClient.sendCommand('Target.setAutoAttach', {
         autoAttach: true,
@@ -241,7 +245,7 @@ export class CdpTarget {
         flatten: true,
       }),
       this.#updateWindowId(),
-      this.#setUserContextConfig(),
+      this.#setUserContextConfig(config),
       this.#initAndEvaluatePreloadScripts(),
       this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
       // Resume tab execution as well if it was paused by the debugger.
@@ -289,7 +293,7 @@ export class CdpTarget {
       BrowsingContextImpl.create(
         frame.id,
         frame.parentId,
-        this.#userContext,
+        this.userContext,
         parentBrowsingContext.cdpTarget,
         this.#eventManager,
         this.#browsingContextStorage,
@@ -580,52 +584,38 @@ export class CdpTarget {
     );
   }
 
-  async setViewport(
-    viewport?: BrowsingContext.Viewport | null,
-    devicePixelRatio?: number | null,
+  async setDeviceMetricsOverride(
+    viewport: BrowsingContext.Viewport | null,
+    devicePixelRatio: number | null,
+    screenOrientation: Emulation.ScreenOrientation | null,
+    screenArea: Emulation.ScreenArea | null,
   ) {
-    if (viewport === null && devicePixelRatio === null) {
+    if (
+      viewport === null &&
+      devicePixelRatio === null &&
+      screenOrientation === null &&
+      screenArea === null
+    ) {
       await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
       return;
     }
 
-    const newViewport = {...this.#previousDeviceMetricsOverride};
+    const metricsOverride: Protocol.Emulation.SetDeviceMetricsOverrideRequest =
+      {
+        width: viewport?.width ?? 0,
+        height: viewport?.height ?? 0,
+        deviceScaleFactor: devicePixelRatio ?? 0,
+        screenOrientation:
+          this.#toCdpScreenOrientationAngle(screenOrientation) ?? undefined,
+        mobile: false,
+        screenWidth: screenArea?.width,
+        screenHeight: screenArea?.height,
+      };
 
-    if (viewport === null) {
-      // Disable override.
-      newViewport.width = 0;
-      newViewport.height = 0;
-    } else if (viewport !== undefined) {
-      newViewport.width = viewport.width;
-      newViewport.height = viewport.height;
-    }
-
-    if (devicePixelRatio === null) {
-      // Disable override.
-      newViewport.deviceScaleFactor = 0;
-    } else if (devicePixelRatio !== undefined) {
-      newViewport.deviceScaleFactor = devicePixelRatio;
-    }
-
-    try {
-      await this.cdpClient.sendCommand(
-        'Emulation.setDeviceMetricsOverride',
-        newViewport,
-      );
-      this.#previousDeviceMetricsOverride = newViewport;
-    } catch (err) {
-      if (
-        (err as Error).message.startsWith(
-          // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
-          'Width and height values must be positive',
-        )
-      ) {
-        throw new UnsupportedOperationException(
-          'Provided viewport dimensions are not supported',
-        );
-      }
-      throw err;
-    }
+    await this.cdpClient.sendCommand(
+      'Emulation.setDeviceMetricsOverride',
+      metricsOverride,
+    );
   }
 
   /**
@@ -633,13 +623,8 @@ export class CdpTarget {
    * configuration and waits for them to finish. It's important to schedule them
    * in parallel, so that they are enqueued before any page's scripts.
    */
-  async #setUserContextConfig() {
+  async #setUserContextConfig(config: ContextConfig) {
     const promises = [];
-
-    const config = this.contextConfigStorage.getActiveConfig(
-      this.topLevelId,
-      this.#userContext,
-    );
 
     promises.push(
       this.#cdpClient
@@ -655,29 +640,21 @@ export class CdpTarget {
 
     if (
       config.viewport !== undefined ||
-      config.devicePixelRatio !== undefined
+      config.devicePixelRatio !== undefined ||
+      config.screenOrientation !== undefined ||
+      config.screenArea !== undefined
     ) {
       promises.push(
-        this.setViewport(config.viewport, config.devicePixelRatio).catch(() => {
+        this.setDeviceMetricsOverride(
+          config.viewport ?? null,
+          config.devicePixelRatio ?? null,
+          config.screenOrientation ?? null,
+          config.screenArea ?? null,
+        ).catch(() => {
           // Ignore CDP errors, as the command is not supported by iframe targets. Generic
           // catch, as the error can vary between CdpClient implementations: Tab vs
           // Puppeteer.
         }),
-      );
-    }
-
-    if (
-      config.screenOrientation !== undefined &&
-      config.screenOrientation !== null
-    ) {
-      promises.push(
-        this.setScreenOrientationOverride(config.screenOrientation).catch(
-          () => {
-            // Ignore CDP errors, as the command is not supported by iframe targets.
-            // Generic catch, as the error can vary between CdpClient implementations:
-            // Tab vs Puppeteer.
-          },
-        ),
       );
     }
 
@@ -697,8 +674,10 @@ export class CdpTarget {
       promises.push(this.setExtraHeaders(config.extraHeaders));
     }
 
-    if (config.userAgent !== undefined) {
-      promises.push(this.setUserAgent(config.userAgent));
+    if (config.userAgent !== undefined || config.locale !== undefined) {
+      promises.push(
+        this.setUserAgentAndAcceptLanguage(config.userAgent, config.locale),
+      );
     }
 
     if (config.scriptingEnabled !== undefined) {
@@ -717,6 +696,10 @@ export class CdpTarget {
       promises.push(
         this.setEmulatedNetworkConditions(config.emulatedNetworkConditions),
       );
+    }
+
+    if (config.maxTouchPoints !== undefined) {
+      promises.push(this.setTouchOverride(config.maxTouchPoints));
     }
 
     await Promise.all(promises);
@@ -738,7 +721,7 @@ export class CdpTarget {
   #ignoreFileDialog(): boolean {
     const config = this.contextConfigStorage.getActiveConfig(
       this.topLevelId,
-      this.#userContext,
+      this.userContext,
     );
 
     return (
@@ -785,27 +768,26 @@ export class CdpTarget {
     }
   }
 
-  async setScreenOrientationOverride(
-    screenOrientation: Emulation.ScreenOrientation | null,
-  ): Promise<void> {
-    const newViewport = {...this.#previousDeviceMetricsOverride};
-    if (screenOrientation === null) {
-      delete newViewport.screenOrientation;
-    } else {
-      newViewport.screenOrientation =
-        this.#toCdpScreenOrientationAngle(screenOrientation);
+  async setTouchOverride(maxTouchPoints: number | null): Promise<void> {
+    const touchEmulationParams: Protocol.Emulation.SetTouchEmulationEnabledRequest =
+      {
+        enabled: maxTouchPoints !== null,
+      };
+    if (maxTouchPoints !== null) {
+      touchEmulationParams.maxTouchPoints = maxTouchPoints;
     }
-
     await this.cdpClient.sendCommand(
-      'Emulation.setDeviceMetricsOverride',
-      newViewport,
+      'Emulation.setTouchEmulationEnabled',
+      touchEmulationParams,
     );
-    this.#previousDeviceMetricsOverride = newViewport;
   }
 
   #toCdpScreenOrientationAngle(
-    orientation: Emulation.ScreenOrientation,
-  ): Protocol.Emulation.ScreenOrientation {
+    orientation: Emulation.ScreenOrientation | null,
+  ): Protocol.Emulation.ScreenOrientation | null {
+    if (orientation === null) {
+      return null;
+    }
     // https://w3c.github.io/screen-orientation/#the-current-screen-orientation-type-and-angle
     if (orientation.natural === Emulation.ScreenOrientationNatural.Portrait) {
       switch (orientation.type) {
@@ -906,9 +888,13 @@ export class CdpTarget {
     });
   }
 
-  async setUserAgent(userAgent: string | null): Promise<void> {
+  async setUserAgentAndAcceptLanguage(
+    userAgent: string | null | undefined,
+    acceptLanguage: string | null | undefined,
+  ): Promise<void> {
     await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
       userAgent: userAgent ?? '',
+      acceptLanguage: acceptLanguage ?? undefined,
     });
   }
 

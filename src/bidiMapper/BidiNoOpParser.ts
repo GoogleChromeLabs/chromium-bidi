@@ -211,6 +211,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Emulation.SetScreenOrientationOverrideParameters {
     return params as Emulation.SetScreenOrientationOverrideParameters;
   }
+  parseSetScreenSettingsOverrideParams(
+    params: unknown,
+  ): Emulation.SetScreenSettingsOverrideParameters {
+    return params as Emulation.SetScreenSettingsOverrideParameters;
+  }
   parseSetScriptingEnabledParams(
     params: unknown,
   ): Emulation.SetScriptingEnabledParameters {
@@ -220,6 +225,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     params: unknown,
   ): Emulation.SetTimezoneOverrideParameters {
     return params as Emulation.SetTimezoneOverrideParameters;
+  }
+  parseSetTouchOverrideParams(
+    params: unknown,
+  ): Emulation.SetTouchOverrideParameters {
+    return params as Emulation.SetTouchOverrideParameters;
   }
   parseSetUserAgentOverrideParams(
     params: unknown,
@@ -339,8 +349,8 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
 
   // Session module
   // keep-sorted start block=yes
-  parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
-    return params as Session.SubscriptionRequest;
+  parseSubscribeParams(params: unknown): Session.SubscribeParameters {
+    return params as Session.SubscribeParameters;
   }
   parseUnsubscribeParams(
     params: unknown,

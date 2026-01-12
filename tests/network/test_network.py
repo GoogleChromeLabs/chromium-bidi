@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import json
+
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR, AnyOr
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
@@ -27,7 +29,7 @@ def compute_response_headers_size(headers) -> int:
 
 
 @pytest.mark.asyncio
-async def test_network_before_request_sent_event_emitted(
+async def test_network_before_request_sent_event_navigation(
         websocket, context_id, url_base):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
@@ -61,7 +63,7 @@ async def test_network_before_request_sent_event_emitted(
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -109,7 +111,7 @@ async def test_network_before_request_sent_event_emitted_with_url_fragment(
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -209,7 +211,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -235,7 +237,7 @@ async def test_network_response_completed_event_emitted(
         })
 
     resp = await wait_for_event(websocket, "network.responseCompleted")
-    headersSize = compute_response_headers_size(
+    headers_size = compute_response_headers_size(
         resp["params"]["response"]["headers"])
 
     assert resp == AnyExtending({
@@ -266,10 +268,10 @@ async def test_network_response_completed_event_emitted(
                 "headers": ANY_LIST,
                 "mimeType": AnyOr("", "text/html"),
                 "bytesReceived": ANY_NUMBER,
-                "headersSize": headersSize,
-                "bodySize": 0,
+                "headersSize": headers_size,
+                "bodySize": ANY_NUMBER,
                 "content": {
-                    "size": 0
+                    "size": ANY_NUMBER
                 }
             }
         }
@@ -292,7 +294,7 @@ async def test_network_response_started_event_emitted(websocket, context_id,
         })
 
     resp = await read_JSON_message(websocket)
-    headersSize = compute_response_headers_size(
+    headers_size = compute_response_headers_size(
         resp["params"]["response"]["headers"])
 
     assert resp == AnyExtending({
@@ -323,8 +325,8 @@ async def test_network_response_started_event_emitted(websocket, context_id,
                 "headers": ANY_LIST,
                 "mimeType": AnyOr("", "text/html"),
                 "bytesReceived": ANY_NUMBER,
-                "headersSize": headersSize,
-                "bodySize": 0,
+                "headersSize": headers_size,
+                "bodySize": ANY_NUMBER,
                 "content": {
                     "size": 0
                 }
@@ -405,7 +407,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -466,7 +468,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -593,3 +595,118 @@ async def test_network_preflight(websocket, context_id, html, url_example,
         },
         'type': 'event',
     })
+
+
+@pytest.mark.asyncio
+async def test_network_before_request_sent_event_fetch_post(
+        websocket, context_id, url_example, url_echo):
+
+    await goto_url(websocket, context_id, url_example)
+
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    body = json.dumps({'foo': 'bar'})
+
+    # Initiate a non-trivial CORS request.
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""
+                    fetch('{url_echo}', {{
+                    method: 'POST',
+                    body: '{body}',
+                    }})
+                """,
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+            }
+        })
+
+    resp = await wait_for_event(websocket, "network.beforeRequestSent")
+
+    assert resp == AnyExtending({
+        'type': 'event',
+        "method": "network.beforeRequestSent",
+        "params": {
+            "isBlocked": False,
+            "context": context_id,
+            "navigation": None,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": url_echo,
+                "method": "POST",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": ANY_NUMBER,
+                "bodySize": len(body),
+                "timings": ANY_DICT,
+                "initiatorType": "fetch",
+                "destination": "",
+            },
+            "initiator": {
+                "type": "script"
+            },
+            "timestamp": ANY_TIMESTAMP
+        }
+    })
+
+
+@pytest.mark.asyncio
+async def test_network_before_request_sent_event_redirects_with_data_collectors(
+        websocket, context_id, url_example, url_permanent_redirect,
+        read_messages):
+
+    await execute_command(
+        websocket, {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["request", "response"],
+                "maxEncodedDataSize": 200_000_000
+            }
+        })
+
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    # Init navigation.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url_permanent_redirect,
+                "wait": "complete",
+            }
+        })
+
+    messages = await read_messages(2, sort=False)
+    # Assert the 2 navigation events are received.
+    assert messages == [
+        AnyExtending({
+            "type": "event",
+            "method": "network.beforeRequestSent",
+            "params": {
+                "context": context_id,
+                "redirectCount": 0,
+                "request": {
+                    "method": "GET",
+                    "url": url_permanent_redirect
+                },
+            },
+        }),
+        AnyExtending({
+            "type": "event",
+            "method": "network.beforeRequestSent",
+            "params": {
+                "context": context_id,
+                "redirectCount": 1,
+                "request": {
+                    "method": "GET",
+                    "url": url_example
+                },
+            },
+        })
+    ]

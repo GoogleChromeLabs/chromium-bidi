@@ -403,6 +403,35 @@ describe('NetworkStorage', () => {
       events = await getEvents('network.authRequired');
       expect(events).to.have.length(2);
     });
+
+    it('should emit beforeRequestSent before authRequired', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
+        phases: [Network.InterceptPhase.AuthRequired],
+      });
+
+      request.requestWillBeSent();
+      request.requestPaused();
+      request.authRequired();
+
+      const event = await getEvent('network.beforeRequestSent');
+      expect(event).to.exist;
+
+      const authEvent = await getEvent('network.authRequired');
+      expect(authEvent).to.exist;
+
+      const beforeRequestSentIndex = processedEvents.findIndex(
+        ([method]) => method === 'network.beforeRequestSent',
+      );
+      const authRequiredIndex = processedEvents.findIndex(
+        ([method]) => method === 'network.authRequired',
+      );
+
+      expect(beforeRequestSentIndex).to.be.lessThan(authRequiredIndex);
+    });
   });
 
   describe('network.responseCompleted', () => {
@@ -413,6 +442,7 @@ describe('NetworkStorage', () => {
 
       request.requestWillBeSent();
       request.responseReceived();
+      request.loadingFinished();
       const event = await getEvent('network.responseCompleted');
       expect(event).to.exist;
     });
@@ -438,6 +468,7 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentExtraInfo();
       request.responseReceived();
       request.responseReceivedExtraInfo();
+      request.loadingFinished();
 
       const event = await getEvent('network.responseCompleted');
 
@@ -466,6 +497,7 @@ describe('NetworkStorage', () => {
       });
       request.responseReceived();
       request.responseReceivedExtraInfo();
+      request.loadingFinished();
 
       const event = await getEvent('network.responseCompleted');
 

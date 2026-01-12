@@ -101,7 +101,16 @@ export class NetworkRequest {
     info?: Protocol.Network.Response;
     extraInfo?: Protocol.Network.ResponseReceivedExtraInfoEvent;
     paused?: Protocol.Fetch.RequestPausedEvent;
-  } = {};
+    loadingFinished?: Protocol.Network.LoadingFinishedEvent;
+    loadingFailed?: Protocol.Network.LoadingFailedEvent;
+    // Tracked decoded data size while the response is loading.
+    decodedSize: number;
+    // Tracked encoded data size while the response is loading.
+    encodedSize: number;
+  } = {
+    decodedSize: 0,
+    encodedSize: 0,
+  };
 
   #eventManager: EventManager;
   #networkStorage: NetworkStorage;
@@ -245,16 +254,45 @@ export class NetworkRequest {
     return cookies;
   }
 
-  get bodySize() {
-    let bodySize = 0;
-    if (typeof this.#requestOverrides?.bodySize === 'number') {
-      bodySize = this.#requestOverrides.bodySize;
-    } else {
-      bodySize = bidiBodySizeFromCdpPostDataEntries(
-        this.#request.info?.request.postDataEntries ?? [],
+  #getBodySizeFromHeaders(
+    headers: Protocol.Network.Headers | undefined,
+  ): number | undefined {
+    if (headers === undefined) {
+      return undefined;
+    }
+
+    if (headers['Content-Length'] !== undefined) {
+      const bodySize = Number.parseInt(headers['Content-Length']);
+      if (Number.isInteger(bodySize)) {
+        return bodySize;
+      }
+      this.#logger?.(
+        LogType.debugError,
+        "Unexpected non-integer 'Content-Length' header",
       );
     }
-    return bodySize;
+
+    // TODO: process `Transfer-Encoding: chunked` case properly.
+
+    return undefined;
+  }
+
+  get bodySize() {
+    if (typeof this.#requestOverrides?.bodySize === 'number') {
+      return this.#requestOverrides.bodySize;
+    }
+    if (this.#request.info?.request.postDataEntries !== undefined) {
+      return bidiBodySizeFromCdpPostDataEntries(
+        this.#request.info?.request.postDataEntries,
+      );
+    }
+
+    // Try to guess the body size based on the `Content-Length` header.
+    return (
+      this.#getBodySizeFromHeaders(this.#request.info?.request.headers) ??
+      this.#getBodySizeFromHeaders(this.#request.extraInfo?.headers) ??
+      0
+    );
   }
 
   get #context(): string | null {
@@ -444,6 +482,8 @@ export class NetworkRequest {
     // TODO: use event.redirectResponse;
     // Temporary workaround to emit ResponseCompleted event for redirects
     this.#response.hasExtraInfo = false;
+    this.#response.decodedSize = 0;
+    this.#response.encodedSize = 0;
     this.#response.info = event.redirectResponse!;
     this.#emitEventsIfReady({
       wasRedirected: true,
@@ -453,15 +493,17 @@ export class NetworkRequest {
   #emitEventsIfReady(
     options: {
       wasRedirected?: boolean;
-      hasFailed?: boolean;
     } = {},
   ) {
     const requestExtraInfoCompleted =
       // Flush redirects
       options.wasRedirected ||
-      options.hasFailed ||
+      Boolean(this.#response.loadingFailed) ||
       this.#isDataUrl() ||
       Boolean(this.#request.extraInfo) ||
+      // If the request is intercepted during the `authRequired` phase, there
+      // will be no `Network.requestWillBeSentExtraInfo` CDP events.
+      this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired) ||
       // Requests from cache don't have extra info
       this.#servedFromCache ||
       // Sometimes there is no extra info and the response
@@ -508,10 +550,15 @@ export class NetworkRequest {
       !responseInterceptionExpected ||
       (responseInterceptionExpected && Boolean(this.#response.paused));
 
+    const loadingFinished =
+      Boolean(this.#response.loadingFailed) ||
+      Boolean(this.#response.loadingFinished);
+
     if (
       Boolean(this.#response.info) &&
       responseExtraInfoCompleted &&
-      responseInterceptionCompleted
+      responseInterceptionCompleted &&
+      (loadingFinished || options.wasRedirected)
     ) {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
       this.#networkStorage.disposeRequest(this.id);
@@ -561,10 +608,19 @@ export class NetworkRequest {
     this.#emitEventsIfReady();
   }
 
+  onLoadingFinishedEvent(event: Protocol.Network.LoadingFinishedEvent) {
+    this.#response.loadingFinished = event;
+    this.#emitEventsIfReady();
+  }
+
+  onDataReceivedEvent(event: Protocol.Network.DataReceivedEvent) {
+    this.#response.decodedSize += event.dataLength;
+    this.#response.encodedSize += event.encodedDataLength;
+  }
+
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
-    this.#emitEventsIfReady({
-      hasFailed: true,
-    });
+    this.#response.loadingFailed = event;
+    this.#emitEventsIfReady();
 
     this.#emitEvent(() => {
       return {
@@ -636,6 +692,9 @@ export class NetworkRequest {
       this.#fetchId !== this.id
     ) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
+      // Make sure the `network.beforeRequestSent` is emitted before
+      // `network.authRequired`.
+      this.#emitEventsIfReady();
     } else {
       void this.#continueWithAuth({
         response: 'Default',
@@ -940,13 +999,12 @@ export class NetworkRequest {
         this.#servedFromCache,
       headers: this.#responseOverrides?.headers ?? headers,
       mimeType: this.#response.info?.mimeType || '',
-      bytesReceived: this.bytesReceived,
+      // TODO: this should be the size for the entire HTTP response.
+      bytesReceived: this.encodedResponseBodySize,
       headersSize: computeHeadersSize(headers),
-      // TODO: consider removing from spec.
-      bodySize: 0,
+      bodySize: this.encodedResponseBodySize,
       content: {
-        // TODO: consider removing from spec.
-        size: 0,
+        size: this.#response.decodedSize ?? 0,
       },
       ...(authChallenges ? {authChallenges} : {}),
     };
@@ -957,8 +1015,13 @@ export class NetworkRequest {
     } as Network.ResponseData;
   }
 
-  get bytesReceived() {
-    return this.#response.info?.encodedDataLength || 0;
+  get encodedResponseBodySize() {
+    return (
+      this.#response.loadingFinished?.encodedDataLength ??
+      this.#response.info?.encodedDataLength ??
+      this.#response.encodedSize ??
+      0
+    );
   }
 
   #getRequestData(): Network.RequestData {
@@ -1006,8 +1069,11 @@ export class NetworkRequest {
         return 'image';
       case 'Document':
         // If request to document is initiated by parser, assume it is expected to
-        // arrive in an iframe. Otherwise, fallback to empty string.
-        return this.#request.info?.initiator.type === 'parser' ? 'iframe' : '';
+        // arrive in an iframe. Otherwise, consider it is a navigation and the request
+        // result will end up in the document.
+        return this.#request.info?.initiator.type === 'parser'
+          ? 'iframe'
+          : 'document';
       default:
         return '';
     }

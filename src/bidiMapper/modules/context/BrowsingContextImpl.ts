@@ -1129,11 +1129,21 @@ export class BrowsingContextImpl {
   }
 
   async setViewport(
-    viewport?: BrowsingContext.Viewport | null,
-    devicePixelRatio?: number | null,
+    viewport: BrowsingContext.Viewport | null,
+    devicePixelRatio: number | null,
+    screenOrientation: Emulation.ScreenOrientation | null,
   ) {
     // Set the target's viewport.
-    await this.cdpTarget.setViewport(viewport, devicePixelRatio);
+    const config = this.#configStorage.getActiveConfig(
+      this.id,
+      this.userContext,
+    );
+    await this.cdpTarget.setDeviceMetricsOverride(
+      viewport,
+      devicePixelRatio,
+      screenOrientation,
+      config.screenArea ?? null,
+    );
   }
 
   async handleUserPrompt(accept?: boolean, userText?: string): Promise<void> {
@@ -1928,11 +1938,6 @@ export class BrowsingContextImpl {
       ),
     );
   }
-  async setScreenOrientationOverride(
-    screenOrientation: Emulation.ScreenOrientation | null,
-  ): Promise<void> {
-    await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
-  }
 
   async setScriptingEnabled(scriptingEnabled: false | null) {
     await Promise.all(
@@ -1943,10 +1948,17 @@ export class BrowsingContextImpl {
     );
   }
 
-  async setUserAgentOverride(userAgent: string | null) {
+  async setUserAgentAndAcceptLanguage(
+    userAgent: string | null | undefined,
+    acceptLanguage: string | null | undefined,
+  ) {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
-        async (cdpTarget) => await cdpTarget.setUserAgent(userAgent),
+        async (cdpTarget) =>
+          await cdpTarget.setUserAgentAndAcceptLanguage(
+            userAgent,
+            acceptLanguage,
+          ),
       ),
     );
   }
@@ -1958,6 +1970,24 @@ export class BrowsingContextImpl {
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) =>
           await cdpTarget.setEmulatedNetworkConditions(networkConditions),
+      ),
+    );
+  }
+
+  async setTouchOverride(maxTouchPoints: number | null) {
+    await Promise.allSettled(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setTouchOverride(maxTouchPoints),
+      ),
+    );
+  }
+
+  async setExtraHeaders(
+    cdpExtraHeaders: Protocol.Network.Headers,
+  ): Promise<Promise<any>> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setExtraHeaders(cdpExtraHeaders),
       ),
     );
   }

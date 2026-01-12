@@ -320,11 +320,11 @@ export namespace Session {
 
   export function parseSubscribeParams(
     params: unknown,
-  ): Protocol.Session.SubscriptionRequest {
+  ): Protocol.Session.SubscribeParameters {
     return parseObject(
       params,
-      WebDriverBidi.Session.SubscriptionRequestSchema,
-    ) as Protocol.Session.SubscriptionRequest;
+      WebDriverBidi.Session.SubscribeParametersSchema,
+    ) as Protocol.Session.SubscribeParameters;
   }
   export function parseUnsubscribeParams(
     params: unknown,
@@ -384,6 +384,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetScreenOrientationOverrideParametersSchema,
     ) as Protocol.Emulation.SetScreenOrientationOverrideParameters;
   }
+  export function parseSetScreenSettingsOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetScreenSettingsOverrideParametersSchema,
+    ) as Protocol.Emulation.SetScreenSettingsOverrideParameters;
+  }
   export function parseSetScriptingEnabledParams(params: unknown) {
     return parseObject(
       params,
@@ -395,6 +401,12 @@ export namespace Emulation {
       params,
       WebDriverBidi.Emulation.SetTimezoneOverrideParametersSchema,
     ) as Protocol.Emulation.SetTimezoneOverrideParameters;
+  }
+  export function parseSetTouchOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetTouchOverrideParametersSchema,
+    ) as Protocol.Emulation.SetTouchOverrideParameters;
   }
   export function parseSetUserAgentOverrideParams(params: unknown) {
     return parseObject(

@@ -137,12 +137,18 @@ export interface BidiCommandParameterParser {
   parseSetScreenOrientationOverrideParams(
     params: unknown,
   ): Emulation.SetScreenOrientationOverrideParameters;
+  parseSetScreenSettingsOverrideParams(
+    params: unknown,
+  ): Emulation.SetScreenSettingsOverrideParameters;
   parseSetScriptingEnabledParams(
     params: unknown,
   ): Emulation.SetScriptingEnabledParameters;
   parseSetTimezoneOverrideParams(
     params: unknown,
   ): Emulation.SetTimezoneOverrideParameters;
+  parseSetTouchOverrideParams(
+    params: unknown,
+  ): Emulation.SetTouchOverrideParameters;
   parseSetUserAgentOverrideParams(
     params: unknown,
   ): Emulation.SetUserAgentOverrideParameters;
@@ -213,7 +219,7 @@ export interface BidiCommandParameterParser {
 
   // Session module
   // keep-sorted start block=yes
-  parseSubscribeParams(params: unknown): Session.SubscriptionRequest;
+  parseSubscribeParams(params: unknown): Session.SubscribeParameters;
   parseUnsubscribeParams(params: unknown): Session.UnsubscribeParameters;
   // keep-sorted end
 

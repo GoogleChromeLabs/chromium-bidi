@@ -121,7 +121,15 @@ async def capabilities(request):
 
 
 @pytest_asyncio.fixture
-async def websocket(test_headless_mode, capabilities, request):
+async def current_test_name(request):
+    if request and request.node and request.node.name:
+        # Add test name to ease log analyse.
+        return request.node.name
+    return "::NO_TEST"
+
+
+@pytest_asyncio.fixture
+async def websocket(test_headless_mode, capabilities, current_test_name):
     """Connects to endpoint, creates a session and returns a websocket connection."""
     async def create_session(connection):
         """
@@ -138,14 +146,16 @@ async def websocket(test_headless_mode, capabilities, request):
                     # Required to prevent automatic switch to https.
                     "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades,LocalNetworkAccessChecks",
                     # Required for bluetooth testing.
-                    "--enable-features=WebBluetooth"
+                    "--enable-features=WebBluetooth",
+                    # Prevent throttling.
+                    "--disable-background-networking",
+                    "--disable-background-timer-throttling",
+                    "--disable-backgrounding-occluded-windows",
                 ]
-            }
-        }
-
-        if request and request.node and request.node.name:
+            },
             # Add test name to ease log analyse.
-            default_capabilities["goog:pytest_name"] = request.node.name
+            "goog:pytest_name": current_test_name
+        }
 
         maybe_browser_bin = os.getenv("BROWSER_BIN")
         if maybe_browser_bin:
@@ -176,7 +186,7 @@ async def websocket(test_headless_mode, capabilities, request):
                 }
             }
         },
-                              timeout=20)
+                              timeout=40)
 
     async def connect_and_create_new_session():
         """
@@ -416,6 +426,11 @@ def get_url_echo(local_server_http, local_server_http_another_host):
 def url_echo(get_url_echo):
     """Returns a URL that, when fetched, echoes back the details of the request."""
     return get_url_echo()
+
+
+@pytest.fixture
+def url_permanent_redirect(local_server_http):
+    return local_server_http.url_permanent_redirect()
 
 
 @pytest.fixture

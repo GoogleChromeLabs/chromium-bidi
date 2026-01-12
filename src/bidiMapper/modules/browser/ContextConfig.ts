@@ -33,6 +33,7 @@ export class ContextConfig {
   // keep-sorted start block=yes
   acceptInsecureCerts?: boolean;
   devicePixelRatio?: number | null;
+  disableNetworkDurableMessages?: true;
   downloadBehavior?: Browser.DownloadBehavior | null;
   emulatedNetworkConditions?: Emulation.NetworkConditions | null;
   // Extra headers are kept in CDP format.
@@ -42,7 +43,9 @@ export class ContextConfig {
     | Emulation.GeolocationPositionError
     | null;
   locale?: string | null;
+  maxTouchPoints?: number | null;
   prerenderingDisabled?: boolean;
+  screenArea?: Emulation.ScreenArea | null;
   screenOrientation?: Emulation.ScreenOrientation | null;
   scriptingEnabled?: false | null;
   // Timezone is kept in CDP format with GMT prefix for offset values.

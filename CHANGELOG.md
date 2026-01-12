@@ -2,6 +2,131 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.0.0...chromium-bidi-v12.0.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* reliably detect default user context ([#3947](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3947)) ([4184afc](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4184afc241f75bf79d19eb5f38bd568bd4e8e9ec))
+
+## [12.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.1...chromium-bidi-v12.0.0) (2025-12-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 145.0.7563.0 ([#3933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3933))
+
+### Features
+
+* **chrome:** update the pinned browser version to 145.0.7563.0 ([#3933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3933)) ([dfd6104](https://github.com/GoogleChromeLabs/chromium-bidi/commit/dfd6104b14ca47efce0e9f1f75e4c0445fa6a3d5))
+* emulation.setScreenSettingsOverride ([#3943](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3943)) ([c3ffde0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c3ffde028b11d26f535380a4df26b3b73d27d250))
+
+
+### Bug Fixes
+
+* ensure `network.beforeRequestSent` is emitted before `network.authRequired` ([#3941](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3941)) ([5072f49](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5072f49367bd94678aa12d744cf0df88818b03f0))
+* extra headers can have duplicates ([#3937](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3937)) ([aabd783](https://github.com/GoogleChromeLabs/chromium-bidi/commit/aabd7831255a90b01afcc59c40992cc0c3e7cdbe))
+* round cookie expiry field ([#3938](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3938)) ([66c4695](https://github.com/GoogleChromeLabs/chromium-bidi/commit/66c46958fa9f8ebe15d119a42b7a8dc9427f18dd))
+
+
+### Reverts
+
+* "fix: extra headers can have duplicates" ([#3939](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3939)) ([4a9b011](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4a9b011956055a5e4d098912a361c1699d4c39d4))
+
+## [11.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.0...chromium-bidi-v11.0.1) (2025-11-14)
+
+
+### Bug Fixes
+
+* correctly report data sizes ([#3836](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3836)) ([154abaa](https://github.com/GoogleChromeLabs/chromium-bidi/commit/154abaaec7e35dc86bcc9dcfd9384d58a65cca08))
+
+## [11.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.6.1...chromium-bidi-v11.0.0) (2025-11-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 144.0.7505.0 ([#3870](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3870))
+
+### Features
+
+* **chrome:** update the pinned browser version to 144.0.7505.0 ([#3870](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3870)) ([178b335](https://github.com/GoogleChromeLabs/chromium-bidi/commit/178b3356efbf50cdd9e27faeb333fa936d901968))
+* respect `emulation.setLocaleOverride` in `navigator.language` and `Accept-Language` ([#3884](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3884)) ([bc755f4](https://github.com/GoogleChromeLabs/chromium-bidi/commit/bc755f47029bb93758a25e3f66f3d414a0792d07))
+
+
+### Bug Fixes
+
+* emulations per context vs per user context ([#3885](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3885)) ([8af52e0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8af52e09e91488cb66150459c8309aa10fa2fb51))
+* update `viewport` and `screenOrientation` in parallel ([#3892](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3892)) ([b0ed10d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b0ed10d556d52c8a73ddb404675f4d7f7b1afab0))
+
+## [10.6.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.6.0...chromium-bidi-v10.6.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* do not merge headers with the same names ([#3864](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3864)) ([ae6cec6](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ae6cec6cb4b503a25cb78dfcb591d262200f1a56))
+
+## [10.6.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.5.1...chromium-bidi-v10.6.0) (2025-10-20)
+
+
+### Features
+
+* provide proper network `destination` on navigation ([#3859](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3859)) ([4fadce5](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4fadce503eb208267f5c47af298af84b6aa5e25e))
+
+## [10.5.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.5.0...chromium-bidi-v10.5.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* data collection do not influence redirect network events ([#3854](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3854)) ([c7297af](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c7297afd692b248904d1f9a672225431be535060))
+
+## [10.5.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.4.0...chromium-bidi-v10.5.0) (2025-10-17)
+
+
+### Features
+
+* get request body size from Content-Length ([#3851](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3851)) ([69c0c0f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/69c0c0febec022d60e5c5f6d46b10acf4e2ccb8c))
+
+## [10.4.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.3.1...chromium-bidi-v10.4.0) (2025-10-15)
+
+
+### Features
+
+* allow for disabling durable messages ([#3848](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3848)) ([e6b28ac](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e6b28ac25990bb997074d4505415d1a8fc9e281a))
+
+## [10.3.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.3.0...chromium-bidi-v10.3.1) (2025-10-15)
+
+
+### Bug Fixes
+
+* don't crash on worker's requests ([#3845](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3845)) ([c0edf96](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c0edf9685d001d52e7e70d2fe063528d8f5e1c22))
+
+## [10.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.2.0...chromium-bidi-v10.3.0) (2025-10-14)
+
+
+### Features
+
+* `network.getData` survives navigations ([#3826](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3826)) ([047ca85](https://github.com/GoogleChromeLabs/chromium-bidi/commit/047ca85a6b20c8c5b34656ce52a50a1b842aa917))
+* validate headers set in `network.setExtraHeaders` ([#3832](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3832)) ([2f2238c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2f2238ce54fb3dbb51da36b6a2da1b2ab803c3b5))
+
+
+### Bug Fixes
+
+* merge `network.setExtraHeaders` for browsing context, user context and global ([#3840](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3840)) ([fbe7018](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fbe7018e32ed84174cd93c96390a9fb5701a7d72))
+
+## [10.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.1.0...chromium-bidi-v10.2.0) (2025-10-10)
+
+
+### Features
+
+* add `embeddedOrigin` in `permissions.setPermission` ([#3799](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3799)) ([fa1ea6f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fa1ea6f4a3a0df4f86be81c68081ae6e13396d59))
+
+## [10.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.0.0...chromium-bidi-v10.1.0) (2025-10-09)
+
+
+### Features
+
+* implement `emulation.setNetworkConditions:offline` ([#3819](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3819)) ([cc702ca](https://github.com/GoogleChromeLabs/chromium-bidi/commit/cc702caf1e249e4e6141fc9fa75d374027529569))
+
 ## [10.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.2.1...chromium-bidi-v10.0.0) (2025-10-07)
 
 

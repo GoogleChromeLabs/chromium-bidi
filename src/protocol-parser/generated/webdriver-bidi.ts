@@ -281,7 +281,7 @@ export namespace Session {
   export const SubscriptionSchema = z.lazy(() => z.string());
 }
 export namespace Session {
-  export const SubscriptionRequestSchema = z.lazy(() =>
+  export const SubscribeParametersSchema = z.lazy(() =>
     z.object({
       events: z.array(z.string()).min(1),
       contexts: z
@@ -372,7 +372,7 @@ export namespace Session {
   export const SubscribeSchema = z.lazy(() =>
     z.object({
       method: z.literal('session.subscribe'),
-      params: Session.SubscriptionRequestSchema,
+      params: Session.SubscribeParametersSchema,
     }),
   );
 }
@@ -1307,8 +1307,10 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetLocaleOverrideSchema,
     Emulation.SetNetworkConditionsSchema,
     Emulation.SetScreenOrientationOverrideSchema,
+    Emulation.SetScreenSettingsOverrideSchema,
     Emulation.SetScriptingEnabledSchema,
     Emulation.SetTimezoneOverrideSchema,
+    Emulation.SetTouchOverrideSchema,
     Emulation.SetUserAgentOverrideSchema,
   ]),
 );
@@ -1320,6 +1322,7 @@ export const EmulationResultSchema = z.lazy(() =>
     Emulation.SetScreenOrientationOverrideResultSchema,
     Emulation.SetScriptingEnabledResultSchema,
     Emulation.SetTimezoneOverrideResultSchema,
+    Emulation.SetTouchOverrideResultSchema,
     Emulation.SetUserAgentOverrideResultSchema,
   ]),
 );
@@ -1471,6 +1474,44 @@ export namespace Emulation {
   );
 }
 export namespace Emulation {
+  export const SetNetworkConditionsResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
+  export const SetScreenSettingsOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setScreenSettingsOverride'),
+      params: Emulation.SetScreenSettingsOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const ScreenAreaSchema = z.lazy(() =>
+    z.object({
+      width: JsUintSchema,
+      height: JsUintSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetScreenSettingsOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      screenArea: z.union([Emulation.ScreenAreaSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetScreenSettingsOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
   export const SetScreenOrientationOverrideSchema = z.lazy(() =>
     z.object({
       method: z.literal('emulation.setScreenOrientationOverride'),
@@ -1592,6 +1633,29 @@ export namespace Emulation {
   export const SetTimezoneOverrideResultSchema = z.lazy(
     () => EmptyResultSchema,
   );
+}
+export namespace Emulation {
+  export const SetTouchOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setTouchOverride'),
+      params: Emulation.SetTouchOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetTouchOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      maxTouchPoints: z.union([JsUintSchema.gte(1), z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetTouchOverrideResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export const NetworkCommandSchema = z.lazy(() =>
   z.union([

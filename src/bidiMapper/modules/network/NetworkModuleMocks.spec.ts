@@ -216,7 +216,7 @@ export class MockCdpNetworkEvents {
       clientSecurityState: {
         initiatorIsSecureContext: true,
         initiatorIPAddressSpace: 'Public',
-        privateNetworkRequestPolicy: 'PreflightWarn',
+        privateNetworkRequestPolicy: 'PermissionWarn',
       },
       siteHasCookieInOtherPartition: false,
     });
@@ -412,6 +412,14 @@ export class MockCdpNetworkEvents {
       type: 'Fetch',
       errorText: 'net::ERR_NAME_NOT_RESOLVED',
       canceled: false,
+    });
+  }
+
+  loadingFinished() {
+    this.cdpClient.emit('Network.loadingFinished', {
+      requestId: this.requestId,
+      timestamp: 279179.745291,
+      encodedDataLength: 999,
     });
   }
 

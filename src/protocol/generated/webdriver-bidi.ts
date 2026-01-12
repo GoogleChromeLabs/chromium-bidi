@@ -210,7 +210,7 @@ export namespace Session {
   export type Subscription = string;
 }
 export namespace Session {
-  export type SubscriptionRequest = {
+  export type SubscribeParameters = {
     events: [string, ...string[]];
     contexts?: [
       BrowsingContext.BrowsingContext,
@@ -280,7 +280,7 @@ export namespace Session {
 export namespace Session {
   export type Subscribe = {
     method: 'session.subscribe';
-    params: Session.SubscriptionRequest;
+    params: Session.SubscribeParameters;
   };
 }
 export namespace Session {
@@ -1052,8 +1052,10 @@ export type EmulationCommand =
   | Emulation.SetLocaleOverride
   | Emulation.SetNetworkConditions
   | Emulation.SetScreenOrientationOverride
+  | Emulation.SetScreenSettingsOverride
   | Emulation.SetScriptingEnabled
   | Emulation.SetTimezoneOverride
+  | Emulation.SetTouchOverride
   | Emulation.SetUserAgentOverride;
 export type EmulationResult =
   | Emulation.SetForcedColorsModeThemeOverrideResult
@@ -1062,6 +1064,7 @@ export type EmulationResult =
   | Emulation.SetScreenOrientationOverrideResult
   | Emulation.SetScriptingEnabledResult
   | Emulation.SetTimezoneOverrideResult
+  | Emulation.SetTouchOverrideResult
   | Emulation.SetUserAgentOverrideResult;
 export namespace Emulation {
   export type SetForcedColorsModeThemeOverride = {
@@ -1202,6 +1205,34 @@ export namespace Emulation {
   };
 }
 export namespace Emulation {
+  export type SetNetworkConditionsResult = EmptyResult;
+}
+export namespace Emulation {
+  export type SetScreenSettingsOverride = {
+    method: 'emulation.setScreenSettingsOverride';
+    params: Emulation.SetScreenSettingsOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export type ScreenArea = {
+    width: JsUint;
+    height: JsUint;
+  };
+}
+export namespace Emulation {
+  export type SetScreenSettingsOverrideParameters = {
+    screenArea: Emulation.ScreenArea | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  };
+}
+export namespace Emulation {
+  export type SetScreenSettingsOverrideResult = EmptyResult;
+}
+export namespace Emulation {
   export type SetScreenOrientationOverride = {
     method: 'emulation.setScreenOrientationOverride';
     params: Emulation.SetScreenOrientationOverrideParameters;
@@ -1295,6 +1326,28 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export type SetTimezoneOverrideResult = EmptyResult;
+}
+export namespace Emulation {
+  export type SetTouchOverride = {
+    method: 'emulation.setTouchOverride';
+    params: Emulation.SetTouchOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export type SetTouchOverrideParameters = {
+    /**
+     * Must be greater than or equal to `1`.
+     */
+    maxTouchPoints: JsUint | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  };
+}
+export namespace Emulation {
+  export type SetTouchOverrideResult = EmptyResult;
 }
 export type NetworkCommand =
   | Network.AddDataCollector
