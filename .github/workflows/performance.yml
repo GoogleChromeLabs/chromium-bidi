@@ -30,15 +30,13 @@ concurrency:
 
 jobs:
   performance_metric:
-    name: ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}
+    name: $${{ matrix.os }}-${{ matrix.head }}
     strategy:
       fail-fast: false
       matrix:
         # TODO(#876): Add Windows CI.
         os: [ubuntu-latest, macos-latest]
         head: [headful, 'new-headless', 'old-headless']
-        # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
-        kind: [cd, node]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -83,18 +81,18 @@ jobs:
           fi
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
-          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
+          CHROMEDRIVER: true
           HEADLESS: ${{ matrix.head == 'headful' && 'false' || matrix.head == 'old-headless' && 'old' || 'new' }}
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |
-          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}:/" > performance_metrics.txt
+          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}-${{ matrix.head }}:/" > performance_metrics.txt
           echo "Extracted performance metrics:"
           cat performance_metrics.txt
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: performance-metrics-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
+          name: performance-metrics-${{ matrix.os }}-${{ matrix.head }}
           path: performance_metrics.txt
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
