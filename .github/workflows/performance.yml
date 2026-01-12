@@ -67,31 +67,22 @@ jobs:
         run: pip install pipenv
       - name: Install python dependencies
         run: pipenv install
-      - name: Run E2E performance tests with xvfb-run
-        if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
+      - name: Resolve Chrome Path
+        run: echo "BROWSER_BIN=$(node -e 'import {installAndGetChromePath} from \"./tools/path-getter/path-getter.mjs\"; console.log(installAndGetChromePath(process.env.HEADLESS === \"old\"))')" >> $GITHUB_ENV
+        env:
+          HEADLESS: ${{ matrix.head == 'headful' && 'false' || matrix.head == 'old-headless' && 'old' || 'new' }}
+      - name: Run Benchmark
         timeout-minutes: 20
-        run: >
-          xvfb-run --auto-servernum
-          npm run e2e:${{ matrix.head }}
-          --
-          -k test_performance_
-          -s
-          | tee tests_output.txt
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "${{ matrix.head }}" == "headful" ]; then
+             xvfb-run --auto-servernum python3 tools/benchmark.py | tee tests_output.txt
+          else
+             python3 tools/benchmark.py | tee tests_output.txt
+          fi
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
-      - name: Run E2E performance tests
-        if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
-        timeout-minutes: 20
-        run: >
-          npm run e2e:${{ matrix.head }}
-          --
-          -k test_performance_
-          -s
-          | tee tests_output.txt
-        env:
-          VERBOSE: ${{ github.event.inputs.verbose }}
-          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
+          HEADLESS: ${{ matrix.head == 'headful' && 'false' || matrix.head == 'old-headless' && 'old' || 'new' }}
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |

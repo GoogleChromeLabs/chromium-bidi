@@ -23,7 +23,8 @@
     "unit": "wireit",
     "wpt": "wireit",
     "wpt:all": "wireit",
-    "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
+    "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/",
+    "benchmark": "python3 tools/benchmark.py"
   },
   "type": "commonjs",
   "main": "./lib/cjs/index.js",
