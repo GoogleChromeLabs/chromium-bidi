@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768305609822,
+  "lastUpdate": 1768306291950,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -4084,6 +4084,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 168.04943084716797,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d28fd47e85d50b0d4b051ebdee675ef26da02a8f",
+          "message": "chore(deps): Bump werkzeug from 3.1.4 to 3.1.5 (#3971)\n\nBumps [werkzeug](https://github.com/pallets/werkzeug) from 3.1.4 to\n3.1.5.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/pallets/werkzeug/releases\">werkzeug's\nreleases</a>.</em></p>\n<blockquote>\n<h2>3.1.5</h2>\n<p>This is the Werkzeug 3.1.5 security fix release, which fixes security\nissues and bugs but does not otherwise change behavior and should not\nresult in breaking changes compared to the latest feature release.</p>\n<p>PyPI: <a\nhref=\"https://pypi.org/project/Werkzeug/3.1.5/\">https://pypi.org/project/Werkzeug/3.1.5/</a>\nChanges: <a\nhref=\"https://werkzeug.palletsprojects.com/page/changes/#version-3-1-5\">https://werkzeug.palletsprojects.com/page/changes/#version-3-1-5</a>\nMilestone: <a\nhref=\"https://github.com/pallets/werkzeug/milestone/43?closed=1\">https://github.com/pallets/werkzeug/milestone/43?closed=1</a></p>\n<ul>\n<li><code>safe_join</code> on Windows does not allow more special device\nnames, regardless of extension or surrounding spaces. <a\nhref=\"https://github.com/pallets/werkzeug/security/advisories/GHSA-87hc-h4r5-73f7\">GHSA-87hc-h4r5-73f7</a></li>\n<li>The multipart form parser handles a <code>\\r\\n</code> sequence at a\nchunk boundary. This fixes the previous attempt, which caused incorrect\ncontent lengths. <a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3065\">#3065</a>\n<a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3077\">#3077</a></li>\n<li>Fix <code>AttributeError</code> when initializing\n<code>DebuggedApplication</code> with <code>pin_security=False</code>.\n<a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3075\">#3075</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/pallets/werkzeug/blob/main/CHANGES.rst\">werkzeug's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>Version 3.1.5</h2>\n<p>Released 2026-01-08</p>\n<ul>\n<li><code>safe_join</code> on Windows does not allow more special device\nnames, regardless\nof extension or surrounding spaces.\n:ghsa:<code>87hc-h4r5-73f7</code></li>\n<li>The multipart form parser handles a <code>\\r\\n</code> sequence at a\nchunk boundary.\nThis fixes the previous attempt, which caused incorrect content lengths.\n:issue:<code>3065</code> :issue:<code>3077</code></li>\n<li>Fix <code>AttributeError</code> when initializing\n<code>DebuggedApplication</code> with\n<code>pin_security=False</code>. :issue:<code>3075</code></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/e3d06f4b1f7ff40a63eba78f81d9cda18f805d6d\"><code>e3d06f4</code></a>\nrelease version 3.1.5</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/7ae1d254e04a0c33e241ac1cca4783ce6c875ca3\"><code>7ae1d25</code></a>\nMerge commit from fork</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/37797aba260022c871718e0908b472727d366d09\"><code>37797ab</code></a>\n<code>safe_join</code> prevents windows special device names with\ncompound extensions</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/3db44c79caa74c00848ceefb0bd3d608e3d09cea\"><code>3db44c7</code></a>\nfix duplicate reference</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/a40f8fa05ff1108ba1096e7cd359d0599f5cd386\"><code>a40f8fa</code></a>\nfix class name typo</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/0f76c353b10afc2f8129aa3684ccc3262516a0c0\"><code>0f76c35</code></a>\nCorrect parsing up to a potential partial boundary (<a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3081\">#3081</a>)</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/1049dd6b2a363e1ef302b4161c340fb8582f627a\"><code>1049dd6</code></a>\nCorrect parsing up to a potential partial boundary</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/b48878cf16dfca3c89ac58aca47ab1ecfcb71354\"><code>b48878c</code></a>\ninitialize <code>_pin</code> in debugger (<a\nhref=\"https://redirect.github.com/pallets/werkzeug/issues/3078\">#3078</a>)</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/fa0f4f2710b8eaffef7f2b3fbc58fc3ca55247fb\"><code>fa0f4f2</code></a>\ninitialize _pin</li>\n<li><a\nhref=\"https://github.com/pallets/werkzeug/commit/f637275bfa68ebd80bec1da9173211ce2dc4fa33\"><code>f637275</code></a>\nstart version 3.1.5</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/pallets/werkzeug/compare/3.1.4...3.1.5\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=werkzeug&package-manager=pip&previous-version=3.1.4&new-version=3.1.5)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-13T12:08:39Z",
+          "tree_id": "339f1a8e241dbfc3e0d3ebf81afe4696ff16b8e3",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/d28fd47e85d50b0d4b051ebdee675ef26da02a8f"
+        },
+        "date": 1768306290938,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 165.16075134277344,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2615.603828430176,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 3375.9809970855713,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.57128143310547,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 266.12939834594727,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 3225.9536266326904,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 212.59560585021973,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 168.36833953857422,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 272.43452072143555,
             "unit": "ms"
           }
         ]
