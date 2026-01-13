@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768222394355,
+  "lastUpdate": 1768303110581,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -3951,6 +3951,65 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 167.54155158996582,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "430c766155d341bc6863d25e97ed683fea5f3d33",
+          "message": "chore(deps): Bump wpt from `6d8b0a1` to `bff636b` (#3969)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `6d8b0a1` to\n`bff636b`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/bff636b3365ad6927a2d3701cc38290cd019fd71\"><code>bff636b</code></a>\nReland &quot;[soft navs] Refactor pending ICP entry buffering&quot;</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/2cf222d2b0c807b04373a5327f0f224649826737\"><code>2cf222d</code></a>\nWebXR layers: Support &quot;stereo&quot; layout and\n&quot;texture-array&quot;</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/1ecdc3b0d77c50611ecf35246e00d83e7f70cb39\"><code>1ecdc3b</code></a>\nscript: Fix fetch-later length and quota computation</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/6f599e27d8d4beed26a8070a0a0c8b70d2b2f73e\"><code>6f599e2</code></a>\nnet: Keep track of size of keep-alive records</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/7b719c8e6d53932de28fe43bd5354aa4405e91df\"><code>7b719c8</code></a>\nFix layout of fallback img elements with max-size and flow-root</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c5cdba7fe97355a4058edf80c3b71336f3c11340\"><code>c5cdba7</code></a>\n[animation-trigger] Don't update attachments if layout is needed</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/93fc2439398d296fe7eebbe82e603ece4e03677e\"><code>93fc243</code></a>\nRemove special layout code for customizable select</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/8d423fc1ba37f56aadf9f04f7deddfb28ae421ca\"><code>8d423fc</code></a>\nAutomate pointerevent-drag-interaction WPT test</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/3af8623a0ef8fc5a1b832895a18c173b618472e9\"><code>3af8623</code></a>\n[Gecko Bug 1981345] Implement referenceTarget support for multiple\nelement at...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/6b1a8d0b6c6f1d29d679e139ec6e3c053ff562f6\"><code>6b1a8d0</code></a>\nSync interfaces/ with <code>@​webref/idl</code> 3.70.2 (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56984\">#56984</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/6d8b0a1471af0cfd5f86906038a55c77da76dd91...bff636b3365ad6927a2d3701cc38290cd019fd71\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\n---------\n\nSigned-off-by: dependabot[bot] <support@github.com>\nSigned-off-by: Browser Automation Bot <browser-automation-bot@google.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Browser Automation Bot <browser-automation-bot@google.com>",
+          "timestamp": "2026-01-13T11:16:06Z",
+          "tree_id": "75152f1893d02b7e1fdc4ddda9067096bc63ee46",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/430c766155d341bc6863d25e97ed683fea5f3d33"
+        },
+        "date": 1768303109542,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 167.6584243774414,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 3206.1985969543457,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.77074241638184,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 244.37122344970703,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 560.680627822876,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 185.04366874694824,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 270.82371711730957,
             "unit": "ms"
           }
         ]
