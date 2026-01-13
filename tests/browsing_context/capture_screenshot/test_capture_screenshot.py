@@ -283,3 +283,82 @@ async def test_screenshot_viewport_clip_scroll(websocket, context_id,
         assert_images_similar(
             resp["data"],
             base64.b64encode(image_file.read()).decode('utf-8'))
+
+
+@pytest.mark.asyncio
+async def test_screenshot_element_scrolled(websocket, context_id,
+                                           query_selector, html):
+    # 1. Capture reference (hello at top, but with scrollbar)
+    await goto_url(
+        websocket, context_id,
+        html('''
+        <div>hello</div>
+        <div style="height: 2000px;"></div>
+    '''))
+
+    # Set a fixed viewport to make the test deterministic.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": {
+                    "width": 200,
+                    "height": 200,
+                },
+                "devicePixelRatio": 1.0,
+            }
+        })
+    await read_JSON_message(websocket)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+                "clip": {
+                    "type": "element",
+                    "element": await query_selector("div:first-child")
+                }
+            }
+        })
+    resp1 = await read_JSON_message(websocket)
+    data1 = resp1["result"]["data"]
+
+    # 2. Capture target (hello at bottom)
+    await goto_url(
+        websocket, context_id,
+        html('''
+        <div style="height: 2000px;"></div>
+        <div>hello</div>
+    '''))
+
+    # Scroll the element into view
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.querySelector('div:last-child').scrollIntoView()",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True
+            }
+        })
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+                "clip": {
+                    "type": "element",
+                    "element": await query_selector("div:last-child")
+                }
+            }
+        })
+
+    resp2 = await read_JSON_message(websocket)
+    data2 = resp2["result"]["data"]
+
+    assert_images_similar(data1, data2)

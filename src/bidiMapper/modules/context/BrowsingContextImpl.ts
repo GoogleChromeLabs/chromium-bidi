@@ -1225,6 +1225,11 @@ export class BrowsingContextImpl {
       );
     }
 
+    if (params.origin === 'viewport') {
+      rect.x -= origin.x;
+      rect.y -= origin.y;
+    }
+
     return await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
       {
@@ -1367,8 +1372,8 @@ export class BrowsingContextImpl {
             String((element: Element) => {
               const rect = element.getBoundingClientRect();
               return {
-                x: rect.x,
-                y: rect.y,
+                x: rect.x + window.scrollX,
+                y: rect.y + window.scrollY,
                 height: rect.height,
                 width: rect.width,
               };
