@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768411618150,
+  "lastUpdate": 1768412189763,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -4296,6 +4296,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 268.5340881347656,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "133232582+browser-automation-bot@users.noreply.github.com",
+            "name": "browser-automation-bot",
+            "username": "browser-automation-bot"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8daef3b850a4958c6efa0b78523136a17cf33981",
+          "message": "chore(main): release chromium-bidi 12.1.0 (#3954)\n\n:robot: I have created a release *beep* *boop*\n---\n\n\n##\n[12.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.0.1...chromium-bidi-v12.1.0)\n(2026-01-13)\n\n\n### Features\n\n* implement `emulation.setTouchOverride`\n([#3952](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3952))\n([0a69424](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0a69424946e11b03891a38585b33a6fdae9cc0a2))\n\n---\nThis PR was generated with [Release\nPlease](https://github.com/googleapis/release-please). See\n[documentation](https://github.com/googleapis/release-please#release-please).\n\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>",
+          "timestamp": "2026-01-14T17:34:11Z",
+          "tree_id": "1ee359603943173c831ae2310a76f5e21806c8bb",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/8daef3b850a4958c6efa0b78523136a17cf33981"
+        },
+        "date": 1768412188298,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 164.21165466308594,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2696.895170211792,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 3050.2431869506836,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 272.17416763305664,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 232.0713996887207,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2627.3891925811768,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 204.79960441589355,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 187.9983901977539,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 270.68257331848145,
             "unit": "ms"
           }
         ]
