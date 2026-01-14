@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768312834407,
+  "lastUpdate": 1768411618150,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -4227,6 +4227,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 169.79713439941406,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b4f6b85226f2f56a35993a60475fda92b48a66d7",
+          "message": "chore(deps): Bump wpt from `a10f070` to `1053d9a` (#3979)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `a10f070` to\n`1053d9a`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/1053d9a4de53cc10423b1d2c7ce2da8cc51ffc44\"><code>1053d9a</code></a>\nlayout: Let floats know that margins can collapse thru phantom\nlines</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/d2ed3e7687d1b997632c054b64c70f689e44c9b5\"><code>d2ed3e7</code></a>\n[text-indent] Support <code>hanging</code> for abspos static\nposition</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/d3b6c32a32b4682f160d5e690df05c6785cecf5c\"><code>d3b6c32</code></a>\nClamp backdrop filter area to output rect in SKIA renderer</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/105e32e03fb9684a63bc8c123d903c0936b06ed5\"><code>105e32e</code></a>\n[animation-trigger] Rename range boundaries of TimelineTrigger IDLs</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c519e34939da1d73a7b8f6ebd2a1124afd5d0c90\"><code>c519e34</code></a>\nMake arrow focus changes for menuitems loop.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/ef086ae9963770f3fabdff5f1994f939bab4b6b5\"><code>ef086ae</code></a>\nadd both syntaxes</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/4b35ac94b092624b7470ce73fbec490555c6ed24\"><code>4b35ac9</code></a>\n[Masonry] Add 'grid-lanes-pack'</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/945ad0b8d69fca6d9b9e25503bd909a946e6a620\"><code>945ad0b</code></a>\nAdd long timeout annotation to\nfocus-menu-elements-arrowoperations.html.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/b69bd36d076d7cc3331a744e62fb68e682e20c39\"><code>b69bd36</code></a>\nScopedVT: Add Element.activeViewTransition attribute</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/7734d01787e95a72a1541a8cc79e9c10b9a718c1\"><code>7734d01</code></a>\nDon't recalc ::first-letter ancestors for interleaved root</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/a10f070b29ee071292ecd7a3c02f469d8866ae3a...1053d9a4de53cc10423b1d2c7ce2da8cc51ffc44\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-14T18:25:36+01:00",
+          "tree_id": "8e9ca5c6a71bc761ed535d2e14783c9f45a54bbd",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/b4f6b85226f2f56a35993a60475fda92b48a66d7"
+        },
+        "date": 1768411617050,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 165.24419784545898,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 1606.1158180236816,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 1764.0506267547607,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.50199699401855,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 370.1406002044678,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 1702.816390991211,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 319.989013671875,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 186.0058307647705,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 268.5340881347656,
             "unit": "ms"
           }
         ]
