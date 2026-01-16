@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768412189763,
+  "lastUpdate": 1768565683682,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -4365,6 +4365,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 270.68257331848145,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "23bf72dba8f6816f97b2ce378b1b7569cb491ab9",
+          "message": "chore(deps): Bump wpt from `1053d9a` to `b71c923` (#3981)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `1053d9a` to\n`b71c923`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/b71c923c87d4b7a89b51071707a96aa5d853504f\"><code>b71c923</code></a>\nAdd test for overconstrained sticky with rtl (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56869\">#56869</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a02e8cda53ba87e65ddb2c0f2420875586b61f82\"><code>a02e8cd</code></a>\nReject spline animations if the last value of keyTimes is not 1</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/e41ea4855ebc3e4931a5beb512735249f0a44835\"><code>e41ea48</code></a>\n[animation-trigger] Enforce single trigger per animation</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/8cd681edfde86e7c83c6cab08d3ca979679a96e3\"><code>8cd681e</code></a>\nMake mask-image invalidation on image changes less strict</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/2f17e0ed187e780329540cc5d9229ef174321e1b\"><code>2f17e0e</code></a>\nMap &quot;createImageBitmap&quot; to web-features (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57173\">#57173</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/cbcb0f49bcbb5de8f4f7337f586b5315869ba12c\"><code>cbcb0f4</code></a>\nMap &quot;XSLT&quot; to web-features (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57169\">#57169</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/8d59e4501f17a0fc11a1aaaf595d2312314fa575\"><code>8d59e45</code></a>\nCorrect spelling of web-features (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57170\">#57170</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/0c84aee08bbe71324de511a52b507ac5290c2554\"><code>0c84aee</code></a>\nCorrect typos</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/536074dba194abf699cbd09b263a55a2a5174b0e\"><code>536074d</code></a>\nFix finding the WebKit framework from the Safari bundle</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/f517e406492ec3d9ab10d3c78c557b7339bc09e4\"><code>f517e40</code></a>\nMap <code>text-shadow</code> web-feature (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56472\">#56472</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/1053d9a4de53cc10423b1d2c7ce2da8cc51ffc44...b71c923c87d4b7a89b51071707a96aa5d853504f\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-16T12:12:57Z",
+          "tree_id": "e47c37578ae8bf1550ad98f2810d50126f2ed6e1",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/23bf72dba8f6816f97b2ce378b1b7569cb491ab9"
+        },
+        "date": 1768565682218,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 168.50552558898926,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 3347.5833892822266,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 1969.4663524627686,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2019.0714359283447,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 265.1116371154785,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 369.8352336883545,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 299.3137836456299,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.51719284057617,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 278.2294750213623,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 167.92621612548828,
             "unit": "ms"
           }
         ]
