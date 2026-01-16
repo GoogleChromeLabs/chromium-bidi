@@ -95,6 +95,14 @@ jobs:
       - name: Install python dependencies
         run: pipenv install
       - name: Run E2E tests
+        if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
+        timeout-minutes: 20
+        run: >
+          xvfb-run --auto-servernum
+          npm run e2e:${{ matrix.head }}
+          --
+          --this-chunk=${{ matrix.this_chunk }}
+          --total-chunks=${{ matrix.total_chunks }}
         env:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           # TODO: Fix tests and don't rerun them.
