@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768569008197,
+  "lastUpdate": 1768570093155,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -4513,6 +4513,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 276.48282051086426,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8003476f4dc0a34084c4f0d4341257081262ab50",
+          "message": "chore(deps): Bump stefanzweifel/git-auto-commit-action from 7.0.0 to 7.1.0 in the all group (#3966)\n\nBumps the all group with 1 update:\n[stefanzweifel/git-auto-commit-action](https://github.com/stefanzweifel/git-auto-commit-action).\n\nUpdates `stefanzweifel/git-auto-commit-action` from 7.0.0 to 7.1.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/releases\">stefanzweifel/git-auto-commit-action's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v7.1.0</h2>\n<h2>Added</h2>\n<ul>\n<li>Add skip_push input option (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/pull/401\">#401</a>)\n<a\nhref=\"https://github.com/@kvanzuijlen\"><code>@​kvanzuijlen</code></a></li>\n</ul>\n<h2>Changes</h2>\n<ul>\n<li>docs: fix typo in README.md (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/pull/400\">#400</a>)\n<a\nhref=\"https://github.com/@GideonBear\"><code>@​GideonBear</code></a></li>\n</ul>\n<h2>Dependency Updates</h2>\n<ul>\n<li>Bump actions/checkout from 5 to 6 (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/pull/399\">#399</a>)\n[@<a href=\"https://github.com/apps/dependabot\">dependabot[bot]</a>](<a\nhref=\"https://github.com/@%5Bdependabot%5Bbot%5D%5D(https://github.com/apps/dependabot)\">https://github.com/@[dependabot[bot]](https://github.com/apps/dependabot)</a>)</li>\n<li>Bump bats from 1.12.0 to 1.13.0 (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/pull/398\">#398</a>)\n[@<a href=\"https://github.com/apps/dependabot\">dependabot[bot]</a>](<a\nhref=\"https://github.com/@%5Bdependabot%5Bbot%5D%5D(https://github.com/apps/dependabot)\">https://github.com/@[dependabot[bot]](https://github.com/apps/dependabot)</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/blob/master/CHANGELOG.md\">stefanzweifel/git-auto-commit-action's\nchangelog</a>.</em></p>\n<blockquote>\n<h2><a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/compare/v7.0.0...v7.1.0\">v7.1.0</a>\n- 2025-12-17</h2>\n<h3>Added</h3>\n<ul>\n<li>Add skip_push input option (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/pull/401\">#401</a>)\n<a\nhref=\"https://github.com/@kvanzuijlen\"><code>@​kvanzuijlen</code></a></li>\n</ul>\n<h3>Changes</h3>\n<ul>\n<li>docs: fix typo in README.md (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/pull/400\">#400</a>)\n<a\nhref=\"https://github.com/@GideonBear\"><code>@​GideonBear</code></a></li>\n</ul>\n<h3>Dependency Updates</h3>\n<ul>\n<li>Bump actions/checkout from 5 to 6 (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/pull/399\">#399</a>)\n[@<a href=\"https://github.com/apps/dependabot\">dependabot[bot]</a>](<a\nhref=\"https://github.com/@%5Bdependabot%5Bbot%5D%5D(https://github.com/apps/dependabot)\">https://github.com/@[dependabot[bot]](https://github.com/apps/dependabot)</a>)</li>\n<li>Bump bats from 1.12.0 to 1.13.0 (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/pull/398\">#398</a>)\n[@<a href=\"https://github.com/apps/dependabot\">dependabot[bot]</a>](<a\nhref=\"https://github.com/@%5Bdependabot%5Bbot%5D%5D(https://github.com/apps/dependabot)\">https://github.com/@[dependabot[bot]](https://github.com/apps/dependabot)</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/commit/04702edda442b2e678b25b537cec683a1493fcb9\"><code>04702ed</code></a>\nBump actions/checkout from 5 to 6 (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/issues/399\">#399</a>)</li>\n<li><a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/commit/1e49d5001fa4bb7d02711af41f4af23c58ef1de8\"><code>1e49d50</code></a>\nAdd skip_push input option (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/issues/401\">#401</a>)</li>\n<li><a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/commit/65c56779c90b0324ac2a7e7c31ec876b8db47914\"><code>65c5677</code></a>\ndocs: fix typo in README.md (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/issues/400\">#400</a>)</li>\n<li><a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/commit/547c1409cec143c754e148a6fbdfa359db836cf6\"><code>547c140</code></a>\nBump bats from 1.12.0 to 1.13.0 (<a\nhref=\"https://redirect.github.com/stefanzweifel/git-auto-commit-action/issues/398\">#398</a>)</li>\n<li><a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/commit/8fa7f5a3c51038deaa521c22ae89fac24baad8e7\"><code>8fa7f5a</code></a>\nUpdate CHANGELOG</li>\n<li>See full diff in <a\nhref=\"https://github.com/stefanzweifel/git-auto-commit-action/compare/v7.0.0...v7.1.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=stefanzweifel/git-auto-commit-action&package-manager=github_actions&previous-version=7.0.0&new-version=7.1.0)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>",
+          "timestamp": "2026-01-16T13:26:41Z",
+          "tree_id": "54edc80d09eadaea62b0ee09b2d37692b2667512",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/8003476f4dc0a34084c4f0d4341257081262ab50"
+        },
+        "date": 1768570091621,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 167.76742935180664,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 1811.3257884979248,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2744.8837280273438,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2831.0667991638184,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 252.29811668395996,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 246.3913917541504,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2651.1355876922607,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 415.38519859313965,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.86762046813965,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 276.68309211730957,
             "unit": "ms"
           }
         ]
