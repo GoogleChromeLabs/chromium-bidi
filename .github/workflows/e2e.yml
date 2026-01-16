@@ -107,7 +107,7 @@ jobs:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           # TODO: Fix tests and don't rerun them.
           # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
-          RERUNS_TIMES: ${{ matrix.kind == 'node' && 5 || 0 }}
+          RERUNS_TIMES: 4
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
@@ -120,7 +120,7 @@ jobs:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           # TODO: Fix tests and don't rerun them.
           # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
-          RERUNS_TIMES: ${{ matrix.kind == 'node' && 5 || 0 }}
+          RERUNS_TIMES: 4
       - name: Upload artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
