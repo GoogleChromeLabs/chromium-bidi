@@ -682,7 +682,11 @@ export class CdpTarget {
       promises.push(this.setExtraHeaders(config.extraHeaders));
     }
 
-    if (config.userAgent !== undefined || config.locale !== undefined) {
+    if (
+      config.userAgent !== undefined ||
+      config.locale !== undefined ||
+      config.clientHints !== undefined
+    ) {
       promises.push(
         this.setUserAgentAndAcceptLanguage(
           config.userAgent,
@@ -926,7 +930,8 @@ export class CdpTarget {
       : undefined;
 
     await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
-      userAgent: userAgent || this.#defaultUserAgent,
+      // `userAgent` is required if `userAgentMetadata` is provided.
+      userAgent: userAgent || (userAgentMetadata ? this.#defaultUserAgent : ''),
       acceptLanguage: acceptLanguage ?? undefined,
       userAgentMetadata,
     });
