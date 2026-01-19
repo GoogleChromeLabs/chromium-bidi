@@ -175,7 +175,7 @@ def get_expected_nerwork_client_hints(client_hints):
 
 @pytest.mark.asyncio
 async def test_client_hints_override_global(websocket, context_id,
-                                            create_context, url_secure_context,
+                                            create_context,
                                             get_navigator_client_hints,
                                             get_network_client_hints,
                                             initial_client_hints):
@@ -246,19 +246,59 @@ async def test_client_hints_override_per_context(websocket, context_id,
         })
 
     # Verify initial context
-    navigator_hints1 = await get_navigator_client_hints(context_id)
-    assert navigator_hints1 == (SOME_CLIENT_HINTS)
+    navigator_hints_1 = await get_navigator_client_hints(context_id)
+    assert navigator_hints_1 == (SOME_CLIENT_HINTS)
     # Check headers for initial context
-    network_hints1 = await get_network_client_hints(context_id)
+    network_hints_1 = await get_network_client_hints(context_id)
     expected_network_hints1 = get_expected_nerwork_client_hints(
         SOME_CLIENT_HINTS)
-    assert network_hints1 == expected_network_hints1
+    assert network_hints_1 == expected_network_hints1
 
     # Verify new context
-    navigator_hints2 = await get_navigator_client_hints(new_context_id)
-    assert navigator_hints2 == (ANOTHER_CLIENT_HINTS)
+    navigator_hints_2 = await get_navigator_client_hints(new_context_id)
+    assert navigator_hints_2 == (ANOTHER_CLIENT_HINTS)
     # Check headers for new context
-    network_hints2 = await get_network_client_hints(new_context_id)
-    expected_network_hints2 = get_expected_nerwork_client_hints(
+    network_hints_2 = await get_network_client_hints(new_context_id)
+    expected_network_hints_2 = get_expected_nerwork_client_hints(
         ANOTHER_CLIENT_HINTS)
-    assert network_hints2 == expected_network_hints2
+    assert network_hints_2 == expected_network_hints_2
+
+
+@pytest.mark.asyncio
+async def test_client_hints_override_per_user_context(
+        websocket, create_context, create_user_context,
+        get_navigator_client_hints, get_network_client_hints, context_id,
+        initial_client_hints):
+    user_context = await create_user_context()
+    context_in_user_context = await create_context(user_context_id=user_context
+                                                   )
+
+    # Set override for the user context
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setClientHintsOverride',
+            'params': {
+                'clientHints': SOME_CLIENT_HINTS,
+                'userContexts': [user_context]
+            }
+        })
+
+    # Verify context in user context has the override
+    navigator_hints = await get_navigator_client_hints(context_in_user_context)
+    assert navigator_hints == SOME_CLIENT_HINTS
+
+    network_hints = await get_network_client_hints(context_in_user_context)
+    expected_network_hints = get_expected_nerwork_client_hints(
+        SOME_CLIENT_HINTS)
+    assert network_hints == expected_network_hints
+
+    # Verify default context (not in user context) does NOT have the override
+    navigator_hints_default = await get_navigator_client_hints(context_id)
+    assert navigator_hints_default == initial_client_hints
+
+    # Verify new context in user context inherits override
+    new_context_in_user_context = await create_context(
+        user_context_id=user_context)
+    navigator_hints_new = await get_navigator_client_hints(
+        new_context_in_user_context)
+    assert navigator_hints_new == SOME_CLIENT_HINTS
