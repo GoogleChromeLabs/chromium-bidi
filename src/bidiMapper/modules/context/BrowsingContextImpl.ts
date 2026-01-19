@@ -28,6 +28,7 @@ import {
   NoSuchHistoryEntryException,
   Script,
   Session,
+  type UAClientHints,
   UnableToCaptureScreenException,
   UnknownErrorException,
   UnsupportedOperationException,
@@ -164,36 +165,66 @@ export class BrowsingContextImpl {
     // as the parent of the context can be set later in case of reconnecting to an
     // existing browser instance + OOPiF.
     eventManager.registerPromiseEvent(
-      context.targetUnblockedOrThrow().then(
-        () => {
-          return {
-            kind: 'success',
-            value: {
-              type: 'event',
-              method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-              params: {
-                ...context.serializeToBidiValue(),
-                // Hack to provide the initial URL of the context, as it can be changed
-                // between the page target is attached and unblocked, as the page is not
-                // fully paused in MPArch session (https://crbug.com/372842894).
-                // TODO: remove once https://crbug.com/372842894 is addressed.
-                url,
+      context
+        .targetUnblockedOrThrow()
+        .then(() => context.#applySessionConfiguration())
+        .then(
+          () => {
+            return {
+              kind: 'success',
+              value: {
+                type: 'event',
+                method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+                params: {
+                  ...context.serializeToBidiValue(),
+                  // Hack to provide the initial URL of the context, as it can be changed
+                  // between the page target is attached and unblocked, as the page is not
+                  // fully paused in MPArch session (https://crbug.com/372842894).
+                  // TODO: remove once https://crbug.com/372842894 is addressed.
+                  url,
+                },
               },
-            },
-          };
-        },
-        (error) => {
-          return {
-            kind: 'error',
-            error,
-          };
-        },
-      ),
+            };
+          },
+          (error) => {
+            return {
+              kind: 'error',
+              error,
+            };
+          },
+        ),
       context.id,
       ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
     );
 
     return context;
+  }
+
+  async #applySessionConfiguration(): Promise<void> {
+    const config = this.#configStorage.getActiveConfig(
+      this.id,
+      this.userContext,
+    );
+
+    await Promise.all([
+      this.setViewport(
+        config.viewport ?? null,
+        config.devicePixelRatio ?? null,
+        config.screenOrientation ?? null,
+      ),
+      this.setScriptingEnabled(config.scriptingEnabled ?? null),
+      this.setUserAgentAndAcceptLanguage(
+        config.userAgent,
+        config.locale,
+        config.clientHints,
+      ),
+      this.setEmulatedNetworkConditions(
+        config.emulatedNetworkConditions ?? null,
+      ),
+      this.setGeolocationOverride(config.geolocation ?? null),
+      this.setTimezoneOverride(config.timezone ?? null),
+      this.setTouchOverride(config.maxTouchPoints ?? null),
+    ]);
   }
 
   /**
@@ -1951,6 +1982,7 @@ export class BrowsingContextImpl {
   async setUserAgentAndAcceptLanguage(
     userAgent: string | null | undefined,
     acceptLanguage: string | null | undefined,
+    clientHints: UAClientHints.Emulation.ClientHintsMetadata | null | undefined,
   ) {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
@@ -1958,6 +1990,7 @@ export class BrowsingContextImpl {
           await cdpTarget.setUserAgentAndAcceptLanguage(
             userAgent,
             acceptLanguage,
+            clientHints,
           ),
       ),
     );

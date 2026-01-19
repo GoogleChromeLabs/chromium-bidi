@@ -25,6 +25,7 @@ import {
   type ChromiumBidi,
   Emulation,
   Session,
+  type UAClientHints,
   UnknownErrorException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
@@ -676,7 +677,11 @@ export class CdpTarget {
 
     if (config.userAgent !== undefined || config.locale !== undefined) {
       promises.push(
-        this.setUserAgentAndAcceptLanguage(config.userAgent, config.locale),
+        this.setUserAgentAndAcceptLanguage(
+          config.userAgent,
+          config.locale,
+          config.clientHints,
+        ),
       );
     }
 
@@ -891,10 +896,39 @@ export class CdpTarget {
   async setUserAgentAndAcceptLanguage(
     userAgent: string | null | undefined,
     acceptLanguage: string | null | undefined,
+    clientHints?: UAClientHints.Emulation.ClientHintsMetadata | null,
   ): Promise<void> {
+    const userAgentMetadata = clientHints
+      ? {
+          brands: clientHints.brands?.map((b) => ({
+            brand: b.brand,
+            version: b.version,
+          })),
+          fullVersionList: clientHints.fullVersionList?.map((b) => ({
+            brand: b.brand,
+            version: b.version,
+          })),
+          platform: clientHints.platform ?? '',
+          platformVersion: clientHints.platformVersion ?? '',
+          architecture: clientHints.architecture ?? '',
+          model: clientHints.model ?? '',
+          mobile: clientHints.mobile ?? false,
+          bitness: clientHints.bitness ?? undefined,
+          wow64: clientHints.wow64 ?? undefined,
+        }
+      : undefined;
+
+    const effectiveUserAgent =
+      userAgent ||
+      (userAgentMetadata
+        ? (await this.#browserCdpClient.sendCommand('Browser.getVersion'))
+            .userAgent
+        : '');
+
     await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
-      userAgent: userAgent ?? '',
+      userAgent: effectiveUserAgent,
       acceptLanguage: acceptLanguage ?? undefined,
+      userAgentMetadata,
     });
   }
 
