@@ -923,6 +923,7 @@ export class CdpTarget {
           mobile: clientHints.mobile ?? false,
           bitness: clientHints.bitness ?? undefined,
           wow64: clientHints.wow64 ?? undefined,
+          formFactors: clientHints.formFactors ?? undefined,
         }
       : undefined;
 

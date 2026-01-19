@@ -23,10 +23,18 @@ SOME_CLIENT_HINTS = {
         "brand": "TestBrand",
         "version": "99"
     }],
+    "fullVersionList": [{
+        "brand": "TestBrand",
+        "version": "99.0.0.0"
+    }],
     "mobile": True,
     "platform": "TestPlatform",
+    "platformVersion": "1.0.0",
     "architecture": "TestArch",
-    "model": "TestModel"
+    "model": "TestModel",
+    "bitness": "64",
+    "wow64": False,
+    "formFactors": ["Tablet", "Mobile"]
 }
 
 ANOTHER_CLIENT_HINTS = {
@@ -34,10 +42,18 @@ ANOTHER_CLIENT_HINTS = {
         "brand": "Brand1",
         "version": "1"
     }],
+    "fullVersionList": [{
+        "brand": "Brand1",
+        "version": "1.1.1.1"
+    }],
     "mobile": False,
     "platform": "Platform1",
+    "platformVersion": "2.0.0",
     "architecture": "Arch1",
-    "model": "Model1"
+    "model": "Model1",
+    "bitness": "32",
+    "wow64": True,
+    "formFactors": ["Desktop"]
 }
 
 
@@ -75,13 +91,25 @@ async def get_navigator_client_hints(websocket, local_server_good_ssl):
                     "expression": """
                     (async () => {
                         if (!navigator.userAgentData) return JSON.stringify({ error: 'navigator.userAgentData is undefined' });
-                        const highEntropy = await navigator.userAgentData.getHighEntropyValues(['architecture', 'model']);
+                        const highEntropy = await navigator.userAgentData.getHighEntropyValues([
+                            'architecture',
+                            'bitness',
+                            'formFactors',
+                            'fullVersionList',
+                            'model',
+                            'platformVersion',
+                            'wow64']);
                         return JSON.stringify({
                             brands: navigator.userAgentData.brands,
                             mobile: navigator.userAgentData.mobile,
                             platform: navigator.userAgentData.platform,
                             architecture: highEntropy.architecture,
-                            model: highEntropy.model
+                            bitness: highEntropy.bitness,
+                            formFactors: highEntropy.formFactors,
+                            fullVersionList: highEntropy.fullVersionList,
+                            model: highEntropy.model,
+                            platformVersion: highEntropy.platformVersion,
+                            wow64: highEntropy.wow64
                         });
                     })()
                     """,
