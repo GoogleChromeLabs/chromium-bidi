@@ -216,6 +216,8 @@ export class BrowsingContextImpl {
       this.setUserAgentAndAcceptLanguage(
         config.userAgent,
         config.locale,
+        // Apply client hints from the configuration (global, user context, or
+        // context-specific).
         config.clientHints,
       ),
       this.setEmulatedNetworkConditions(

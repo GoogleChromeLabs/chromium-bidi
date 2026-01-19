@@ -504,6 +504,10 @@ export class EmulationProcessor {
   ): Promise<EmptyResult> {
     const clientHints = params.clientHints ?? null;
 
+    // Get all relevant contexts to update:
+    // 1. Specific browsing contexts (if provided).
+    // 2. All contexts for specific user contexts (if provided).
+    // 3. All top-level contexts (if global).
     const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
       params.contexts,
       params.userContexts,

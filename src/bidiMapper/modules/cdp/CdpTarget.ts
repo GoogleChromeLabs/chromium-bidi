@@ -67,6 +67,9 @@ export class CdpTarget {
   readonly contextConfigStorage: ContextConfigStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
+  // Default user agent for the target. Required, as emulating client hints without user
+  // agent is not possible. Cache it to avoid round trips to the browser for every target override.
+  readonly #defaultUserAgent: string;
   readonly #logger: LoggerFn | undefined;
 
   /**
@@ -97,6 +100,7 @@ export class CdpTarget {
     networkStorage: NetworkStorage,
     configStorage: ContextConfigStorage,
     userContext: Browser.UserContext,
+    defaultUserAgent: string,
     logger?: LoggerFn,
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
@@ -111,6 +115,7 @@ export class CdpTarget {
       configStorage,
       networkStorage,
       userContext,
+      defaultUserAgent,
       logger,
     );
 
@@ -137,8 +142,10 @@ export class CdpTarget {
     configStorage: ContextConfigStorage,
     networkStorage: NetworkStorage,
     userContext: Browser.UserContext,
+    defaultUserAgent: string,
     logger: LoggerFn | undefined,
   ) {
+    this.#defaultUserAgent = defaultUserAgent;
     this.userContext = userContext;
     this.#id = targetId;
     this.#cdpClient = cdpClient;
@@ -918,15 +925,8 @@ export class CdpTarget {
         }
       : undefined;
 
-    const effectiveUserAgent =
-      userAgent ||
-      (userAgentMetadata
-        ? (await this.#browserCdpClient.sendCommand('Browser.getVersion'))
-            .userAgent
-        : '');
-
     await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
-      userAgent: effectiveUserAgent,
+      userAgent: userAgent || this.#defaultUserAgent,
       acceptLanguage: acceptLanguage ?? undefined,
       userAgentMetadata,
     });
