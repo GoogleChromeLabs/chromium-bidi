@@ -915,10 +915,7 @@ export class CdpTarget {
             brand: b.brand,
             version: b.version,
           })),
-          fullVersionList: clientHints.fullVersionList?.map((b) => ({
-            brand: b.brand,
-            version: b.version,
-          })),
+          fullVersionList: clientHints.fullVersionList,
           platform: clientHints.platform ?? '',
           platformVersion: clientHints.platformVersion ?? '',
           architecture: clientHints.architecture ?? '',
