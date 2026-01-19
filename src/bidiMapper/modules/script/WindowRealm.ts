@@ -83,9 +83,7 @@ export class WindowRealm extends Realm {
    * Do not expose to user hidden realms.
    */
   override isHidden(): boolean {
-    return (
-      this.realmStorage.hiddenSandboxes.has(this.sandbox) || this.sandbox === ''
-    );
+    return this.realmStorage.hiddenSandboxes.has(this.sandbox);
   }
 
   override get associatedBrowsingContexts(): [BrowsingContextImpl] {
