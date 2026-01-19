@@ -165,6 +165,14 @@ async def get_network_client_hints(websocket, local_server_good_ssl):
     return _get_network_client_hints
 
 
+def get_expected_nerwork_client_hints(client_hints):
+    return {
+        'brands': client_hints['brands'],
+        'mobile': client_hints['mobile'],
+        'platform': client_hints['platform'],
+    }
+
+
 @pytest.mark.asyncio
 async def test_client_hints_override_global(websocket, context_id,
                                             create_context, url_secure_context,
@@ -187,11 +195,8 @@ async def test_client_hints_override_global(websocket, context_id,
     # Verify Network Headers
     network_hints = await get_network_client_hints(context_id)
     # Filter expected hints to only those we expect in headers (Low Entropy)
-    expected_network_hints = {
-        k: v
-        for k, v in SOME_CLIENT_HINTS.items()
-        if k in ['brands', 'mobile', 'platform']
-    }
+    expected_network_hints = get_expected_nerwork_client_hints(
+        SOME_CLIENT_HINTS)
     assert network_hints == expected_network_hints
 
     # Verify new context inherits
@@ -245,11 +250,8 @@ async def test_client_hints_override_per_context(websocket, context_id,
     assert navigator_hints1 == (SOME_CLIENT_HINTS)
     # Check headers for initial context
     network_hints1 = await get_network_client_hints(context_id)
-    expected_network_hints1 = {
-        k: v
-        for k, v in SOME_CLIENT_HINTS.items()
-        if k in ['brands', 'mobile', 'platform']
-    }
+    expected_network_hints1 = get_expected_nerwork_client_hints(
+        SOME_CLIENT_HINTS)
     assert network_hints1 == expected_network_hints1
 
     # Verify new context
@@ -257,9 +259,6 @@ async def test_client_hints_override_per_context(websocket, context_id,
     assert navigator_hints2 == (ANOTHER_CLIENT_HINTS)
     # Check headers for new context
     network_hints2 = await get_network_client_hints(new_context_id)
-    expected_network_hints2 = {
-        k: v
-        for k, v in ANOTHER_CLIENT_HINTS.items()
-        if k in ['brands', 'mobile', 'platform']
-    }
+    expected_network_hints2 = get_expected_nerwork_client_hints(
+        ANOTHER_CLIENT_HINTS)
     assert network_hints2 == expected_network_hints2
