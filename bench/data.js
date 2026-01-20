@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768843886792,
+  "lastUpdate": 1768899080648,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -4972,6 +4972,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 167.19961166381836,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "69349599+sadym-chromium@users.noreply.github.com",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "de084cb55cbfdcaad7c774086c430b261b1bc0a1",
+          "message": "feat: implement `emulation.setClientHintsOverride` (#3990)\n\nSpec:\nhttps://wicg.github.io/ua-client-hints/#emulation-setclienthintsoverride\n\n---------\n\nCo-authored-by: Alex Rudenko <OrKoN@users.noreply.github.com>",
+          "timestamp": "2026-01-20T08:49:16Z",
+          "tree_id": "8eddb75fe1a51e2f60230ae60b2ef5d8bb98ef59",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/de084cb55cbfdcaad7c774086c430b261b1bc0a1"
+        },
+        "date": 1768899079440,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 164.56894874572754,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2751.904821395874,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2641.934394836426,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 1697.3594188690186,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.70484352111816,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 407.4582099914551,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2735.8943462371826,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 280.2701950073242,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.76614952087402,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 278.2271385192871,
             "unit": "ms"
           }
         ]
