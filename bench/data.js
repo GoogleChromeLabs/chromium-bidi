@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768905152323,
+  "lastUpdate": 1768905744904,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -5120,6 +5120,85 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 157.5439453125,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "133232582+browser-automation-bot@users.noreply.github.com",
+            "name": "browser-automation-bot",
+            "username": "browser-automation-bot"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c2c6a443bfb6b84601dd42602e67b36c46bb7970",
+          "message": "chore(main): release chromium-bidi 13.0.0 (#3982)\n\n:robot: I have created a release *beep* *boop*\n---\n\n\n##\n[13.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.1.0...chromium-bidi-v13.0.0)\n(2026-01-20)\n\n\n### ⚠ BREAKING CHANGES\n\n* **chrome:** update the pinned browser version to 146.0.7635.0\n([#3980](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3980))\n\n### Features\n\n* **chrome:** update the pinned browser version to 146.0.7635.0\n([#3980](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3980))\n([5359e36](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5359e36e7419c710672535d59730b3fc8912f65a))\n* implement `emulation.setClientHintsOverride`\n([#3990](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3990))\n([de084cb](https://github.com/GoogleChromeLabs/chromium-bidi/commit/de084cb55cbfdcaad7c774086c430b261b1bc0a1))\n\n---\nThis PR was generated with [Release\nPlease](https://github.com/googleapis/release-please). See\n[documentation](https://github.com/googleapis/release-please#release-please).\n\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>",
+          "timestamp": "2026-01-20T11:40:04+01:00",
+          "tree_id": "6ebbec3ba051240c89410d5311c888d4c4c10da3",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/c2c6a443bfb6b84601dd42602e67b36c46bb7970"
+        },
+        "date": 1768905743470,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 168.02477836608887,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2434.0250492095947,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2583.724594116211,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 1781.6919803619385,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.3908462524414,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 402.094030380249,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 3529.6169757843018,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 222.5816249847412,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.46989059448242,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 275.9068012237549,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 167.65995025634766,
             "unit": "ms"
           }
         ]
