@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768899080648,
+  "lastUpdate": 1768905152323,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -5046,6 +5046,80 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 278.2271385192871,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f9f98f596b0746a1563396ae0f8d0a43200ae77d",
+          "message": "chore(deps): Bump wpt from `6c667f4` to `2dc0ad4` (#3992)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `6c667f4` to\n`2dc0ad4`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/2dc0ad4f330f0b5647d11b00ae7437b668cb8df3\"><code>2dc0ad4</code></a>\n[WPT] Add Client Hints tests for speculation rules prefetch +\nredirect</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/64beafa48cdb09ee9a09f9cd787e0903a849790d\"><code>64beafa</code></a>\nEnsure text-autospace is set to no-autospace for preformatted elements\nto mai...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a6c0050d0cc22b16876e81073f333f622c514e4f\"><code>a6c0050</code></a>\nUpdate asserts for bidi network wdspec tests to take a single expected\nobject.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/680e4cf3fcabe4a6de1deb7fc36eb84d8278eedd\"><code>680e4cf</code></a>\nMove css-shadow-parts/ tests to css-shadow/part/</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/1242323699cb7c21b584ce0554e621d172b6d985\"><code>1242323</code></a>\nMove css-scoping/ tests to css-shadow/ to match spec</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/e965dc6af7aed962382fba493c6c6e342c56be51\"><code>e965dc6</code></a>\nUpdate spec references in tests for css-scoping/</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/8d0700fe13f8d7c4acb33b6ae33c3d75c9a8c06b\"><code>8d0700f</code></a>\nAlso remove the text from anchor-scroll-fixedpos-003-ref.html</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/d7e246a0cce0ff6c738d8d60d4d9288347fa39d3\"><code>d7e246a</code></a>\nUpdate scroll shift once per frame at resize observer time.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/268a423830e35cd1d2c8196da8f1452bfe3e9607\"><code>268a423</code></a>\nAccount for shape() when interpolating composited transition</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/71ef4d4dba43c1131fb10dcefee652f38b457326\"><code>71ef4d4</code></a>\nAdd a crashtest by regression of bug 1055032.</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/6c667f4862096851af102357b3cb8d1e7215bc1f...2dc0ad4f330f0b5647d11b00ae7437b668cb8df3\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-20T10:30:49Z",
+          "tree_id": "a333a2df4c026071c48a8ece0ee77dec57a46d7d",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/f9f98f596b0746a1563396ae0f8d0a43200ae77d"
+        },
+        "date": 1768905150511,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 168.11013221740723,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2296.088218688965,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2565.5410289764404,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 269.6311950683594,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 314.40720558166504,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 4854.018974304199,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 381.65435791015625,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 185.0712776184082,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 272.98712730407715,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 157.5439453125,
             "unit": "ms"
           }
         ]
