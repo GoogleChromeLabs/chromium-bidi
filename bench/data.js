@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768912911586,
+  "lastUpdate": 1768991116760,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -5352,6 +5352,85 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 166.98050498962402,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "563d77e3fa66ddcbb720018c36a1b9c933bfe19c",
+          "message": "chore(deps): Bump wpt from `c75ce3e` to `8ffa429` (#3996)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `c75ce3e` to\n`8ffa429`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/8ffa4295d6624f40cb851d86a126223407ebd556\"><code>8ffa429</code></a>\n[focusgroup] Allow directional movement from items with a negative\ntabindex.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/160101e3bff14f3f3c101c7ab51df83b5f1ce57f\"><code>160101e</code></a>\n[focusgroup] Rename focusgroup-entry-priority to focusgroupstart</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/7417a4c5149c46a4d70decd1a5c064f04f2dda5b\"><code>7417a4c</code></a>\n[Gap Decorations]: Remove none as value for rule-visibility-items</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/abba6fad03c1be4937ca989df70fb265d9b726c8\"><code>abba6fa</code></a>\nMap <code>private-network-access</code> web-feature (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56696\">#56696</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/76438942bccbde3d5c107ae6ad8d1451905326e1\"><code>7643894</code></a>\nFix &quot;pseduo&quot; typos to &quot;pseudo&quot;</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a532969030bf7e71be01297f9d60f54d3fab8b0f\"><code>a532969</code></a>\nMap <code>position</code> web-feature (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56751\">#56751</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/8309b111e1e7f0d4d02972703a330bbb5f1c2046\"><code>8309b11</code></a>\nAdd a historical test for the FontFaceSet constructor</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c4c7d5d8bc2750d3e98f3d5335cb938be1c6136d\"><code>c4c7d5d</code></a>\nImprove textarea hard-wrapping further.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/90dfbbe9935c7a71a16e59d002fee968deb63d93\"><code>90dfbbe</code></a>\nCSS Highlight API: Fix test by adding &lt;body&gt; element.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/154ffc841488b3c28d67ace437f769a64192e6bb\"><code>154ffc8</code></a>\nRevert &quot;Bug 1967204 - remove superfluous eslint-env annotations\nfrom remainin...</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/c75ce3e8116468006ac01060f68919bc875f5e40...8ffa4295d6624f40cb851d86a126223407ebd556\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-21T11:23:31+01:00",
+          "tree_id": "e048edb5eb38197e778013db3df791f28aede323",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/563d77e3fa66ddcbb720018c36a1b9c933bfe19c"
+        },
+        "date": 1768991115740,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 163.9458179473877,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2356.986379623413,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 3258.668375015259,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2980.3540229797363,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.91541481018066,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 226.32217407226562,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2627.1735668182373,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 354.049015045166,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.67025756835938,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 271.8839168548584,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 167.46063232421875,
             "unit": "ms"
           }
         ]
