@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769070377669,
+  "lastUpdate": 1769070872494,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -5737,6 +5737,85 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 167.8603172302246,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6ae7d8b127cd30367fe1d2330f1efaac10070f21",
+          "message": "chore(deps): Bump wpt from `8ffa429` to `020ff60` (#4000)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `8ffa429` to\n`020ff60`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/020ff60edf5cb3b2d1fa5d2ac32ba34b38836822\"><code>020ff60</code></a>\nremove superfluous eslint-env annotations from testing.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/1614defed197267f70375f3da919289d9b0dae2d\"><code>1614def</code></a>\nRemove\nhtml/semantics/forms/the-select-element/customizable-select/select-dia...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a7178e8ece5e73f8de788438d6ae9dd0fa114ffb\"><code>a7178e8</code></a>\n[wpt PR 49873] - Focus on the first focusable element when in dialog\nmode, a=...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a8fbcd0e854ff5b7bb0eb6da8ebad811dab1ae56\"><code>a8fbcd0</code></a>\nElementTiming/ContainerTiming: report paints of images in pseudo element\ncont...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/2d4988ea243a950fe8ba9c9b20ab5f103b5bc307\"><code>2d4988e</code></a>\nWebXR Layers: Add a wpt test for createCubeLayer</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/e669c543534ccc284f7c4dcaa506c98141fdc8b8\"><code>e669c54</code></a>\n[webaudio-testharness] Migrate audioworkletprocessor-param-getter</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c9cc83314b66a0cad9776bf5deb5b1a951a950b6\"><code>c9cc833</code></a>\n[webaudio-testharness] Migrate audiobuffersource-duration-loop.html</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/399a5f46216524373aa1474dfaeaec86eb81a7c4\"><code>399a5f4</code></a>\nAdd missing <strong>init</strong>.py file to\nwebdriver/tests/classic/external/ (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57274\">#57274</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/3baa11c85a0f0d2cc92d210f7d62dcc2e0fb7ad1\"><code>3baa11c</code></a>\nDigital Credentials: abort does not break later requests (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57252\">#57252</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/9bd4d659822e4f1b71ad4b039786cfbadbd3dd44\"><code>9bd4d65</code></a>\nMove tests for external WebDriver classic APIs to a dedicated subfolder\n(<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57268\">#57268</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/8ffa4295d6624f40cb851d86a126223407ebd556...020ff60edf5cb3b2d1fa5d2ac32ba34b38836822\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>",
+          "timestamp": "2026-01-22T08:32:51Z",
+          "tree_id": "a956e286b92e9fa17ca5c8356ef5d932425f9faf",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/6ae7d8b127cd30367fe1d2330f1efaac10070f21"
+        },
+        "date": 1769070870851,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 164.17288780212402,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2888.974189758301,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 4532.675218582153,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 3621.8775749206543,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 275.4208564758301,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 295.74642181396484,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 3229.6632289886475,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 249.81417655944824,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.74102020263672,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 255.94968795776367,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 167.4572467803955,
             "unit": "ms"
           }
         ]
