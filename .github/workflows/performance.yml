@@ -192,7 +192,7 @@ jobs:
             fi
             key=${line%:*}
             value=${line##*:}
-            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"Percent\"}" >> all_performance_metrics.json
+            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"ms\"}" >> all_performance_metrics.json
             first_metric=false
           done < all_performance_metrics.txt
           echo "]" >> all_performance_metrics.json
