@@ -36,6 +36,7 @@ comparison aims to mitigate the impact of hardware fluctuations.
 #### Running locally
 
 To run the benchmark locally, you would need some preparation:
+
 1. Build Chromium BiDi.
 1. Add Puppeteer to your project dependencies (!Important: don't commit it!).
 1. Link Chromium BiDi and use linked version in your project. This is required for Puppeteer
@@ -44,7 +45,7 @@ To run the benchmark locally, you would need some preparation:
 
 ```bash
 npm run build
-npm install --no-save puppeteer
+npm install --dev puppeteer
 npm link
 npm link chromium-bidi
 node tools/perf-pup.mjs
