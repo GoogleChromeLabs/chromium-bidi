@@ -46,7 +46,6 @@ const BENCHMARK_HTML = `
  * dispersion (variance, stdDev), and reliability estimates (confidence intervals).
  */
 function calculateStats(latencies) {
-  // Filter outliers (GC spikes)
   latencies.sort((a, b) => a - b);
   const count = latencies.length;
   const totalTime = latencies.reduce((sum, val) => sum + val, 0);
@@ -243,7 +242,7 @@ async function main() {
     `BiDi is ${Math.abs(diff).toFixed(4)}ms ±${moeDiff.toFixed(4)}ms (${Math.abs(diffPercent).toFixed(4)}% ±${moeDiffPercent.toFixed(2)}%) ${slowerOrFaster} than CDP`,
   );
 
-  console.log(`PERF_METRIC:diff_bidi_vs_cdp:${diffPercent.toFixed(4)}`);
+  console.log(`PERF_METRIC:bidi_vs_cdp:${diffPercent.toFixed(4)}`);
 }
 
 await main();
