@@ -109,8 +109,7 @@ function calculateStats(latencies) {
 async function runBenchmarkRun(name, launchOptions, chromePath) {
   const browser = await puppeteer.launch({
     executablePath: chromePath,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    headless: true,
+    headless: 'shell',
     ...launchOptions,
   });
 
