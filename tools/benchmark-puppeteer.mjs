@@ -45,17 +45,17 @@ const BENCHMARK_HTML = `
  * This function processes an array of latencies to compute central tendency (mean),
  * dispersion (variance, stdDev), and reliability estimates (confidence intervals).
  */
-function calculateStats(runMeans) {
+function calculateStats(latencies) {
   // Filter outliers (GC spikes)
-  runMeans.sort((a, b) => a - b);
-  const count = runMeans.length;
-  const totalTime = runMeans.reduce((sum, val) => sum + val, 0);
+  latencies.sort((a, b) => a - b);
+  const count = latencies.length;
+  const totalTime = latencies.reduce((sum, val) => sum + val, 0);
 
   // Arithmetic Mean (x̄): The central tendency of the run means.
   // x̄ = (Σx) / n
   const averageTime = totalTime / count;
-  const min = runMeans[0];
-  const max = runMeans[count - 1];
+  const min = latencies[0];
+  const max = latencies[count - 1];
 
   // Sample Variance (s²): Measures the spread of the run means around the average.
   // We use Sample Variance (divided by n-1) instead of Population Variance (divided by n)
@@ -63,7 +63,7 @@ function calculateStats(runMeans) {
   // correction).
   // s² = Σ(x - x̄)² / (n - 1)
   const variance =
-    runMeans.reduce((sum, val) => sum + Math.pow(val - averageTime, 2), 0) /
+    latencies.reduce((sum, val) => sum + Math.pow(val - averageTime, 2), 0) /
     (count - 1);
 
   // Sample Standard Deviation (s): The square root of the variance, representing spread

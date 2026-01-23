@@ -58,7 +58,8 @@ jobs:
       - name: Build chromium-bidi
         run: npm run build
       - name: Install Puppeteer
-        run: npm i puppeteer
+        # Use specific Puppeteer version for result consistency.
+        run: npm install puppeteer@24.36.0
       - name: Link chromium-bidi
         run: |
           npm link
