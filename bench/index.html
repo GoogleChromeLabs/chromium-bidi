@@ -1,284 +1,472 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes" />
-    <style>
-      html {
-        font-family: BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-        -webkit-font-smoothing: antialiased;
-        background-color: #fff;
-        font-size: 16px;
-      }
-      body {
-        color: #4a4a4a;
-        margin: 8px;
-        font-size: 1em;
-        font-weight: 400;
-      }
-      header {
-        margin-bottom: 8px;
-        display: flex;
-        flex-direction: column;
-      }
-      main {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-      a {
-        color: #3273dc;
-        cursor: pointer;
-        text-decoration: none;
-      }
-      a:hover {
-        color: #000;
-      }
-      button {
-        color: #fff;
-        background-color: #3298dc;
-        border-color: transparent;
-        cursor: pointer;
-        text-align: center;
-      }
-      button:hover {
-        background-color: #2793da;
-        flex: none;
-      }
-      .spacer {
-        flex: auto;
-      }
-      .small {
-        font-size: 0.75rem;
-      }
-      footer {
-        margin-top: 16px;
-        display: flex;
-        align-items: center;
-      }
-      .header-label {
-        margin-right: 4px;
-      }
-      .benchmark-set {
-        margin: 8px 0;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-      .benchmark-title {
-        font-size: 3rem;
-        font-weight: 600;
-        word-break: break-word;
-        text-align: center;
-      }
-      .benchmark-graphs {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        flex-wrap: wrap;
-        width: 100%;
-      }
-      .benchmark-chart {
-        max-width: 1000px;
-      }
-    </style>
-    <title>Benchmarks</title>
-  </head>
 
-  <body>
-    <header id="header">
-      <div class="header-item">
-        <strong class="header-label">Last Update:</strong>
-        <span id="last-update"></span>
-      </div>
-      <div class="header-item">
-        <strong class="header-label">Repository:</strong>
-        <a id="repository-link" rel="noopener"></a>
-      </div>
-      <div class="header-item">
-        <strong class="header-label">Performance tests: <a rel="noopener" href="https://github.com/GoogleChromeLabs/chromium-bidi/tree/main/tests/performance">tests/performance</a></strong>
-      </div>
-    </header>
-    <main id="main"></main>
-    <footer>
-      <button id="dl-button">Download data as JSON</button>
-      <div class="spacer"></div>
-      <div class="small">Powered by <a rel="noopener" href="https://github.com/marketplace/actions/continuous-benchmark">github-action-benchmark</a></div>
-    </footer>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes" />
+  <style>
+    html {
+      font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #fff;
+      font-size: 16px;
+    }
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.2/dist/Chart.min.js"></script>
-    <script src="data.js"></script>
-    <script id="main-script">
-      'use strict';
-      (function() {
-        // Colors from https://github.com/github/linguist/blob/master/lib/linguist/languages.yml
-        const toolColors = {
-          cargo: '#dea584',
-          go: '#00add8',
-          benchmarkjs: '#f1e05a',
-          benchmarkluau: '#000080',
-          pytest: '#3572a5',
-          googlecpp: '#f34b7d',
-          catch2: '#f34b7d',
-          julia: '#a270ba',
-          jmh: '#b07219',
-          benchmarkdotnet: '#178600',
-          customBiggerIsBetter: '#38ff38',
-          customSmallerIsBetter: '#ff3838',
-          _: '#333333'
+    body {
+      color: #4a4a4a;
+      margin: 8px;
+      font-size: 1em;
+      font-weight: 400;
+    }
+
+    header {
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: #3273dc;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #000;
+    }
+
+    button {
+      color: #fff;
+      background-color: #3298dc;
+      border-color: transparent;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    button:hover {
+      background-color: #2793da;
+      flex: none;
+    }
+
+    .spacer {
+      flex: auto;
+    }
+
+    .small {
+      font-size: 0.75rem;
+    }
+
+    footer {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-label {
+      margin-right: 4px;
+    }
+
+    .benchmark-set {
+      margin: 8px 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .benchmark-title {
+      font-size: 3rem;
+      font-weight: 600;
+      word-break: break-word;
+      text-align: center;
+    }
+
+    .benchmark-graphs {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .benchmark-chart {
+      max-width: 1000px;
+    }
+  </style>
+  <title>Benchmarks</title>
+</head>
+
+<body>
+  <header id="header">
+    <div class="header-item">
+      <strong class="header-label">Last Update:</strong>
+      <span id="last-update"></span>
+    </div>
+    <div class="header-item">
+      <strong class="header-label">Repository:</strong>
+      <a id="repository-link" rel="noopener"></a>
+    </div>
+    <div class="header-item">
+      <strong class="header-label">E2E Performance Tests: <a rel="noopener"
+          href="https://github.com/GoogleChromeLabs/chromium-bidi/tree/main/tests/performance">tests/performance</a></strong>
+    </div>
+    <div class="header-item">
+      <strong class="header-label">Puppeteer Benchmark: <a rel="noopener"
+          href="https://github.com/GoogleChromeLabs/chromium-bidi/tree/main/tools/benchmark-puppeteer.mjs">tools/benchmark-puppeteer.mjs</a></strong>
+    </div>
+  </header>
+  <main id="main"></main>
+  <footer>
+    <button id="dl-button">Download data as JSON</button>
+    <div class="spacer"></div>
+    <div class="small">Powered by <a rel="noopener"
+        href="https://github.com/marketplace/actions/continuous-benchmark">github-action-benchmark</a></div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.2/dist/Chart.min.js"></script>
+  <script src="data.js"></script>
+  <script id="main-script">
+    'use strict';
+    (function () {
+      // Colors from https://github.com/github/linguist/blob/master/lib/linguist/languages.yml
+      const TOOL_COLORS = {
+        customBiggerIsBetter: '#38ff38',
+        customSmallerIsBetter: '#4E79A7',
+        _: '#333333'
+      };
+
+      // Palette for multi-line charts
+      const PALETTE = [
+        '#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F',
+        '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC'
+      ];
+
+      // Configuration for custom group headers and descriptions
+      const GROUP_CONFIG = {
+        'pup-perf-metric': {
+          title: 'Puppeteer BiDi vs CDP',
+          description: 'Percentage difference between BiDi and CDP performance. Positive values indicate BiDi is slower.'
+        }
+      };
+
+      /**
+       * Initialize the benchmark page.
+       * Renders the header and footer, and prepares the data sets.
+       * @returns {Array} Array of objects containing benchmark set names and data.
+       */
+      function init() {
+        const data = window.BENCHMARK_DATA;
+
+        // Render header
+        document.getElementById('last-update').textContent = new Date(data.lastUpdate).toString();
+        const repoLink = document.getElementById('repository-link');
+        repoLink.href = data.repoUrl;
+        repoLink.textContent = data.repoUrl;
+
+        // Render footer
+        document.getElementById('dl-button').onclick = () => {
+          const dataUrl = 'data:,' + JSON.stringify(data, null, 2);
+          const a = document.createElement('a');
+          a.href = dataUrl;
+          a.download = 'benchmark_data.json';
+          a.click();
         };
 
-        function init() {
-          function collectBenchesPerTestCase(entries) {
-            const map = new Map();
-            for (const entry of entries) {
-              const {commit, date, tool, benches} = entry;
-              for (const bench of benches) {
-                const result = { commit, date, tool, bench };
-                const arr = map.get(bench.name);
-                if (arr === undefined) {
-                  map.set(bench.name, [result]);
-                } else {
-                  arr.push(result);
-                }
-              }
+        return Object.keys(data.entries).map(name => ({
+          name,
+          dataSet: collectBenchesPerTestCase(data.entries[name]),
+        }));
+      }
+
+      /**
+       * Collects benchmarks per test case, organizing them into a Map.
+       * @param {Array} entries - Raw benchmark entries.
+       * @returns {Map} Map where keys are benchmark names and values are arrays of benchmark results.
+       */
+      function collectBenchesPerTestCase(entries) {
+        const map = new Map();
+        for (const entry of entries) {
+          const { commit, date, tool, benches } = entry;
+          for (const bench of benches) {
+            const result = { commit, date, tool, bench };
+            const arr = map.get(bench.name);
+            if (arr === undefined) {
+              map.set(bench.name, [result]);
+            } else {
+              arr.push(result);
             }
-            return map;
           }
-
-          const data = window.BENCHMARK_DATA;
-
-          // Render header
-          document.getElementById('last-update').textContent = new Date(data.lastUpdate).toString();
-          const repoLink = document.getElementById('repository-link');
-          repoLink.href = data.repoUrl;
-          repoLink.textContent = data.repoUrl;
-
-          // Render footer
-          document.getElementById('dl-button').onclick = () => {
-            const dataUrl = 'data:,' + JSON.stringify(data, null, 2);
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = 'benchmark_data.json';
-            a.click();
-          };
-
-          // Prepare data points for charts
-          return Object.keys(data.entries).map(name => ({
-            name,
-            dataSet: collectBenchesPerTestCase(data.entries[name]),
-          }));
         }
+        return map;
+      }
 
-        function renderAllChars(dataSets) {
+      /**
+       * Groups benchmarks by their 'group' property or name prefix.
+       * @param {Map} benchSet - Map of benchmark names to results.
+       * @returns {Map} Map where keys are group names and values are Maps of sub-benchmarks.
+       */
+      function groupBenches(benchSet) {
+        const groups = new Map();
+        for (const [benchName, benches] of benchSet.entries()) {
+          const benchWithGroup = benches.find(b => b.bench.group);
+          const groupName = benchWithGroup ? benchWithGroup.bench.group : benchName;
 
-          function renderGraph(parent, name, dataset) {
-            const canvas = document.createElement('canvas');
-            canvas.className = 'benchmark-chart';
-            parent.appendChild(canvas);
+          if (!groups.has(groupName)) {
+            groups.set(groupName, new Map());
+          }
+          groups.get(groupName).set(benchName, benches);
+        }
+        return groups;
+      }
 
-            const color = toolColors[dataset.length > 0 ? dataset[0].tool : '_'];
-            const data = {
-              labels: dataset.map(d => d.commit.id.slice(0, 7)),
-              datasets: [
-                {
-                  label: name,
-                  data: dataset.map(d => d.bench.value),
-                  borderColor: color,
-                  backgroundColor: color + '60', // Add alpha for #rrggbbaa
-                }
-              ],
-            };
-            const options = {
-              scales: {
-                xAxes: [
-                  {
-                    scaleLabel: {
-                      display: true,
-                      labelString: 'commit',
-                    },
-                  }
-                ],
-                yAxes: [
-                  {
-                    scaleLabel: {
-                      display: true,
-                      labelString: dataset.length > 0 ? dataset[0].bench.unit : '',
-                    },
-                    ticks: {
-                      beginAtZero: true,
-                    }
-                  }
-                ],
-              },
-              tooltips: {
-                callbacks: {
-                  afterTitle: items => {
-                    const {index} = items[0];
-                    const data = dataset[index];
-                    return '\n' + data.commit.message + '\n\n' + data.commit.timestamp + ' committed by @' + data.commit.committer.username + '\n';
-                  },
-                  label: item => {
-                    let label = item.value;
-                    const { range, unit } = dataset[item.index].bench;
-                    label += ' ' + unit;
-                    if (range) {
-                      label += ' (' + range + ')';
-                    }
-                    return label;
-                  },
-                  afterLabel: item => {
-                    const { extra } = dataset[item.index].bench;
-                    return extra ? '\n' + extra : '';
-                  }
-                }
-              },
-              onClick: (_mouseEvent, activeElems) => {
-                if (activeElems.length === 0) {
-                  return;
-                }
-                // XXX: Undocumented. How can we know the index?
-                const index = activeElems[0]._index;
-                const url = dataset[index].commit.url;
-                window.open(url, '_blank');
-              },
-            };
+      /**
+       * Resolves the color for a dataset based on the number of groups or tool type.
+       * @param {Map} groups - The groups of benchmarks in the current chart.
+       * @param {Array} points - The data points for the current dataset.
+       * @param {number} index - The index of the dataset.
+       * @returns {string} The color string (hex).
+       */
+      function resolveColor(groups, points, index) {
+        if (groups.size > 1) {
+          return PALETTE[index % PALETTE.length];
+        }
+        const tool = points.length > 0 ? points[0].tool : '_';
+        return TOOL_COLORS[tool] || TOOL_COLORS._;
+      }
 
-            new Chart(canvas, {
-              type: 'line',
-              data,
-              options,
+      /**
+       * Creates chart datasets from group data.
+       * Handles the creation of main datasets and error band datasets (if ranges exist).
+       * @param {Map} groups - Map of group labels to their data points.
+       * @param {Array} sortedCommits - Array of all commits sorted by time.
+       * @returns {Array} Array of Chart.js dataset objects.
+       */
+      function createChartDatasets(groups, sortedCommits) {
+        const datasets = [];
+        let colorIndex = 0;
+
+        for (const [label, points] of groups.entries()) {
+          // Map data points to the unified timeline (sortedCommits) to handle missing data
+          const data = sortedCommits.map(c => {
+            const p = points.find(pt => pt.commit.id === c.id);
+            return p ? p.bench.value : null;
+          });
+
+          // Calculate error bounds (ranges)
+          const ranges = sortedCommits.map(c => {
+            const p = points.find(pt => pt.commit.id === c.id);
+            return p && p.bench.range ? p.bench.range : 0;
+          });
+          const hasRanges = ranges.some(r => r > 0);
+
+          const color = resolveColor(groups, points, colorIndex++);
+
+          // If error ranges exist, add helper datasets for the "stripe" effect
+          if (hasRanges) {
+            datasets.push({
+              label: '', // Hidden from legend
+              data: data.map((v, i) => v !== null ? v + ranges[i] : null), // High bound
+              borderColor: 'transparent',
+              backgroundColor: color + '40', // Semi-transparent fill
+              pointRadius: 0,
+              fill: '+1', // Fill to the next dataset (Low bound)
+              borderWidth: 0,
+            }, {
+              label: '', // Hidden from legend
+              data: data.map((v, i) => v !== null ? v - ranges[i] : null), // Low bound
+              borderColor: 'transparent',
+              backgroundColor: 'transparent',
+              pointRadius: 0,
+              fill: false, // Do not fill
+              borderWidth: 0,
             });
           }
 
-          function renderBenchSet(name, benchSet, main) {
-            const setElem = document.createElement('div');
-            setElem.className = 'benchmark-set';
-            main.appendChild(setElem);
+          // Main dataset
+          datasets.push({
+            label,
+            data,
+            borderColor: color,
+            backgroundColor: color + '60',
+            fill: false
+          });
+        }
+        return datasets;
+      }
 
-            const nameElem = document.createElement('h1');
-            nameElem.className = 'benchmark-title';
-            nameElem.textContent = name;
-            setElem.appendChild(nameElem);
-
-            const graphsElem = document.createElement('div');
-            graphsElem.className = 'benchmark-graphs';
-            setElem.appendChild(graphsElem);
-
-            for (const [benchName, benches] of benchSet.entries()) {
-              renderGraph(graphsElem, benchName, benches)
+      /**
+       * Generates the configuration options for Chart.js.
+       * @param {Map} groups - Map of groups.
+       * @param {Array} chartDatasets - Created datasets.
+       * @param {Array} sortedCommits - Unified sorted commits.
+       * @returns {Object} Chart.js options object.
+       */
+      function getChartOptions(groups, chartDatasets, sortedCommits) {
+        return {
+          legend: {
+            labels: {
+              // Filter out helper datasets (empty labels)
+              filter: item => item.text !== ''
             }
-          }
+          },
+          scales: {
+            xAxes: [{
+              scaleLabel: { display: true, labelString: 'commit' },
+            }],
+            yAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: groups.values().next().value[0]?.bench.unit || '',
+              },
+              ticks: { beginAtZero: true }
+            }]
+          },
+          tooltips: {
+            // Only show tooltips for main datasets
+            filter: item => chartDatasets[item.datasetIndex].label !== '',
+            callbacks: {
+              afterTitle: items => {
+                const commit = sortedCommits[items[0].index];
+                // Show only the first line of the commit message (PR title)
+                return `\n${commit.message.split('\n')[0]}\n\n${commit.timestamp} committed by @${commit.committer.username}\n`;
+              },
+              label: item => {
+                const datasetLabel = chartDatasets[item.datasetIndex].label;
+                const originalPoints = groups.get(datasetLabel);
+                const point = originalPoints.find(p => p.commit.id === sortedCommits[item.index].id);
+                let label = `${datasetLabel}: ${item.value}`;
 
-          const main = document.getElementById('main');
-          for (const {name, dataSet} of dataSets) {
-            renderBenchSet(name, dataSet, main);
-          }
+                if (point) {
+                  label += ` ${point.bench.unit}`;
+                  // Display range in tooltip if present
+                  if (point.bench.range) {
+                    label += ` (± ${point.bench.range})`;
+                  }
+                }
+                return label;
+              },
+              afterLabel: item => {
+                // Show extra info if available
+                const datasetLabel = chartDatasets[item.datasetIndex].label;
+                const originalPoints = groups.get(datasetLabel);
+                const point = originalPoints.find(p => p.commit.id === sortedCommits[item.index].id);
+                return point && point.bench.extra ? `\n${point.bench.extra}` : '';
+              }
+            }
+          },
+          onClick: (_, activeElems) => {
+            // Open commit URL on click
+            if (activeElems.length > 0) {
+              const commit = sortedCommits[activeElems[0]._index];
+              window.open(commit.url, '_blank');
+            }
+          },
+        };
+      }
+
+      /**
+       * Renders a single graph (chart) for a group of benchmarks.
+       * @param {HTMLElement} parent - The container element.
+       * @param {string} name - The title of the graph.
+       * @param {Map} groups - The benchmarks to display on this graph.
+       */
+      function renderGraph(parent, name, groups) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'benchmark-chart';
+        wrapper.style.width = '100%';
+        parent.appendChild(wrapper);
+
+        const config = GROUP_CONFIG[name] || {};
+
+        const title = document.createElement('h3');
+        title.textContent = config.title || name;
+        title.style.textAlign = 'center';
+        wrapper.appendChild(title);
+
+        if (config.description) {
+          const desc = document.createElement('p');
+          desc.textContent = config.description;
+          desc.style.textAlign = 'center';
+          desc.style.fontStyle = 'italic';
+          desc.style.marginBottom = '10px';
+          wrapper.appendChild(desc);
         }
 
-        renderAllChars(init()); // Start
-      })();
-    </script>
-  </body>
+        const canvas = document.createElement('canvas');
+        wrapper.appendChild(canvas);
+
+        // Collect and sort all commits to create a unified X-axis
+        const commitsMap = new Map();
+        for (const points of groups.values()) {
+          for (const point of points) {
+            commitsMap.set(point.commit.id, point.commit);
+          }
+        }
+        const sortedCommits = Array.from(commitsMap.values()).sort((a, b) =>
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        );
+
+        const datasets = createChartDatasets(groups, sortedCommits);
+
+        new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels: sortedCommits.map(c => c.id.slice(0, 7)),
+            datasets,
+          },
+          options: getChartOptions(groups, datasets, sortedCommits),
+        });
+      }
+
+      /**
+       * Renders a set of benchmarks (e.g. from a specific test suite).
+       * @param {string} name - Name of the benchmark set.
+       * @param {Map} benchSet - Data for the set.
+       * @param {HTMLElement} main - Main container.
+       */
+      function renderBenchSet(name, benchSet, main) {
+        const setElem = document.createElement('div');
+        setElem.className = 'benchmark-set';
+        main.appendChild(setElem);
+
+        const nameElem = document.createElement('h1');
+        nameElem.className = 'benchmark-title';
+        nameElem.textContent = name;
+        setElem.appendChild(nameElem);
+
+        const graphsElem = document.createElement('div');
+        graphsElem.className = 'benchmark-graphs';
+        setElem.appendChild(graphsElem);
+
+        // Group benchmarks before rendering
+        const groups = groupBenches(benchSet);
+        const sortedGroups = Array.from(groups.entries()).sort(([, subA], [, subB]) => {
+          const hasGroup = (sub) => {
+            const first = sub.values().next().value;
+            return first && first[0] && first[0].bench.group;
+          };
+          return (hasGroup(subB) ? 1 : 0) - (hasGroup(subA) ? 1 : 0);
+        });
+
+        for (const [groupName, subGroups] of sortedGroups) {
+          renderGraph(graphsElem, groupName, subGroups);
+        }
+      }
+
+      // Main execution: Initialize data and render all benchmark sets
+      const dataSets = init();
+      const main = document.getElementById('main');
+      for (const { name, dataSet } of dataSets) {
+        renderBenchSet(name, dataSet, main);
+      }
+    })();
+  </script>
+</body>
+
 </html>
