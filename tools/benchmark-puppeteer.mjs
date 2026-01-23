@@ -22,6 +22,7 @@ import puppeteer from 'puppeteer';
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 
 const ITERATIONS = 10000;
+const WARMUP_ITERATIONS = ITERATIONS * 0.1;
 
 function calculateStats(latencies) {
   latencies.sort((a, b) => a - b);
@@ -88,7 +89,6 @@ async function runBenchmark(name, launchOptions) {
         </div>`;
     }, name);
 
-    const WARMUP_ITERATIONS = ITERATIONS * 0.1;
     console.log(`Warming up for ${WARMUP_ITERATIONS} iterations...`);
     for (let i = 0; i < WARMUP_ITERATIONS; i++) {
       await page.evaluate(
@@ -140,35 +140,31 @@ async function runBenchmark(name, launchOptions) {
   }
 }
 
-async function run() {
-  const cdpStats = await runBenchmark('Puppeteer CDP', {});
-  const bidiStats = await runBenchmark('Puppeteer BiDi', {
-    protocol: 'webDriverBiDi',
-  });
+const cdpStats = await runBenchmark('Puppeteer CDP', {});
+const bidiStats = await runBenchmark('Puppeteer BiDi', {
+  protocol: 'webDriverBiDi',
+});
 
-  console.log('\n=== Comparison (BiDi vs CDP) ===');
-  const diff = bidiStats.averageTime - cdpStats.averageTime;
-  const diffPercent = (diff / cdpStats.averageTime) * 100;
+console.log('\n=== Comparison (BiDi vs CDP) ===');
+const diff = bidiStats.averageTime - cdpStats.averageTime;
+const diffPercent = (diff / cdpStats.averageTime) * 100;
 
-  // Standard Error of Difference = sqrt(SE1^2 + SE2^2) (assuming independent samples)
-  const seDiff = Math.sqrt(
-    Math.pow(cdpStats.standardError, 2) + Math.pow(bidiStats.standardError, 2),
-  );
-  const moeDiff = 1.96 * seDiff;
-  const moeDiffPercent = (moeDiff / cdpStats.averageTime) * 100;
-  const ciLowerPercent = ((diff - moeDiff) / cdpStats.averageTime) * 100;
-  const ciUpperPercent = ((diff + moeDiff) / cdpStats.averageTime) * 100;
+// Standard Error of Difference = sqrt(SE1^2 + SE2^2) (assuming independent samples)
+const seDiff = Math.sqrt(
+  Math.pow(cdpStats.standardError, 2) + Math.pow(bidiStats.standardError, 2),
+);
+const moeDiff = 1.96 * seDiff;
+const moeDiffPercent = (moeDiff / cdpStats.averageTime) * 100;
+const ciLowerPercent = ((diff - moeDiff) / cdpStats.averageTime) * 100;
+const ciUpperPercent = ((diff + moeDiff) / cdpStats.averageTime) * 100;
 
-  const slowerOrFaster = diff >= 0 ? 'slower' : 'faster';
+const slowerOrFaster = diff >= 0 ? 'slower' : 'faster';
 
-  console.log(
-    `BiDi is ${Math.abs(diff).toFixed(4)}ms (${Math.abs(diffPercent).toFixed(4)}%) ${slowerOrFaster} than CDP`,
-  );
-  console.log(
-    `95% Confidence Interval of the difference: [${ciLowerPercent.toFixed(2)}%, ${ciUpperPercent.toFixed(2)}%] (±${moeDiffPercent.toFixed(2)}%)`,
-  );
+console.log(
+  `BiDi is ${Math.abs(diff).toFixed(4)}ms (${Math.abs(diffPercent).toFixed(4)}%) ${slowerOrFaster} than CDP`,
+);
+console.log(
+  `95% Confidence Interval of the difference: [${ciLowerPercent.toFixed(2)}%, ${ciUpperPercent.toFixed(2)}%] (±${moeDiffPercent.toFixed(2)}%)`,
+);
 
-  console.log(`PERF_METRIC:diff_bidi_vs_cdp:${diffPercent.toFixed(4)}`);
-}
-
-run();
+console.log(`PERF_METRIC:diff_bidi_vs_cdp:${diffPercent.toFixed(4)}`);
