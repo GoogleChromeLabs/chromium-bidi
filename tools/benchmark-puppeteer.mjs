@@ -116,9 +116,7 @@ async function runBenchmarkRun(name, launchOptions, chromePath) {
   try {
     const page = await browser.newPage();
     await page.goto('about:blank');
-    await page.evaluate((html) => {
-      document.body.innerHTML = html;
-    }, BENCHMARK_HTML);
+    await page.setContent(BENCHMARK_HTML);
 
     // Warmup
     for (let i = 0; i < WARMUP_ITERATIONS; i++) {
