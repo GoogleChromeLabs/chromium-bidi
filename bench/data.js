@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769070872494,
+  "lastUpdate": 1769172119997,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -5816,6 +5816,85 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 167.4572467803955,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "69349599+sadym-chromium@users.noreply.github.com",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "cf40cb73ab3b5d488d7633c95145c072f9b8129b",
+          "message": "ci: measure perf via Puppeteer (#4002)\n\nAnother approach for performance measurement. Evaluate script changing\nDOM many times via Puppeteer CDP and BiDi. Normalize the results by CDP\nto negotiate hardware differences.\n\nI keep the e2e for now, so that we can compare the stability of the\nmetrics.",
+          "timestamp": "2026-01-23T13:39:35+01:00",
+          "tree_id": "6b6ce0190d3a18f7b2dee0cbefc68565e90b08c1",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/cf40cb73ab3b5d488d7633c95145c072f9b8129b"
+        },
+        "date": 1769172118293,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest:diff_bidi_vs_cdp",
+            "value": 17.527,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest:diff_bidi_vs_cdp",
+            "value": 30.9816,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 235.6297492980957,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2210.554027557373,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 270.6860065460205,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 255.7977199554443,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 3337.57381439209,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 3604.4023990631104,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 246.50001525878906,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 3666.355609893799,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.76948738098145,
             "unit": "ms"
           }
         ]
