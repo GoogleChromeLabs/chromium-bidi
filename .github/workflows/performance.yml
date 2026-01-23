@@ -67,13 +67,12 @@ jobs:
       - name: Run JS performance benchmark
         run: |
           node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
-          cat tests_output.txt
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |
           value=$(grep 'PERF_METRIC:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:VALUE://')
           range=$(grep 'PERF_METRIC:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}:bidi_vs_cdp\", \"value\": $value, \"range\": $range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\"}" > pup_perf_metrics.json
+          echo "{\"name\": \"${{ matrix.os }}:pup-perf-metric\", \"value\": $value, \"range\": $range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}\"}" > pup_perf_metrics.json
           echo "Extracted performance metrics:"
           cat pup_perf_metrics.json
       - name: Upload performance result as artifact
