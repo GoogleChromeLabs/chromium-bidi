@@ -109,7 +109,7 @@ function calculateStats(latencies) {
 async function runBenchmarkRun(name, launchOptions, chromePath) {
   const browser = await puppeteer.launch({
     executablePath: chromePath,
-    headless: 'shell',
+    headless: true,
     ...launchOptions,
   });
 
@@ -167,7 +167,8 @@ async function runBenchmarkRun(name, launchOptions, chromePath) {
 }
 
 async function main() {
-  const chromePath = installAndGetChromePath();
+  // Headless shell does not work with Puppeteer. Use new headless.
+  const chromePath = installAndGetChromePath(false);
   console.log(`Using Chrome: ${chromePath}`);
   console.log(
     `Starting Benchmark: ${RUNS} runs x ${ITERATIONS_PER_RUN} iterations...`,
