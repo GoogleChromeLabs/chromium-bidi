@@ -68,7 +68,7 @@ jobs:
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |
-          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/pup-${{ matrix.os }}:/" > pup_perf_metrics.txt
+          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}:/" > pup_perf_metrics.txt
           echo "Extracted performance metrics:"
           cat pup_perf_metrics.txt
       - name: Upload performance result as artifact
@@ -144,7 +144,7 @@ jobs:
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |
-          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/e2e-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}:/" > e2e_perf_metrics.txt
+          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}:/" > e2e_perf_metrics.txt
           echo "Extracted performance metrics:"
           cat e2e_perf_metrics.txt
       - name: Upload performance result as artifact
