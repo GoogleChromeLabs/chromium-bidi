@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769187960708,
+  "lastUpdate": 1769190394756,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -6155,6 +6155,89 @@ window.BENCHMARK_DATA = {
             "name": "macos-latest:pup-perf-metric",
             "value": 54.0963,
             "range": "4.8295",
+            "unit": "Percent",
+            "extra": "macos-latest"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "545e70cfd4816e38386dc8bfe93cc88e66ce6f17",
+          "message": "chore(deps): Bump lodash from 4.17.21 to 4.17.23 (#3999)\n\nBumps [lodash](https://github.com/lodash/lodash) from 4.17.21 to\n4.17.23.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/dec55b7a3b382da075e2eac90089b4cd00a26cbb\"><code>dec55b7</code></a>\nBump main to v4.17.23 (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6088\">#6088</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/19c9251b3631d7cf220b43bc757eb33f1084f117\"><code>19c9251</code></a>\nfix: setCacheHas JSDoc return type should be boolean (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6071\">#6071</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/b5e672995ae26929d111a6e94589f8d03fb8e578\"><code>b5e6729</code></a>\njsdoc: Add -0 and BigInt zeros to _.compact falsey values list (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6062\">#6062</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/edadd452146f7e4bad4ea684e955708931d84d81\"><code>edadd45</code></a>\nPrevent prototype pollution on baseUnset function</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/4879a7a7d0a4494b0e83c7fa21bcc9fc6e7f1a6d\"><code>4879a7a</code></a>\ndoc: fix autoLink function, conversion of source links (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6056\">#6056</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/9648f692b0fc7c2f6a7a763d754377200126c2e8\"><code>9648f69</code></a>\nchore: remove <code>yarn.lock</code> file (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6053\">#6053</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/dfa407db0bf5b200f2c7a9e4f06830ceaf074be9\"><code>dfa407d</code></a>\nci: remove legacy configuration files (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6052\">#6052</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/156e1965ae78b121a88f81178ab81632304e8d64\"><code>156e196</code></a>\nfeat: add renovate setup (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6039\">#6039</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/933e1061b8c344d3fc742cdc400175d5ffc99bce\"><code>933e106</code></a>\nci: add pipeline for Bun (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6023\">#6023</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/072a807ff7ad8ffc7c1d2c3097266e815d138e20\"><code>072a807</code></a>\ndocs: update links related to Open JS Foundation (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/5968\">#5968</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/lodash/lodash/compare/4.17.21...4.17.23\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=lodash&package-manager=npm_and_yarn&previous-version=4.17.21&new-version=4.17.23)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-23T17:40:03Z",
+          "tree_id": "a4465fc09f19d72c669256814dc95fe8b5dcb120",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/545e70cfd4816e38386dc8bfe93cc88e66ce6f17"
+        },
+        "date": 1769190393037,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 316.05234146118164,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 3589.552640914917,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 167.11506843566895,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 268.8035488128662,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 271.28214836120605,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2332.8569889068604,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 313.3962154388428,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2432.7871799468994,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 181.96139335632324,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric",
+            "value": 56.2104,
+            "range": "1.8967",
+            "unit": "Percent",
+            "extra": "ubuntu-latest"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric",
+            "value": 40.7171,
+            "range": "5.4258",
             "unit": "Percent",
             "extra": "macos-latest"
           }
