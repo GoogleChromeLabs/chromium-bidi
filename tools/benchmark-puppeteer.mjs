@@ -168,7 +168,7 @@ async function runBenchmarkRun(name, launchOptions, chromePath) {
 
 async function main() {
   // Headless shell does not work with Puppeteer. Use new headless.
-  const chromePath = installAndGetChromePath(false);
+  const chromePath = installAndGetChromePath();
   console.log(`Using Chrome: ${chromePath}`);
   console.log(
     `Starting Benchmark: ${RUNS} runs x ${ITERATIONS_PER_RUN} iterations...`,
