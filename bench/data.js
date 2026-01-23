@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769172119997,
+  "lastUpdate": 1769175893506,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -5895,6 +5895,90 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
             "value": 184.76948738098145,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "00824d012306d18521ec4cdd3ce0374420f90298",
+          "message": "chore(deps): Bump wpt from `020ff60` to `7648ff0` (#4003)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `020ff60` to\n`7648ff0`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/7648ff00b010c31b3f82fc6d137a78bcbaa7807a\"><code>7648ff0</code></a>\nFix linting errors</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/42765243c01610f3984091b636c055689b2aa132\"><code>4276524</code></a>\nSorted methods alphabetically.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/7f4689052e149dd05b5bcec497dea6e5baeffbde\"><code>7f46890</code></a>\nWebDriver BiDi client modules should validate data types in command\nresponses.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/2039415e869447c272043ff2e84cf562a41c5a2a\"><code>2039415</code></a>\nscript: Do no assume that every textual <code>\\&lt;input&gt;</code> is a\nfocusable area</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/9c427757d9f21e5b803c1794cc6d2f4adad63236\"><code>9c42775</code></a>\ngeolocation: Add long timeout to geolocation permission policy redirect\nWPT</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/ec53b7cd2586cb793675d7b1b7cde6a7d5ab201f\"><code>ec53b7c</code></a>\nSync interfaces/ with <code>@​webref/idl</code> 3.71.1 (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57289\">#57289</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/278ac64bf2619d203089ce8ed93c8e940589b5bb\"><code>278ac64</code></a>\nFix typo in test description for quota rejection (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57296\">#57296</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/6a4b7e5f7b9da52a5152725dcbc40f4f421792f3\"><code>6a4b7e5</code></a>\nMap <code>get-computed-style</code> web-feature (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/56648\">#56648</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a31fc402149bbfd5b4d1afe7e5f9928216522a5f\"><code>a31fc40</code></a>\n[focusgroup] Fix focusgroup='none' on direct child of focusgroup.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/9d5a6f7492556f2aa2820e42786f0d4f4a027dd5\"><code>9d5a6f7</code></a>\nUpdate error message for aborted <code>create()</code> operation (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57277\">#57277</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/020ff60edf5cb3b2d1fa5d2ac32ba34b38836822...7648ff00b010c31b3f82fc6d137a78bcbaa7807a\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-23T13:43:20Z",
+          "tree_id": "f19d5beb17fc102aba7111642568b3c00f980915",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/00824d012306d18521ec4cdd3ce0374420f90298"
+        },
+        "date": 1769175891811,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest:diff_bidi_vs_cdp",
+            "value": 18.7842,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest:diff_bidi_vs_cdp",
+            "value": -19.3847,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 237.76578903198242,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 3518.5717582702637,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 165.38386344909668,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 268.7133312225342,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.7657356262207,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 1829.6316623687744,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 3179.3643951416016,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 270.4780101776123,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 3432.8346252441406,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.63616371154785,
             "unit": "ms"
           }
         ]
