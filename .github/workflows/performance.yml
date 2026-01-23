@@ -64,7 +64,7 @@ jobs:
           npm link
           npm link chromium-bidi
       - name: Run JS performance benchmark
-        run: node tools/perf-pup.mjs | tee -a tests_output.txt
+        run: node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |

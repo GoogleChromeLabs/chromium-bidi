@@ -29,7 +29,7 @@ the project's performance.
 
 Metrics with the `pup-` prefix compare Puppeteer performance in CDP and BiDi modes. The
 benchmark uses the script
-[`tools/perf-pup.mjs`](https://github.com/GoogleChromeLabs/chromium-bidi/tree/main/tools/perf-pup.mjs)
+[`tools/benchmark-puppeteer.mjs`](https://github.com/GoogleChromeLabs/chromium-bidi/tree/main/tools/benchmark-puppeteer.mjs)
 to evaluate JavaScript execution involving selectors and DOM manipulation. This direct
 comparison aims to mitigate the impact of hardware fluctuations.
 
@@ -48,7 +48,7 @@ npm run build
 npm install --dev puppeteer
 npm link
 npm link chromium-bidi
-node tools/perf-pup.mjs
+node tools/benchmark-puppeteer.mjs
 ```
 
 ### E2E benchmark

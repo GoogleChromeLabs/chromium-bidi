@@ -171,4 +171,4 @@ async function run() {
   console.log(`PERF_METRIC:diff_bidi_vs_cdp:${diffPercent.toFixed(4)}`);
 }
 
-run().catch(console.error);
+run();
