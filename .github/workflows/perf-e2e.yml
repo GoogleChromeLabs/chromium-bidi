@@ -1,6 +1,6 @@
 # This workflow will run measure performance in different environments.
 
-name: Measure performance
+name: Measure e2e performance
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -95,7 +95,7 @@ jobs:
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |
-          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}:/" > performance_metrics.txt
+          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/e2e-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}:/" > performance_metrics.txt
           echo "Extracted performance metrics:"
           cat performance_metrics.txt
       - name: Upload performance result as artifact

@@ -1,0 +1,142 @@
+# This workflow will run measure performance in different environments.
+
+name: Measure Puppeteer performance
+
+# Declare default permissions as read only.
+permissions: read-all
+
+env:
+  DEBUG: 'bidi:server:*,bidi:mapper:*'
+  DEBUG_DEPTH: 10
+  FORCE_COLOR: 3
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+on:
+  merge_group:
+  pull_request:
+  push:
+    branches: 'main'
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: Verbose logging
+        default: false
+        required: false
+        type: boolean
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  performance_metric:
+    name: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(#876): Add Windows CI.
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - name: Disable AppArmor
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Install and build npm dependencies
+        run: npm ci
+      # Install chrome, chromedriver and headless shell is required to keep them cached.
+      - name: Install all chrome binaries if needed
+        uses: ./.github/actions/setup-chrome-binaries
+      - name: Build chromium-bidi
+        run: npm run build
+      - name: Install Puppeteer
+        run: npm i puppeteer
+      - name: Link chromium-bidi
+        run: |
+          npm link
+          npm link chromium-bidi
+      - name: Run JS performance benchmark
+        run: node tools/perf-pup.mjs | tee -a tests_output.txt
+      - name: Extract and store performance metrics
+        id: extract_metrics
+        run: |
+          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/pup-${{ matrix.os }}:/" > performance_metrics.txt
+          echo "Extracted performance metrics:"
+          cat performance_metrics.txt
+      - name: Upload performance result as artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: performance-metrics-${{ matrix.os }}
+          path: performance_metrics.txt
+          # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
+          retention-days: 1
+  combine_metrics:
+    if: ${{ !cancelled() }}
+    name: Combine performance metrics
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      deployments: write
+      # Add perf metrics to PR's comment
+      pull-requests: write
+      contents: write
+    runs-on: ubuntu-latest
+    needs: performance_metric
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - name: Setup Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - name: Download all performance metrics artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          path: artifacts
+      - name: Combine metrics into a single file
+        run: |
+          find artifacts -name "performance_metrics.txt" -exec cat {} + > all_performance_metrics.txt
+          echo "Combined performance metrics:"
+          cat all_performance_metrics.txt
+
+          # Convert to JSON format suitable for github-action-benchmark
+          echo "[" > all_performance_metrics.json
+          first_metric=true
+          while IFS= read -r line; do
+            if [ "$first_metric" = false ]; then
+              echo "," >> all_performance_metrics.json
+            fi
+            key=${line%:*}
+            value=${line##*:}
+            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"Percent\"}" >> all_performance_metrics.json
+            first_metric=false
+          done < all_performance_metrics.txt
+          echo "]" >> all_performance_metrics.json
+          echo "Combined performance metrics in JSON format:"
+          cat all_performance_metrics.json
+      - name: Upload combined performance metrics
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: all-performance-metrics
+          path: |
+            all_performance_metrics.txt
+            all_performance_metrics.json
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'customSmallerIsBetter'
+          output-file-path: all_performance_metrics.json
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: bench/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Comment only when run in PR.
+          comment-always: ${{ github.ref != 'refs/heads/main' }}
+          # Push and deploy automatically on merge to main.
+          auto-push: ${{ github.ref == 'refs/heads/main' }}
