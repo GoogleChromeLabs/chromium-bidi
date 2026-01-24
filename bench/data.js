@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769190394756,
+  "lastUpdate": 1769243825611,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -6238,6 +6238,94 @@ window.BENCHMARK_DATA = {
             "name": "macos-latest:pup-perf-metric",
             "value": 40.7171,
             "range": "5.4258",
+            "unit": "Percent",
+            "extra": "macos-latest"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "OrKoN@users.noreply.github.com",
+            "name": "Alex Rudenko",
+            "username": "OrKoN"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8f0ef95783e8bdcd5e08a29675db70146682f087",
+          "message": "fix: handle uncaught exceptions in close method (#4005)\n\nAdded error handling for uncaught exceptions when closing the browser.",
+          "timestamp": "2026-01-24T08:32:06Z",
+          "tree_id": "187ca10cfc814f8ca7fb668d90f67619b3e48d7d",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/8f0ef95783e8bdcd5e08a29675db70146682f087"
+        },
+        "date": 1769243824058,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 265.95983505249023,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 1888.8919830322266,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 167.65084266662598,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 168.7641143798828,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 269.8488712310791,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 269.49119567871094,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 1879.319190979004,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 305.4460048675537,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 3253.3825874328613,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 181.92405700683594,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric",
+            "value": 55.5553,
+            "range": "1.6873",
+            "unit": "Percent",
+            "extra": "ubuntu-latest"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric",
+            "value": 46.7072,
+            "range": "4.9242",
             "unit": "Percent",
             "extra": "macos-latest"
           }
