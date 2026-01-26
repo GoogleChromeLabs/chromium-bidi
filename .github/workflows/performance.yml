@@ -76,11 +76,11 @@ jobs:
 
           mean_value=$(grep 'PERF_METRIC:DIFF_MEAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:VALUE://')
           mean_range=$(grep 'PERF_METRIC:DIFF_MEAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}:PERF_METRIC:DIFF_MEAN_REL\", \"value\": $mean_value, \"range\": $mean_range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}:pup-perf-metric:DIFF_REL\"}," >> pup_perf_metrics.json
+          echo "{\"name\": \"${{ matrix.os }}:pup-perf-metric:diff_mean_rel\", \"value\": $mean_value, \"range\": $mean_range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}:pup-perf-metric:DIFF_REL\"}," >> pup_perf_metrics.json
 
           median_value=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:VALUE://')
           median_range=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}:PERF_METRIC:DIFF_MEDIAN_REL\", \"value\": $median_value, \"range\": $median_range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}:pup-perf-metric:DIFF_REL\"}" >> pup_perf_metrics.json
+          echo "{\"name\": \"${{ matrix.os }}:pup-perf-metric:diff_median_rel\", \"value\": $median_value, \"range\": $median_range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}:pup-perf-metric:DIFF_REL\"}" >> pup_perf_metrics.json
           echo "Extracted performance metrics:"
           cat pup_perf_metrics.json
       - name: Upload performance result as artifact
