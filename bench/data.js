@@ -29,55 +29,55 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
             "value": 165.2696132659912,
             "unit": "ms",
-            "extra": "ubuntu-latest:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-new-headless-cd:test_performance_screenshot",
             "value": 1697.815179824829,
             "unit": "ms",
-            "extra": "macos-latest:e2e-perf-metric"
+            "extra": "legacy-macos-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-headful-node:test_performance_screenshot",
             "value": 1773.7640380859375,
             "unit": "ms",
-            "extra": "macos-latest:e2e-perf-metric"
+            "extra": "legacy-macos-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-headful-cd:test_performance_screenshot",
             "value": 3422.404956817627,
             "unit": "ms",
-            "extra": "macos-latest:e2e-perf-metric"
+            "extra": "legacy-macos-latest:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
             "value": 278.86343002319336,
             "unit": "ms",
-            "extra": "ubuntu-latest:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-old-headless-cd:test_performance_screenshot",
             "value": 234.27166938781738,
             "unit": "ms",
-            "extra": "macos-latest:e2e-perf-metric"
+            "extra": "legacy-macos-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot",
             "value": 204.82916831970215,
             "unit": "ms",
-            "extra": "macos-latest:e2e-perf-metric"
+            "extra": "legacy-macos-latest:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
             "value": 184.76476669311523,
             "unit": "ms",
-            "extra": "ubuntu-latest:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 284.848690032959,
             "unit": "ms",
-            "extra": "ubuntu-latest:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest:e2e-perf-metric"
           }
         ]
       },
@@ -132,7 +132,7 @@ window.BENCHMARK_DATA = {
             "name": "macos-latest-new-headless-node:test_performance_screenshot",
             "value": 2947.7521896362305,
             "unit": "ms",
-            "extra": "macos-latest:e2e-perf-metric"
+            "extra": "legacy-macos-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot",
@@ -153,7 +153,7 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 151.77078247070312,
             "unit": "ms",
-            "extra": "ubuntu-latest:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest:e2e-perf-metric"
           }
         ]
       },
@@ -6130,14 +6130,14 @@ window.BENCHMARK_DATA = {
             "value": 57.1717,
             "range": "1.7743",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 54.0963,
             "range": "4.8295",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric"
+            "extra": "legacy-macos-latest:pup-perf-metric"
           }
         ]
       },
@@ -6213,14 +6213,14 @@ window.BENCHMARK_DATA = {
             "value": 56.2104,
             "range": "1.8967",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 40.7171,
             "range": "5.4258",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric"
+            "extra": "legacy-macos-latest:pup-perf-metric"
           }
         ]
       },
@@ -6301,14 +6301,14 @@ window.BENCHMARK_DATA = {
             "value": 55.5553,
             "range": "1.6873",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 46.7072,
             "range": "4.9242",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric"
+            "extra": "legacy-macos-latest:pup-perf-metric"
           }
         ]
       },
@@ -6394,14 +6394,14 @@ window.BENCHMARK_DATA = {
             "value": 56.4664,
             "range": "2.1142",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 63.4988,
             "range": "7.2933",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric"
+            "extra": "legacy-macos-latest:pup-perf-metric"
           }
         ]
       },
@@ -6482,14 +6482,14 @@ window.BENCHMARK_DATA = {
             "value": 56.2624,
             "range": "1.8736",
             "unit": "Percent",
-            "extra": "ubuntu-latest"
+            "extra": "legacy-ubuntu-latest"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 51.9939,
             "range": "5.1512",
             "unit": "Percent",
-            "extra": "macos-latest"
+            "extra": "legacy-macos-latest"
           }
         ]
       },
@@ -6570,14 +6570,14 @@ window.BENCHMARK_DATA = {
             "value": 57.102,
             "range": "1.7354",
             "unit": "Percent",
-            "extra": "ubuntu-latest"
+            "extra": "legacy-ubuntu-latest"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 53.604,
             "range": "7.1048",
             "unit": "Percent",
-            "extra": "macos-latest"
+            "extra": "legacy-macos-latest"
           }
         ]
       },
@@ -6618,14 +6618,14 @@ window.BENCHMARK_DATA = {
             "value": 55.8212,
             "range": "1.8338",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
             "value": 57.3589,
             "range": "2.6257",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
@@ -6662,14 +6662,14 @@ window.BENCHMARK_DATA = {
             "value": 47.1599,
             "range": "5.4991",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest:pup-perf-metric:diff_median_rel",
             "value": 55.0862,
             "range": "12.0064",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot",
@@ -6725,14 +6725,14 @@ window.BENCHMARK_DATA = {
             "value": 58.4241,
             "range": "1.6939",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
             "value": 58.5001,
             "range": "2.3672",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
@@ -6764,14 +6764,14 @@ window.BENCHMARK_DATA = {
             "value": 41.3051,
             "range": "4.4883",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest:pup-perf-metric:diff_median_rel",
             "value": 63.6207,
             "range": "10.9661",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot",
@@ -6827,14 +6827,14 @@ window.BENCHMARK_DATA = {
             "value": 51.4289,
             "range": "3.7724",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
             "value": 59.7218,
             "range": "5.5389",
             "unit": "Percent",
-            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
@@ -6871,14 +6871,14 @@ window.BENCHMARK_DATA = {
             "value": 44.0916,
             "range": "3.8345",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest:pup-perf-metric:diff_median_rel",
             "value": 56.4979,
             "range": "7.9959",
             "unit": "Percent",
-            "extra": "macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot",

@@ -151,10 +151,26 @@
 
       // Configuration for custom group headers and descriptions
       const GROUP_CONFIG = {
-        'pup-perf-metric': {
-          title: 'Puppeteer BiDi vs CDP',
-          description: 'Percentage difference between BiDi and CDP performance. Positive values indicate BiDi is slower.'
-        }
+        'ubuntu-latest-shell:pup-perf-metric:diff_rel': {
+          order: 0,
+          title: 'Puppeteer BiDi vs CDP on Ubuntu',
+          description: 'Percentage difference between BiDi and CDP performance and 95% confidence interval of the values.'
+        },
+        'macos-latest-shell:pup-perf-metric:diff_rel': {
+          order: 1,
+          title: 'Puppeteer BiDi vs CDP on Mac OS',
+          description: 'Percentage difference between BiDi and CDP performance and 95% confidence interval of the values. Expected to be flaky, but kept for keeping track.'
+        },
+        'ubuntu-latest:e2e-perf-metric': {
+          order: 2,
+          title: 'E2E performance on Ubuntu',
+          description: 'E2E performance tests on different runners ("cd" - chromedriver, "node" - NodeJS runner) and configurations (old and headless, headful).'
+        },
+        'macos-latest:e2e-perf-metric': {
+          order: 3,
+          title: 'E2E performance on Mac OS',
+          description: 'E2E performance tests on different runners ("cd" - chromedriver, "node" - NodeJS runner) and configurations (old and headless, headful).'
+        },
       };
 
       /**
@@ -458,7 +474,18 @@
 
         // Group benchmarks before rendering
         const groups = groupBenches(benchSet);
-        const sortedGroups = Array.from(groups.entries()).sort(([, subA], [, subB]) => {
+        const sortedGroups = Array.from(groups.entries()).sort((a, b) => {
+          const nameA = a[0];
+          const nameB = b[0];
+          const orderA = GROUP_CONFIG[nameA]?.order ?? Infinity;
+          const orderB = GROUP_CONFIG[nameB]?.order ?? Infinity;
+
+          if (orderA !== Infinity || orderB !== Infinity) {
+            return orderA - orderB;
+          }
+
+          const subA = a[1];
+          const subB = b[1];
           const hasGroup = (sub) => {
             const first = sub.values().next().value;
             return first && first[0] && first[0].bench.extra;
@@ -466,8 +493,42 @@
           return (hasGroup(subB) ? 1 : 0) - (hasGroup(subA) ? 1 : 0);
         });
 
-        for (const [groupName, subGroups] of sortedGroups) {
+        // Split regular and legacy groups
+        const regularGroups = [];
+        const legacyGroups = [];
+        for (const group of sortedGroups) {
+          if (group[0].startsWith('legacy')) {
+            legacyGroups.push(group);
+          } else {
+            regularGroups.push(group);
+          }
+        }
+
+        for (const [groupName, subGroups] of regularGroups) {
           renderGraph(graphsElem, groupName, subGroups);
+        }
+
+        if (legacyGroups.length > 0) {
+          const detailsElem = document.createElement('details');
+          detailsElem.style.width = '100%';
+          detailsElem.style.marginTop = '2rem';
+          setElem.appendChild(detailsElem);
+
+          const summaryElem = document.createElement('summary');
+          summaryElem.textContent = 'Legacy Metrics';
+          summaryElem.className = 'benchmark-title';
+          summaryElem.style.fontSize = '1.5rem';
+          summaryElem.style.cursor = 'pointer';
+          summaryElem.style.outline = 'none';
+          detailsElem.appendChild(summaryElem);
+
+          const legacyGraphsElem = document.createElement('div');
+          legacyGraphsElem.className = 'benchmark-graphs';
+          detailsElem.appendChild(legacyGraphsElem);
+
+          for (const [groupName, subGroups] of legacyGroups) {
+            renderGraph(legacyGraphsElem, groupName, subGroups);
+          }
         }
       }
 
