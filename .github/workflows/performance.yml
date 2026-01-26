@@ -166,7 +166,7 @@ jobs:
                 split($2, parts, ":");
                 if (length(parts) >= 2) {
                   if (count > 0) printf ",";
-                  printf "{\"name\": \"%s:%s\", \"value\": %s, \"unit\": \"ms\"}", prefix, parts[1], parts[2];
+                  printf "{\"name\": \"%s:%s\", \"value\": %s, \"unit\": \"ms\", \"extra\": \"${{ matrix.os }}:e2e-perf-metric\"}", prefix, parts[1], parts[2];
                   count++;
                 }
               }
