@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769438246519,
+  "lastUpdate": 1769439552115,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -6698,6 +6698,108 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
             "value": 184.38515663146973,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3884ccf1fb4e0294d33aa8a6076818ab5a794b39",
+          "message": "chore(deps): Bump wpt from `7648ff0` to `32006ad` (#4008)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `7648ff0` to\n`32006ad`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/32006ad1c817b401a0ad454e8d786744f9a98ff1\"><code>32006ad</code></a>\nMap &quot;Color&quot; to web-features (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57328\">#57328</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/690f95ba24fdbe74cb0085793c448a4a989e5ed7\"><code>690f95b</code></a>\nSlightly increase fuzzy tolerance in WPT\ncss-view-transitions/3d-transform-in...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/67ae2f6d278e70177d02b203bb8f28519f6abaaf\"><code>67ae2f6</code></a>\nFix CHECK failure in InterpolableLength::ScaleAndAdd</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a8415d86c8633abbd01aaef81dbebf7a4f1cc60c\"><code>a8415d8</code></a>\nExtend these timeouts.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/411848723da396bf49134693b546a7614e8d8c71\"><code>4118487</code></a>\nUpdate MediaRecorder-mimetype.html WPT to spec which deprecates\nisTypeSupported.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/6a06f4cf11c9f950bd4f00c6b7770d84dfbf7cff\"><code>6a06f4c</code></a>\n:heading invalidation</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/11b9300f17ffa49486e3ad23e086a8f811cc6f57\"><code>11b9300</code></a>\nUse Ahem font and less text in\ninline-with-offset-from-containing-block.html ...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/b88d4458c2d0d397a1681e4b9ed9c1ffdfd29948\"><code>b88d445</code></a>\nscript: Fix handling of invalid fetch responses for link\nstylesheets</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/6bd5b2ad9fe6e4f7908fb2b45b0989a3ad5b3ffa\"><code>6bd5b2a</code></a>\nMap input-color-alpha feature in WEB_FEATURES.yml (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57324\">#57324</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/959238ad82f969a674930c00fe2325e87d83e779\"><code>959238a</code></a>\nEstablish submenu relationships only with toggle-menu, not\nshow/hide-menu.</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/7648ff00b010c31b3f82fc6d137a78bcbaa7807a...32006ad1c817b401a0ad454e8d786744f9a98ff1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-26T14:53:23Z",
+          "tree_id": "4939f9c252f929601781879fd82fb60388247680",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/3884ccf1fb4e0294d33aa8a6076818ab5a794b39"
+        },
+        "date": 1769439550690,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 242.19560623168945,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2657.304000854492,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 167.80004501342773,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric:diff_mean_rel",
+            "value": 58.4241,
+            "range": "1.6939",
+            "unit": "Percent",
+            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
+            "value": 58.5001,
+            "range": "2.3672",
+            "unit": "Percent",
+            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 167.71855354309082,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 277.6035785675049,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 278.3938407897949,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2019.1834449768064,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 316.73436164855957,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric:diff_mean_rel",
+            "value": 41.3051,
+            "range": "4.4883",
+            "unit": "Percent",
+            "extra": "macos-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric:diff_median_rel",
+            "value": 63.6207,
+            "range": "10.9661",
+            "unit": "Percent",
+            "extra": "macos-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 3212.2632026672363,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 183.7498664855957,
             "unit": "ms"
           }
         ]
