@@ -207,15 +207,15 @@
       }
 
       /**
-       * Groups benchmarks by their 'group' property or name prefix.
+       * Groups benchmarks by their 'extra' property or name prefix.
        * @param {Map} benchSet - Map of benchmark names to results.
        * @returns {Map} Map where keys are group names and values are Maps of sub-benchmarks.
        */
       function groupBenches(benchSet) {
         const groups = new Map();
         for (const [benchName, benches] of benchSet.entries()) {
-          const benchWithGroup = benches.find(b => b.bench.group);
-          const groupName = benchWithGroup ? benchWithGroup.bench.group : benchName;
+          const benchWithGroup = benches.find(b => b.bench.extra);
+          const groupName = benchWithGroup ? benchWithGroup.bench.extra : benchName;
 
           if (!groups.has(groupName)) {
             groups.set(groupName, new Map());
@@ -449,7 +449,7 @@
         const sortedGroups = Array.from(groups.entries()).sort(([, subA], [, subB]) => {
           const hasGroup = (sub) => {
             const first = sub.values().next().value;
-            return first && first[0] && first[0].bench.group;
+            return first && first[0] && first[0].bench.extra;
           };
           return (hasGroup(subB) ? 1 : 0) - (hasGroup(subA) ? 1 : 0);
         });
