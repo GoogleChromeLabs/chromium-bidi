@@ -313,6 +313,16 @@
         return {
           legend: {
             labels: {
+              generateLabels: (chart) => {
+                return chart.data.datasets.map((dataset, i) => ({
+                  text: dataset.label,
+                  fillStyle: dataset.backgroundColor,
+                  strokeStyle: dataset.borderColor,
+                  lineWidth: 3,
+                  hidden: !chart.isDatasetVisible(i),
+                  datasetIndex: i
+                }));
+              },
               // Filter out helper datasets (empty labels)
               filter: item => item.text !== ''
             }
