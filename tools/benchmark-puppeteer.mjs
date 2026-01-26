@@ -21,7 +21,7 @@ import puppeteer from 'puppeteer';
 
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 
-const RUNS = 3;
+const RUNS = 100;
 const ITERATIONS_PER_RUN = 100;
 const WARMUP_ITERATIONS = Math.max(2, 0.1 * ITERATIONS_PER_RUN);
 
