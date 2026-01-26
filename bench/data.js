@@ -28,47 +28,56 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
             "value": 165.2696132659912,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-new-headless-cd:test_performance_screenshot",
             "value": 1697.815179824829,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-headful-node:test_performance_screenshot",
             "value": 1773.7640380859375,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-headful-cd:test_performance_screenshot",
             "value": 3422.404956817627,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
             "value": 278.86343002319336,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-old-headless-cd:test_performance_screenshot",
             "value": 234.27166938781738,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot",
             "value": 204.82916831970215,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
             "value": 184.76476669311523,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
             "value": 284.848690032959,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
           }
         ]
       },
@@ -122,7 +131,8 @@ window.BENCHMARK_DATA = {
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot",
             "value": 2947.7521896362305,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
           },
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot",
@@ -142,7 +152,8 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot",
             "value": 151.77078247070312,
-            "unit": "ms"
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
           }
         ]
       },
