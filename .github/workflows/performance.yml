@@ -69,10 +69,18 @@ jobs:
           node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
       - name: Extract and store performance metrics
         id: extract_metrics
+        # Publish 2 metrics: mean and median relative difference. Group them together by
+        # providing the same `extra` field.
         run: |
-          value=$(grep 'PERF_METRIC:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:VALUE://')
-          range=$(grep 'PERF_METRIC:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}:pup-perf-metric\", \"value\": $value, \"range\": $range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}\"}" > pup_perf_metrics.json
+          echo "" > pup_perf_metrics.json
+
+          mean_value=$(grep 'PERF_METRIC:DIFF_MEAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:VALUE://')
+          mean_range=$(grep 'PERF_METRIC:DIFF_MEAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:RANGE://')
+          echo "{\"name\": \"${{ matrix.os }}:PERF_METRIC:DIFF_MEAN_REL\", \"value\": $mean_value, \"range\": $mean_range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}:pup-perf-metric:DIFF_REL\"}," >> pup_perf_metrics.json
+
+          median_value=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:VALUE://')
+          median_range=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:RANGE://')
+          echo "{\"name\": \"${{ matrix.os }}:PERF_METRIC:DIFF_MEDIAN_REL\", \"value\": $median_value, \"range\": $median_range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}:pup-perf-metric:DIFF_REL\"}" >> pup_perf_metrics.json
           echo "Extracted performance metrics:"
           cat pup_perf_metrics.json
       - name: Upload performance result as artifact
@@ -195,7 +203,7 @@ jobs:
             fi
             key=${line%:*}
             value=${line##*:}
-            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"ms\"}" >> performance-metrics-all.json
+            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"ms\", \"extra\": \"${{ matrix.os }}:e2e-perf-metric\"}" >> performance-metrics-all.json
             first_metric=false
           done < performance-metrics-all.txt
 
