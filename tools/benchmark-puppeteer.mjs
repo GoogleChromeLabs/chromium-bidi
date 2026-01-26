@@ -209,12 +209,11 @@ async function main() {
 
     // Run CDP.
     process.stdout.write(`running CDP... `);
-    const cdpLatencies = await runBenchmarkRun('Puppeteer CDP', {}, chromePath);
+    const cdpLatencies = await runBenchmarkRun({}, chromePath);
     stats.cdp.push(...cdpLatencies);
 
     process.stdout.write(`running BiDi... `);
     const bidiLatencies = await runBenchmarkRun(
-      'Puppeteer BiDi',
       {protocol: 'webDriverBiDi'},
       chromePath,
     );
