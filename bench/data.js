@@ -5843,16 +5843,6 @@ window.BENCHMARK_DATA = {
         "tool": "customSmallerIsBetter",
         "benches": [
           {
-            "name": "ubuntu-latest:diff_bidi_vs_cdp",
-            "value": 17.527,
-            "unit": "ms"
-          },
-          {
-            "name": "macos-latest:diff_bidi_vs_cdp",
-            "value": 30.9816,
-            "unit": "ms"
-          },
-          {
             "name": "macos-latest-old-headless-cd:test_performance_screenshot",
             "value": 235.6297492980957,
             "unit": "ms"
@@ -5921,16 +5911,6 @@ window.BENCHMARK_DATA = {
         "date": 1769175891811,
         "tool": "customSmallerIsBetter",
         "benches": [
-          {
-            "name": "ubuntu-latest:diff_bidi_vs_cdp",
-            "value": 18.7842,
-            "unit": "ms"
-          },
-          {
-            "name": "macos-latest:diff_bidi_vs_cdp",
-            "value": -19.3847,
-            "unit": "ms"
-          },
           {
             "name": "macos-latest-old-headless-cd:test_performance_screenshot",
             "value": 237.76578903198242,
@@ -6005,16 +5985,6 @@ window.BENCHMARK_DATA = {
         "date": 1769176509949,
         "tool": "customSmallerIsBetter",
         "benches": [
-          {
-            "name": "ubuntu-latest:diff_bidi_vs_cdp",
-            "value": 18.0259,
-            "unit": "ms"
-          },
-          {
-            "name": "macos-latest:diff_bidi_vs_cdp",
-            "value": -10.6977,
-            "unit": "ms"
-          },
           {
             "name": "macos-latest-old-headless-cd:test_performance_screenshot",
             "value": 296.2254047393799,
