@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769243825611,
+  "lastUpdate": 1769418254775,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -6326,6 +6326,99 @@ window.BENCHMARK_DATA = {
             "name": "macos-latest:pup-perf-metric",
             "value": 46.7072,
             "range": "4.9242",
+            "unit": "Percent",
+            "extra": "macos-latest"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "69349599+sadym-chromium@users.noreply.github.com",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f8b53504de26d81e6d6c0d760ef5fe47a48917e0",
+          "message": "ci: touch dependabot.yml (#4007)",
+          "timestamp": "2026-01-26T09:58:33+01:00",
+          "tree_id": "2e41b467e8799c3a8ab77ee9248b7caffade2b91",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/f8b53504de26d81e6d6c0d760ef5fe47a48917e0"
+        },
+        "date": 1769418253595,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 226.27019882202148,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2209.895610809326,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 167.5753116607666,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 167.0827865600586,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 274.52616691589355,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 275.368070602417,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2935.6441974639893,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2408.8873863220215,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 253.71403694152832,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 2529.190254211426,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 164.76197242736816,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric",
+            "value": 56.4664,
+            "range": "2.1142",
+            "unit": "Percent",
+            "extra": "ubuntu-latest"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric",
+            "value": 63.4988,
+            "range": "7.2933",
             "unit": "Percent",
             "extra": "macos-latest"
           }
