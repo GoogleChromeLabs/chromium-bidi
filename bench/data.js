@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769439552115,
+  "lastUpdate": 1769443231063,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -6770,6 +6770,113 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
             "value": 183.7498664855957,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "587ea55293bb7790df75de4133e200f8bc909bd8",
+          "message": "chore(deps): Bump websockets from 15.0.1 to 16.0 in /examples in the all group (#4009)\n\nBumps the all group in /examples with 1 update:\n[websockets](https://github.com/python-websockets/websockets).\n\nUpdates `websockets` from 15.0.1 to 16.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/python-websockets/websockets/releases\">websockets's\nreleases</a>.</em></p>\n<blockquote>\n<h2>16.0</h2>\n<p>See <a\nhref=\"https://websockets.readthedocs.io/en/stable/project/changelog.html\">https://websockets.readthedocs.io/en/stable/project/changelog.html</a>\nfor details.</p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/d4303a5d3e373fc8c34177c3dec1a9c75c8865fa\"><code>d4303a5</code></a>\nRelease version 16.0.</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/851bcd756bf114e41438f04d928aa85838724fe1\"><code>851bcd7</code></a>\nBump pypa/cibuildwheel from 3.3.0 to 3.3.1</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/740c8d373e10ced940fb33c3e0457991841c10c4\"><code>740c8d3</code></a>\nTemporarily remove the trio implementation.</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/92ea0553587ba07a4668c30dfd9e6210d9f26bc9\"><code>92ea055</code></a>\nAdd missing changelog entry.</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/ba74244154df5a74f044d0f8cd971acac636bb74\"><code>ba74244</code></a>\nDocument bug fix.</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/9410483c016463a6cd08b2a5321337b85e094f10\"><code>9410483</code></a>\nPin sphinx to avoid error in sphinxcontrib-trio.</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/8e4d408e17b0bfa1a91aa62e054b8786a8132231\"><code>8e4d408</code></a>\nDocument asyncio's TLS read buffer.</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/cb3500b0b030715dc3caa1e3ce95affe4a79b8bd\"><code>cb3500b</code></a>\nStop referring to the asyncio implementation as new.</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/6563a9c884d92df4c889bb174dc84a56a7377686\"><code>6563a9c</code></a>\nThe threading implementation supports max_queue.</li>\n<li><a\nhref=\"https://github.com/python-websockets/websockets/commit/9f17e92dbee2b9a14e02b2792cfbb127efbd4098\"><code>9f17e92</code></a>\nClarify that protocol_mutex protects pending_pings.</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/python-websockets/websockets/compare/15.0.1...16.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=websockets&package-manager=pip&previous-version=15.0.1&new-version=16.0)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-26T15:56:10Z",
+          "tree_id": "f80d31b82f9b530394d1e045406e553971199a15",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/587ea55293bb7790df75de4133e200f8bc909bd8"
+        },
+        "date": 1769443229204,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 280.21717071533203,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 4410.842609405518,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot",
+            "value": 167.67005920410156,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric:diff_mean_rel",
+            "value": 51.4289,
+            "range": "3.7724",
+            "unit": "Percent",
+            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
+            "value": 59.7218,
+            "range": "5.5389",
+            "unit": "Percent",
+            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 165.19174575805664,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 254.40154075622556,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 268.37687492370605,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2810.6624126434326,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 3763.166618347168,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 275.4734516143799,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric:diff_mean_rel",
+            "value": 44.0916,
+            "range": "3.8345",
+            "unit": "Percent",
+            "extra": "macos-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric:diff_median_rel",
+            "value": 56.4979,
+            "range": "7.9959",
+            "unit": "Percent",
+            "extra": "macos-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 3338.258218765259,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 181.85625076293945,
             "unit": "ms"
           }
         ]
