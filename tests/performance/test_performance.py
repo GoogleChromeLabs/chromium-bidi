@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import time
 import statistics
+import time
 from pathlib import Path
 
 import pytest
@@ -25,14 +25,16 @@ REPEAT_TIMES = 20
 
 async def capture_screenshot(websocket, context_id):
     await execute_command(
-        # Increase timeout for screenshots.
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.captureScreenshot",
             "params": {
                 "origin": "document",
                 "context": context_id
             }
-        }, timeout=60)
+        },
+        # Increase timeout for screenshots.
+        timeout=60)
 
 
 # Timeout 10 minutes.
