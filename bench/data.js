@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769431547061,
+  "lastUpdate": 1769438246519,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -6597,6 +6597,108 @@ window.BENCHMARK_DATA = {
             "range": "7.1048",
             "unit": "Percent",
             "extra": "macos-latest"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "69349599+sadym-chromium@users.noreply.github.com",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6cc691af672d864a2994e35e7e08e93e98e347f7",
+          "message": "ci: extend performance metrics (#4012)",
+          "timestamp": "2026-01-26T15:31:58+01:00",
+          "tree_id": "6e7e8e2fce257b7b34c07dd8b2cccebeb386f680",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/6cc691af672d864a2994e35e7e08e93e98e347f7"
+        },
+        "date": 1769438245367,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot",
+            "value": 236.34281158447266,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot",
+            "value": 2936.9865894317627,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric:diff_mean_rel",
+            "value": 55.8212,
+            "range": "1.8338",
+            "unit": "Percent",
+            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
+            "value": 57.3589,
+            "range": "2.6257",
+            "unit": "Percent",
+            "extra": "ubuntu-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
+            "value": 164.4852638244629,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot",
+            "value": 269.7314739227295,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot",
+            "value": 275.461483001709,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot",
+            "value": 2809.340810775757,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot",
+            "value": 2570.6610202789307,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot",
+            "value": 280.59635162353516,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric:diff_mean_rel",
+            "value": 47.1599,
+            "range": "5.4991",
+            "unit": "Percent",
+            "extra": "macos-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest:pup-perf-metric:diff_median_rel",
+            "value": 55.0862,
+            "range": "12.0064",
+            "unit": "Percent",
+            "extra": "macos-latest:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot",
+            "value": 6589.903974533081,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot",
+            "value": 184.38515663146973,
+            "unit": "ms"
           }
         ]
       }
