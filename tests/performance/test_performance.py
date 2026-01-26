@@ -14,12 +14,13 @@
 # limitations under the License.
 
 import time
+import statistics
 from pathlib import Path
 
 import pytest
 from test_helpers import execute_command, goto_url
 
-REPEAT_TIMES = 5
+REPEAT_TIMES = 20
 
 
 async def capture_screenshot(websocket, context_id):
@@ -33,7 +34,8 @@ async def capture_screenshot(websocket, context_id):
         })
 
 
-@pytest.mark.timeout(60)
+# Timeout 10 minutes.
+@pytest.mark.timeout(10 * 60)
 @pytest.mark.asyncio
 async def test_performance_screenshot(websocket, context_id,
                                       current_test_name):
@@ -57,10 +59,14 @@ async def test_performance_screenshot(websocket, context_id,
     # Pre-warm.
     await capture_screenshot(websocket, context_id)
 
-    start_time = time.time()
+    samples = []
     for i in range(REPEAT_TIMES):
+        start_time = time.perf_counter()
         await capture_screenshot(websocket, context_id)
+        samples.append(time.perf_counter() - start_time)
 
-    average_time = (time.time() - start_time) / REPEAT_TIMES
+    mean_value = statistics.mean(samples) * 1000
+    median_value = statistics.median(samples) * 1000
 
-    print(f"PERF_METRIC:{current_test_name}:{average_time * 1000}")
+    print(f"PERF_METRIC:{current_test_name}_mean:{mean_value}")
+    print(f"PERF_METRIC:{current_test_name}_median:{median_value}")
