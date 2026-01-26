@@ -6149,14 +6149,14 @@ window.BENCHMARK_DATA = {
             "value": 57.1717,
             "range": "1.7743",
             "unit": "Percent",
-            "extra": "ubuntu-latest"
+            "extra": "ubuntu-latest:pup-perf-metric"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 54.0963,
             "range": "4.8295",
             "unit": "Percent",
-            "extra": "macos-latest"
+            "extra": "macos-latest:pup-perf-metric"
           }
         ]
       },
@@ -6232,14 +6232,14 @@ window.BENCHMARK_DATA = {
             "value": 56.2104,
             "range": "1.8967",
             "unit": "Percent",
-            "extra": "ubuntu-latest"
+            "extra": "ubuntu-latest:pup-perf-metric"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 40.7171,
             "range": "5.4258",
             "unit": "Percent",
-            "extra": "macos-latest"
+            "extra": "macos-latest:pup-perf-metric"
           }
         ]
       },
@@ -6320,14 +6320,14 @@ window.BENCHMARK_DATA = {
             "value": 55.5553,
             "range": "1.6873",
             "unit": "Percent",
-            "extra": "ubuntu-latest"
+            "extra": "ubuntu-latest:pup-perf-metric"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 46.7072,
             "range": "4.9242",
             "unit": "Percent",
-            "extra": "macos-latest"
+            "extra": "macos-latest:pup-perf-metric"
           }
         ]
       },
@@ -6413,14 +6413,14 @@ window.BENCHMARK_DATA = {
             "value": 56.4664,
             "range": "2.1142",
             "unit": "Percent",
-            "extra": "ubuntu-latest"
+            "extra": "ubuntu-latest:pup-perf-metric"
           },
           {
             "name": "macos-latest:pup-perf-metric",
             "value": 63.4988,
             "range": "7.2933",
             "unit": "Percent",
-            "extra": "macos-latest"
+            "extra": "macos-latest:pup-perf-metric"
           }
         ]
       },
