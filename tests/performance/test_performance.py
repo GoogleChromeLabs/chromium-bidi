@@ -68,5 +68,5 @@ async def test_performance_screenshot(websocket, context_id,
     mean_value = statistics.mean(samples) * 1000
     median_value = statistics.median(samples) * 1000
 
-    print(f"PERF_METRIC:{current_test_name}_mean:{mean_value}")
-    print(f"PERF_METRIC:{current_test_name}_median:{median_value}")
+    print(f"PERF_METRIC:{current_test_name}_mean:{mean_value:.4f}")
+    print(f"PERF_METRIC:{current_test_name}_median:{median_value:.4f}")
