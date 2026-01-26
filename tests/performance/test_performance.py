@@ -25,13 +25,14 @@ REPEAT_TIMES = 20
 
 async def capture_screenshot(websocket, context_id):
     await execute_command(
+        # Increase timeout for screenshots.
         websocket, {
             "method": "browsingContext.captureScreenshot",
             "params": {
                 "origin": "document",
                 "context": context_id
             }
-        })
+        }, timeout=60)
 
 
 # Timeout 10 minutes.
