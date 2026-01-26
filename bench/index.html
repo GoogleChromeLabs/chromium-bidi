@@ -261,7 +261,7 @@
           // Calculate error bounds (ranges)
           const ranges = sortedCommits.map(c => {
             const p = points.find(pt => pt.commit.id === c.id);
-            return p && p.bench.range ? p.bench.range : 0;
+            return p && p.bench.range ? Number(p.bench.range) : 0;
           });
           const hasRanges = ranges.some(r => r > 0);
 
