@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769508212695,
+  "lastUpdate": 1769508873962,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -7539,6 +7539,178 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
             "value": 182.8918,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "98b039b14a754804611db175e0d475648cf6c07b",
+          "message": "chore(deps-dev): Bump the all group with 3 updates (#4017)\n\nBumps the all group with 3 updates:\n[@rollup/wasm-node](https://github.com/rollup/rollup),\n[rollup](https://github.com/rollup/rollup) and\n[typescript-eslint](https://github.com/typescript-eslint/typescript-eslint/tree/HEAD/packages/typescript-eslint).\n\nUpdates `@rollup/wasm-node` from 4.56.0 to 4.57.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/releases\"><code>@​rollup/wasm-node</code>'s\nreleases</a>.</em></p>\n<blockquote>\n<h2>v4.57.0</h2>\n<h2>4.57.0</h2>\n<p><em>2026-01-27</em></p>\n<h3>Features</h3>\n<ul>\n<li>Add import attributes to all plugin hooks that did not provide them\nyet (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n<li>Deprecate returning import attributes from <code>load</code> or\n<code>transform</code> hooks as that will no longer be supported with\nrollup 5 (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/5700\">#5700</a>:\nextend more hooks to include import attributes and add warnings (<a\nhref=\"https://github.com/TrickyPi\"><code>@​TrickyPi</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6243\">#6243</a>:\nfix(deps): update swc monorepo (major) (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6244\">#6244</a>:\nfix(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6245\">#6245</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6246\">#6246</a>:\nRefactor to reduce Rollup 5 upgrade diff (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/blob/master/CHANGELOG.md\"><code>@​rollup/wasm-node</code>'s\nchangelog</a>.</em></p>\n<blockquote>\n<h2>4.57.0</h2>\n<p><em>2026-01-27</em></p>\n<h3>Features</h3>\n<ul>\n<li>Add import attributes to all plugin hooks that did not provide them\nyet (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n<li>Deprecate returning import attributes from <code>load</code> or\n<code>transform</code> hooks as that will no longer be supported with\nrollup 5 (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/5700\">#5700</a>:\nextend more hooks to include import attributes and add warnings (<a\nhref=\"https://github.com/TrickyPi\"><code>@​TrickyPi</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6243\">#6243</a>:\nfix(deps): update swc monorepo (major) (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6244\">#6244</a>:\nfix(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6245\">#6245</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6246\">#6246</a>:\nRefactor to reduce Rollup 5 upgrade diff (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/743d0546f59799a8f7e4e2f4e1ad167f7dae333d\"><code>743d054</code></a>\n4.57.0</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/74121c7609af41f19935956ea77cfa25419cbf1d\"><code>74121c7</code></a>\nextend more hooks to include import attributes and add warnings (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/c519d82cffa62f912e01d7bf527cf628f127d333\"><code>c519d82</code></a>\nRefactor to reduce Rollup 5 upgrade diff (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6246\">#6246</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/7af842b3af052d1c305e90ac1fbf0cfb8c9fa359\"><code>7af842b</code></a>\nfix(deps): update swc monorepo (major) (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6243\">#6243</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/529997c005feafa46fa8d1e9571653ac33784941\"><code>529997c</code></a>\nchore(deps): lock file maintenance (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6245\">#6245</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/aa288d367cf23284aecf712d6aba3a295c70a09b\"><code>aa288d3</code></a>\nfix(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6244\">#6244</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/rollup/rollup/compare/v4.56.0...v4.57.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `rollup` from 4.56.0 to 4.57.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/releases\">rollup's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v4.57.0</h2>\n<h2>4.57.0</h2>\n<p><em>2026-01-27</em></p>\n<h3>Features</h3>\n<ul>\n<li>Add import attributes to all plugin hooks that did not provide them\nyet (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n<li>Deprecate returning import attributes from <code>load</code> or\n<code>transform</code> hooks as that will no longer be supported with\nrollup 5 (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/5700\">#5700</a>:\nextend more hooks to include import attributes and add warnings (<a\nhref=\"https://github.com/TrickyPi\"><code>@​TrickyPi</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6243\">#6243</a>:\nfix(deps): update swc monorepo (major) (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6244\">#6244</a>:\nfix(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6245\">#6245</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6246\">#6246</a>:\nRefactor to reduce Rollup 5 upgrade diff (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/blob/master/CHANGELOG.md\">rollup's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>4.57.0</h2>\n<p><em>2026-01-27</em></p>\n<h3>Features</h3>\n<ul>\n<li>Add import attributes to all plugin hooks that did not provide them\nyet (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n<li>Deprecate returning import attributes from <code>load</code> or\n<code>transform</code> hooks as that will no longer be supported with\nrollup 5 (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/5700\">#5700</a>:\nextend more hooks to include import attributes and add warnings (<a\nhref=\"https://github.com/TrickyPi\"><code>@​TrickyPi</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6243\">#6243</a>:\nfix(deps): update swc monorepo (major) (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6244\">#6244</a>:\nfix(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6245\">#6245</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6246\">#6246</a>:\nRefactor to reduce Rollup 5 upgrade diff (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/743d0546f59799a8f7e4e2f4e1ad167f7dae333d\"><code>743d054</code></a>\n4.57.0</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/74121c7609af41f19935956ea77cfa25419cbf1d\"><code>74121c7</code></a>\nextend more hooks to include import attributes and add warnings (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/5700\">#5700</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/c519d82cffa62f912e01d7bf527cf628f127d333\"><code>c519d82</code></a>\nRefactor to reduce Rollup 5 upgrade diff (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6246\">#6246</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/7af842b3af052d1c305e90ac1fbf0cfb8c9fa359\"><code>7af842b</code></a>\nfix(deps): update swc monorepo (major) (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6243\">#6243</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/529997c005feafa46fa8d1e9571653ac33784941\"><code>529997c</code></a>\nchore(deps): lock file maintenance (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6245\">#6245</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/aa288d367cf23284aecf712d6aba3a295c70a09b\"><code>aa288d3</code></a>\nfix(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6244\">#6244</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/rollup/rollup/compare/v4.56.0...v4.57.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `typescript-eslint` from 8.53.1 to 8.54.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/releases\">typescript-eslint's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v8.54.0</h2>\n<h2>8.54.0 (2026-01-26)</h2>\n<h3>🚀 Features</h3>\n<ul>\n<li><strong>eslint-plugin-internal:</strong> add prefer-tsutils-methods\nrule (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11974\">#11974</a>,\n<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/issues/11625\">#11625</a>)</li>\n<li><strong>scope-manager:</strong> support ScopeManager#addGlobals (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11914\">#11914</a>)</li>\n<li><strong>typescript-estree:</strong> add shortcut methods to\nParserServicesWithTypeInformation (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11965\">#11965</a>,\n<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/issues/11955\">#11955</a>)</li>\n</ul>\n<h3>🩹 Fixes</h3>\n<ul>\n<li><strong>eslint-plugin:</strong> [no-unused-private-class-members]\nprivate destructured class member is defined but used (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11785\">#11785</a>)</li>\n<li><strong>eslint-plugin:</strong> [no-unnecessary-type-assertion]\ncheck both base constraint and actual type for non-null assertions (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11967\">#11967</a>,\n<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/issues/11559\">#11559</a>)</li>\n<li><strong>scope-manager:</strong> fix catch clause scopes\n<code>def.name</code> (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11982\">#11982</a>)</li>\n<li><strong>scope-manager:</strong> prevent misidentification of\n<code>&quot;use strict&quot;</code> directives (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11995\">#11995</a>)</li>\n<li><strong>utils:</strong> handle missing <code>FlatESLint</code> and\n<code>LegacyESLint</code> (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11958\">#11958</a>)</li>\n</ul>\n<h3>❤️ Thank You</h3>\n<ul>\n<li>Brad Zacher <a\nhref=\"https://github.com/bradzacher\"><code>@​bradzacher</code></a></li>\n<li>fnx <a\nhref=\"https://github.com/DMartens\"><code>@​DMartens</code></a></li>\n<li>Francesco Trotta</li>\n<li>Josh Goldberg</li>\n<li>MinJae <a\nhref=\"https://github.com/Ju-MINJAE\"><code>@​Ju-MINJAE</code></a></li>\n<li>Minyeong Kim <a\nhref=\"https://github.com/minyeong981\"><code>@​minyeong981</code></a></li>\n<li>overlookmotel</li>\n<li>Yuya Yoshioka <a\nhref=\"https://github.com/YuyaYoshioka\"><code>@​YuyaYoshioka</code></a></li>\n<li>김현수 <a\nhref=\"https://github.com/Kimsoo0119\"><code>@​Kimsoo0119</code></a></li>\n</ul>\n<p>You can read about our <a\nhref=\"https://typescript-eslint.io/users/versioning\">versioning\nstrategy</a> and <a\nhref=\"https://typescript-eslint.io/users/releases\">releases</a> on our\nwebsite.</p>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-eslint/CHANGELOG.md\">typescript-eslint's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>8.54.0 (2026-01-26)</h2>\n<p>This was a version bump only for typescript-eslint to align it with\nother projects, there were no code changes.</p>\n<p>You can read about our <a\nhref=\"https://typescript-eslint.io/users/versioning\">versioning\nstrategy</a> and <a\nhref=\"https://typescript-eslint.io/users/releases\">releases</a> on our\nwebsite.</p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commit/d423e57622e1c8e789a1b84109d1ab2c15497507\"><code>d423e57</code></a>\nchore(release): publish 8.54.0</li>\n<li>See full diff in <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commits/v8.54.0/packages/typescript-eslint\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-27T10:06:57Z",
+          "tree_id": "d2061a6ce99e010d2fe2d6d41b5c73d13ddd6915",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/98b039b14a754804611db175e0d475648cf6c07b"
+        },
+        "date": 1769508872733,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 285.3391,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 273.6056,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 7213.9689,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 3300.5802,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
+            "value": 167.743,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
+            "value": 167.2752,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "value": 61.3869,
+            "range": "1.0627",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "value": 59.3547,
+            "range": "1.3933",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 143.8186,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 147.7061,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 274.2896,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 274.5975,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 278.8225,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 279.0853,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 6628.9338,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 3269.3419,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 300.5504,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 303.5169,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "value": 68.0467,
+            "range": "4.4422",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "value": 87.7162,
+            "range": "8.1751",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 10913.7119,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 5753.1072,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 183.2327,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 182.9937,
             "unit": "ms",
             "extra": "ubuntu-latest:e2e-perf-metric"
           }
