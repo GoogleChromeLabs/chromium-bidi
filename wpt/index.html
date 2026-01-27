@@ -114,7 +114,7 @@
     <div class="headings">
       <h1>
         <span>
-          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/d9e2f158682fd1461698f7b1df216dcf28cca0af"><code>d9e2f158</code></a>)
+          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/c6c9b8399ee84f0c673de1a694dbe3c6414deac9"><code>c6c9b839</code></a>)
         </span><br>
         <span>
           test results for WPT (<a href="https://github.com/web-platform-tests/wpt/commit/4af83765a2f5708bd7a8534a4db5d659b2cf6619"><code>4af83765</code></a>)
@@ -132,7 +132,7 @@
       </div>
     </div>
     
-      <h2 id="bidi-tests">BiDi tests - 5691 / 5817 (126 remaining)
+      <h2 id="bidi-tests">BiDi tests - 5689 / 5817 (128 remaining)
       </h2>
       <div>
         
@@ -3604,7 +3604,7 @@
         <summary class="path part">
           <span class="short-name">browsing_context</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context</span>
-          <span class="stat"><b>977/1002</b></span>
+          <span class="stat"><b>975/1002</b></span>
         </summary>
         
     <div class="test-card">
@@ -7397,7 +7397,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_end/download_end.py/test_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;5af988ab-8c8e-4c6a-8438-e306e328c2a6&#39; == &#39;889d1e0d-3659-4f67-89f1-c5c29de66589&#39;</small>
+          <br /><small>AssertionError: assert &#39;bc02dce3-4667-4c3b-bd16-bf70e9e0248d&#39; == &#39;92d3e058-1eab-44a6-8707-c2410ce0f018&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -7520,7 +7520,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py/test_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;19bc0111-7fea-4f20-8d29-472c7665dc45&#39; == &#39;3ac1c22f-8605-42f0-a7e6-7cbd3197ba01&#39;</small>
+          <br /><small>AssertionError: assert &#39;bc8ba714-cdb5-48fc-a4be-359801b78c44&#39; == &#39;083e1794-d2e9-4052-b9aa-1ab7f1c569c1&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -7548,7 +7548,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_redirect_to_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py/test_redirect_to_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;9eb9e7ae-fe78-49d2-bc0b-1195b0e124af&#39; == &#39;84246f09-de63-4971-89f3-2f97b0bcd233&#39;</small>
+          <br /><small>AssertionError: assert &#39;93ce3a18-8437-475c-aeb2-73618e604be1&#39; == &#39;2a014ff6-8a7c-439c-88b0-cd1fd3afe7a5&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -16593,7 +16593,7 @@
         <summary class="path part">
           <span class="short-name">set_viewport</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport</span>
-          <span class="stat"><b>85/86</b></span>
+          <span class="stat"><b>84/86</b></span>
         </summary>
         
     <div class="test-card">
@@ -17583,10 +17583,10 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">viewport.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport&#47;viewport.py</span>
-          <span class="stat"><b>18/18</b></span>
+          <span class="stat"><b>17/18</b></span>
         </summary>
         
       <div class="test-card test-card-subtest pass">
@@ -17701,17 +17701,17 @@
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_reset_to_default</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py/test_reset_to_default</span>
-          
+          <br /><small>AssertionError: assert {&#39;height&#39;: 333, &#39;width&#39;: 666} == {&#39;height&#39;: 513, &#39;width&#39;: 800}</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
@@ -18430,37 +18430,26 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">user_prompt_opened</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;user_prompt_opened</span>
-          <span class="stat"><b>18/18</b></span>
+          <span class="stat"><b>17/18</b></span>
         </summary>
         
-    <div class="test-card">
-      <details>
-        <summary class="path pass">
-          <span class="short-name">beforeunload.py</span>
-          <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;user_prompt_opened&#47;beforeunload.py</span>
-          <span class="stat"><b>1/1</b></span>
-        </summary>
-        
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
-          <span class="short-name">test_beforeunload</span>
-          <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py/test_beforeunload</span>
+          <span class="short-name">beforeunload.py</span>
+          <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py</span>
           
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>TIMEOUT</b>
           </span>
         </div>
       </div>
-      </details>
-    </div>
-
     <div class="test-card">
       <details>
         <summary class="path pass">
