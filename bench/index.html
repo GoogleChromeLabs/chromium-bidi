@@ -153,23 +153,43 @@
       const GROUP_CONFIG = {
         'ubuntu-latest-shell:pup-perf-metric:diff_rel': {
           order: 0,
-          title: 'Puppeteer BiDi vs CDP on Ubuntu',
-          description: 'Percentage difference between BiDi and CDP performance and 95% confidence interval of the values.'
+          title: 'Puppeteer: BiDi vs CDP (Ubuntu)',
+          description: 'Relative difference (%) with 95% Confidence Interval.'
         },
         'macos-latest-shell:pup-perf-metric:diff_rel': {
           order: 1,
-          title: 'Puppeteer BiDi vs CDP on Mac OS',
-          description: 'Percentage difference between BiDi and CDP performance and 95% confidence interval of the values. Expected to be flaky, but kept for keeping track.'
+          title: 'Puppeteer: BiDi vs CDP (Mac)',
+          description: 'Relative difference (%) with 95% Confidence Interval. Known flakiness.'
         },
-        'ubuntu-latest:e2e-perf-metric': {
+        'macos-latest-old-headless:e2e-perf-metric': {
           order: 2,
-          title: 'E2E performance on Ubuntu',
-          description: 'E2E performance tests on different runners ("cd" - chromedriver, "node" - NodeJS runner) and configurations (old and headless, headful).'
+          title: 'E2E: Mac (Headless Shell)',
+          description: 'Runner comparison: Chromedriver vs Node.'
         },
-        'macos-latest:e2e-perf-metric': {
+        'ubuntu-latest-old-headless:e2e-perf-metric': {
           order: 3,
-          title: 'E2E performance on Mac OS',
-          description: 'E2E performance tests on different runners ("cd" - chromedriver, "node" - NodeJS runner) and configurations (old and headless, headful).'
+          title: 'E2E: Ubuntu (Headless Shell)',
+          description: 'Runner comparison: Chromedriver vs Node.'
+        },
+        'macos-latest-new-headless:e2e-perf-metric': {
+          order: 4,
+          title: 'E2E: Mac (New Headless)',
+          description: 'Runner comparison: Chromedriver vs Node.'
+        },
+        'ubuntu-latest-new-headless:e2e-perf-metric': {
+          order: 5,
+          title: 'E2E: Ubuntu (New Headless)',
+          description: 'Runner comparison: Chromedriver vs Node.'
+        },
+        'macos-latest-headful:e2e-perf-metric': {
+          order: 6,
+          title: 'E2E: Mac (Headful)',
+          description: 'Runner comparison: Chromedriver vs Node.'
+        },
+        'ubuntu-latest-headful:e2e-perf-metric': {
+          order: 7,
+          title: 'E2E: Ubuntu (Headful)',
+          description: 'Runner comparison: Chromedriver vs Node.'
         },
       };
 
