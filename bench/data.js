@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769532105121,
+  "lastUpdate": 1769532958788,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -9079,6 +9079,234 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
             "value": 179.7689,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c6c9b8399ee84f0c673de1a694dbe3c6414deac9",
+          "message": "chore(deps): Bump github/codeql-action from 4.31.11 to 4.32.0 in the all group (#4024)\n\nBumps the all group with 1 update:\n[github/codeql-action](https://github.com/github/codeql-action).\n\nUpdates `github/codeql-action` from 4.31.11 to 4.32.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/github/codeql-action/releases\">github/codeql-action's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v4.32.0</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a\nhref=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.24.0\">2.24.0</a>.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3425\">#3425</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/github/codeql-action/blob/main/CHANGELOG.md\">github/codeql-action's\nchangelog</a>.</em></p>\n<blockquote>\n<h1>CodeQL Action Changelog</h1>\n<p>See the <a\nhref=\"https://github.com/github/codeql-action/releases\">releases\npage</a> for the relevant changes to the CodeQL CLI and language\npacks.</p>\n<h2>[UNRELEASED]</h2>\n<p>No user facing changes.</p>\n<h2>4.32.0 - 26 Jan 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a\nhref=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.24.0\">2.24.0</a>.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3425\">#3425</a></li>\n</ul>\n<h2>4.31.11 - 23 Jan 2026</h2>\n<ul>\n<li>When running a Default Setup workflow with <a\nhref=\"https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging\">Actions\ndebugging enabled</a>, the CodeQL Action will now use more unique names\nwhen uploading logs from the Dependabot authentication proxy as workflow\nartifacts. This ensures that the artifact names do not clash between\nmultiple jobs in a build matrix. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3409\">#3409</a></li>\n<li>Improved error handling throughout the CodeQL Action. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3415\">#3415</a></li>\n<li>Added experimental support for automatically excluding <a\nhref=\"https://docs.github.com/en/repositories/working-with-files/managing-files/customizing-how-changed-files-appear-on-github\">generated\nfiles</a> from the analysis. This feature is not currently enabled for\nany analysis. In the future, it may be enabled by default for some\nGitHub-managed analyses. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3318\">#3318</a></li>\n<li>The changelog extracts that are included with releases of the CodeQL\nAction are now shorter to avoid duplicated information from appearing in\nDependabot PRs. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3403\">#3403</a></li>\n</ul>\n<h2>4.31.10 - 12 Jan 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to 2.23.9. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3393\">#3393</a></li>\n</ul>\n<h2>4.31.9 - 16 Dec 2025</h2>\n<p>No user facing changes.</p>\n<h2>4.31.8 - 11 Dec 2025</h2>\n<ul>\n<li>Update default CodeQL bundle version to 2.23.8. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3354\">#3354</a></li>\n</ul>\n<h2>4.31.7 - 05 Dec 2025</h2>\n<ul>\n<li>Update default CodeQL bundle version to 2.23.7. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3343\">#3343</a></li>\n</ul>\n<h2>4.31.6 - 01 Dec 2025</h2>\n<p>No user facing changes.</p>\n<h2>4.31.5 - 24 Nov 2025</h2>\n<ul>\n<li>Update default CodeQL bundle version to 2.23.6. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3321\">#3321</a></li>\n</ul>\n<h2>4.31.4 - 18 Nov 2025</h2>\n<p>No user facing changes.</p>\n<h2>4.31.3 - 13 Nov 2025</h2>\n<ul>\n<li>CodeQL Action v3 will be deprecated in December 2026. The Action now\nlogs a warning for customers who are running v3 but could be running v4.\nFor more information, see <a\nhref=\"https://github.blog/changelog/2025-10-28-upcoming-deprecation-of-codeql-action-v3/\">Upcoming\ndeprecation of CodeQL Action v3</a>.</li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/b20883b0cd1f46c72ae0ba6d1090936928f9fa30\"><code>b20883b</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/github/codeql-action/issues/3428\">#3428</a>\nfrom github/update-v4.32.0-e3b8227a2</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/c9aa45dd0f8ba0b0433386779eb4798c2545156b\"><code>c9aa45d</code></a>\nUpdate changelog for v4.32.0</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/e3b8227a28dee88b8eaf5597d892a0cea497e634\"><code>e3b8227</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/github/codeql-action/issues/3427\">#3427</a>\nfrom github/henrymercer/bump-for-new-minor-series</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/8a01181ce209b3e3f51c6add1b9e1e744bdf0064\"><code>8a01181</code></a>\nCompare minor version number</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/80e142568fc335997bbf78abac097448213bd9ae\"><code>80e1425</code></a>\nBump minor version for CLI v2.24.0</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/b748848f27bc46a97bbb965c606bbc298e760a9a\"><code>b748848</code></a>\nBump the Action minor version number on new CodeQL minor version\nseries</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/5e767eff5aa6e2b719f353611ff3c363d6225d18\"><code>5e767ef</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/github/codeql-action/issues/3425\">#3425</a>\nfrom github/update-bundle/codeql-bundle-v2.24.0</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/975286947045be7e8b204a16b36b1b04b9feef86\"><code>9752869</code></a>\nAdd changelog note</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/c62c214723e7c0cdfb907bede6988df3a0640c7e\"><code>c62c214</code></a>\nUpdate default bundle to codeql-bundle-v2.24.0</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/25a224b8085c21d4d61b7fc051468805fc3ac490\"><code>25a224b</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/github/codeql-action/issues/3423\">#3423</a>\nfrom github/mbg/ci/yq-windows</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/github/codeql-action/compare/19b2f06db2b6f5108140aeb04014ef02b648f789...b20883b0cd1f46c72ae0ba6d1090936928f9fa30\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=github/codeql-action&package-manager=github_actions&previous-version=4.31.11&new-version=4.32.0)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-27T16:47:40Z",
+          "tree_id": "7f6476d876a811639bafacdaf13d37fec4a087b6",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/c6c9b8399ee84f0c673de1a694dbe3c6414deac9"
+        },
+        "date": 1769532956928,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 297.1153,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 275.5851,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 247.4296,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "value": 60.7599,
+            "range": "2.5173",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "value": 57.9294,
+            "range": "0.2782",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "value": 58.7983,
+            "range": "0.4019",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 169.068,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 167.5234,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 164.8044,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 279.2353,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 277.9396,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 266.6722,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 278.8333,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 280.1786,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 266.7928,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 11542.9739,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 4627.9352,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 2246.5514,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 9374.3326,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 4487.7387,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 2341.4429,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 330.5129,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 320.9357,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 299.973,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "value": 61.7652,
+            "range": "5.0617",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "value": 69.8705,
+            "range": "2.2687",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "value": 51.7476,
+            "range": "1.0735",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 10752.8984,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 4372.8804,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 2573.6885,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 182.9125,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 182.9546,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 181.5481,
             "unit": "ms",
             "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
           }
