@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769448621353,
+  "lastUpdate": 1769494824581,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -7071,6 +7071,166 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
             "value": 183.1195,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "58710eef0530ec7f05090f55f061abd8fa4bd7c5",
+          "message": "chore(deps): Bump wpt from `32006ad` to `fadfaa1` (#4015)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `32006ad` to\n`fadfaa1`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/fadfaa1a530fbbc35dddef0d2651f89a8a24a23d\"><code>fadfaa1</code></a>\nUse Ahem font in WPT old-content-is-inline.html (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57340\">#57340</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/16a84e425015b51895129aebc5a510cb9efcad89\"><code>16a84e4</code></a>\n[Connection-Allowlist] Add wpt for link rel prefetch</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/9b5600218e0a03dc5527ca7924e991d91627cf05\"><code>9b56002</code></a>\nFix a cookieStore web-platform test</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/4388c1a2a04ec2e5791ae3a25a7bc86a51877f2a\"><code>4388c1a</code></a>\nMake nsMathMLmmultiscriptsFrame handle italic correction of largeop\nbase.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/ce7533833901dbb8556ca1aadeb2b257c2eea5f9\"><code>ce75338</code></a>\nMap iframe-related tests to web-features (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/57323\">#57323</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/9eebd5afef864f414548791c6e8a9f840ecc01fc\"><code>9eebd5a</code></a>\nSuppressDetachCheck() on promise resolvers used by Obserable\nmethods</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/f169d441f42da2fd60b668c7aefd02e79c378b26\"><code>f169d44</code></a>\nCSP: test that U+000B is not treated as whitespace</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c2807c2f99f57d1426d253a9140821138c36c13b\"><code>c2807c2</code></a>\n[Masonry] Implement item-level baseline alignment for non-intrinsic</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/49dbfbe8f643b8aa911a5de1479eda3db5ea5d8a\"><code>49dbfbe</code></a>\nBail earlier in layout cache matching when breaking before a node.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/a0f0f2f274fa92cb144a93579e847e4d63e413f4\"><code>a0f0f2f</code></a>\n[animation-trigger] Remove play-alternate and play-pause actions</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/32006ad1c817b401a0ad454e8d786744f9a98ff1...fadfaa1a530fbbc35dddef0d2651f89a8a24a23d\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-27T07:13:37+01:00",
+          "tree_id": "f12c15e3f5ce5a37846d48adb38263bd27aed5c2",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/58710eef0530ec7f05090f55f061abd8fa4bd7c5"
+        },
+        "date": 1769494823283,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 421.0974,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 383.9839,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 13811.7119,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 6064.5519,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
+            "value": 167.6504,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
+            "value": 167.0859,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "value": 56.0634,
+            "range": "1.6799",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "value": 52.5252,
+            "range": "2.2396",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 166.1022,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 166.1838,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 274.5607,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 274.3103,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 277.2484,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 279.7174,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 11292.8731,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 3851.4955,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 244.9351,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 247.0086,
+            "unit": "ms",
+            "extra": "macos-latest:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "value": 48.2023,
+            "range": "4.5857",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "value": 63.8715,
+            "range": "9.9216",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 183.5451,
+            "unit": "ms",
+            "extra": "ubuntu-latest:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 183.3116,
             "unit": "ms",
             "extra": "ubuntu-latest:e2e-perf-metric"
           }
