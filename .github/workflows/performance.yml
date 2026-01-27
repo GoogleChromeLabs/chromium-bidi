@@ -66,7 +66,7 @@ jobs:
           npm link chromium-bidi
       - name: Run JS performance benchmark
         run: |
-          node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
+          DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
       - name: Extract and store performance metrics
         id: extract_metrics
         # Publish 2 metrics: mean and median relative difference. Group them together by
@@ -87,7 +87,10 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: pup-perf-metrics-${{ matrix.os }}
-          path: pup_perf_metrics.json
+          path: |
+            pup_perf_metrics.json
+            debug.cdp.log
+            debug.bidi.log
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   e2e-perf-metric:

@@ -17,6 +17,8 @@
  * limitations under the License.
  */
 
+import fs from 'fs';
+
 import puppeteer from 'puppeteer';
 
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
@@ -315,6 +317,13 @@ async function main() {
   console.log(
     `PERF_METRIC:DIFF_MEDIAN_REL:RANGE:${medianDiffRelMoe.toFixed(4)}`,
   );
+
+  if (process.env.DEBUG_CDP_DATA) {
+    fs.writeFileSync(process.env.DEBUG_CDP_DATA, stats.cdp.join('\n'));
+  }
+  if (process.env.DEBUG_BIDI_DATA) {
+    fs.writeFileSync(process.env.DEBUG_BIDI_DATA, stats.bidi.join('\n'));
+  }
 }
 
 await main();
