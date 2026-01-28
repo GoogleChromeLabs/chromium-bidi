@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [13.0.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.0.1...chromium-bidi-v13.0.2) (2026-01-28)
+
+
+### Bug Fixes
+
+* handle uncaught exceptions in close method ([#4005](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4005)) ([8f0ef95](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8f0ef95783e8bdcd5e08a29675db70146682f087))
+
 ## [13.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.0.0...chromium-bidi-v13.0.1) (2026-01-21)
 
 
