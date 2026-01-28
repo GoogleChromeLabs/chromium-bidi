@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+import os
 import statistics
 import time
 from pathlib import Path
@@ -21,6 +23,20 @@ import pytest
 from test_helpers import execute_command, goto_url
 
 REPEAT_TIMES = 20
+
+
+def log_metric(test_name, name, value, unit='ms'):
+    metrics_json_file = os.environ.get('METRICS_JSON_FILE')
+    metric = {
+        'name': f'{test_name}_{name}',
+        'value': value,
+        'unit': unit,
+    }
+    if metrics_json_file:
+        with open(metrics_json_file, 'a') as f:
+            f.write(json.dumps(metric) + ',\n')
+    else:
+        print(f"PERF_METRIC:{test_name}_{name}:{value:.4f}")
 
 
 async def capture_screenshot(websocket, context_id):
@@ -72,6 +88,6 @@ async def test_performance_screenshot(websocket, context_id,
     median_value = statistics.median(samples) * 1000
     p10_value = sorted(samples)[int(len(samples) * 0.1)] * 1000
 
-    print(f"PERF_METRIC:{current_test_name}_mean:{mean_value:.4f}")
-    print(f"PERF_METRIC:{current_test_name}_median:{median_value:.4f}")
-    print(f"PERF_METRIC:{current_test_name}_p10:{p10_value:.4f}")
+    log_metric(current_test_name, 'mean', mean_value)
+    log_metric(current_test_name, 'median', median_value)
+    log_metric(current_test_name, 'p10', p10_value)

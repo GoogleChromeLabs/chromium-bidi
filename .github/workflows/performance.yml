@@ -163,50 +163,23 @@ jobs:
       - name: Run E2E performance tests with xvfb-run
         if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
         timeout-minutes: 20
-        run: >
-          xvfb-run --auto-servernum
-          npm run e2e:${{ matrix.head }}
-          --
-          tests/performance/
-          -s
-          | tee tests_output.txt
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
+          METRICS_JSON_FILE: e2e_perf_metrics.json
+        run: |
+          xvfb-run --auto-servernum npm run e2e:${{ matrix.head }} -- tests/performance/ -s
+          cat e2e_perf_metrics.json
       - name: Run E2E performance tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
-        run: >
-          npm run e2e:${{ matrix.head }}
-          --
-          tests/performance/
-          -s
-          | tee tests_output.txt
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
-      - name: Extract and store performance metrics
-        id: extract_metrics
-        env:
-          PREFIX: ${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
+          METRICS_JSON_FILE: e2e_perf_metrics.json
         run: |
-          if [ -f tests_output.txt ] && grep -q 'PERF_METRIC:' tests_output.txt; then
-            echo "" > e2e_perf_metrics.json
-            grep 'PERF_METRIC:' tests_output.txt | awk -F'PERF_METRIC:' -v prefix="$PREFIX" '
-              BEGIN { count=0 }
-              {
-                split($2, parts, ":");
-                if (length(parts) >= 2) {
-                  printf "{\"name\": \"%s:%s\", \"value\": %s, \"unit\": \"ms\", \"extra\": \"${{ matrix.os }}-${{ matrix.head }}:e2e-perf-metric\"},", prefix, parts[1], parts[2];
-                  count++;
-                }
-              }
-            ' >> e2e_perf_metrics.json
-            echo "Extracted performance metrics:"
-            cat e2e_perf_metrics.json
-          else
-            echo "No performance metrics found or output file missing."
-          fi
+          npm run e2e:${{ matrix.head }} -- tests/performance/ -s
+          cat e2e_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
@@ -250,7 +223,7 @@ jobs:
             fi
           done
 
-          echo "{}]" >> performance-metrics-all.json
+          echo "]" >> performance-metrics-all.json
           echo "Combined performance metrics in JSON format:"
           cat performance-metrics-all.json
       - name: Upload combined performance metrics
