@@ -177,11 +177,6 @@ export class BrowserProcessor {
   ): Promise<Browser.SetClientWindowStateResult> {
     const {clientWindow} = params;
 
-    const windowInfo = await this.#browserCdpClient.sendCommand(
-      'Browser.getWindowForTarget',
-      {targetId: clientWindow},
-    );
-
     const bounds: Protocol.Browser.Bounds = {
       windowState: params.state ?? 'normal',
     };
@@ -201,12 +196,32 @@ export class BrowserProcessor {
       }
     }
 
+    const windowId = Number.parseInt(clientWindow);
+    if (isNaN(windowId)) {
+      throw new InvalidArgumentException('no such client window');
+    }
+
     await this.#browserCdpClient.sendCommand('Browser.setWindowBounds', {
-      windowId: windowInfo.windowId,
+      windowId,
       bounds,
     });
 
-    return await this.#getWindowInfo(clientWindow);
+    const result = await this.#browserCdpClient.sendCommand(
+      'Browser.getWindowBounds',
+      {
+        windowId,
+      },
+    );
+
+    return {
+      active: false,
+      clientWindow: `${windowId}`,
+      state: result.bounds.windowState ?? 'normal',
+      height: result.bounds.height ?? 0,
+      width: result.bounds.width ?? 0,
+      x: result.bounds.left ?? 0,
+      y: result.bounds.top ?? 0,
+    };
   }
 
   async getClientWindows(): Promise<Browser.GetClientWindowsResult> {

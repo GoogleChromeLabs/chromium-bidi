@@ -56,17 +56,15 @@ async def test_set_client_window_state_normal(websocket, context_id,
             "params": {},
         },
     )
-    assert result["clientWindows"] == [
-        {
-            "clientWindow": client_window_id,
-            "state": "normal",
-            "x": 0,
-            "y": 0,
-            "width": 1024,
-            "height": 768,
-            "active": ANY,
-        }
-    ]
+    assert result["clientWindows"] == [{
+        "clientWindow": client_window_id,
+        "state": "normal",
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 768,
+        "active": ANY,
+    }]
 
 
 @pytest.mark.asyncio
@@ -102,17 +100,15 @@ async def test_set_client_window_state_maximized(websocket, context_id,
             "params": {},
         },
     )
-    assert result["clientWindows"] == [
-        {
-            "clientWindow": client_window_id,
-            "state": "maximized",
-            "x": ANY,
-            "y": ANY,
-            "width": ANY,
-            "height": ANY,
-            "active": ANY,
-        }
-    ]
+    assert result["clientWindows"] == [{
+        "clientWindow": client_window_id,
+        "state": "maximized",
+        "x": ANY,
+        "y": ANY,
+        "width": ANY,
+        "height": ANY,
+        "active": ANY,
+    }]
 
 
 @pytest.mark.asyncio
@@ -148,17 +144,15 @@ async def test_set_client_window_state_minimized(websocket, context_id,
             "params": {},
         },
     )
-    assert result["clientWindows"] == [
-        {
-            "clientWindow": client_window_id,
-            "state": "minimized",
-            "x": ANY,
-            "y": ANY,
-            "width": ANY,
-            "height": ANY,
-            "active": ANY,
-        }
-    ]
+    assert result["clientWindows"] == [{
+        "clientWindow": client_window_id,
+        "state": "minimized",
+        "x": ANY,
+        "y": ANY,
+        "width": ANY,
+        "height": ANY,
+        "active": ANY,
+    }]
 
 
 @pytest.mark.asyncio
@@ -194,14 +188,12 @@ async def test_set_client_window_state_fullscreen(websocket, context_id,
             "params": {},
         },
     )
-    assert result["clientWindows"] == [
-        {
-            "clientWindow": client_window_id,
-            "state": "fullscreen",
-            "x": ANY,
-            "y": ANY,
-            "width": ANY,
-            "height": ANY,
-            "active": ANY,
-        }
-    ]
+    assert result["clientWindows"] == [{
+        "clientWindow": client_window_id,
+        "state": "fullscreen",
+        "x": ANY,
+        "y": ANY,
+        "width": ANY,
+        "height": ANY,
+        "active": ANY,
+    }]
