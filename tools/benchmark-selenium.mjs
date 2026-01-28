@@ -17,11 +17,15 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-
 import {Builder, ScriptManager} from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
 
+import {
+  calculateStats,
+  printStats,
+  printComparison,
+  printCiComparison,
+} from './benchmark-utils.mjs';
 import {
   installAndGetChromePath,
   installAndGetChromeDriverPath,
@@ -30,9 +34,7 @@ import {
 
 const RUNS = parseInt(process.env.RUNS) || 100;
 const ITERATIONS_PER_RUN = parseInt(process.env.ITERATIONS) || 100;
-const OS = process.env.OS || 'unknown';
 const WARMUP_ITERATIONS = Math.max(2, 0.1 * ITERATIONS_PER_RUN);
-const T_CRIT_95_LARGE_N = 1.96;
 
 const BENCHMARK_HTML = `
 <div style='font-family:Segoe UI, sans-serif; padding:20px; background:#f4f7f6;'>
@@ -43,93 +45,6 @@ const BENCHMARK_HTML = `
     </div>
   </div>
 </div>`;
-
-/**
- * Calculates the Standard Error for a specific percentile using rank-based confidence intervals.
- * @param {number[]} sortedLatencies
- * @param {number} percentile (between 0 and 1, e.g., 0.1 for P10, 0.5 for Median)
- * @returns {number} The estimated Standard Error.
- */
-function calculateRankBasedStandardError(sortedLatencies, percentile) {
-  const count = sortedLatencies.length;
-  // Standard Error of the Index
-  const seIndex = Math.sqrt(count * percentile * (1 - percentile));
-
-  // 95% Confidence Interval Indices
-  let lowerIndex = Math.floor(count * percentile - T_CRIT_95_LARGE_N * seIndex);
-  let upperIndex = Math.ceil(count * percentile + T_CRIT_95_LARGE_N * seIndex);
-
-  // Clamp indices to valid range.
-  lowerIndex = Math.max(0, lowerIndex);
-  upperIndex = Math.min(count - 1, upperIndex);
-
-  const lowerValue = sortedLatencies[lowerIndex];
-  const upperValue = sortedLatencies[upperIndex];
-
-  // Approximate Standard Error: (Upper - Lower) / (2 * Z)
-  return (upperValue - lowerValue) / (2 * T_CRIT_95_LARGE_N);
-}
-
-/**
- * Calculates statistical metrics for a set of benchmark run means.
- */
-function calculateStats(latencies) {
-  latencies.sort((a, b) => a - b);
-  const count = latencies.length;
-  const totalSum = latencies.reduce((sum, val) => sum + val, 0);
-
-  const mean = totalSum / count;
-  const min = latencies[0];
-  const max = latencies[count - 1];
-  const median = latencies[Math.floor(count * 0.5)];
-  const p10 = latencies[Math.floor(count * 0.1)];
-  const p90 = latencies[Math.floor(count * 0.9)];
-
-  const variance =
-    latencies.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
-    (count - 1);
-  const stdDev = Math.sqrt(variance);
-  const rsd = (stdDev / mean) * 100;
-  const standardErrorMean = stdDev / Math.sqrt(count);
-  const tCrit = T_CRIT_95_LARGE_N;
-  const marginOfErrorMean = tCrit * standardErrorMean;
-  const ciRsdMean = (marginOfErrorMean / mean) * 100;
-
-  const standardErrorMedian = calculateRankBasedStandardError(latencies, 0.5);
-  const marginOfErrorMedian = tCrit * standardErrorMedian;
-  const ciRsdMedian = (marginOfErrorMedian / median) * 100;
-
-  const standardErrorP10 = calculateRankBasedStandardError(latencies, 0.1);
-  const marginOfErrorP10 = tCrit * standardErrorP10;
-  const ciRsdP10 = (marginOfErrorP10 / p10) * 100;
-
-  const standardErrorP90 = calculateRankBasedStandardError(latencies, 0.9);
-  const marginOfErrorP90 = tCrit * standardErrorP90;
-  const ciRsdP90 = (marginOfErrorP90 / p90) * 100;
-
-  return {
-    mean,
-    median,
-    min,
-    max,
-    stdDev,
-    rsd,
-    standardErrorMean,
-    marginOfErrorMean,
-    ciRsdMean,
-    standardErrorMedian,
-    marginOfErrorMedian,
-    ciRsdMedian,
-    p10,
-    standardErrorP10,
-    marginOfErrorP10,
-    ciRsdP10,
-    p90,
-    standardErrorP90,
-    marginOfErrorP90,
-    ciRsdP90,
-  };
-}
 
 async function runIteration(mode, i, context, benchmarkAction) {
   const script = `(${benchmarkAction.toString()})(${i}, 'some-counter')`;
@@ -292,16 +207,6 @@ async function main() {
   const bidiFinal = calculateStats(stats.bidi);
 
   console.log('\n=== Results (Mean of Runs) ===');
-  const printStats = (name, final) => {
-    console.log(`${name}:`);
-    console.log(
-      `  Mean: ${final.mean.toFixed(4)}ms ±${final.marginOfErrorMean.toFixed(4)}ms (±${final.ciRsdMean.toFixed(2)}%)`,
-    );
-    console.log(
-      `  Median: ${final.median.toFixed(4)}ms ±${final.marginOfErrorMedian.toFixed(4)}ms (±${final.ciRsdMedian.toFixed(2)}%)`,
-    );
-  };
-
   printStats('Selenium Classic', classicFinal);
   printStats('Selenium CDP', cdpFinal);
   printStats('Selenium BiDi', bidiFinal);
@@ -313,93 +218,9 @@ async function main() {
   console.log('\n=== Comparison (BiDi vs CDP) ===');
   printComparison(bidiFinal, cdpFinal);
 
-  // Print CI metrics
-  const METRICS_JSON_FILE = process.env.METRICS_JSON_FILE;
-  if (METRICS_JSON_FILE) {
-    fs.writeFileSync(METRICS_JSON_FILE, '');
-  } else {
-    console.log('\n=== CI output ===');
-  }
-  printCiComparison('classic', classicFinal, cdpFinal, METRICS_JSON_FILE);
-  printCiComparison('bidi', bidiFinal, cdpFinal, METRICS_JSON_FILE);
-}
-
-function printCiComparison(prefix, final, baseline, metricsJsonFile) {
-  const printMetric = (
-    name,
-    finalValue,
-    baselineValue,
-    finalSe,
-    baselineSe,
-  ) => {
-    const diffAbs = finalValue - baselineValue;
-    const diffRel = (diffAbs / baselineValue) * 100;
-    const diffSe = Math.sqrt(Math.pow(finalSe, 2) + Math.pow(baselineSe, 2));
-    const diffMoe = diffSe * T_CRIT_95_LARGE_N;
-    const diffRelMoe = (diffMoe / baselineValue) * 100;
-
-    const metric = {
-      name: `${OS}-shell:selenium-perf-metric:${prefix}_diff_rel_${name.toLowerCase()}`,
-      value: diffRel,
-      range: diffRelMoe,
-      unit: 'Percent',
-      extra: `${OS}-shell:selenium-perf-metric:diff_rel`,
-    };
-    if (metricsJsonFile) {
-      fs.appendFileSync(metricsJsonFile, `${JSON.stringify(metric)},\n`);
-    } else {
-      console.log(`PERF_METRIC=${JSON.stringify(metric)}`);
-    }
-  };
-
-  printMetric(
-    'mean',
-    final.mean,
-    baseline.mean,
-    final.standardErrorMean,
-    baseline.standardErrorMean,
-  );
-  printMetric(
-    'median',
-    final.median,
-    baseline.median,
-    final.standardErrorMedian,
-    baseline.standardErrorMedian,
-  );
-  printMetric(
-    'p10',
-    final.p10,
-    baseline.p10,
-    final.standardErrorP10,
-    baseline.standardErrorP10,
-  );
-}
-
-function printComparison(bidiFinal, baselineFinal) {
-  const meanDiffAbs = bidiFinal.mean - baselineFinal.mean;
-  const meanDiffRel = (meanDiffAbs / baselineFinal.mean) * 100;
-  const meanDiffStandardError = Math.sqrt(
-    Math.pow(baselineFinal.standardErrorMean, 2) +
-      Math.pow(bidiFinal.standardErrorMean, 2),
-  );
-  const meanDiffAbsMoe = meanDiffStandardError * T_CRIT_95_LARGE_N;
-  const meanDiffRelMoe = (meanDiffAbsMoe / baselineFinal.mean) * 100;
-
-  const medianDiffAbs = bidiFinal.median - baselineFinal.median;
-  const medianDiffRel = (medianDiffAbs / baselineFinal.median) * 100;
-  const medianDiffStandardError = Math.sqrt(
-    Math.pow(baselineFinal.standardErrorMedian, 2) +
-      Math.pow(bidiFinal.standardErrorMedian, 2),
-  );
-  const medianDiffAbsMoe = medianDiffStandardError * T_CRIT_95_LARGE_N;
-  const medianDiffRelMoe = (medianDiffAbsMoe / baselineFinal.median) * 100;
-
-  console.log(
-    `  Mean:   ${meanDiffRel.toFixed(2)}% ±${meanDiffRelMoe.toFixed(2)}% / ${meanDiffAbs.toFixed(4)}ms ±${meanDiffAbsMoe.toFixed(4)}ms`,
-  );
-  console.log(
-    `  Median: ${medianDiffRel.toFixed(2)}% ±${medianDiffRelMoe.toFixed(2)}% / ${medianDiffAbs.toFixed(4)}ms ±${medianDiffAbsMoe.toFixed(4)}ms`,
-  );
+  // Print metrics to the file for CI.
+  printCiComparison('classic_diff', classicFinal, cdpFinal, 'selenium');
+  printCiComparison('bidi_diff', bidiFinal, cdpFinal, 'selenium');
 }
 
 await main();
