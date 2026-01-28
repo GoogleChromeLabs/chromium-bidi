@@ -23,8 +23,10 @@ import puppeteer from 'puppeteer';
 
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 
-const RUNS = 100;
-const ITERATIONS_PER_RUN = 100;
+const RUNS = parseInt(process.env.RUNS) || 100;
+const ITERATIONS_PER_RUN = parseInt(process.env.ITERATIONS) || 100;
+const OS = process.env.OS || 'unknown';
+const METRICS_JSON_FILE = process.env.METRICS_JSON_FILE;
 const WARMUP_ITERATIONS = Math.max(2, 0.1 * ITERATIONS_PER_RUN);
 
 // For large sample sizes (N > 1000), the t-distribution converges to the normal distribution.
@@ -371,60 +373,38 @@ async function main() {
     `  P90:    ${p90DiffRel.toFixed(2)}% ±${p90DiffRelMoe.toFixed(2)}% / ${p90DiffAbs.toFixed(4)}ms ±${p90DiffAbsMoe.toFixed(4)}ms`,
   );
 
-  console.log('\n=== CI output ===');
-
-  console.log(`PERF_METRIC:CDP_MEAN_ABS:VALUE:${cdpFinal.mean.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:CDP_MEAN_ABS:RANGE:${cdpFinal.marginOfErrorMean.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:CDP_MEDIAN_ABS:VALUE:${cdpFinal.median.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:CDP_MEDIAN_ABS:RANGE:${cdpFinal.marginOfErrorMedian.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:CDP_P90_ABS:VALUE:${cdpFinal.p90.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:CDP_P90_ABS:RANGE:${cdpFinal.marginOfErrorP90.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:BIDI_MEAN_ABS:VALUE:${bidiFinal.mean.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:BIDI_MEAN_ABS:RANGE:${bidiFinal.marginOfErrorMean.toFixed(4)}`,
-  );
-
-  console.log(
-    `PERF_METRIC:BIDI_MEDIAN_ABS:VALUE:${bidiFinal.median.toFixed(4)}`,
-  );
-  console.log(
-    `PERF_METRIC:BIDI_MEDIAN_ABS:RANGE:${bidiFinal.marginOfErrorMedian.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:BIDI_P90_ABS:VALUE:${bidiFinal.p90.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:BIDI_P90_ABS:RANGE:${bidiFinal.marginOfErrorP90.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:DIFF_MEAN_REL:VALUE:${meanDiffRel.toFixed(4)}`);
-  console.log(`PERF_METRIC:DIFF_MEAN_REL:RANGE:${meanDiffRelMoe.toFixed(4)}`);
-
-  console.log(`PERF_METRIC:DIFF_MEDIAN_REL:VALUE:${medianDiffRel.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:DIFF_MEDIAN_REL:RANGE:${medianDiffRelMoe.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:DIFF_P10_REL:VALUE:${p10DiffRel.toFixed(4)}`);
-  console.log(`PERF_METRIC:DIFF_P10_REL:RANGE:${p10DiffRelMoe.toFixed(4)}`);
-
-  console.log(`PERF_METRIC:DIFF_P90_REL:VALUE:${p90DiffRel.toFixed(4)}`);
-  console.log(`PERF_METRIC:DIFF_P90_REL:RANGE:${p90DiffRelMoe.toFixed(4)}`);
-
   if (process.env.DEBUG_CDP_DATA) {
     fs.writeFileSync(process.env.DEBUG_CDP_DATA, stats.cdp.join('\n'));
   }
   if (process.env.DEBUG_BIDI_DATA) {
     fs.writeFileSync(process.env.DEBUG_BIDI_DATA, stats.bidi.join('\n'));
   }
+
+  // Print CI metrics
+  if (METRICS_JSON_FILE) {
+    fs.writeFileSync(METRICS_JSON_FILE, '');
+  } else {
+    console.log('\n=== CI output ===');
+  }
+
+  const printDiffMetric = (name, value, range) => {
+    const metric = {
+      name: `${OS}-shell:puppeteer-perf-metric:bidi_diff_rel_${name}`,
+      value,
+      range,
+      unit: 'Percent',
+      extra: `${OS}-shell:puppeteer-perf-metric:diff_rel`,
+    };
+    if (METRICS_JSON_FILE) {
+      fs.appendFileSync(METRICS_JSON_FILE, `${JSON.stringify(metric)},\n`);
+    } else {
+      console.log(`PERF_METRIC=${JSON.stringify(metric)}`);
+    }
+  };
+
+  printDiffMetric('mean', meanDiffRel, meanDiffRelMoe);
+  printDiffMetric('median', medianDiffRel, medianDiffRelMoe);
+  printDiffMetric('p10', p10DiffRel, p10DiffRelMoe);
 }
 
 await main();

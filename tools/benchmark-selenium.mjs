@@ -17,10 +17,9 @@
  * limitations under the License.
  */
 
-import {
-  Builder,
-  ScriptManager,
-} from 'selenium-webdriver';
+import fs from 'fs';
+
+import {Builder, ScriptManager} from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
 
 import {
@@ -31,6 +30,7 @@ import {
 
 const RUNS = parseInt(process.env.RUNS) || 100;
 const ITERATIONS_PER_RUN = parseInt(process.env.ITERATIONS) || 100;
+const OS = process.env.OS || 'unknown';
 const WARMUP_ITERATIONS = Math.max(2, 0.1 * ITERATIONS_PER_RUN);
 const T_CRIT_95_LARGE_N = 1.96;
 
@@ -150,7 +150,12 @@ async function runIteration(mode, i, context, benchmarkAction) {
   }
 }
 
-async function runBenchmarkRun(mode, chromePath, chromeDriverPath, bidiMapperPath) {
+async function runBenchmarkRun(
+  mode,
+  chromePath,
+  chromeDriverPath,
+  bidiMapperPath,
+) {
   const service = new chrome.ServiceBuilder(chromeDriverPath).addArguments(
     `--bidi-mapper-path=${bidiMapperPath}`,
   );
@@ -181,11 +186,11 @@ async function runBenchmarkRun(mode, chromePath, chromeDriverPath, bidiMapperPat
       scriptManager = await ScriptManager(bidiContextId, driver);
     }
 
-    const url = 'data:text/html,' + encodeURIComponent(BENCHMARK_HTML);
+    const url = `data:text/html,${encodeURIComponent(BENCHMARK_HTML)}`;
     await driver.get(url);
 
     const benchmarkAction = (index, id) => {
-      document.getElementById(id).innerText = 'Iter: ' + (index + 1);
+      document.getElementById(id).innerText = `Iter: ${index + 1}`;
       return {
         iteration: index + 1,
         timestamp: Date.now(),
@@ -201,13 +206,23 @@ async function runBenchmarkRun(mode, chromePath, chromeDriverPath, bidiMapperPat
 
     // Warmup.
     for (let i = 0; i < WARMUP_ITERATIONS; i++) {
-        await runIteration(mode, i, {driver, cdpSession, scriptManager, bidiContextId}, benchmarkAction);
+      await runIteration(
+        mode,
+        i,
+        {driver, cdpSession, scriptManager, bidiContextId},
+        benchmarkAction,
+      );
     }
 
     const latencies = [];
     for (let i = 0; i < ITERATIONS_PER_RUN; i++) {
       const start = performance.now();
-      await runIteration(mode, i, {driver, cdpSession, scriptManager, bidiContextId}, benchmarkAction);
+      await runIteration(
+        mode,
+        i,
+        {driver, cdpSession, scriptManager, bidiContextId},
+        benchmarkAction,
+      );
       const end = performance.now();
       latencies.push(end - start);
     }
@@ -225,7 +240,7 @@ async function main() {
   console.log(`Using Chrome: ${chromePath}`);
   console.log(`Using ChromeDriver: ${chromeDriverPath}`);
   console.log(`Using BiDi Mapper: ${bidiMapperPath}`);
-  
+
   console.log(
     `Starting Benchmark: ${RUNS} runs x ${ITERATIONS_PER_RUN} iterations...`,
   );
@@ -241,17 +256,32 @@ async function main() {
 
     // Run Classic
     process.stdout.write(`running Classic... `);
-    const classicLatencies = await runBenchmarkRun('classic', chromePath, chromeDriverPath, bidiMapperPath);
+    const classicLatencies = await runBenchmarkRun(
+      'classic',
+      chromePath,
+      chromeDriverPath,
+      bidiMapperPath,
+    );
     stats.classic.push(...classicLatencies);
 
     // Run CDP
     process.stdout.write(`running CDP... `);
-    const cdpLatencies = await runBenchmarkRun('cdp', chromePath, chromeDriverPath, bidiMapperPath);
+    const cdpLatencies = await runBenchmarkRun(
+      'cdp',
+      chromePath,
+      chromeDriverPath,
+      bidiMapperPath,
+    );
     stats.cdp.push(...cdpLatencies);
 
     // Run BiDi
     process.stdout.write(`running BiDi... `);
-    const bidiLatencies = await runBenchmarkRun('bidi', chromePath, chromeDriverPath, bidiMapperPath);
+    const bidiLatencies = await runBenchmarkRun(
+      'bidi',
+      chromePath,
+      chromeDriverPath,
+      bidiMapperPath,
+    );
     stats.bidi.push(...bidiLatencies);
 
     console.log('Done.');
@@ -263,15 +293,15 @@ async function main() {
 
   console.log('\n=== Results (Mean of Runs) ===');
   const printStats = (name, final) => {
-      console.log(`${name}:`);
-      console.log(
-        `  Mean: ${final.mean.toFixed(4)}ms ±${final.marginOfErrorMean.toFixed(4)}ms (±${final.ciRsdMean.toFixed(2)}%)`,
-      );
-      console.log(
-        `  Median: ${final.median.toFixed(4)}ms ±${final.marginOfErrorMedian.toFixed(4)}ms (±${final.ciRsdMedian.toFixed(2)}%)`,
-      );
+    console.log(`${name}:`);
+    console.log(
+      `  Mean: ${final.mean.toFixed(4)}ms ±${final.marginOfErrorMean.toFixed(4)}ms (±${final.ciRsdMean.toFixed(2)}%)`,
+    );
+    console.log(
+      `  Median: ${final.median.toFixed(4)}ms ±${final.marginOfErrorMedian.toFixed(4)}ms (±${final.ciRsdMedian.toFixed(2)}%)`,
+    );
   };
-  
+
   printStats('Selenium Classic', classicFinal);
   printStats('Selenium CDP', cdpFinal);
   printStats('Selenium BiDi', bidiFinal);
@@ -284,39 +314,60 @@ async function main() {
   printComparison(bidiFinal, cdpFinal);
 
   // Print CI metrics
-  console.log('\n=== CI output ===');
-  printCiComparison('CLASSIC_VS_CDP', classicFinal, cdpFinal);
-  printCiComparison('BIDI_VS_CDP', bidiFinal, cdpFinal);
+  const METRICS_JSON_FILE = process.env.METRICS_JSON_FILE;
+  if (METRICS_JSON_FILE) {
+    fs.writeFileSync(METRICS_JSON_FILE, '');
+  } else {
+    console.log('\n=== CI output ===');
+  }
+  printCiComparison('classic', classicFinal, cdpFinal, METRICS_JSON_FILE);
+  printCiComparison('bidi', bidiFinal, cdpFinal, METRICS_JSON_FILE);
 }
 
-function printCiComparison(prefix, final, baseline) {
-  const printMetric = (name, finalValue, baselineValue, finalSe, baselineSe) => {
+function printCiComparison(prefix, final, baseline, metricsJsonFile) {
+  const printMetric = (
+    name,
+    finalValue,
+    baselineValue,
+    finalSe,
+    baselineSe,
+  ) => {
     const diffAbs = finalValue - baselineValue;
     const diffRel = (diffAbs / baselineValue) * 100;
     const diffSe = Math.sqrt(Math.pow(finalSe, 2) + Math.pow(baselineSe, 2));
     const diffMoe = diffSe * T_CRIT_95_LARGE_N;
     const diffRelMoe = (diffMoe / baselineValue) * 100;
 
-    console.log(`PERF_METRIC:SELENIUM_${prefix}_${name}_REL:VALUE:${diffRel.toFixed(4)}`);
-    console.log(`PERF_METRIC:SELENIUM_${prefix}_${name}_REL:RANGE:${diffRelMoe.toFixed(4)}`);
+    const metric = {
+      name: `${OS}-shell:selenium-perf-metric:${prefix}_diff_rel_${name.toLowerCase()}`,
+      value: diffRel,
+      range: diffRelMoe,
+      unit: 'Percent',
+      extra: `${OS}-shell:selenium-perf-metric:diff_rel`,
+    };
+    if (metricsJsonFile) {
+      fs.appendFileSync(metricsJsonFile, `${JSON.stringify(metric)},\n`);
+    } else {
+      console.log(`PERF_METRIC=${JSON.stringify(metric)}`);
+    }
   };
 
   printMetric(
-    'MEAN',
+    'mean',
     final.mean,
     baseline.mean,
     final.standardErrorMean,
     baseline.standardErrorMean,
   );
   printMetric(
-    'MEDIAN',
+    'median',
     final.median,
     baseline.median,
     final.standardErrorMedian,
     baseline.standardErrorMedian,
   );
   printMetric(
-    'P10',
+    'p10',
     final.p10,
     baseline.p10,
     final.standardErrorP10,
