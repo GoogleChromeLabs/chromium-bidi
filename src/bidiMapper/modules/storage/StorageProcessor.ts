@@ -77,7 +77,9 @@ export class StorageProcessor {
         // are returned.
         (c) =>
           partitionKey.sourceOrigin === undefined ||
-          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin,
+          (c.partitionKey?.topLevelSite === partitionKey.sourceOrigin &&
+            c.partitionKey?.hasCrossSiteAncestor ===
+              partitionKey['goog:hasCrossSiteAncestor']),
       )
       .filter((cdpCookie) => {
         const bidiCookie = cdpToBiDiCookie(cdpCookie);
@@ -212,7 +214,12 @@ export class StorageProcessor {
       if (
         key !== undefined &&
         value !== undefined &&
-        !['type', 'sourceOrigin', 'userContext'].includes(key)
+        ![
+          'type',
+          'sourceOrigin',
+          'userContext',
+          'goog:hasCrossSiteAncestor',
+        ].includes(key)
       ) {
         unsupportedPartitionKeys.set(key, value);
       }
@@ -229,10 +236,15 @@ export class StorageProcessor {
 
     // Set `userContext` to `default` if not provided, as it's required in Chromium.
     const userContext = descriptor.userContext ?? 'default';
+    const hasCrossSiteAncestor =
+      descriptor['goog:hasCrossSiteAncestor'] ?? false;
 
     return {
       userContext,
       ...(sourceOrigin === undefined ? {} : {sourceOrigin}),
+      ...(sourceOrigin === undefined
+        ? {}
+        : {'goog:hasCrossSiteAncestor': hasCrossSiteAncestor}),
     };
   }
 
