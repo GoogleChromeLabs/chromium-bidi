@@ -172,6 +172,43 @@ export class BrowserProcessor {
     };
   }
 
+  async setClientWindowState(
+    params: Browser.SetClientWindowStateParameters,
+  ): Promise<Browser.SetClientWindowStateResult> {
+    const {clientWindow} = params;
+
+    const windowInfo = await this.#browserCdpClient.sendCommand(
+      'Browser.getWindowForTarget',
+      {targetId: clientWindow},
+    );
+
+    const bounds: Protocol.Browser.Bounds = {
+      windowState: params.state ?? 'normal',
+    };
+
+    if (bounds.windowState === 'normal') {
+      if ('width' in params && params.width !== undefined) {
+        bounds.width = params.width;
+      }
+      if ('height' in params && params.height !== undefined) {
+        bounds.height = params.height;
+      }
+      if ('x' in params && params.x !== undefined) {
+        bounds.left = params.x;
+      }
+      if ('y' in params && params.y !== undefined) {
+        bounds.top = params.y;
+      }
+    }
+
+    await this.#browserCdpClient.sendCommand('Browser.setWindowBounds', {
+      windowId: windowInfo.windowId,
+      bounds,
+    });
+
+    return await this.#getWindowInfo(clientWindow);
+  }
+
   async getClientWindows(): Promise<Browser.GetClientWindowsResult> {
     const topLevelTargetIds = this.#browsingContextStorage
       .getTopLevelContexts()
