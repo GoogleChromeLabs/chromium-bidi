@@ -178,20 +178,20 @@ export class BrowserProcessor {
     const {clientWindow} = params;
 
     const bounds: Protocol.Browser.Bounds = {
-      windowState: params.state ?? 'normal',
+      windowState: params.state,
     };
 
-    if (bounds.windowState === 'normal') {
-      if ('width' in params && params.width !== undefined) {
+    if (params.state === 'normal') {
+      if (params.width !== undefined) {
         bounds.width = params.width;
       }
-      if ('height' in params && params.height !== undefined) {
+      if (params.height !== undefined) {
         bounds.height = params.height;
       }
-      if ('x' in params && params.x !== undefined) {
+      if (params.x !== undefined) {
         bounds.left = params.x;
       }
-      if ('y' in params && params.y !== undefined) {
+      if (params.y !== undefined) {
         bounds.top = params.y;
       }
     }
