@@ -68,6 +68,9 @@ jobs:
         env:
           METRICS_JSON_FILE: pup_perf_metrics.json
           OS: ${{ matrix.os }}
+          # Reduce runs on macOS to balance execution time and flakiness,
+          # while maintaining sufficient signal for performance monitoring.
+          RUNS: ${{ matrix.os == 'ubuntu-latest' && 100 || 20 }}
         run: |
           DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs
           cat pup_perf_metrics.json
@@ -113,6 +116,9 @@ jobs:
         env:
           METRICS_JSON_FILE: selenium_perf_metrics.json
           OS: ${{ matrix.os }}
+          # Reduce runs on macOS to balance execution time and flakiness,
+          # while maintaining sufficient signal for performance monitoring.
+          RUNS: ${{ matrix.os == 'ubuntu-latest' && 100 || 20 }}
         run: |
           node tools/benchmark-selenium.mjs
           cat selenium_perf_metrics.json
@@ -216,15 +222,11 @@ jobs:
         run: |
           echo "[" > performance-metrics-all.json
 
-          find artifacts -name "*metrics.json" -print0 | while IFS= read -r -d '' file; do
-            if grep -q '[^[:space:]]' "$file"; then
-              if [ "$first_metric" = false ]; then
-                echo "," >> performance-metrics-all.json
-              fi
-              cat "$file" >> performance-metrics-all.json
-              first_metric=false
-            fi
-          done
+          find artifacts -name "*metrics.json" -exec cat {} + >> performance-metrics-all.json
+
+          # The metrics files have a trailing comma, but JSON does not allow it in the list.
+          # Remove the last comma when combining metrics together.
+          sed -i '$ s/,$//' performance-metrics-all.json
 
           echo "]" >> performance-metrics-all.json
           echo "Combined performance metrics in JSON format:"

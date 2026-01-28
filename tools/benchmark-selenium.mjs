@@ -148,11 +148,11 @@ async function runBenchmarkRun(
 }
 
 async function main() {
-  const chromePath = installAndGetChromePath();
+  const chromePath = installAndGetChromePath(true);
   const chromeDriverPath = installAndGetChromeDriverPath();
   const bidiMapperPath = getBidiMapperPath();
 
-  console.log(`Using Chrome: ${chromePath}`);
+  console.log(`Using Headless Shell: ${chromePath}`);
   console.log(`Using ChromeDriver: ${chromeDriverPath}`);
   console.log(`Using BiDi Mapper: ${bidiMapperPath}`);
 
