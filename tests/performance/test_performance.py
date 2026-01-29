@@ -22,7 +22,7 @@ from pathlib import Path
 import pytest
 from test_helpers import execute_command, goto_url
 
-REPEAT_TIMES = os.environ.get('RUNS', 10)
+REPEAT_TIMES = int(os.environ.get('RUNS', 10))
 
 
 def log_metric(test_name, name, value, unit='ms'):
