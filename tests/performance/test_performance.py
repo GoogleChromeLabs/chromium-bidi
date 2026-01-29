@@ -30,18 +30,17 @@ def log_metric(test_name, name, value, unit='ms'):
     head = os.environ.get('HEAD', 'unknownHead')
     runner = os.environ.get('RUNNER', 'unknownRunner')
     metrics_json_file = os.environ.get('METRICS_JSON_FILE')
-    prefix = f"{os_name}-{head}-{runner}"
     metric = {
-        'name': f'{prefix}:{test_name}_{name}',
+        'name': f'{os_name}-{head}-{runner}:{test_name}_{name}',
         'value': value,
         'unit': unit,
-        'extra': f'{prefix}:e2e-perf-metric'
+        'extra': f'{os_name}-{head}:e2e-perf-metric'
     }
     if metrics_json_file:
         with open(metrics_json_file, 'a') as f:
             f.write(json.dumps(metric) + ',\n')
     else:
-        print(f"PERF_METRIC:{prefix}:{test_name}_{name}:{value:.4f}")
+        print(f"PERF_METRIC:{json.dumps(metric)}")
 
 
 async def capture_screenshot(websocket, context_id):

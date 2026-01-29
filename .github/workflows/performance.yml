@@ -173,22 +173,7 @@ jobs:
         run: pip install pipenv
       - name: Install python dependencies
         run: pipenv install
-      - name: Run E2E performance tests with xvfb-run
-        if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
-        timeout-minutes: 20
-        env:
-          VERBOSE: ${{ github.event.inputs.verbose }}
-          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
-          METRICS_JSON_FILE: e2e_perf_metrics.json
-          OS: ${{ matrix.os }}
-          HEAD: ${{ matrix.head }}
-          RUNNER: ${{ matrix.kind }}
-          RUNS: ${{ matrix.os == 'macos-latest' && 5 || 100 }}
-        run: |
-          xvfb-run --auto-servernum npm run e2e:${{ matrix.head }} -- tests/performance/ -s
-          cat e2e_perf_metrics.json
       - name: Run E2E performance tests
-        if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
@@ -197,6 +182,7 @@ jobs:
           # Reduce runs on macOS to balance execution time and flakiness,
           # while maintaining sufficient signal for performance monitoring.
           RUNS: ${{ matrix.os == 'macos-latest' && 5 || 100 }}
+          OS: ${{ matrix.os }}
           HEAD: ${{ matrix.head }}
           RUNNER: ${{ matrix.kind }}
         run: |
