@@ -182,7 +182,7 @@ jobs:
           METRICS_JSON_FILE: e2e_perf_metrics.json
           # Reduce runs on macOS to balance execution time and flakiness,
           # while maintaining sufficient signal for performance monitoring.
-          RUNS: ${{ matrix.os == 'macos-latest' && 5 || 100 }}
+          REPEAT_TIMES: ${{ matrix.os == 'macos-latest' && 5 || 50 }}
           OS: ${{ matrix.os }}
           HEAD: ${{ matrix.head }}
           RUNNER: ${{ matrix.kind }}
