@@ -17,10 +17,22 @@ import pytest
 from anys import ANY_BOOL, ANY_NUMBER
 from test_helpers import execute_command, goto_url
 
-SOME_WIDTH = 1234
-SOME_HEIGHT = 798
-SOME_X = 88
-SOME_Y = 99
+# These values are important for headful runner in some conditions:
+# - x and y should be large enough to avoid window decorations (e.g. macOS menu bar).
+#   Reference values for menu bars / window decorations:
+#   - macOS menu bar: ~22px to ~32px (depending on OS version and screen notch)
+#   - Windows title bar: ~30px
+#   - Linux (GNOME) top bar: ~27px
+# - width and height should be small enough to fit in CI runners.
+#   Reference values for GitHub runners:
+#   - Windows: ~1024x768
+#   - Linux (Xvfb): often ~1280x1024
+#   - macOS: inconsistent, often behaves like ~1024x768 or similar
+# - width should be large enough to be valid for Chromium (e.g. > 500).
+SOME_X = 33
+SOME_Y = 44
+SOME_HEIGHT = 555
+SOME_WIDTH = 666
 
 
 @pytest.mark.asyncio
