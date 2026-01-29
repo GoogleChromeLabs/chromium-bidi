@@ -160,7 +160,7 @@ async function main() {
   printComparison(bidiFinal, cdpFinal);
 
   // Print metrics to the file for CI.
-  printCiComparison('diff', bidiFinal, cdpFinal, 'pup');
+  printCiComparison('diff', bidiFinal, cdpFinal, 'puppeteer');
 }
 
 await main();
