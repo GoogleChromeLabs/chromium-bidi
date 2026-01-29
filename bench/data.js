@@ -6942,13 +6942,13 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
             "value": 166.8703,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
             "value": 166.4653,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
@@ -7126,13 +7126,13 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
             "value": 167.6504,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
             "value": 167.0859,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
@@ -7286,13 +7286,13 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
             "value": 166.8202,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
             "value": 165.7894,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
@@ -7434,13 +7434,13 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
             "value": 168.4842,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
             "value": 166.9716,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
@@ -7594,13 +7594,13 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
             "value": 167.743,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
             "value": 167.2752,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
@@ -8426,19 +8426,19 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
             "value": 166.8692,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
             "value": 166.7727,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_p10",
             "value": 163.6072,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
@@ -8882,19 +8882,19 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
             "value": 166.9272,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
             "value": 167.3276,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_p10",
             "value": 162.3828,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
@@ -9812,19 +9812,19 @@ window.BENCHMARK_DATA = {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_mean",
             "value": 166.7654,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_median",
             "value": 166.4455,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-headful-node:test_performance_screenshot_p10",
             "value": 164.6447,
             "unit": "ms",
-            "extra": "ubuntu-latest-headful:e2e-perf-metric"
+            "extra": "legacy-ubuntu-latest-headful:e2e-perf-metric"
           },
           {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
