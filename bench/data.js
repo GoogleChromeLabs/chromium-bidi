@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769678919909,
+  "lastUpdate": 1769685300945,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -9993,6 +9993,264 @@ window.BENCHMARK_DATA = {
             "value": 181.639,
             "unit": "ms",
             "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "69349599+sadym-chromium@users.noreply.github.com",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "dd46fa92932cfa93b1739ab028ec88d33e6ffe6d",
+          "message": "ci: measure chromedriver+selenium performance (#4028)",
+          "timestamp": "2026-01-29T12:09:10+01:00",
+          "tree_id": "9857baebd43714114e4d8272d249ab86a6a9c5db",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/dd46fa92932cfa93b1739ab028ec88d33e6ffe6d"
+        },
+        "date": 1769685299654,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 209.3507585999987,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 210.34741699997994,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 201.89604199998712,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 2447.0973082,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 2362.9396659999884,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 2155.375041999946,
+            "unit": "ms"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 58.29440428290695,
+            "range": "0.27909458638859275",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 57.89349024073114,
+            "range": "0.057726547666168436",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 59.50894909127265,
+            "range": "0.07999755835417756",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 165.0433031900019,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 166.15098300000142,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 158.8479540000094,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 300.93660392999965,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 302.83377649999466,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 277.7078539999991,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 296.2106143899973,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 299.84733099999517,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 269.09718000001703,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 3402.7946670000065,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 3415.3297920000227,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 2394.803542000005,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 2057.162908200007,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 1877.2384590000115,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 1810.8980829999837,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 229.0708502000001,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 225.51329200000225,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 203.932334000001,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 66.41117544953784,
+            "range": "1.4506631724364962",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 73.19153193212867,
+            "range": "1.0565285843594614",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 50.32559052459668,
+            "range": "0.31646428189254827",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 1913.005599799999,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 1918.0942909999885,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 1639.605250000045,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_mean",
+            "value": 183.39319817999638,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_median",
+            "value": 183.16915549999635,
+            "unit": "ms"
+          },
+          {
+            "name": "test_performance_screenshot_p10",
+            "value": 180.02334400000564,
+            "unit": "ms"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 382.3154042491514,
+            "range": "9.786500868552231",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 598.4295767107324,
+            "range": "13.425498242296188",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 591.6992917539195,
+            "range": "11.4674213591324",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 511.86190301439245,
+            "range": "15.41921350503553",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 656.4770814999863,
+            "range": "32.76752011477014",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 459.99784610977315,
+            "range": "8.267000011196588",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
           }
         ]
       }
