@@ -119,9 +119,8 @@ jobs:
           HEAD: ${{ matrix.head }}
           RUNNER: ${{ matrix.kind }}
           OS: ${{ matrix.os }}
-          # Reduce runs on macOS to balance execution time and flakiness,
-          # while maintaining sufficient signal for performance monitoring.
-          RUNS: ${{ matrix.os == 'macos-latest' && 50 || 100 }}
+          # Precise metrics are not required; a general impression is sufficient.
+          RUNS: 10
           ITERATIONS: 100
         run: |
           node tools/benchmark-selenium.mjs
