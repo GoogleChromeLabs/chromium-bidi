@@ -22,21 +22,25 @@ from pathlib import Path
 import pytest
 from test_helpers import execute_command, goto_url
 
-REPEAT_TIMES = 20
+REPEAT_TIMES = os.environ.get('RUNS', 10)
 
 
 def log_metric(test_name, name, value, unit='ms'):
+    os_name = os.environ.get('OS', 'unknownOs')
+    head = os.environ.get('HEAD', 'unknownHead')
+    runner = os.environ.get('RUNNER', 'unknownRunner')
     metrics_json_file = os.environ.get('METRICS_JSON_FILE')
     metric = {
         'name': f'{test_name}_{name}',
         'value': value,
         'unit': unit,
     }
+    prefix = f"{os_name}-{head}-{runner}"
     if metrics_json_file:
         with open(metrics_json_file, 'a') as f:
             f.write(json.dumps(metric) + ',\n')
     else:
-        print(f"PERF_METRIC:{test_name}_{name}:{value:.4f}")
+        print(f"PERF_METRIC:{prefix}:{test_name}_{name}:{value:.4f}")
 
 
 async def capture_screenshot(websocket, context_id):
