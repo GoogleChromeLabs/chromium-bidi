@@ -29,7 +29,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pup-perf-metric:
+  puppeteer-perf-metric:
     name: Puppeteer ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -76,7 +76,7 @@ jobs:
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: pup-perf-metrics-${{ matrix.os }}
+          name: puppeteer-perf-metrics-${{ matrix.os }}
           path: |
             puppeteer_perf_metrics.json
             debug.cdp.log
@@ -207,7 +207,7 @@ jobs:
       pull-requests: write
       contents: write
     runs-on: ubuntu-latest
-    needs: [pup-perf-metric, selenium-perf-metric, e2e-perf-metric]
+    needs: [puppeteer-perf-metric, selenium-perf-metric, e2e-perf-metric]
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
