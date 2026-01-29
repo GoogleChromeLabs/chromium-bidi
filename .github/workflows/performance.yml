@@ -142,6 +142,9 @@ jobs:
         head: [headful, 'new-headless', 'old-headless']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
         kind: [cd, node]
+        exclude:
+          - os: ubuntu-latest
+            head: headful
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
