@@ -28,22 +28,13 @@ import {
   RUNS,
   ITERATIONS_PER_RUN,
   WARMUP_ITERATIONS,
+  BENCHMARK_HTML,
 } from './benchmark-utils.mjs';
 import {
   installAndGetChromePath,
   installAndGetChromeDriverPath,
   getBidiMapperPath,
 } from './path-getter/path-getter.mjs';
-
-const BENCHMARK_HTML = `
-<div style='font-family:Segoe UI, sans-serif; padding:20px; background:#f4f7f6;'>
-  <h2>Protocol Benchmark</h2>
-  <div style='display:flex; gap:15px;'>
-    <div id='some-box' style='flex:1; padding:15px; background:white; border-left:5px solid #3498db;'>
-      Some counter<div id='some-counter' style='font-size:24px;'>0</div><div id='some-res'>-</div>
-    </div>
-  </div>
-</div>`;
 
 async function runIteration(mode, i, context, benchmarkAction) {
   const script = `(${benchmarkAction.toString()})(${i}, 'some-counter')`;
