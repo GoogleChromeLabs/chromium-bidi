@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769697028239,
+  "lastUpdate": 1769698195126,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -11419,6 +11419,294 @@ window.BENCHMARK_DATA = {
             "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
             "value": 365.9611796969304,
             "range": "6.744533722814411",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4ceedab572a25af3e5b60cd5e5d5d889d8bdc526",
+          "message": "chore(deps): Bump the all group with 3 updates (#4036)\n\nBumps the all group with 3 updates:\n[puppeteer](https://github.com/puppeteer/puppeteer),\n[@actions/core](https://github.com/actions/toolkit/tree/HEAD/packages/core)\nand [@puppeteer/browsers](https://github.com/puppeteer/puppeteer).\n\nUpdates `puppeteer` from 24.36.0 to 24.36.1\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/puppeteer/puppeteer/releases\">puppeteer's\nreleases</a>.</em></p>\n<blockquote>\n<h2>puppeteer-core: v24.36.1</h2>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.36.0...puppeteer-core-v24.36.1\">24.36.1</a>\n(2026-01-27)</h2>\n<h3>♻️ Chores</h3>\n<ul>\n<li>improve TargetManager code (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14602\">#14602</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/2c1e0025594ee28e5ddff318eb91307941eaa3a0\">2c1e002</a>)</li>\n</ul>\n<h3>Dependencies</h3>\n<ul>\n<li>The following workspace dependencies were updated\n<ul>\n<li>dependencies\n<ul>\n<li><code>@​puppeteer/browsers</code> bumped from 2.11.1 to 2.11.2</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n<h2>puppeteer: v24.36.1</h2>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.36.0...puppeteer-v24.36.1\">24.36.1</a>\n(2026-01-27)</h2>\n<h3>♻️ Chores</h3>\n<ul>\n<li><strong>puppeteer:</strong> Synchronize puppeteer versions</li>\n</ul>\n<h3>Dependencies</h3>\n<ul>\n<li>The following workspace dependencies were updated\n<ul>\n<li>dependencies\n<ul>\n<li><code>@​puppeteer/browsers</code> bumped from 2.11.1 to 2.11.2</li>\n<li>puppeteer-core bumped from 24.36.0 to 24.36.1</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/puppeteer/puppeteer/blob/main/CHANGELOG.md\">puppeteer's\nchangelog</a>.</em></p>\n<blockquote>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.36.0...puppeteer-v24.36.1\">24.36.1</a>\n(2026-01-27)</h2>\n<h3>♻️ Chores</h3>\n<ul>\n<li>improve TargetManager code (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14602\">#14602</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/2c1e0025594ee28e5ddff318eb91307941eaa3a0\">2c1e002</a>)</li>\n</ul>\n<h3>Dependencies</h3>\n<ul>\n<li>The following workspace dependencies were updated\n<ul>\n<li>dependencies\n<ul>\n<li><code>@​puppeteer/browsers</code> bumped from 2.11.1 to 2.11.2</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/5d820f2872cdec366fbf6069d03ebc094d8b97f2\"><code>5d820f2</code></a>\nchore: release main (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14601\">#14601</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/2c1e0025594ee28e5ddff318eb91307941eaa3a0\"><code>2c1e002</code></a>\nrefactor: improve TargetManager code (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14602\">#14602</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/306fa41d544efe5142e0dbc7a8c3b1a365dc079a\"><code>306fa41</code></a>\nchore(deps): update site deps (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14608\">#14608</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/f09b945e5f6259967a914e5ba4a25c95f4483fe7\"><code>f09b945</code></a>\nchore(deps-dev): bump the dev-dependencies group across 1 directory with\n15 u...</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/7d9eaa1778c18b9aef8ecff02d3c5de6c87df70a\"><code>7d9eaa1</code></a>\nchore(deps): bump the all group across 1 directory with 5 updates (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14605\">#14605</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/34b1635c87342682ae1deac03242795c097a4b34\"><code>34b1635</code></a>\ntest: fix ng-schematics tests (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14606\">#14606</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/c95d1bfd4be847d07f81b4a8c819786d3f51534d\"><code>c95d1bf</code></a>\nfix: typo in the config path in getConfigHomeLinux (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14600\">#14600</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.36.0...puppeteer-v24.36.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `@actions/core` from 2.0.2 to 3.0.0\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/actions/toolkit/blob/main/packages/core/RELEASES.md\"><code>@​actions/core</code>'s\nchangelog</a>.</em></p>\n<blockquote>\n<h2>3.0.0</h2>\n<ul>\n<li><strong>Breaking change</strong>: Package is now ESM-only\n<ul>\n<li>CommonJS consumers must use dynamic <code>import()</code> instead of\n<code>require()</code></li>\n</ul>\n</li>\n</ul>\n<h2>2.0.3</h2>\n<ul>\n<li>Bump <code>@actions/http-client</code> to <code>3.0.2</code></li>\n</ul>\n<h2>2.0.1</h2>\n<ul>\n<li>Bump <code>@​actions/exec</code> from 1.1.1 to 2.0.0 <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/2199\">#2199</a></li>\n</ul>\n<h2>2.0.0</h2>\n<ul>\n<li>Add support for Node 24 <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/2110\">#2110</a></li>\n<li>Bump <code>@​actions/http-client</code> from 2.0.1 to 3.0.0</li>\n</ul>\n<h2>1.11.1</h2>\n<ul>\n<li>Fix uses of <code>crypto.randomUUID</code> on Node 18 and earlier <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/1842\">#1842</a></li>\n</ul>\n<h3>1.11.0</h3>\n<ul>\n<li>Add platform info utilities <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/1551\">#1551</a></li>\n<li>Remove dependency on <code>uuid</code> package <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/1824\">#1824</a></li>\n</ul>\n<h3>1.10.1</h3>\n<ul>\n<li>Fix error message reference in oidc utils <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/1511\">#1511</a></li>\n</ul>\n<h3>1.10.0</h3>\n<ul>\n<li><code>saveState</code> and <code>setOutput</code> now use\nenvironment files if available <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/1178\">#1178</a></li>\n<li><code>getMultilineInput</code> now correctly trims whitespace by\ndefault <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/1185\">#1185</a></li>\n</ul>\n<h3>1.9.1</h3>\n<ul>\n<li>Randomize delimiter when calling\n<code>core.exportVariable</code></li>\n</ul>\n<h3>1.9.0</h3>\n<ul>\n<li>Added <code>toPosixPath</code>, <code>toWin32Path</code> and\n<code>toPlatformPath</code> utilities <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/1102\">#1102</a></li>\n</ul>\n<h3>1.8.2</h3>\n<ul>\n<li>Update to v2.0.1 of <code>@actions/http-client</code> <a\nhref=\"https://redirect.github.com/actions/toolkit/pull/1087\">#1087</a></li>\n</ul>\n<h3>1.8.1</h3>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li>See full diff in <a\nhref=\"https://github.com/actions/toolkit/commits/HEAD/packages/core\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `@puppeteer/browsers` from 2.11.1 to 2.11.2\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/puppeteer/puppeteer/releases\"><code>@​puppeteer/browsers</code>'s\nreleases</a>.</em></p>\n<blockquote>\n<h2>browsers: v2.11.2</h2>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/browsers-v2.11.1...browsers-v2.11.2\">2.11.2</a>\n(2026-01-27)</h2>\n<h3>🛠️ Fixes</h3>\n<ul>\n<li>typo in the config path in getConfigHomeLinux (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14600\">#14600</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/c95d1bfd4be847d07f81b4a8c819786d3f51534d\">c95d1bf</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/puppeteer/puppeteer/blob/main/CHANGELOG.md\"><code>@​puppeteer/browsers</code>'s\nchangelog</a>.</em></p>\n<blockquote>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/puppeteer-v22.11.1...puppeteer-v22.11.2\">22.11.2</a>\n(2024-06-18)</h2>\n<h3>Miscellaneous Chores</h3>\n<ul>\n<li><strong>puppeteer:</strong> Synchronize puppeteer versions</li>\n</ul>\n<h3>Dependencies</h3>\n<ul>\n<li>The following workspace dependencies were updated\n<ul>\n<li>dependencies\n<ul>\n<li>puppeteer-core bumped from 22.11.1 to 22.11.2</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n<h3>Bug Fixes</h3>\n<ul>\n<li><strong>deps:</strong> bump ws to 8.17.1 (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12605\">#12605</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/49bcb2537e45c903e6c1d5d360b0077f0153c5d2\">49bcb25</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/5d820f2872cdec366fbf6069d03ebc094d8b97f2\"><code>5d820f2</code></a>\nchore: release main (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14601\">#14601</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/2c1e0025594ee28e5ddff318eb91307941eaa3a0\"><code>2c1e002</code></a>\nrefactor: improve TargetManager code (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14602\">#14602</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/306fa41d544efe5142e0dbc7a8c3b1a365dc079a\"><code>306fa41</code></a>\nchore(deps): update site deps (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14608\">#14608</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/f09b945e5f6259967a914e5ba4a25c95f4483fe7\"><code>f09b945</code></a>\nchore(deps-dev): bump the dev-dependencies group across 1 directory with\n15 u...</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/7d9eaa1778c18b9aef8ecff02d3c5de6c87df70a\"><code>7d9eaa1</code></a>\nchore(deps): bump the all group across 1 directory with 5 updates (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14605\">#14605</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/34b1635c87342682ae1deac03242795c097a4b34\"><code>34b1635</code></a>\ntest: fix ng-schematics tests (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14606\">#14606</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/c95d1bfd4be847d07f81b4a8c819786d3f51534d\"><code>c95d1bf</code></a>\nfix: typo in the config path in getConfigHomeLinux (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14600\">#14600</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/c5fdc0c57ddc736439ed8f20a2ccc24647a896ff\"><code>c5fdc0c</code></a>\nchore: release main (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14558\">#14558</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/514ef71fec32686446a2465dba9565ca88800f89\"><code>514ef71</code></a>\ntest: skip a flaky test (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14599\">#14599</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/d63dafde50d1f07e4c39b2ca53b7e7907109791e\"><code>d63dafd</code></a>\nfeat(webdriver): use <code>emulation.setClientHintsOverride</code> (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14588\">#14588</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/puppeteer/puppeteer/compare/browsers-v2.11.1...browsers-v2.11.2\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-01-29T14:47:35Z",
+          "tree_id": "9785b1e3d5870025bf20c600984c7788671425e1",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/4ceedab572a25af3e5b60cd5e5d5d889d8bdc526"
+        },
+        "date": 1769698192956,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 236.91570840001077,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 230.30808299995442,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 219.49387500001194,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 3464.288533599961,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 2952.8209589999506,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 2485.089124999945,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 348.7167576421831,
+            "range": "3.5084232539749647",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 357.66980062936426,
+            "range": "2.250345917460521",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 370.56858494479445,
+            "range": "10.696596330038933",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 450.71554850805154,
+            "range": "14.294744693233232",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 319.781633598271,
+            "range": "2.63632404679772",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 329.43693379106287,
+            "range": "2.027318164488819",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 165.68593006666862,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 165.75932000000648,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 162.05225800000278,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 274.9566828666673,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 277.3315769999982,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 261.9788800000009,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 269.61642019999863,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 267.0383990000005,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 263.5027699999881,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 3544.2249500000116,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 3228.3655000000235,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 2607.609167000021,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 2020.5293250000009,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 2044.5057919999954,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 1678.840249999979,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 293.1618745999913,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 280.0857499998983,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 261.3491659999454,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 2701.36444999996,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 2231.390082999951,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 1870.320250000077,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 183.69277540000058,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 183.1277549999868,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 179.15330499999982,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 314.5021784535251,
+            "range": "20.497981894685328",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 416.9346035511662,
+            "range": "17.85649059576601",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 420.6031976743167,
+            "range": "10.277063405713385",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 405.3169907629581,
+            "range": "30.410972911257467",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 383.4783040143196,
+            "range": "21.03895050718135",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 341.59389534881166,
+            "range": "8.460794496878329",
             "unit": "Percent",
             "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
           }
