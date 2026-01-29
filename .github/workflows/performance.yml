@@ -71,7 +71,7 @@ jobs:
           # Reduce runs on macOS to balance execution time and flakiness,
           # while maintaining sufficient signal for performance monitoring.
           RUNS: ${{ matrix.os == 'macos-latest' && 50 || 100 }}
-          ITERATIONS: 1000
+          ITERATIONS: 100
         run: |
           DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs
           cat puppeteer_perf_metrics.json
