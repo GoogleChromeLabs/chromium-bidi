@@ -16,6 +16,25 @@
  */
 
 import fs from 'fs';
+import {parseArgs} from 'node:util';
+
+const {values} = parseArgs({
+  options: {
+    runs: {
+      type: 'string',
+      default: process.env.RUNS || '2',
+    },
+    iterations: {
+      type: 'string',
+      default: process.env.ITERATIONS || '1000',
+    },
+  },
+  strict: false,
+});
+
+export const RUNS = values.runs;
+export const ITERATIONS_PER_RUN = values.iterations;
+export const WARMUP_ITERATIONS = Math.max(2, 0.1 * ITERATIONS_PER_RUN);
 
 // Critical Value (z*) for 95% Confidence Interval using the T-distribution
 // with infinite degrees of freedom (which converges to the normal distribution/Z-score).

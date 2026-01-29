@@ -25,16 +25,15 @@ import {
   printStats,
   printComparison,
   printCiComparison,
+  RUNS,
+  ITERATIONS_PER_RUN,
+  WARMUP_ITERATIONS,
 } from './benchmark-utils.mjs';
 import {
   installAndGetChromePath,
   installAndGetChromeDriverPath,
   getBidiMapperPath,
 } from './path-getter/path-getter.mjs';
-
-const RUNS = parseInt(process.env.RUNS) || 100;
-const ITERATIONS_PER_RUN = parseInt(process.env.ITERATIONS) || 100;
-const WARMUP_ITERATIONS = Math.max(2, 0.1 * ITERATIONS_PER_RUN);
 
 const BENCHMARK_HTML = `
 <div style='font-family:Segoe UI, sans-serif; padding:20px; background:#f4f7f6;'>

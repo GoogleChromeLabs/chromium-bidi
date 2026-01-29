@@ -66,17 +66,19 @@ jobs:
           npm link chromium-bidi
       - name: Run JS performance benchmark
         env:
-          METRICS_JSON_FILE: pup_perf_metrics.json
+          METRICS_JSON_FILE: puppeteer_perf_metrics.json
           OS: ${{ matrix.os }}
+          RUNS: 100
+          ITERATIONS: 1000
         run: |
           DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs
-          cat pup_perf_metrics.json
+          cat puppeteer_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: pup-perf-metrics-${{ matrix.os }}
           path: |
-            pup_perf_metrics.json
+            puppeteer_perf_metrics.json
             debug.cdp.log
             debug.bidi.log
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
@@ -118,6 +120,7 @@ jobs:
           # Reduce runs on macOS to balance execution time and flakiness,
           # while maintaining sufficient signal for performance monitoring.
           RUNS: ${{ matrix.os == 'macos-latest' && 50 || 100 }}
+          ITERATIONS: 100
         run: |
           node tools/benchmark-selenium.mjs
           cat selenium_perf_metrics.json

@@ -17,6 +17,8 @@
  * limitations under the License.
  */
 
+import fs from 'fs';
+
 import puppeteer from 'puppeteer';
 
 import {
@@ -24,12 +26,14 @@ import {
   printStats,
   printComparison,
   printCiComparison,
+  RUNS,
+  ITERATIONS_PER_RUN,
+  WARMUP_ITERATIONS,
 } from './benchmark-utils.mjs';
-import {installAndGetChromePath} from './path-getter/path-getter.mjs';
-
-const RUNS = parseInt(process.env.RUNS) || 100;
-const ITERATIONS_PER_RUN = parseInt(process.env.ITERATIONS) || 100;
-const WARMUP_ITERATIONS = Math.max(2, 0.1 * ITERATIONS_PER_RUN);
+import {
+  installAndGetChromePath,
+  getBidiMapperPath,
+} from './path-getter/path-getter.mjs';
 
 const BENCHMARK_HTML = `
 <div style='font-family:Segoe UI, sans-serif; padding:20px; background:#f4f7f6;'>
@@ -100,8 +104,23 @@ async function runBenchmarkRun(launchOptions, chromePath) {
 }
 
 async function main() {
+  // Verify if we are using the linked version of chromium-bidi.
+  // Puppeteer installs chromium-bidi as a dependency in its own node_modules,
+  // which prevents the linked version (in the root node_modules) from being used.
+  // We remove the nested dependency to force Puppeteer to use the one in the root.
+  const nestedChromiumBidiPath =
+    'node_modules/puppeteer-core/node_modules/chromium-bidi';
+  if (fs.existsSync(nestedChromiumBidiPath)) {
+    console.log(
+      'Removing nested chromium-bidi dependency to use linked version...',
+    );
+    fs.rmSync(nestedChromiumBidiPath, {recursive: true, force: true});
+  }
+
   const chromePath = installAndGetChromePath(true);
+  const bidiMapperPath = getBidiMapperPath();
   console.log(`Using Chrome: ${chromePath}`);
+  console.log(`Using BiDi Mapper: ${bidiMapperPath}`);
   console.log(
     `Starting Benchmark: ${RUNS} runs x ${ITERATIONS_PER_RUN} iterations...`,
   );
