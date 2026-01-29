@@ -16,13 +16,6 @@ on:
   pull_request:
   push:
     branches: 'main'
-  workflow_dispatch:
-    inputs:
-      verbose:
-        description: Verbose logging
-        default: false
-        required: false
-        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -177,12 +170,11 @@ jobs:
       - name: Run E2E performance tests
         timeout-minutes: 20
         env:
-          VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           METRICS_JSON_FILE: e2e_perf_metrics.json
           # Reduce runs on macOS to balance execution time and flakiness,
           # while maintaining sufficient signal for performance monitoring.
-          REPEAT_TIMES: ${{ matrix.os == 'macos-latest' && 5 || 15 }}
+          ITERATIONS: ${{ matrix.os == 'macos-latest' && 5 || 15 }}
           OS: ${{ matrix.os }}
           HEAD: ${{ matrix.head }}
           RUNNER: ${{ matrix.kind }}

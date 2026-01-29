@@ -22,7 +22,7 @@ from pathlib import Path
 import pytest
 from test_helpers import execute_command, goto_url
 
-REPEAT_TIMES = int(os.environ.get('RUNS', 10))
+ITERATIONS = int(os.environ.get('ITERATIONS', 10))
 
 
 def log_metric(test_name, name, value, unit='ms'):
@@ -83,7 +83,7 @@ async def test_performance_screenshot(websocket, context_id,
     await capture_screenshot(websocket, context_id)
 
     samples = []
-    for i in range(REPEAT_TIMES):
+    for i in range(ITERATIONS):
         start_time = time.perf_counter()
         await capture_screenshot(websocket, context_id)
         samples.append(time.perf_counter() - start_time)
