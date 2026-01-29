@@ -6126,18 +6126,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric",
+            "name": "ubuntu-latest:puppeteer-perf-metric",
             "value": 57.1717,
             "range": "1.7743",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric"
           },
           {
-            "name": "macos-latest:pup-perf-metric",
+            "name": "macos-latest:puppeteer-perf-metric",
             "value": 54.0963,
             "range": "4.8295",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric"
           }
         ]
       },
@@ -6209,18 +6209,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric",
+            "name": "ubuntu-latest:puppeteer-perf-metric",
             "value": 56.2104,
             "range": "1.8967",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric"
           },
           {
-            "name": "macos-latest:pup-perf-metric",
+            "name": "macos-latest:puppeteer-perf-metric",
             "value": 40.7171,
             "range": "5.4258",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric"
           }
         ]
       },
@@ -6297,18 +6297,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric",
+            "name": "ubuntu-latest:puppeteer-perf-metric",
             "value": 55.5553,
             "range": "1.6873",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric"
           },
           {
-            "name": "macos-latest:pup-perf-metric",
+            "name": "macos-latest:puppeteer-perf-metric",
             "value": 46.7072,
             "range": "4.9242",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric"
           }
         ]
       },
@@ -6390,18 +6390,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric",
+            "name": "ubuntu-latest:puppeteer-perf-metric",
             "value": 56.4664,
             "range": "2.1142",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric"
           },
           {
-            "name": "macos-latest:pup-perf-metric",
+            "name": "macos-latest:puppeteer-perf-metric",
             "value": 63.4988,
             "range": "7.2933",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric"
           }
         ]
       },
@@ -6478,14 +6478,14 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric",
+            "name": "ubuntu-latest:puppeteer-perf-metric",
             "value": 56.2624,
             "range": "1.8736",
             "unit": "Percent",
             "extra": "legacy-ubuntu-latest"
           },
           {
-            "name": "macos-latest:pup-perf-metric",
+            "name": "macos-latest:puppeteer-perf-metric",
             "value": 51.9939,
             "range": "5.1512",
             "unit": "Percent",
@@ -6566,14 +6566,14 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric",
+            "name": "ubuntu-latest:puppeteer-perf-metric",
             "value": 57.102,
             "range": "1.7354",
             "unit": "Percent",
             "extra": "legacy-ubuntu-latest"
           },
           {
-            "name": "macos-latest:pup-perf-metric",
+            "name": "macos-latest:puppeteer-perf-metric",
             "value": 53.604,
             "range": "7.1048",
             "unit": "Percent",
@@ -6614,18 +6614,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest:puppeteer-perf-metric:diff_mean_rel",
             "value": 55.8212,
             "range": "1.8338",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest:puppeteer-perf-metric:diff_median_rel",
             "value": 57.3589,
             "range": "2.6257",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
@@ -6658,18 +6658,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "macos-latest:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest:puppeteer-perf-metric:diff_mean_rel",
             "value": 47.1599,
             "range": "5.4991",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest:puppeteer-perf-metric:diff_median_rel",
             "value": 55.0862,
             "range": "12.0064",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot",
@@ -6721,18 +6721,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest:puppeteer-perf-metric:diff_mean_rel",
             "value": 58.4241,
             "range": "1.6939",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest:puppeteer-perf-metric:diff_median_rel",
             "value": 58.5001,
             "range": "2.3672",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
@@ -6760,18 +6760,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "macos-latest:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest:puppeteer-perf-metric:diff_mean_rel",
             "value": 41.3051,
             "range": "4.4883",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest:puppeteer-perf-metric:diff_median_rel",
             "value": 63.6207,
             "range": "10.9661",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot",
@@ -6823,18 +6823,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest:puppeteer-perf-metric:diff_mean_rel",
             "value": 51.4289,
             "range": "3.7724",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest:puppeteer-perf-metric:diff_median_rel",
             "value": 59.7218,
             "range": "5.5389",
             "unit": "Percent",
-            "extra": "legacy-ubuntu-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-ubuntu-latest:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot",
@@ -6867,18 +6867,18 @@ window.BENCHMARK_DATA = {
             "unit": "ms"
           },
           {
-            "name": "macos-latest:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest:puppeteer-perf-metric:diff_mean_rel",
             "value": 44.0916,
             "range": "3.8345",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest:puppeteer-perf-metric:diff_median_rel",
             "value": 56.4979,
             "range": "7.9959",
             "unit": "Percent",
-            "extra": "legacy-macos-latest:pup-perf-metric:diff_rel"
+            "extra": "legacy-macos-latest:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot",
@@ -6951,18 +6951,18 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-headful:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 60.7659,
             "range": "1.1525",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 59.7566,
             "range": "1.5082",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7037,18 +7037,18 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 64.3214,
             "range": "3.4142",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 81.841,
             "range": "5.9857",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7135,18 +7135,18 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-headful:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 56.0634,
             "range": "1.6799",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 52.5252,
             "range": "2.2396",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7209,18 +7209,18 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 48.2023,
             "range": "4.5857",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 63.8715,
             "range": "9.9216",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
@@ -7295,18 +7295,18 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-headful:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 60.2526,
             "range": "1.0999",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 59.6422,
             "range": "1.4454",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7357,18 +7357,18 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 69.7123,
             "range": "4.5454",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 90.7569,
             "range": "8.2283",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
@@ -7443,18 +7443,18 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-headful:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 58.5701,
             "range": "1.1318",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 57.8809,
             "range": "1.4886",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7505,18 +7505,18 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 57.5555,
             "range": "3.9019",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 50.8932,
             "range": "6.7984",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7603,18 +7603,18 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-headful:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 61.3869,
             "range": "1.0627",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 59.3547,
             "range": "1.3933",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7677,18 +7677,18 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 68.0467,
             "range": "4.4422",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 87.7162,
             "range": "8.1751",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7775,25 +7775,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-new-headless:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 58.6862,
             "range": "1.3036",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 59.2363,
             "range": "0.2869",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 60.8944,
             "range": "0.3534",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -7886,25 +7886,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 58.2293,
             "range": "6.4499",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 83.3353,
             "range": "3.914",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 62.7463,
             "range": "1.9567",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
@@ -8003,25 +8003,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-new-headless:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 60.6761,
             "range": "1.1297",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 59.2963,
             "range": "0.2543",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 61.1619,
             "range": "0.3833",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -8114,25 +8114,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 61.6059,
             "range": "4.7146",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 53.8997,
             "range": "1.3192",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 49.6944,
             "range": "0.8032",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
@@ -8213,25 +8213,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-new-headless:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 59.6491,
             "range": "1.1254",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 58.1556,
             "range": "0.2693",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 59.1544,
             "range": "0.3401",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -8324,25 +8324,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 57.5922,
             "range": "6.4098",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 53.978,
             "range": "1.5237",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 46.9236,
             "range": "0.6664",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
@@ -8441,25 +8441,25 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-headful:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 60.0566,
             "range": "1.2087",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 59.6562,
             "range": "0.2852",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 60.7506,
             "range": "0.4548",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -8570,25 +8570,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 62.0813,
             "range": "4.3683",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 72.6111,
             "range": "3.656",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 76.6802,
             "range": "3.0857",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
@@ -8669,25 +8669,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-new-headless:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 58.9264,
             "range": "0.9903",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 58.2116,
             "range": "0.2308",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 59.9175,
             "range": "0.3016",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -8780,25 +8780,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 63.9415,
             "range": "4.7961",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 70.499,
             "range": "2.9339",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 45.3035,
             "range": "1.4068",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
@@ -8897,25 +8897,25 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-headful:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 59.2156,
             "range": "1.1288",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 58.1752,
             "range": "0.246",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 60.7077,
             "range": "0.3706",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -9026,25 +9026,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 58.2662,
             "range": "3.6763",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 65.5692,
             "range": "2.8517",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 63.9803,
             "range": "2.3113",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
@@ -9125,25 +9125,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 60.7599,
             "range": "2.5173",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 57.9294,
             "range": "0.2782",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 58.7983,
             "range": "0.4019",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -9254,25 +9254,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 61.7652,
             "range": "5.0617",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 69.8705,
             "range": "2.2687",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 51.7476,
             "range": "1.0735",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
@@ -9371,25 +9371,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-new-headless:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 60.0209,
             "range": "0.9998",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 59.0589,
             "range": "0.267",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 60.6716,
             "range": "0.3795",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -9482,25 +9482,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 72.3737,
             "range": "4.1971",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 67.1791,
             "range": "2.7661",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 48.479,
             "range": "0.887",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
@@ -9581,25 +9581,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 58.7416,
             "range": "0.9866",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 58.6398,
             "range": "0.2338",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 59.7859,
             "range": "0.387",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -9710,25 +9710,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 49.0157,
             "range": "3.3769",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 45.2316,
             "range": "0.5685",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 45.1164,
             "range": "0.5983",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
@@ -9827,25 +9827,25 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-headful:e2e-perf-metric"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 61.0438,
             "range": "1.2117",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 59.6735,
             "range": "0.2732",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "ubuntu-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 61.6571,
             "range": "0.4049",
             "unit": "Percent",
-            "extra": "ubuntu-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
@@ -9938,25 +9938,25 @@ window.BENCHMARK_DATA = {
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_mean_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 54.9195,
             "range": "5.2995",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_median_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
             "value": 63.0389,
             "range": "2.6501",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "macos-latest-shell:pup-perf-metric:diff_p10_rel",
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
             "value": 48.3095,
             "range": "0.8908",
             "unit": "Percent",
-            "extra": "macos-latest-shell:pup-perf-metric:diff_rel"
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
             "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
