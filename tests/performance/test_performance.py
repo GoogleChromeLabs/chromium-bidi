@@ -30,12 +30,13 @@ def log_metric(test_name, name, value, unit='ms'):
     head = os.environ.get('HEAD', 'unknownHead')
     runner = os.environ.get('RUNNER', 'unknownRunner')
     metrics_json_file = os.environ.get('METRICS_JSON_FILE')
+    prefix = f"{os_name}-{head}-{runner}"
     metric = {
-        'name': f'{test_name}_{name}',
+        'name': f'{prefix}:{test_name}_{name}',
         'value': value,
         'unit': unit,
+        'extra': f'{prefix}:e2e-perf-metric'
     }
-    prefix = f"{os_name}-{head}-{runner}"
     if metrics_json_file:
         with open(metrics_json_file, 'a') as f:
             f.write(json.dumps(metric) + ',\n')
