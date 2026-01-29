@@ -10019,36 +10019,6 @@ window.BENCHMARK_DATA = {
         "tool": "customSmallerIsBetter",
         "benches": [
           {
-            "name": "test_performance_screenshot_mean",
-            "value": 209.3507585999987,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 210.34741699997994,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 201.89604199998712,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_mean",
-            "value": 2447.0973082,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 2362.9396659999884,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 2155.375041999946,
-            "unit": "ms"
-          },
-          {
             "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 58.29440428290695,
             "range": "0.27909458638859275",
@@ -10070,96 +10040,6 @@ window.BENCHMARK_DATA = {
             "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
           },
           {
-            "name": "test_performance_screenshot_mean",
-            "value": 165.0433031900019,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 166.15098300000142,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 158.8479540000094,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_mean",
-            "value": 300.93660392999965,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 302.83377649999466,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 277.7078539999991,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_mean",
-            "value": 296.2106143899973,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 299.84733099999517,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 269.09718000001703,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_mean",
-            "value": 3402.7946670000065,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 3415.3297920000227,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 2394.803542000005,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_mean",
-            "value": 2057.162908200007,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 1877.2384590000115,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 1810.8980829999837,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_mean",
-            "value": 229.0708502000001,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 225.51329200000225,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 203.932334000001,
-            "unit": "ms"
-          },
-          {
             "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
             "value": 66.41117544953784,
             "range": "1.4506631724364962",
@@ -10179,36 +10059,6 @@ window.BENCHMARK_DATA = {
             "range": "0.31646428189254827",
             "unit": "Percent",
             "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
-          },
-          {
-            "name": "test_performance_screenshot_mean",
-            "value": 1913.005599799999,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 1918.0942909999885,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 1639.605250000045,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_mean",
-            "value": 183.39319817999638,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_median",
-            "value": 183.16915549999635,
-            "unit": "ms"
-          },
-          {
-            "name": "test_performance_screenshot_p10",
-            "value": 180.02334400000564,
-            "unit": "ms"
           },
           {
             "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
