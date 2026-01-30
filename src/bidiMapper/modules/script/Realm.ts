@@ -23,7 +23,7 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
+import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {EventManager} from '../session/EventManager.js';
@@ -81,9 +81,7 @@ export abstract class Realm {
         this.realmStorage.knownHandlesToRealmMap.set(objectId, this.realmId);
       } else {
         // No need to await for the object to be released.
-        void this.#releaseObject(objectId).catch((error) =>
-          this.#logger?.(LogType.debugError, error),
-        );
+        void this.#releaseObject(objectId);
       }
     }
 
