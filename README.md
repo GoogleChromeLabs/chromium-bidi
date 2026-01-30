@@ -19,11 +19,12 @@ at [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
 
 ## Performance Benchmarks
 
-Detailed information about the benchmarking infrastructure, methodology, and mathematics can be found in [benchmark.md](benchmark.md).
+The project continuously monitors the performance and overhead of the WebDriver BiDi implementation.
 
-Performance data, while not entirely stable (especially on macOS), is collected from GitHub Actions and offers insights into the project's performance.
+- **Dashboard:** [Chromium-BiDi Performance Benchmarks](https://googlechromelabs.github.io/chromium-bidi/bench/)
+- **Details:** Refer to [benchmark.md](benchmark.md) for detailed information about the benchmarking infrastructure, methodology, and statistical analysis.
 
-- https://googlechromelabs.github.io/chromium-bidi/bench/
+Note that performance data can be sensitive to CI environment fluctuations, especially on macOS.
 
 ## BiDi+
 
