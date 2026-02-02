@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770023786117,
+  "lastUpdate": 1770033329598,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -13603,6 +13603,294 @@ window.BENCHMARK_DATA = {
             "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
             "value": 447.5590849825927,
             "range": "12.986787745424621",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6697d29d2ed7a1f3a2dc9d5408f74945f1a83a60",
+          "message": "chore(deps-dev): Bump the all group with 3 updates (#4046)\n\nBumps the all group with 3 updates:\n[@rollup/wasm-node](https://github.com/rollup/rollup),\n[globals](https://github.com/sindresorhus/globals) and\n[rollup](https://github.com/rollup/rollup).\n\nUpdates `@rollup/wasm-node` from 4.57.0 to 4.57.1\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/releases\"><code>@​rollup/wasm-node</code>'s\nreleases</a>.</em></p>\n<blockquote>\n<h2>v4.57.1</h2>\n<h2>4.57.1</h2>\n<p><em>2026-01-30</em></p>\n<h3>Bug Fixes</h3>\n<ul>\n<li>Fix heap corruption issue in Windows (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6251\">#6251</a>)</li>\n<li>Ensure exports of a dynamic import are fully included when called\nfrom a try...catch (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6254\">#6254</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6251\">#6251</a>:\nfix: Isolate and cache <code>process.report.getReport()</code> calls in\na child process for robust environment detection (<a\nhref=\"https://github.com/alan-agius4\"><code>@​alan-agius4</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6252\">#6252</a>:\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6253\">#6253</a>:\nchore(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6254\">#6254</a>:\nFully include dynamic imports in a try-catch (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6255\">#6255</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/blob/master/CHANGELOG.md\"><code>@​rollup/wasm-node</code>'s\nchangelog</a>.</em></p>\n<blockquote>\n<h2>4.57.1</h2>\n<p><em>2026-01-30</em></p>\n<h3>Bug Fixes</h3>\n<ul>\n<li>Fix heap corruption issue in Windows (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6251\">#6251</a>)</li>\n<li>Ensure exports of a dynamic import are fully included when called\nfrom a try...catch (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6254\">#6254</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6251\">#6251</a>:\nfix: Isolate and cache <code>process.report.getReport()</code> calls in\na child process for robust environment detection (<a\nhref=\"https://github.com/alan-agius4\"><code>@​alan-agius4</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6252\">#6252</a>:\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6253\">#6253</a>:\nchore(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6254\">#6254</a>:\nFully include dynamic imports in a try-catch (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6255\">#6255</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/d37675f25150d6a94dcf4138853bdc2ecb3ce57b\"><code>d37675f</code></a>\n4.57.1</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/eafac0b6d3af86fe1b3510ae0657ac5b9a5ece94\"><code>eafac0b</code></a>\nchore(deps): lock file maintenance (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6255\">#6255</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/47fa568b128870c4a5c12e303d1edf9d53742132\"><code>47fa568</code></a>\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6252\">#6252</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/416f4766fd643d2ed851f82641a0d675846e4674\"><code>416f476</code></a>\nFully include dynamic imports in a try-catch (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6254\">#6254</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/5e393e33621f648f9e65eda34bec2946439a91bb\"><code>5e393e3</code></a>\nfix: Isolate and cache <code>process.report.getReport()</code> calls in\na child process ...</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/c931d2393490ed812fc747a51127fcf01303e82a\"><code>c931d23</code></a>\nchore(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6253\">#6253</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/c79e6c201d1f99e126d2e6bfb3f8c5c100ddcebf\"><code>c79e6c2</code></a>\nMitigate vulnerability that would allow to steal credentials</li>\n<li>See full diff in <a\nhref=\"https://github.com/rollup/rollup/compare/v4.57.0...v4.57.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `globals` from 17.2.0 to 17.3.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/sindresorhus/globals/releases\">globals's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v17.3.0</h2>\n<ul>\n<li>Update globals (2026-02-01) (<a\nhref=\"https://redirect.github.com/sindresorhus/globals/issues/336\">#336</a>)\n295fba9</li>\n</ul>\n<hr />\n<p><a\nhref=\"https://github.com/sindresorhus/globals/compare/v17.2.0...v17.3.0\">https://github.com/sindresorhus/globals/compare/v17.2.0...v17.3.0</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/sindresorhus/globals/commit/5edc6020698a76964b0fa17cb604f4484451143b\"><code>5edc602</code></a>\n17.3.0</li>\n<li><a\nhref=\"https://github.com/sindresorhus/globals/commit/295fba929adf8b44f945688233778a57ff754368\"><code>295fba9</code></a>\nUpdate globals (2026-02-01) (<a\nhref=\"https://redirect.github.com/sindresorhus/globals/issues/336\">#336</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/sindresorhus/globals/compare/v17.2.0...v17.3.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `rollup` from 4.57.0 to 4.57.1\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/releases\">rollup's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v4.57.1</h2>\n<h2>4.57.1</h2>\n<p><em>2026-01-30</em></p>\n<h3>Bug Fixes</h3>\n<ul>\n<li>Fix heap corruption issue in Windows (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6251\">#6251</a>)</li>\n<li>Ensure exports of a dynamic import are fully included when called\nfrom a try...catch (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6254\">#6254</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6251\">#6251</a>:\nfix: Isolate and cache <code>process.report.getReport()</code> calls in\na child process for robust environment detection (<a\nhref=\"https://github.com/alan-agius4\"><code>@​alan-agius4</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6252\">#6252</a>:\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6253\">#6253</a>:\nchore(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6254\">#6254</a>:\nFully include dynamic imports in a try-catch (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6255\">#6255</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/blob/master/CHANGELOG.md\">rollup's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>4.57.1</h2>\n<p><em>2026-01-30</em></p>\n<h3>Bug Fixes</h3>\n<ul>\n<li>Fix heap corruption issue in Windows (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6251\">#6251</a>)</li>\n<li>Ensure exports of a dynamic import are fully included when called\nfrom a try...catch (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6254\">#6254</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6251\">#6251</a>:\nfix: Isolate and cache <code>process.report.getReport()</code> calls in\na child process for robust environment detection (<a\nhref=\"https://github.com/alan-agius4\"><code>@​alan-agius4</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6252\">#6252</a>:\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6253\">#6253</a>:\nchore(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6254\">#6254</a>:\nFully include dynamic imports in a try-catch (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6255\">#6255</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/d37675f25150d6a94dcf4138853bdc2ecb3ce57b\"><code>d37675f</code></a>\n4.57.1</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/eafac0b6d3af86fe1b3510ae0657ac5b9a5ece94\"><code>eafac0b</code></a>\nchore(deps): lock file maintenance (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6255\">#6255</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/47fa568b128870c4a5c12e303d1edf9d53742132\"><code>47fa568</code></a>\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6252\">#6252</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/416f4766fd643d2ed851f82641a0d675846e4674\"><code>416f476</code></a>\nFully include dynamic imports in a try-catch (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6254\">#6254</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/5e393e33621f648f9e65eda34bec2946439a91bb\"><code>5e393e3</code></a>\nfix: Isolate and cache <code>process.report.getReport()</code> calls in\na child process ...</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/c931d2393490ed812fc747a51127fcf01303e82a\"><code>c931d23</code></a>\nchore(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6253\">#6253</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/c79e6c201d1f99e126d2e6bfb3f8c5c100ddcebf\"><code>c79e6c2</code></a>\nMitigate vulnerability that would allow to steal credentials</li>\n<li>See full diff in <a\nhref=\"https://github.com/rollup/rollup/compare/v4.57.0...v4.57.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-02-02T11:53:20Z",
+          "tree_id": "dd535770e089ba9bc3fd14d93e23288209948e1f",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/6697d29d2ed7a1f3a2dc9d5408f74945f1a83a60"
+        },
+        "date": 1770033327460,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 290.6862747999867,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 287.18070799999396,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 247.51424999999472,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 3945.6017748001614,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 3053.4685410002567,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 2694.338875000085,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 165.53337166666893,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 166.18917600000316,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 163.38841099999968,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 279.0121028000025,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 277.4681980000082,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 268.72177500001726,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 61.5389139582546,
+            "range": "4.457695100413245",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 55.85512608463863,
+            "range": "0.9363566633307787",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 49.85383512927866,
+            "range": "1.0126922608870426",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 278.4906689333326,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 279.988612000011,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 265.38745099999517,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2294.343833600004,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 2102.500582999994,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 1851.005208999993,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 2059.3992667999973,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 2029.389334000001,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 1737.4756250000019,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 295.36129159998836,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 289.70300000003135,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 263.31729199989695,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 2425.5628000000343,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 2142.522334000091,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 2029.339790999984,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 169.2891615333347,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 167.96698900000706,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 163.64637900001355,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 63.56271877744176,
+            "range": "2.8176936019713503",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 57.37692352977947,
+            "range": "0.22357372370647213",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 62.035765026314984,
+            "range": "0.26838103612176795",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 444.4503406606701,
+            "range": "18.061466926782536",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 483.63462277122136,
+            "range": "9.633381147291264",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 515.0908117758923,
+            "range": "13.954119433808293",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 541.764665456188,
+            "range": "34.93874335993652",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 387.421524277529,
+            "range": "7.852558462904785",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 399.94041034785124,
+            "range": "10.821414911949551",
             "unit": "Percent",
             "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
           }
