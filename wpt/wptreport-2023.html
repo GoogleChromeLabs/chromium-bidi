@@ -114,18 +114,18 @@
     <div class="headings">
       <h1>
         <span>
-          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/ad69ce17e67a1b496079bb489a80295c82b60402"><code>ad69ce17</code></a>)
+          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/9fb8dab2d5a5901267fb0a0b5f410acbc8667683"><code>9fb8dab2</code></a>)
         </span><br>
         <span>
-          test results for WPT (<a href="https://github.com/web-platform-tests/wpt/commit/06c4589623bf8f8c92fda5afabe44059a01465dc"><code>06c45896</code></a>)
+          test results for WPT (<a href="https://github.com/web-platform-tests/wpt/commit/5669aca4a3fc5ea17525a7fcef5cf5444d99aaff"><code>5669aca4</code></a>)
              matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>
         </span><br>
         <span>
-          running Chrome 146.0.7657.0 @ <time>2026-02-02</time>
+          running Chrome 146.0.7657.0 @ <time>2026-02-06</time>
         </span>
       <p>
     Since 2023-12-31,
-    the total number of subtests went from 2807 to 3470 (+23.62%),
+    the total number of subtests went from 2807 to 3472 (+23.69%),
     and the number of passing subtests went from 2456 to 3443 (+40.19%).
   </p>
     </div>
@@ -136,7 +136,7 @@
       </div>
     </div>
     
-      <h2 id="bidi-tests">BiDi tests - 3443 / 3470 (27 remaining)
+      <h2 id="bidi-tests">BiDi tests - 3443 / 3472 (29 remaining)
       </h2>
       <div>
         
@@ -145,7 +145,7 @@
         <summary class="path part">
           <span class="short-name">browsing_context</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context</span>
-          <span class="stat"><b>835/850</b></span>
+          <span class="stat"><b>835/852</b></span>
         </summary>
         
     <div class="test-card">
@@ -351,18 +351,18 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">capture_screenshot</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;capture_screenshot</span>
-          <span class="stat"><b>94/94</b></span>
+          <span class="stat"><b>94/96</b></span>
         </summary>
         
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">capture_screenshot.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;capture_screenshot&#47;capture_screenshot.py</span>
-          <span class="stat"><b>8/8</b></span>
+          <span class="stat"><b>8/9</b></span>
         </summary>
         
       <div class="test-card test-card-subtest pass">
@@ -474,6 +474,20 @@
         <div class="result">
           <span>
             <b>PASS</b>
+          </span>
+        </div>
+      </div>
+      <div class="test-card test-card-subtest fail">
+        <div class="test-name">
+          <p class="non-collapsible-item path">
+          <span class="short-name">test_clip_huge_element_to_viewport</span>
+          <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py/test_clip_huge_element_to_viewport</span>
+          <br /><small>assert 785 == 800</small>
+        </p>
+        </div>
+        <div class="result">
+          <span>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
@@ -1677,12 +1691,26 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">origin.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;capture_screenshot&#47;origin.py</span>
-          <span class="stat"><b>3/3</b></span>
+          <span class="stat"><b>3/4</b></span>
         </summary>
         
+      <div class="test-card test-card-subtest fail">
+        <div class="test-name">
+          <p class="non-collapsible-item path">
+          <span class="short-name">test_capture_huge_document_origin</span>
+          <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/capture_screenshot/origin.py/test_capture_huge_document_origin</span>
+          <br /><small>webdriver.bidi.error.UnknownErrorException: unknown error (Unable to capture screenshot)</small>
+        </p>
+        </div>
+        <div class="result">
+          <span>
+            <b>FAIL</b>
+          </span>
+        </div>
+      </div>
       <div class="test-card test-card-subtest pass">
         <div class="test-name">
           <p class="non-collapsible-item path">
