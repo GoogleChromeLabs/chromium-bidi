@@ -114,7 +114,7 @@
     <div class="headings">
       <h1>
         <span>
-          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/ebea4348b51d579fc7219413af4519dcf164d825"><code>ebea4348</code></a>)
+          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/07120fb92d6e0b333b7d4b87dfc5fca8444e062a"><code>07120fb9</code></a>)
         </span><br>
         <span>
           test results for WPT (<a href="https://github.com/web-platform-tests/wpt/commit/6e3902a9946f1d3a11e98fcc4d3c25cc953f56df"><code>6e3902a9</code></a>)
@@ -132,7 +132,7 @@
       </div>
     </div>
     
-      <h2 id="bidi-tests">BiDi tests - 5691 / 5819 (128 remaining)
+      <h2 id="bidi-tests">BiDi tests - 5649 / 5819 (170 remaining)
       </h2>
       <div>
         
@@ -7425,7 +7425,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_end/download_end.py/test_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;3520fd70-e182-44a3-97a4-2eafe5ebdfc0&#39; == &#39;717f2237-7256-41d1-935b-89744dfc9ae1&#39;</small>
+          <br /><small>AssertionError: assert &#39;c594403e-62dd-49ac-9562-db513cf3b241&#39; == &#39;4044e493-7e17-46bb-bcec-e4dfbfeee66a&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -7548,7 +7548,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py/test_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;5a044326-2984-455e-80a4-ad2fe9a0e48d&#39; == &#39;f7467179-76b8-4c82-bfc5-9c203bcfc908&#39;</small>
+          <br /><small>AssertionError: assert &#39;39752bea-6053-474f-a417-813453852a7a&#39; == &#39;23ce469b-d7bd-488d-b5cf-863ccd3a43d5&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -7576,7 +7576,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_redirect_to_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py/test_redirect_to_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;3047a0a6-7f2f-4f4c-97a2-5fc43514c839&#39; == &#39;e27f6856-dadd-4ea6-beb6-469479db462b&#39;</small>
+          <br /><small>AssertionError: assert &#39;85cb3589-8f07-4374-9d8f-f194c06fdb47&#39; == &#39;2e14b6e1-2901-42e9-9d4b-4ef50ff1b52c&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -16618,10 +16618,10 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">set_viewport</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport</span>
-          <span class="stat"><b>86/86</b></span>
+          <span class="stat"><b>85/86</b></span>
         </summary>
         
     <div class="test-card">
@@ -17474,23 +17474,23 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">user_contexts.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport&#47;user_contexts.py</span>
-          <span class="stat"><b>9/9</b></span>
+          <span class="stat"><b>8/9</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_reset_to_default</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/set_viewport/user_contexts.py/test_reset_to_default</span>
-          
+          <br /><small>AssertionError: assert {&#39;height&#39;: 333, &#39;width&#39;: 666} == {&#39;height&#39;: 513, &#39;width&#39;: 800}</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
@@ -18458,26 +18458,37 @@
 
     <div class="test-card">
       <details>
-        <summary class="path part">
+        <summary class="path pass">
           <span class="short-name">user_prompt_opened</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;user_prompt_opened</span>
-          <span class="stat"><b>17/18</b></span>
+          <span class="stat"><b>18/18</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest fail">
+    <div class="test-card">
+      <details>
+        <summary class="path pass">
+          <span class="short-name">beforeunload.py</span>
+          <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;user_prompt_opened&#47;beforeunload.py</span>
+          <span class="stat"><b>1/1</b></span>
+        </summary>
+        
+      <div class="test-card test-card-subtest pass">
         <div class="test-name">
           <p class="non-collapsible-item path">
-          <span class="short-name">beforeunload.py</span>
-          <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py</span>
+          <span class="short-name">test_beforeunload</span>
+          <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py/test_beforeunload</span>
           
         </p>
         </div>
         <div class="result">
           <span>
-            <b>TIMEOUT</b>
+            <b>PASS</b>
           </span>
         </div>
       </div>
+      </details>
+    </div>
+
     <div class="test-card">
       <details>
         <summary class="path pass">
@@ -27220,7 +27231,7 @@
         <summary class="path part">
           <span class="short-name">external</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;external</span>
-          <span class="stat"><b>370/372</b></span>
+          <span class="stat"><b>328/372</b></span>
         </summary>
         
     <div class="test-card">
@@ -31623,31 +31634,31 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path fail">
           <span class="short-name">emulation&#47;set_client_hints_override</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;external&#47;emulation&#47;set_client_hints_override</span>
-          <span class="stat"><b>42/42</b></span>
+          <span class="stat"><b>0/42</b></span>
         </summary>
         
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path fail">
           <span class="short-name">client_hints.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;external&#47;emulation&#47;set_client_hints_override&#47;client_hints.py</span>
-          <span class="stat"><b>1/1</b></span>
+          <span class="stat"><b>0/1</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_set_override_and_reset</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/client_hints.py/test_set_override_and_reset</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
@@ -31656,37 +31667,37 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path fail">
           <span class="short-name">contexts.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;external&#47;emulation&#47;set_client_hints_override&#47;contexts.py</span>
-          <span class="stat"><b>2/2</b></span>
+          <span class="stat"><b>0/2</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_contexts</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/contexts.py/test_contexts</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_multiple_contexts</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/contexts.py/test_multiple_contexts</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
@@ -31695,51 +31706,51 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path fail">
           <span class="short-name">global.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;external&#47;emulation&#47;set_client_hints_override&#47;global.py</span>
-          <span class="stat"><b>3/3</b></span>
+          <span class="stat"><b>0/3</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_set_override_and_reset_globally</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/global.py/test_set_override_and_reset_globally</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_set_override_and_reset_globally_and_per_context</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/global.py/test_set_override_and_reset_globally_and_per_context</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_set_override_and_reset_globally_and_per_user_context</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/global.py/test_set_override_and_reset_globally_and_per_user_context</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
@@ -31748,457 +31759,457 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path fail">
           <span class="short-name">invalid.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;external&#47;emulation&#47;set_client_hints_override&#47;invalid.py</span>
-          <span class="stat"><b>32/32</b></span>
+          <span class="stat"><b>0/32</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_client_hints_invalid_type[42]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_client_hints_invalid_type[42]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_client_hints_invalid_type[False]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_client_hints_invalid_type[False]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_client_hints_invalid_type[foo]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_client_hints_invalid_type[foo]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_client_hints_invalid_type[value2]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_client_hints_invalid_type[value2]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_client_hints_missing</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_client_hints_missing</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_and_user_contexts</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_and_user_contexts</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_empty_list</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_empty_list</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_entry_invalid_type[42]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_entry_invalid_type[42]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_entry_invalid_type[False]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_entry_invalid_type[False]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_entry_invalid_type[None]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_entry_invalid_type[None]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_entry_invalid_type[value3]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_entry_invalid_type[value3]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_entry_invalid_type[value4]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_entry_invalid_type[value4]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_entry_invalid_value</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_entry_invalid_value</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_iframe</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_iframe</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_invalid_type[42]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_invalid_type[42]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_invalid_type[False]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_invalid_type[False]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_invalid_type[foo]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_invalid_type[foo]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_invalid_type[None]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_invalid_type[None]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_contexts_invalid_type[value4]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_contexts_invalid_type[value4]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_empty_list</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_empty_list</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_entry_invalid_type[42]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_entry_invalid_type[42]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_entry_invalid_type[False]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_entry_invalid_type[False]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_entry_invalid_type[None]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_entry_invalid_type[None]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_entry_invalid_type[value3]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_entry_invalid_type[value3]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_entry_invalid_type[value4]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_entry_invalid_type[value4]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_entry_invalid_value[]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_entry_invalid_value[]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_entry_invalid_value[somestring]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_entry_invalid_value[somestring]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_invalid_type[42]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_invalid_type[42]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_invalid_type[False]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_invalid_type[False]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_invalid_type[foo]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_invalid_type[foo]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_invalid_type[None]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_invalid_type[None]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_params_user_contexts_invalid_type[value4]</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/invalid.py/test_params_user_contexts_invalid_type[value4]</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
@@ -32207,65 +32218,65 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path fail">
           <span class="short-name">user_contexts.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;external&#47;emulation&#47;set_client_hints_override&#47;user_contexts.py</span>
-          <span class="stat"><b>4/4</b></span>
+          <span class="stat"><b>0/4</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_set_to_default_user_context</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/user_contexts.py/test_set_to_default_user_context</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_set_to_multiple_user_contexts</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/user_contexts.py/test_set_to_multiple_user_contexts</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_set_to_user_context_and_then_to_context</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/user_contexts.py/test_set_to_user_context_and_then_to_context</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_user_contexts</span>
           <span class="long-name hidden">/webdriver/tests/bidi/external/emulation/set_client_hints_override/user_contexts.py/test_user_contexts</span>
-          
+          <br /><small>webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command &#39;emulation.setClientHintsOverride&#39;.)</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
