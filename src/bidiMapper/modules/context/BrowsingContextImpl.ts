@@ -1868,7 +1868,7 @@ export class BrowsingContextImpl {
     const matchedBackendNodeIds = new Set<number>();
     for (const backendNodeId of startBackendNodeIds) {
       const {nodes} = await this.#cdpTarget.cdpClient.sendCommand(
-        'Accessibility.queryAXTree' as any,
+        'Accessibility.queryAXTree',
         {
           backendNodeId,
           accessibleName: locator.value.name,
