@@ -1828,7 +1828,6 @@ export class BrowsingContextImpl {
       );
     }
     await this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable');
-    await this.#cdpTarget.cdpClient.sendCommand('DOM.enable');
 
     const startBackendNodeIds: number[] = [];
     if (startNodes.length === 0) {
