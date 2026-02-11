@@ -1888,14 +1888,6 @@ export class BrowsingContextImpl {
           }
         }
       }
-
-      if (
-        maxNodeCount !== undefined &&
-        maxNodeCount > 0 &&
-        matchedBackendNodeIds.size >= maxNodeCount
-      ) {
-        break;
-      }
     }
 
     const resultNodes = await Promise.all(
