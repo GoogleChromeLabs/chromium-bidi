@@ -14,8 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe,
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe, wait_for_command,
                           wait_for_event)
 
 
@@ -232,3 +233,77 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
     }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_reload_with_network_interception(
+        websocket, context_id, html):
+    """
+    Test that a network intercept is not lost when a page is reloaded.
+    See https://github.com/GoogleChromeLabs/chromium-bidi/issues/4043.
+    """
+    url = html("<h1>Reload Test</h1>")
+
+    # 1. Subscribe to network events
+    await subscribe(websocket, ["network.beforeRequestSent"])
+
+    # 2. Add network intercept
+    await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+            }
+        })
+
+    # 3. Initial navigation (wait="complete")
+    nav_cmd_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+                "wait": "complete"
+            }
+        })
+
+    # Handle interception for navigation
+    event = await wait_for_event(websocket, "network.beforeRequestSent")
+    assert event["params"]["isBlocked"] is True
+    request_id = event["params"]["request"]["request"]
+
+    await execute_command(websocket, {
+        "method": "network.continueRequest",
+        "params": {
+            "request": request_id,
+        }
+    })
+
+    # Wait for navigation to complete
+    await wait_for_command(websocket, nav_cmd_id)
+
+    # 4. Trigger reload (wait="complete")
+    reload_cmd_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "context": context_id,
+                "wait": "complete",
+            }
+        })
+
+    # 5. Wait for network.beforeRequestSent
+    event = await wait_for_event(websocket, "network.beforeRequestSent")
+    assert event["params"]["isBlocked"] is True
+    request_id = event["params"]["request"]["request"]
+
+    # 6. Continue request
+    await execute_command(websocket, {
+        "method": "network.continueRequest",
+        "params": {
+            "request": request_id,
+        }
+    })
+
+    # 7. Wait for reload to complete
+    await wait_for_command(websocket, reload_cmd_id)
