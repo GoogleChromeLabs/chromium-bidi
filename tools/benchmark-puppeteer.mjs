@@ -115,6 +115,31 @@ const benchmarks = [
       await page.evaluate(() => 1);
     },
   },
+  {
+    id: 'nodes',
+    name: '100 Nodes Evaluation',
+    warmup: async (page) => {
+      await page.evaluate(() => {
+        let container = document.getElementById('container');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'container';
+          document.body.appendChild(container);
+        }
+        container.innerHTML = '';
+        for (let i = 0; i < 100; i++) {
+          const node = document.createElement('div');
+          node.innerText = `Node ${i}`;
+          container.appendChild(node);
+        }
+      });
+    },
+    measure: async (page) => {
+      await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('#container > div'));
+      });
+    },
+  },
 ];
 
 async function main() {
@@ -157,11 +182,7 @@ async function main() {
 
       // Run CDP.
       process.stdout.write(`running CDP... `);
-      const cdpLatencies = await runBenchmarkRun(
-        {},
-        chromePath,
-        benchmark,
-      );
+      const cdpLatencies = await runBenchmarkRun({}, chromePath, benchmark);
       stats.cdp.push(...cdpLatencies);
 
       process.stdout.write(`running BiDi... `);
