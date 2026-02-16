@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1771223059931,
+  "lastUpdate": 1771231960293,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -21091,6 +21091,336 @@ window.BENCHMARK_DATA = {
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
             "value": 209.6872079999912,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d4f851586c04c4dbec857370024e935524f8c37e",
+          "message": "chore(deps-dev): Bump the all group across 1 directory with 5 updates (#4075)\n\nBumps the all group with 5 updates in the / directory:\n\n| Package | From | To |\n| --- | --- | --- |\n| [@puppeteer/browsers](https://github.com/puppeteer/puppeteer) |\n`2.12.0` | `2.12.1` |\n| [rimraf](https://github.com/isaacs/rimraf) | `6.1.2` | `6.1.3` |\n|\n[rollup-plugin-license](https://github.com/mjeanroy/rollup-plugin-license)\n| `3.6.0` | `3.7.0` |\n|\n[typescript-eslint](https://github.com/typescript-eslint/typescript-eslint/tree/HEAD/packages/typescript-eslint)\n| `8.54.0` | `8.55.0` |\n|\n[webdriverio](https://github.com/webdriverio/webdriverio/tree/HEAD/packages/webdriverio)\n| `9.23.3` | `9.24.0` |\n\n\nUpdates `@puppeteer/browsers` from 2.12.0 to 2.12.1\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/puppeteer/puppeteer/releases\"><code>@​puppeteer/browsers</code>'s\nreleases</a>.</em></p>\n<blockquote>\n<h2>browsers: v2.12.1</h2>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/browsers-v2.12.0...browsers-v2.12.1\">2.12.1</a>\n(2026-02-13)</h2>\n<h3>🛠️ Fixes</h3>\n<ul>\n<li><strong>wsl:</strong> check for linux locations first (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14681\">#14681</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/11f01efebcb1b0febfdeb5fb1a4d52f0155732df\">11f01ef</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/puppeteer/puppeteer/blob/main/CHANGELOG.md\"><code>@​puppeteer/browsers</code>'s\nchangelog</a>.</em></p>\n<blockquote>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/puppeteer-v22.12.0...puppeteer-v22.12.1\">22.12.1</a>\n(2024-06-26)</h2>\n<h3>Miscellaneous Chores</h3>\n<ul>\n<li><strong>puppeteer:</strong> Synchronize puppeteer versions</li>\n</ul>\n<h3>Dependencies</h3>\n<ul>\n<li>The following workspace dependencies were updated\n<ul>\n<li>dependencies\n<ul>\n<li>puppeteer-core bumped from 22.12.0 to 22.12.1</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n<h3>Bug Fixes</h3>\n<ul>\n<li>execution contexts might be created before previous is destroyed (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12666\">#12666</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/db642d1d6975a9b12700a471f6cacc8daf6bd04d\">db642d1</a>)</li>\n<li>reset the viewport after taking a fullPage screenshot if\ndefaultViewport is null (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12650\">#12650</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/0a32283cfccba306fa20dc5b5c31487a6d8fb201\">0a32283</a>)</li>\n<li>roll to Chrome 126.0.6478.126 (r1300313) (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12656\">#12656</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/32ed82c623905755944b1cf2d9e0cd9d952c8f94\">32ed82c</a>)</li>\n<li>use RAF-based polling for ARIA selectors (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12664\">#12664</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/56d1d3f8b731d18c6aa9cc3d6de9c722b93a7a1e\">56d1d3f</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/eee111bedbbf719ce27f356f4f5307646b13b0eb\"><code>eee111b</code></a>\nchore: release main (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14683\">#14683</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/905f1abbe3742e7610f48a8df3f8f2d61e2bdfd7\"><code>905f1ab</code></a>\nchore(deps): bump qs from 6.14.1 to 6.14.2 in /website (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14682\">#14682</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/11f01efebcb1b0febfdeb5fb1a4d52f0155732df\"><code>11f01ef</code></a>\nfix(wsl): check for linux locations first (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14681\">#14681</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/7765ae7d532634a919ca146b742b4a863e3366e9\"><code>7765ae7</code></a>\nfix: do not resolve user data dir if it is absolute (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14680\">#14680</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/dfc22dd4361f57a90cb653499e023c272ab50018\"><code>dfc22dd</code></a>\nfix: roll to Chrome 145.0.7632.67 (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14679\">#14679</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/b0aa4dd35da756d9f706b5efb49b745d27553c42\"><code>b0aa4dd</code></a>\nchore(webdriver): update chromium-bidi to 14.0.0 (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14675\">#14675</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/c78939253958d89168b4087d6c98d82b1d56cad4\"><code>c789392</code></a>\nrevert: &quot;fix: disable ReadAnythingOmniboxChip by default&quot; (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14674\">#14674</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/1c21c1e5f7db33b6c2f8fff7c3860b02ee225e46\"><code>1c21c1e</code></a>\nchore(deps): bump semver from 7.7.3 to 7.7.4 in the dependencies group\n(<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14664\">#14664</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/88ca20bce666d60f39cacfe1b06628d3c7fbd207\"><code>88ca20b</code></a>\nchore(deps): bump the all group in /website with 2 updates (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14666\">#14666</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/3a8df881a5b33e106f0f9ede12fe66b6ab5152d6\"><code>3a8df88</code></a>\nchore(deps): bump github/codeql-action from 4.32.0 to 4.32.2 in the all\ngroup...</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/puppeteer/puppeteer/compare/browsers-v2.12.0...browsers-v2.12.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `rimraf` from 6.1.2 to 6.1.3\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/f738c781d14fa7bc06f8e39e062d78f701fde3f1\"><code>f738c78</code></a>\n6.1.3</li>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/a164a85093f78e40d8f995b0d8ff3a1856324768\"><code>a164a85</code></a>\nupdate deps</li>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/4635ba7498849cade724bd34c1ec9feae4b56236\"><code>4635ba7</code></a>\nupdate deps</li>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/509c53f8b0298508c3a536dc121bbc0652d3e56f\"><code>509c53f</code></a>\nlimit ci workflow permissions</li>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/68ce04f9bfb436e66356428e2970c78fa2a76d02\"><code>68ce04f</code></a>\nformatting</li>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/37680c5d7f0104042ab8e8fae3e77484dc7687ca\"><code>37680c5</code></a>\nadd warning to not pass untrusted input to this method ever</li>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/786563d3901763fa77090271d239233aa27e7a3a\"><code>786563d</code></a>\nremove contributing doc, already covered by .github repo</li>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/dbeef7399038d0cc467dbac5f91074cd0dc847dd\"><code>dbeef73</code></a>\ncontributing</li>\n<li><a\nhref=\"https://github.com/isaacs/rimraf/commit/84d27afdbf7a211ecce6e9e73530aeb7278ea5d2\"><code>84d27af</code></a>\nupdate workflows and standard project junk</li>\n<li>See full diff in <a\nhref=\"https://github.com/isaacs/rimraf/compare/v6.1.2...v6.1.3\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `rollup-plugin-license` from 3.6.0 to 3.7.0\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/blob/master/CHANGELOG.md\">rollup-plugin-license's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>3.5.0 (2024-06-22)</h2>\n<ul>\n<li>release: prepare next release (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/71f5bcf\">71f5bcf</a>)</li>\n<li>release: prepare next release (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/2c51c64\">2c51c64</a>)</li>\n<li>release: release version (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/f27f51d\">f27f51d</a>)</li>\n<li>release: release version (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/8a7f79c\">8a7f79c</a>)</li>\n<li>chore: fix lint task (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/a7c455f\">a7c455f</a>)</li>\n<li>chore: remove (deprecated) eslint-config-google (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/0ba031f\">0ba031f</a>)</li>\n<li>chore(ci): push release to current branch (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/03112e9\">03112e9</a>)</li>\n<li>chore(deps-dev): bump <code>@​rollup/plugin-commonjs</code> from\n25.0.7 to 25.0.8 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1732\">#1732</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/8bd6fb3\">8bd6fb3</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1732\">#1732</a></li>\n<li>chore(deps-dev): bump <code>@​rollup/plugin-commonjs</code> from\n25.0.8 to 26.0.1 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1741\">#1741</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/25f03f2\">25f03f2</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1741\">#1741</a></li>\n<li>chore(deps-dev): bump globalthis from 1.0.3 to 1.0.4 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1721\">#1721</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/54084da\">54084da</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1721\">#1721</a></li>\n<li>chore(deps-dev): bump gulp-conventional-changelog from 4.0.0 to\n5.0.0 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1723\">#1723</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/d6ae13f\">d6ae13f</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1723\">#1723</a></li>\n<li>chore(deps-dev): bump prettier from 3.2.5 to 3.3.0 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1737\">#1737</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/3e80b2a\">3e80b2a</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1737\">#1737</a></li>\n<li>chore(deps-dev): bump prettier from 3.3.0 to 3.3.1 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1740\">#1740</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/ef8aabf\">ef8aabf</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1740\">#1740</a></li>\n<li>chore(deps-dev): bump prettier from 3.3.1 to 3.3.2 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1746\">#1746</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/e4fbe41\">e4fbe41</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1746\">#1746</a></li>\n<li>chore(deps-dev): bump rimraf from 5.0.5 to 5.0.7 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1727\">#1727</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/44fd2d4\">44fd2d4</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1727\">#1727</a></li>\n<li>chore(deps-dev): bump rollup from 4.14.3 to 4.16.2 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1715\">#1715</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/0126778\">0126778</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1715\">#1715</a></li>\n<li>chore(deps-dev): bump rollup from 4.16.2 to 4.16.4 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1716\">#1716</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/2256205\">2256205</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1716\">#1716</a></li>\n<li>chore(deps-dev): bump rollup from 4.16.4 to 4.17.2 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1722\">#1722</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/084276a\">084276a</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1722\">#1722</a></li>\n<li>chore(deps-dev): bump the babel group with 2 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1720\">#1720</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/6720a77\">6720a77</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1720\">#1720</a></li>\n<li>chore(deps-dev): bump the babel group with 2 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1739\">#1739</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/2d3d1d3\">2d3d1d3</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1739\">#1739</a></li>\n<li>chore(deps-dev): bump the babel group with 3 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1733\">#1733</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/b56dc88\">b56dc88</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1733\">#1733</a></li>\n<li>chore(deps-dev): bump the typescript-eslint group across 1 directory\nwith 2 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1729\">#1729</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/5cfc7c0\">5cfc7c0</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1729\">#1729</a></li>\n<li>chore(deps-dev): bump the typescript-eslint group across 1 directory\nwith 2 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1748\">#1748</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/c0abf2d\">c0abf2d</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1748\">#1748</a></li>\n<li>chore(deps-dev): bump the typescript-eslint group with 2 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1714\">#1714</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/1deea69\">1deea69</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1714\">#1714</a></li>\n<li>chore(deps-dev): bump the typescript-eslint group with 2 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1717\">#1717</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/3571d80\">3571d80</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1717\">#1717</a></li>\n<li>chore(deps-dev): bump the typescript-eslint group with 2 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1735\">#1735</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/c3d769f\">c3d769f</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1735\">#1735</a></li>\n<li>chore(deps-dev): bump the typescript-eslint group with 2 updates (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1736\">#1736</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/2e053de\">2e053de</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1736\">#1736</a></li>\n<li>chore(deps-dev): bump typescript from 5.4.5 to 5.5.2 (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1750\">#1750</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/374962d\">374962d</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1750\">#1750</a></li>\n<li>--- (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1730\">#1730</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/40dc5e6\">40dc5e6</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1730\">#1730</a></li>\n<li>Update readme (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/780ff50\">780ff50</a>)</li>\n<li>feat: drop glob usage (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1742\">#1742</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/2623a1b\">2623a1b</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1742\">#1742</a></li>\n<li>feat: drop mkdirp (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1743\">#1743</a>)\n(<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/2f90c74\">2f90c74</a>),\ncloses <a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/1743\">#1743</a></li>\n<li>feat: include private self dependency (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/1401f5d\">1401f5d</a>)</li>\n<li>docs: update README &amp; changelog (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/bdfca87\">bdfca87</a>)</li>\n</ul>\n<h2>3.4.0 (2024-04-18)</h2>\n<ul>\n<li>release: prepare next release (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/1c6c911\">1c6c911</a>)</li>\n<li>release: release version (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/a576572\">a576572</a>)</li>\n<li>chore: add changelog update workflow (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/5f4ed57\">5f4ed57</a>)</li>\n<li>chore: update changelog (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/a48e164\">a48e164</a>)</li>\n<li>chore: update readme (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/8254eae\">8254eae</a>)</li>\n<li>chore(ci): add node 21 (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/80cefa0\">80cefa0</a>)</li>\n<li>chore(ci): remove invalid option (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/16e4d5d\">16e4d5d</a>)</li>\n<li>chore(ci): update actions/checkout to version 4.1.2 (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/9742e59\">9742e59</a>)</li>\n<li>chore(ci): use node 20 (<a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/184cc0b\">184cc0b</a>)</li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/bb34bb50bb33f05a0147d2ca78225e47fab6a712\"><code>bb34bb5</code></a>\nrelease: release version</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/6ef9f8169961e2c303a9818fb9f2c437da5e7bf4\"><code>6ef9f81</code></a>\nchore(ci): clear node_auth_token before publish</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/add404fd0153dc905adf92ca096fe4e84817c417\"><code>add404f</code></a>\nchore(ci): remove reference of npm token</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/07357c2aaf582101b4ba198590ed6bf1f0f6f64a\"><code>07357c2</code></a>\nchore(docs): update readme</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/488b043cd2204a2d9a4baa661182851b2bc3c22c\"><code>488b043</code></a>\nchore(ci): add npm oidc permission</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/c20ab4877d5d320c52b4da0796f431e14c5f1ac0\"><code>c20ab48</code></a>\nchore: remove warning</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/ef99eed4323b663c2f6edaa6be2df8d8acc924e6\"><code>ef99eed</code></a>\nchore: update dependencies</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/df9ac732d6d1ff6b049dfe33f55a7bd8aa89f170\"><code>df9ac73</code></a>\nfix return type of <code>template</code> (<a\nhref=\"https://redirect.github.com/mjeanroy/rollup-plugin-license/issues/2069\">#2069</a>)</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/6967948cdb87485e8ce15a6d9164b85d9364e240\"><code>6967948</code></a>\nchore: remove node core modules prefix</li>\n<li><a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/commit/cc8c079b51aed60e67bc9b1ca2e60896571d2403\"><code>cc8c079</code></a>\nchore(ci): group jasmine dependabot updates</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/mjeanroy/rollup-plugin-license/compare/v3.6.0...v3.7.0\">compare\nview</a></li>\n</ul>\n</details>\n<details>\n<summary>Maintainer changes</summary>\n<p>This version was pushed to npm by [GitHub Actions](<a\nhref=\"https://www.npmjs.com/~GitHub\">https://www.npmjs.com/~GitHub</a>\nActions), a new releaser for rollup-plugin-license since your current\nversion.</p>\n</details>\n<br />\n\nUpdates `typescript-eslint` from 8.54.0 to 8.55.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/releases\">typescript-eslint's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v8.55.0</h2>\n<h2>8.55.0 (2026-02-09)</h2>\n<h3>🚀 Features</h3>\n<ul>\n<li><strong>utils:</strong> deprecate defaultOptions in favor of\nmeta.defaultOptions (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11992\">#11992</a>)</li>\n</ul>\n<h3>🩹 Fixes</h3>\n<ul>\n<li><strong>eslint-plugin:</strong> [no-unused-vars] remove trailing\nnewline when removing entire import (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11990\">#11990</a>)</li>\n<li><strong>eslint-plugin:</strong> [no-useless-default-assignment]\nrequire strictNullChecks (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11966\">#11966</a>,\n<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/12000\">#12000</a>)</li>\n<li><strong>eslint-plugin:</strong> [no-useless-default-assignment]\nreport unnecessary defaults in ternary expressions (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11984\">#11984</a>)</li>\n<li><strong>eslint-plugin:</strong> [no-useless-default-assignment]\nreduce param index to ts this handling (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11949\">#11949</a>)</li>\n<li><strong>typescript-estree:</strong> forbid invalid modifier in\nobject expression (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/11931\">#11931</a>)</li>\n</ul>\n<h3>❤️ Thank You</h3>\n<ul>\n<li>Christian Rose <a\nhref=\"https://github.com/chrros95\"><code>@​chrros95</code></a></li>\n<li>fisker Cheung <a\nhref=\"https://github.com/fisker\"><code>@​fisker</code></a></li>\n<li>Josh Goldberg</li>\n<li>Maria Solano <a\nhref=\"https://github.com/MariaSolOs\"><code>@​MariaSolOs</code></a></li>\n<li>Minyeong Kim <a\nhref=\"https://github.com/minyeong981\"><code>@​minyeong981</code></a></li>\n<li>SungHyun627 <a\nhref=\"https://github.com/SungHyun627\"><code>@​SungHyun627</code></a></li>\n<li>Yukihiro Hasegawa <a\nhref=\"https://github.com/y-hsgw\"><code>@​y-hsgw</code></a></li>\n</ul>\n<p>See <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/releases/tag/v8.55.0\">GitHub\nReleases</a> for more information.</p>\n<p>You can read about our <a\nhref=\"https://typescript-eslint.io/users/versioning\">versioning\nstrategy</a> and <a\nhref=\"https://typescript-eslint.io/users/releases\">releases</a> on our\nwebsite.</p>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-eslint/CHANGELOG.md\">typescript-eslint's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>8.55.0 (2026-02-09)</h2>\n<p>This was a version bump only for typescript-eslint to align it with\nother projects, there were no code changes.</p>\n<p>See <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/releases/tag/v8.55.0\">GitHub\nReleases</a> for more information.</p>\n<p>You can read about our <a\nhref=\"https://typescript-eslint.io/users/versioning\">versioning\nstrategy</a> and <a\nhref=\"https://typescript-eslint.io/users/releases\">releases</a> on our\nwebsite.</p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commit/fedfe8665afbabd5c7d3ee09d14f450d5ba0b10a\"><code>fedfe86</code></a>\nchore(release): publish 8.55.0</li>\n<li><a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commit/b931f8c706beafc289462824814dca158694cb48\"><code>b931f8c</code></a>\nchore: use workspace refs for workspace deps (<a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/tree/HEAD/packages/typescript-eslint/issues/12018\">#12018</a>)</li>\n<li><a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commit/1f17a7918cd507b11fd04ce75fe44a9c62bf9542\"><code>1f17a79</code></a>\nchore: migrate to pnpm (<a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/tree/HEAD/packages/typescript-eslint/issues/11248\">#11248</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commits/v8.55.0/packages/typescript-eslint\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `webdriverio` from 9.23.3 to 9.24.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/webdriverio/webdriverio/releases\">webdriverio's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v9.24.0 (2026-02-10)</h2>\n<h4>:rocket: New Feature</h4>\n<ul>\n<li><code>wdio-appium-service</code>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/webdriverio/webdriverio/pull/14980\">#14980</a>\nWs/appium service selector performance (<a\nhref=\"https://github.com/wswebcreation\"><code>@​wswebcreation</code></a>)</li>\n</ul>\n</li>\n</ul>\n<h4>:nail_care: Polish</h4>\n<ul>\n<li><code>wdio-appium-service</code>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/webdriverio/webdriverio/pull/14980\">#14980</a>\nWs/appium service selector performance (<a\nhref=\"https://github.com/wswebcreation\"><code>@​wswebcreation</code></a>)</li>\n</ul>\n</li>\n</ul>\n<h4>:memo: Documentation</h4>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/webdriverio/webdriverio/pull/15079\">#15079</a>\nfix: resolve broken link in docs (<a\nhref=\"https://github.com/mccmrunal\"><code>@​mccmrunal</code></a>)</li>\n</ul>\n<h4>Committers: 3</h4>\n<ul>\n<li>MRUNAL CHAUDHARI (<a\nhref=\"https://github.com/mccmrunal\"><code>@​mccmrunal</code></a>)</li>\n<li>Vince Graics (<a\nhref=\"https://github.com/Winify\"><code>@​Winify</code></a>)</li>\n<li>Wim Selles (<a\nhref=\"https://github.com/wswebcreation\"><code>@​wswebcreation</code></a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/webdriverio/webdriverio/blob/main/CHANGELOG.md\">webdriverio's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>v9.24.0 (2026-02-10)</h2>\n<h4>:rocket: New Feature</h4>\n<ul>\n<li><code>wdio-appium-service</code>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/webdriverio/webdriverio/pull/14980\">#14980</a>\nWs/appium service selector performance (<a\nhref=\"https://github.com/wswebcreation\"><code>@​wswebcreation</code></a>)</li>\n</ul>\n</li>\n</ul>\n<h4>:nail_care: Polish</h4>\n<ul>\n<li><code>wdio-appium-service</code>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/webdriverio/webdriverio/pull/14980\">#14980</a>\nWs/appium service selector performance (<a\nhref=\"https://github.com/wswebcreation\"><code>@​wswebcreation</code></a>)</li>\n</ul>\n</li>\n</ul>\n<h4>:memo: Documentation</h4>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/webdriverio/webdriverio/pull/15079\">#15079</a>\nfix: resolve broken link in docs (<a\nhref=\"https://github.com/mccmrunal\"><code>@​mccmrunal</code></a>)</li>\n</ul>\n<h4>Committers: 3</h4>\n<ul>\n<li>MRUNAL CHAUDHARI (<a\nhref=\"https://github.com/mccmrunal\"><code>@​mccmrunal</code></a>)</li>\n<li>Vince Graics (<a\nhref=\"https://github.com/Winify\"><code>@​Winify</code></a>)</li>\n<li>Wim Selles (<a\nhref=\"https://github.com/wswebcreation\"><code>@​wswebcreation</code></a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/webdriverio/webdriverio/commit/ae97a13a6f03d0d6c988beb56ec822473fa61c62\"><code>ae97a13</code></a>\nv9.23.3</li>\n<li>See full diff in <a\nhref=\"https://github.com/webdriverio/webdriverio/commits/v9.24.0/packages/webdriverio\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-02-16T09:50:34+01:00",
+          "tree_id": "a001a27f230d98695acd4195a00cf8f45d42f822",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/d4f851586c04c4dbec857370024e935524f8c37e"
+        },
+        "date": 1771231958464,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 219.2792499999996,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 220.11079200001404,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 199.82891699999072,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 2119.117158400036,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 2148.8045000000966,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 1876.6547090000358,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 50.772314978799336,
+            "range": "3.2384746267774704",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 69.88159063466901,
+            "range": "4.057618269550767",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 34.3802118385136,
+            "range": "1.4708501852336267",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 60.53080951967532,
+            "range": "0.5399970456017742",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 58.71372525331119,
+            "range": "0.12437366025619331",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 60.635274163191035,
+            "range": "0.1601764823685723",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 165.92256906666117,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 165.6255510000051,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 161.23036499999444,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 1678.8132417999918,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 1726.637165999989,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 1429.071666999988,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 450.738471150567,
+            "range": "14.901425507471092",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 499.923129713336,
+            "range": "12.109818604666355",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 524.7286036273981,
+            "range": "9.119844918204517",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 505.5883869309825,
+            "range": "25.701069422160682",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 398.2825209214686,
+            "range": "10.92012269318589",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 398.90993431398,
+            "range": "7.1916881380966196",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 274.823062066658,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 271.49364500002093,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 266.6624060000231,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 183.71282826666783,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 183.18456899999092,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 179.91686200002732,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 346.6834474618529,
+            "range": "3.436191112457687",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 353.8041284971757,
+            "range": "1.9712329565187567",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 367.9011736947384,
+            "range": "13.44194515089698",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 444.46873547902595,
+            "range": "13.965095291127822",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 312.4337380103874,
+            "range": "2.244468858101632",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 323.784846348849,
+            "range": "1.9974193435111636",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 2117.117100199971,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 2160.348417000023,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 1690.745958999969,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 1960.4343666000432,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 1742.1910830000797,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 1694.6468749999894,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 287.5386370000001,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 285.14619800000673,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 280.4327239999793,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 217.16506679999839,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 218.21291700001666,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 201.5037090000078,
             "unit": "ms",
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           }
