@@ -135,9 +135,10 @@ const benchmarks = [
       });
     },
     measure: async (page) => {
-      await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('#container > div'));
-      });
+      // Use evaluateHandle to return the array of nodes as a JSHandle.
+      await page.$$eval('#container > div', (nodes) =>
+        nodes.map((node) => node.textContent),
+      );
     },
   },
 ];
