@@ -316,6 +316,7 @@ async def test_browsing_context_download_end_canceled(
             'suggestedFilename': ANY_STR,
             'timestamp': ANY_TIMESTAMP,
             'url': ANY_STR,
+            'userContext': target_user_context_id,
         },
         'type': 'event',
     }
