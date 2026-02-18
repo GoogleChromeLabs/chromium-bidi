@@ -78,7 +78,8 @@ async def test_browsingContext_noInitialLoadEvents(websocket, html,
             'context': context_id,
             'navigation': navigation,
             'timestamp': ANY_TIMESTAMP,
-            'url': url
+            'url': url,
+            'userContext': 'default',
         }
     } == resp
     await assert_no_more_messages()
@@ -121,6 +122,7 @@ async def test_browsingContext_load_properNavigation(websocket, context_id,
                 'navigation': 'stable_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': url_example,
+                'userContext': 'default',
             },
             'type': 'event',
         },

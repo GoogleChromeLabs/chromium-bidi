@@ -96,7 +96,8 @@ def downloadable_url(url_download, request, content):
 
 @pytest_asyncio.fixture
 async def assert_success_download_events(websocket, prepare_context, content,
-                                         trigger_download, downloadable_url):
+                                         trigger_download, downloadable_url,
+                                         target_user_context_id):
 
     async def assert_success_download_events(context_id):
         await prepare_context(context_id)
@@ -111,6 +112,7 @@ async def assert_success_download_events(websocket, prepare_context, content,
                 'suggestedFilename': ANY_STR,
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
+                'userContext': target_user_context_id,
             },
             'type': 'event',
         }
@@ -127,6 +129,7 @@ async def assert_success_download_events(websocket, prepare_context, content,
                 'status': 'complete',
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
+                'userContext': target_user_context_id,
             },
             'type': 'event',
         }
@@ -142,7 +145,8 @@ async def assert_success_download_events(websocket, prepare_context, content,
 
 @pytest_asyncio.fixture
 async def assert_denied_download_events(websocket, prepare_context,
-                                        trigger_download, downloadable_url):
+                                        trigger_download, downloadable_url,
+                                        target_user_context_id):
 
     async def assert_denied_download_events(context_id):
         await prepare_context(context_id)
@@ -157,6 +161,7 @@ async def assert_denied_download_events(websocket, prepare_context,
                 'suggestedFilename': ANY_STR,
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
+                'userContext': target_user_context_id,
             },
             'type': 'event',
         }
@@ -172,6 +177,7 @@ async def assert_denied_download_events(websocket, prepare_context,
                 'status': 'canceled',
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
+                'userContext': target_user_context_id,
             },
             'type': 'event',
         }
@@ -198,7 +204,8 @@ async def test_browsing_context_download_will_begin(websocket,
             'navigation': ANY_UUID,
             'suggestedFilename': FILE_NAME,
             'timestamp': ANY_TIMESTAMP,
-            'url': downloadable_url
+            'url': downloadable_url,
+            'userContext': target_user_context_id,
         },
         'type': 'event',
     }
@@ -222,7 +229,8 @@ async def test_browsing_context_download_default_behavior(
             'navigation': ANY_UUID,
             'suggestedFilename': FILE_NAME,
             'timestamp': ANY_TIMESTAMP,
-            'url': downloadable_url
+            'url': downloadable_url,
+            'userContext': target_user_context_id,
         },
         'type': 'event',
     }
@@ -260,7 +268,8 @@ async def test_browsing_context_download_default_behavior(
             'status': 'complete',
             'filepath': ANY_STR,
             'timestamp': ANY_TIMESTAMP,
-            'url': downloadable_url
+            'url': downloadable_url,
+            'userContext': target_user_context_id,
         },
         'type': 'event',
     }
@@ -341,6 +350,7 @@ async def test_browsing_context_download_end_canceled(
             'status': 'canceled',
             'timestamp': ANY_TIMESTAMP,
             'url': url_hang_forever_download(),
+            'userContext': target_user_context_id,
         },
         'type': 'event',
     }
