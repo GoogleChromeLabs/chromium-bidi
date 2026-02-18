@@ -186,7 +186,12 @@ export abstract class Realm {
     return this.#origin;
   }
 
-  abstract get source(): Script.Source;
+  get source(): Script.Source {
+    return {
+      realm: this.realmId,
+      userContext: this.#userContext,
+    };
+  }
 
   get cdpClient(): CdpClient {
     return this.#cdpClient;

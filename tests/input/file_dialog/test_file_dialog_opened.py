@@ -17,7 +17,7 @@ import pytest
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
-KEYS_TO_STABILIZE = ['sharedId', 'context', 'realm', 'id']
+KEYS_TO_STABILIZE = ['sharedId', 'context', 'realm', 'id', 'userContext']
 
 
 @pytest.mark.asyncio

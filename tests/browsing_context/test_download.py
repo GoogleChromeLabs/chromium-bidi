@@ -96,10 +96,10 @@ def downloadable_url(url_download, request, content):
 
 @pytest_asyncio.fixture
 async def assert_success_download_events(websocket, prepare_context, content,
-                                         trigger_download, downloadable_url,
-                                         target_user_context_id):
+                                         trigger_download, downloadable_url):
 
-    async def assert_success_download_events(context_id):
+    async def assert_success_download_events(context_id,
+                                             user_context_id='default'):
         await prepare_context(context_id)
         await trigger_download(context_id)
         event = await wait_for_event(websocket,
@@ -112,7 +112,7 @@ async def assert_success_download_events(websocket, prepare_context, content,
                 'suggestedFilename': ANY_STR,
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
-                'userContext': target_user_context_id,
+                'userContext': user_context_id,
             },
             'type': 'event',
         }
@@ -129,7 +129,7 @@ async def assert_success_download_events(websocket, prepare_context, content,
                 'status': 'complete',
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
-                'userContext': target_user_context_id,
+                'userContext': user_context_id,
             },
             'type': 'event',
         }
@@ -145,10 +145,10 @@ async def assert_success_download_events(websocket, prepare_context, content,
 
 @pytest_asyncio.fixture
 async def assert_denied_download_events(websocket, prepare_context,
-                                        trigger_download, downloadable_url,
-                                        target_user_context_id):
+                                        trigger_download, downloadable_url):
 
-    async def assert_denied_download_events(context_id):
+    async def assert_denied_download_events(context_id,
+                                            user_context_id='default'):
         await prepare_context(context_id)
         await trigger_download(context_id)
         event = await wait_for_event(websocket,
@@ -161,7 +161,7 @@ async def assert_denied_download_events(websocket, prepare_context,
                 'suggestedFilename': ANY_STR,
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
-                'userContext': target_user_context_id,
+                'userContext': user_context_id,
             },
             'type': 'event',
         }
@@ -177,7 +177,7 @@ async def assert_denied_download_events(websocket, prepare_context,
                 'status': 'canceled',
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
-                'userContext': target_user_context_id,
+                'userContext': user_context_id,
             },
             'type': 'event',
         }
@@ -186,11 +186,9 @@ async def assert_denied_download_events(websocket, prepare_context,
 
 
 @pytest.mark.asyncio
-async def test_browsing_context_download_will_begin(websocket,
-                                                    target_context_id,
-                                                    downloadable_url,
-                                                    prepare_context,
-                                                    trigger_download):
+async def test_browsing_context_download_will_begin(
+        websocket, target_context_id, target_user_context_id, downloadable_url,
+        prepare_context, trigger_download):
     await prepare_context(target_context_id)
     await trigger_download(target_context_id)
 
@@ -255,6 +253,7 @@ async def test_browsing_context_download_default_behavior(
                 'status': 'canceled',
                 'timestamp': ANY_TIMESTAMP,
                 'url': downloadable_url,
+                'userContext': target_user_context_id,
             },
             'type': 'event',
         }
@@ -372,7 +371,8 @@ async def test_browsing_context_download_behavior_deny(
             }
         })
 
-    await assert_denied_download_events(target_context_id)
+    await assert_denied_download_events(target_context_id,
+                                        user_context_id=target_user_context_id)
 
 
 @pytest.mark.asyncio
@@ -391,7 +391,8 @@ async def test_browsing_context_download_behavior_allowed_with_destination_folde
             }
         })
 
-    download_path = await assert_success_download_events(target_context_id)
+    download_path = await assert_success_download_events(
+        target_context_id, user_context_id=target_user_context_id)
     assert download_path.startswith(str(tmp_path))
 
 
@@ -422,15 +423,18 @@ async def test_browsing_context_download_behavior_allow_global(
     assert download_path.startswith(str(tmp_path))
     # Assert the behavior applied for existing context in custom user context.
     download_path = await assert_success_download_events(
-        context_in_some_user_context)
+        context_in_some_user_context, user_context_id=some_user_context)
     assert download_path.startswith(str(tmp_path))
     # Assert the behavior applied for new context in existing user context.
     download_path = await assert_success_download_events(
-        await create_context(some_user_context))
+        await create_context(some_user_context),
+        user_context_id=some_user_context)
     assert download_path.startswith(str(tmp_path))
     # Assert the behavior applied for new context in new user context.
-    download_path = await assert_success_download_events(await create_context(
-        await create_user_context()))
+    new_user_context = await create_user_context()
+    download_path = await assert_success_download_events(
+        await create_context(new_user_context),
+        user_context_id=new_user_context)
     assert download_path.startswith(str(tmp_path))
 
 
