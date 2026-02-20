@@ -36,7 +36,7 @@ import {
   getBidiMapperPath,
 } from './path-getter/path-getter.mjs';
 
-async function runBenchmarkRun(launchOptions, chromePath) {
+async function runBenchmarkRun(launchOptions, chromePath, benchmark) {
   const browser = await puppeteer.launch({
     executablePath: chromePath,
     headless: 'shell',
@@ -50,6 +50,30 @@ async function runBenchmarkRun(launchOptions, chromePath) {
 
     // Warmup
     for (let i = 0; i < WARMUP_ITERATIONS; i++) {
+      await benchmark.warmup(page, i);
+    }
+
+    // Measurement
+    const latencies = [];
+    for (let i = 0; i < ITERATIONS_PER_RUN; i++) {
+      const start = performance.now();
+      await benchmark.measure(page, i);
+      const end = performance.now();
+      latencies.push(end - start);
+    }
+
+    // Return all latencies for this run
+    return latencies;
+  } finally {
+    await browser.close();
+  }
+}
+
+const benchmarks = [
+  {
+    id: 'diff',
+    name: 'Object Evaluation',
+    warmup: async (page, i) => {
       await page.evaluate(
         (index, id) => {
           document.getElementById(id).innerText = `Warmup: ${index + 1}`;
@@ -57,12 +81,8 @@ async function runBenchmarkRun(launchOptions, chromePath) {
         i,
         'some-counter',
       );
-    }
-
-    // Measurement
-    const latencies = [];
-    for (let i = 0; i < ITERATIONS_PER_RUN; i++) {
-      const start = performance.now();
+    },
+    measure: async (page, i) => {
       await page.evaluate(
         (index, id) => {
           // Change DOM.
@@ -83,16 +103,45 @@ async function runBenchmarkRun(launchOptions, chromePath) {
         i,
         'some-counter',
       );
-      const end = performance.now();
-      latencies.push(end - start);
-    }
-
-    // Return all latencies for this run
-    return latencies;
-  } finally {
-    await browser.close();
-  }
-}
+    },
+  },
+  {
+    id: 'number',
+    name: 'Number Evaluation',
+    warmup: async (page) => {
+      await page.evaluate(() => 1);
+    },
+    measure: async (page) => {
+      await page.evaluate(() => 1);
+    },
+  },
+  {
+    id: 'nodes',
+    name: '100 Nodes Evaluation',
+    warmup: async (page) => {
+      await page.evaluate(() => {
+        let container = document.getElementById('container');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'container';
+          document.body.appendChild(container);
+        }
+        container.innerHTML = '';
+        for (let i = 0; i < 100; i++) {
+          const node = document.createElement('div');
+          node.innerText = `Node ${i}`;
+          container.appendChild(node);
+        }
+      });
+    },
+    measure: async (page) => {
+      // Use evaluateHandle to return the array of nodes as a JSHandle.
+      await page.$$eval('#container > div', (nodes) =>
+        nodes.map((node) => node.textContent),
+      );
+    },
+  },
+];
 
 async function main() {
   // Verify if we are using the linked version of chromium-bidi.
@@ -122,42 +171,47 @@ async function main() {
     `Starting Benchmark: ${RUNS} runs x ${ITERATIONS_PER_RUN} iterations...`,
   );
 
-  const stats = {
-    cdp: [],
-    bidi: [],
-  };
+  for (const benchmark of benchmarks) {
+    console.log(`\nRunning Benchmark: ${benchmark.name}`);
+    const stats = {
+      cdp: [],
+      bidi: [],
+    };
 
-  for (let i = 0; i < RUNS; i++) {
-    process.stdout.write(`Run ${i + 1}/${RUNS}: `);
+    for (let i = 0; i < RUNS; i++) {
+      process.stdout.write(`Run ${i + 1}/${RUNS}: `);
 
-    // Run CDP.
-    process.stdout.write(`running CDP... `);
-    const cdpLatencies = await runBenchmarkRun({}, chromePath);
-    stats.cdp.push(...cdpLatencies);
+      // Run CDP.
+      process.stdout.write(`running CDP... `);
+      const cdpLatencies = await runBenchmarkRun({}, chromePath, benchmark);
+      stats.cdp.push(...cdpLatencies);
 
-    process.stdout.write(`running BiDi... `);
-    const bidiLatencies = await runBenchmarkRun(
-      {protocol: 'webDriverBiDi'},
-      chromePath,
-    );
-    stats.bidi.push(...bidiLatencies);
+      process.stdout.write(`running BiDi... `);
+      const bidiLatencies = await runBenchmarkRun(
+        {protocol: 'webDriverBiDi'},
+        chromePath,
+        benchmark,
+      );
+      stats.bidi.push(...bidiLatencies);
 
-    console.log('Done.');
+      console.log('Done.');
+    }
+
+    const cdpFinal = calculateStats(stats.cdp);
+    const bidiFinal = calculateStats(stats.bidi);
+
+    console.log(`\n=== Results: ${benchmark.name} (Mean of Runs) ===`);
+    printStats('Puppeteer CDP', cdpFinal);
+    printStats('Puppeteer BiDi', bidiFinal);
+
+    // Comparisons
+    console.log(`\n=== Comparison: ${benchmark.name} (BiDi vs CDP) ===`);
+    printComparison(bidiFinal, cdpFinal);
+
+    // Print metrics to the file for CI.
+    // Use benchmark.id as the prefix for the metrics
+    printCiComparison(benchmark.id, bidiFinal, cdpFinal, 'puppeteer');
   }
-
-  const cdpFinal = calculateStats(stats.cdp);
-  const bidiFinal = calculateStats(stats.bidi);
-
-  console.log('\n=== Results (Mean of Runs) ===');
-  printStats('Puppeteer CDP', cdpFinal);
-  printStats('Puppeteer BiDi', bidiFinal);
-
-  // Comparisons
-  console.log('\n=== Comparison (BiDi vs CDP) ===');
-  printComparison(bidiFinal, cdpFinal);
-
-  // Print metrics to the file for CI.
-  printCiComparison('diff', bidiFinal, cdpFinal, 'puppeteer');
 }
 
 await main();
