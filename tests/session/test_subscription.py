@@ -434,7 +434,8 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
             "level": "info",
             "source": {
                 "realm": ANY,
-                "context": context_id
+                "context": context_id,
+                "userContext": "default"
             },
             "text": "SOME_MESSAGE",
             "timestamp": ANY_TIMESTAMP,
