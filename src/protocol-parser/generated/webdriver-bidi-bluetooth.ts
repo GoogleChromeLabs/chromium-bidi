@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2024 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -28,191 +27,409 @@
 import * as z from 'zod';
 
 export namespace Bluetooth {
-export const BluetoothUuidSchema = z.lazy(() => z.string());
+  export const BluetoothUuidSchema = z.lazy(() => z.string());
 }
 export namespace Bluetooth {
-export const BluetoothManufacturerDataSchema = z.lazy(() => z.object({
-"key":z.number().int().nonnegative(),"data":z.string()}));
+  export const BluetoothManufacturerDataSchema = z.lazy(() =>
+    z.object({
+      key: z.number().int().nonnegative(),
+      data: z.string(),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const CharacteristicPropertiesSchema = z.lazy(() => z.object({
-"broadcast":z.boolean().optional(),"read":z.boolean().optional(),"writeWithoutResponse":z.boolean().optional(),"write":z.boolean().optional(),"notify":z.boolean().optional(),"indicate":z.boolean().optional(),"authenticatedSignedWrites":z.boolean().optional(),"extendedProperties":z.boolean().optional()}));
+  export const CharacteristicPropertiesSchema = z.lazy(() =>
+    z.object({
+      broadcast: z.boolean().optional(),
+      read: z.boolean().optional(),
+      writeWithoutResponse: z.boolean().optional(),
+      write: z.boolean().optional(),
+      notify: z.boolean().optional(),
+      indicate: z.boolean().optional(),
+      authenticatedSignedWrites: z.boolean().optional(),
+      extendedProperties: z.boolean().optional(),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const RequestDeviceSchema = z.lazy(() => z.string());
+  export const RequestDeviceSchema = z.lazy(() => z.string());
 }
 export namespace Bluetooth {
-export const RequestDeviceInfoSchema = z.lazy(() => z.object({
-"id":Bluetooth.RequestDeviceSchema,"name":z.union([z.string(),z.null()])}));
+  export const RequestDeviceInfoSchema = z.lazy(() =>
+    z.object({
+      id: Bluetooth.RequestDeviceSchema,
+      name: z.union([z.string(), z.null()]),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const RequestDevicePromptSchema = z.lazy(() => z.string());
+  export const RequestDevicePromptSchema = z.lazy(() => z.string());
 }
 export namespace Bluetooth {
-export const ScanRecordSchema = z.lazy(() => z.object({
-"name":z.string().optional(),"uuids":z.array(Bluetooth.BluetoothUuidSchema).optional(),"appearance":z.number().optional(),"manufacturerData":z.array(Bluetooth.BluetoothManufacturerDataSchema).optional()}));
+  export const ScanRecordSchema = z.lazy(() =>
+    z.object({
+      name: z.string().optional(),
+      uuids: z.array(Bluetooth.BluetoothUuidSchema).optional(),
+      appearance: z.number().optional(),
+      manufacturerData: z
+        .array(Bluetooth.BluetoothManufacturerDataSchema)
+        .optional(),
+    }),
+  );
 }
-export const 
-BluetoothCommandSchema = z.lazy(() => z.union([Bluetooth.HandleRequestDevicePromptSchema,Bluetooth.SimulateAdapterSchema,Bluetooth.DisableSimulationSchema,Bluetooth.SimulatePreconnectedPeripheralSchema,Bluetooth.SimulateAdvertisementSchema,Bluetooth.SimulateGattConnectionResponseSchema,Bluetooth.SimulateGattDisconnectionSchema,Bluetooth.SimulateServiceSchema,Bluetooth.SimulateCharacteristicSchema,Bluetooth.SimulateCharacteristicResponseSchema,Bluetooth.SimulateDescriptorSchema,Bluetooth.SimulateDescriptorResponseSchema]));
-export namespace Bluetooth {
-export const 
-HandleRequestDevicePromptSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.handleRequestDevicePrompt"),"params":Bluetooth.HandleRequestDevicePromptParametersSchema}));
-}
-export namespace Bluetooth {
-export const HandleRequestDevicePromptParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"prompt":Bluetooth.RequestDevicePromptSchema}).and(
-z.union([Bluetooth.HandleRequestDevicePromptAcceptParametersSchema,Bluetooth.HandleRequestDevicePromptCancelParametersSchema]))
+export const BluetoothCommandSchema = z.lazy(() =>
+  z.union([
+    Bluetooth.HandleRequestDevicePromptSchema,
+    Bluetooth.SimulateAdapterSchema,
+    Bluetooth.DisableSimulationSchema,
+    Bluetooth.SimulatePreconnectedPeripheralSchema,
+    Bluetooth.SimulateAdvertisementSchema,
+    Bluetooth.SimulateGattConnectionResponseSchema,
+    Bluetooth.SimulateGattDisconnectionSchema,
+    Bluetooth.SimulateServiceSchema,
+    Bluetooth.SimulateCharacteristicSchema,
+    Bluetooth.SimulateCharacteristicResponseSchema,
+    Bluetooth.SimulateDescriptorSchema,
+    Bluetooth.SimulateDescriptorResponseSchema,
+  ]),
 );
+export namespace Bluetooth {
+  export const HandleRequestDevicePromptSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.handleRequestDevicePrompt'),
+      params: Bluetooth.HandleRequestDevicePromptParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-HandleRequestDevicePromptAcceptParametersSchema = z.lazy(() => z.object({
-"accept":z.literal(true),"device":Bluetooth.RequestDeviceSchema}));
+  export const HandleRequestDevicePromptParametersSchema = z.lazy(() =>
+    z
+      .object({
+        context: z.string(),
+        prompt: Bluetooth.RequestDevicePromptSchema,
+      })
+      .and(
+        z.union([
+          Bluetooth.HandleRequestDevicePromptAcceptParametersSchema,
+          Bluetooth.HandleRequestDevicePromptCancelParametersSchema,
+        ]),
+      ),
+  );
 }
 export namespace Bluetooth {
-export const 
-HandleRequestDevicePromptCancelParametersSchema = z.lazy(() => z.object({
-"accept":z.literal(false)}));
+  export const HandleRequestDevicePromptAcceptParametersSchema = z.lazy(() =>
+    z.object({
+      accept: z.literal(true),
+      device: Bluetooth.RequestDeviceSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateAdapterSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateAdapter"),"params":Bluetooth.SimulateAdapterParametersSchema}));
+  export const HandleRequestDevicePromptCancelParametersSchema = z.lazy(() =>
+    z.object({
+      accept: z.literal(false),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateAdapterParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"leSupported":z.boolean().optional(),"state":z.enum(["absent","powered-off","powered-on",])}));
+  export const SimulateAdapterSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateAdapter'),
+      params: Bluetooth.SimulateAdapterParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-DisableSimulationSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.disableSimulation"),"params":Bluetooth.DisableSimulationParametersSchema}));
+  export const SimulateAdapterParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      leSupported: z.boolean().optional(),
+      state: z.enum(['absent', 'powered-off', 'powered-on']),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const DisableSimulationParametersSchema = z.lazy(() => z.object({
-"context":z.string()}));
+  export const DisableSimulationSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.disableSimulation'),
+      params: Bluetooth.DisableSimulationParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulatePreconnectedPeripheralSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulatePreconnectedPeripheral"),"params":Bluetooth.SimulatePreconnectedPeripheralParametersSchema}));
+  export const DisableSimulationParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulatePreconnectedPeripheralParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"name":z.string(),"manufacturerData":z.array(Bluetooth.BluetoothManufacturerDataSchema),"knownServiceUuids":z.array(Bluetooth.BluetoothUuidSchema)}));
+  export const SimulatePreconnectedPeripheralSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulatePreconnectedPeripheral'),
+      params: Bluetooth.SimulatePreconnectedPeripheralParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateAdvertisementSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateAdvertisement"),"params":Bluetooth.SimulateAdvertisementParametersSchema}));
+  export const SimulatePreconnectedPeripheralParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      name: z.string(),
+      manufacturerData: z.array(Bluetooth.BluetoothManufacturerDataSchema),
+      knownServiceUuids: z.array(Bluetooth.BluetoothUuidSchema),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateAdvertisementParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"scanEntry":Bluetooth.SimulateAdvertisementScanEntryParametersSchema}));
+  export const SimulateAdvertisementSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateAdvertisement'),
+      params: Bluetooth.SimulateAdvertisementParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateAdvertisementScanEntryParametersSchema = z.lazy(() => z.object({
-"deviceAddress":z.string(),"rssi":z.number(),"scanRecord":Bluetooth.ScanRecordSchema}));
+  export const SimulateAdvertisementParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      scanEntry: Bluetooth.SimulateAdvertisementScanEntryParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateGattConnectionResponseSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateGattConnectionResponse"),"params":Bluetooth.SimulateGattConnectionResponseParametersSchema}));
+  export const SimulateAdvertisementScanEntryParametersSchema = z.lazy(() =>
+    z.object({
+      deviceAddress: z.string(),
+      rssi: z.number(),
+      scanRecord: Bluetooth.ScanRecordSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateGattConnectionResponseParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"code":z.number().int().nonnegative()}));
+  export const SimulateGattConnectionResponseSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateGattConnectionResponse'),
+      params: Bluetooth.SimulateGattConnectionResponseParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateGattDisconnectionSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateGattDisconnection"),"params":Bluetooth.SimulateGattDisconnectionParametersSchema}));
+  export const SimulateGattConnectionResponseParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      code: z.number().int().nonnegative(),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateGattDisconnectionParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string()}));
+  export const SimulateGattDisconnectionSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateGattDisconnection'),
+      params: Bluetooth.SimulateGattDisconnectionParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateServiceSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateService"),"params":Bluetooth.SimulateServiceParametersSchema}));
+  export const SimulateGattDisconnectionParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateServiceParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"uuid":Bluetooth.BluetoothUuidSchema,"type":z.enum(["add","remove",])}));
+  export const SimulateServiceSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateService'),
+      params: Bluetooth.SimulateServiceParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateCharacteristicSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateCharacteristic"),"params":Bluetooth.SimulateCharacteristicParametersSchema}));
+  export const SimulateServiceParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      uuid: Bluetooth.BluetoothUuidSchema,
+      type: z.enum(['add', 'remove']),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateCharacteristicParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"serviceUuid":Bluetooth.BluetoothUuidSchema,"characteristicUuid":Bluetooth.BluetoothUuidSchema,"characteristicProperties":Bluetooth.CharacteristicPropertiesSchema.optional(),"type":z.enum(["add","remove",])}));
+  export const SimulateCharacteristicSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateCharacteristic'),
+      params: Bluetooth.SimulateCharacteristicParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateCharacteristicResponseSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateCharacteristicResponse"),"params":Bluetooth.SimulateCharacteristicResponseParametersSchema}));
+  export const SimulateCharacteristicParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      serviceUuid: Bluetooth.BluetoothUuidSchema,
+      characteristicUuid: Bluetooth.BluetoothUuidSchema,
+      characteristicProperties:
+        Bluetooth.CharacteristicPropertiesSchema.optional(),
+      type: z.enum(['add', 'remove']),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateCharacteristicResponseParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"serviceUuid":Bluetooth.BluetoothUuidSchema,"characteristicUuid":Bluetooth.BluetoothUuidSchema,"type":z.enum(["read","write","subscribe-to-notifications","unsubscribe-from-notifications",]),"code":z.number().int().nonnegative(),"data":z.array(z.number().int().nonnegative()).optional()}));
+  export const SimulateCharacteristicResponseSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateCharacteristicResponse'),
+      params: Bluetooth.SimulateCharacteristicResponseParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateDescriptorSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateDescriptor"),"params":Bluetooth.SimulateDescriptorParametersSchema}));
+  export const SimulateCharacteristicResponseParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      serviceUuid: Bluetooth.BluetoothUuidSchema,
+      characteristicUuid: Bluetooth.BluetoothUuidSchema,
+      type: z.enum([
+        'read',
+        'write',
+        'subscribe-to-notifications',
+        'unsubscribe-from-notifications',
+      ]),
+      code: z.number().int().nonnegative(),
+      data: z.array(z.number().int().nonnegative()).optional(),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateDescriptorParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"serviceUuid":Bluetooth.BluetoothUuidSchema,"characteristicUuid":Bluetooth.BluetoothUuidSchema,"descriptorUuid":Bluetooth.BluetoothUuidSchema,"type":z.enum(["add","remove",])}));
+  export const SimulateDescriptorSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateDescriptor'),
+      params: Bluetooth.SimulateDescriptorParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-SimulateDescriptorResponseSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.simulateDescriptorResponse"),"params":Bluetooth.SimulateDescriptorResponseParametersSchema}));
+  export const SimulateDescriptorParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      serviceUuid: Bluetooth.BluetoothUuidSchema,
+      characteristicUuid: Bluetooth.BluetoothUuidSchema,
+      descriptorUuid: Bluetooth.BluetoothUuidSchema,
+      type: z.enum(['add', 'remove']),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const SimulateDescriptorResponseParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"serviceUuid":Bluetooth.BluetoothUuidSchema,"characteristicUuid":Bluetooth.BluetoothUuidSchema,"descriptorUuid":Bluetooth.BluetoothUuidSchema,"type":z.enum(["read","write",]),"code":z.number().int().nonnegative(),"data":z.array(z.number().int().nonnegative()).optional()}));
-}
-export const 
-BluetoothEventSchema = z.lazy(() => z.union([Bluetooth.RequestDevicePromptUpdatedSchema,Bluetooth.GattConnectionAttemptedSchema]));
-export namespace Bluetooth {
-export const 
-RequestDevicePromptUpdatedSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.requestDevicePromptUpdated"),"params":Bluetooth.RequestDevicePromptUpdatedParametersSchema}));
+  export const SimulateDescriptorResponseSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateDescriptorResponse'),
+      params: Bluetooth.SimulateDescriptorResponseParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const RequestDevicePromptUpdatedParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"prompt":Bluetooth.RequestDevicePromptSchema,"devices":z.array(Bluetooth.RequestDeviceInfoSchema)}));
+  export const SimulateDescriptorResponseParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      serviceUuid: Bluetooth.BluetoothUuidSchema,
+      characteristicUuid: Bluetooth.BluetoothUuidSchema,
+      descriptorUuid: Bluetooth.BluetoothUuidSchema,
+      type: z.enum(['read', 'write']),
+      code: z.number().int().nonnegative(),
+      data: z.array(z.number().int().nonnegative()).optional(),
+    }),
+  );
+}
+export const BluetoothEventSchema = z.lazy(() =>
+  z.union([
+    Bluetooth.RequestDevicePromptUpdatedSchema,
+    Bluetooth.GattConnectionAttemptedSchema,
+  ]),
+);
+export namespace Bluetooth {
+  export const RequestDevicePromptUpdatedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.requestDevicePromptUpdated'),
+      params: Bluetooth.RequestDevicePromptUpdatedParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-GattConnectionAttemptedSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.gattConnectionAttempted"),"params":Bluetooth.GattConnectionAttemptedParametersSchema}));
+  export const RequestDevicePromptUpdatedParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      prompt: Bluetooth.RequestDevicePromptSchema,
+      devices: z.array(Bluetooth.RequestDeviceInfoSchema),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const GattConnectionAttemptedParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string()}));
+  export const GattConnectionAttemptedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.gattConnectionAttempted'),
+      params: Bluetooth.GattConnectionAttemptedParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-CharacteristicEventGeneratedSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.characteristicEventGenerated"),"params":Bluetooth.CharacteristicEventGeneratedParametersSchema}));
+  export const GattConnectionAttemptedParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const CharacteristicEventGeneratedParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"serviceUuid":Bluetooth.BluetoothUuidSchema,"characteristicUuid":Bluetooth.BluetoothUuidSchema,"type":z.enum(["read","write-with-response","write-without-response","subscribe-to-notifications","unsubscribe-from-notifications",]),"data":z.array(z.number().int().nonnegative()).optional()}));
+  export const CharacteristicEventGeneratedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.characteristicEventGenerated'),
+      params: Bluetooth.CharacteristicEventGeneratedParametersSchema,
+    }),
+  );
 }
 export namespace Bluetooth {
-export const 
-DescriptorEventGeneratedSchema = z.lazy(() => z.object({
-"method":z.literal("bluetooth.descriptorEventGenerated"),"params":Bluetooth.DescriptorEventGeneratedParametersSchema}));
+  export const CharacteristicEventGeneratedParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      serviceUuid: Bluetooth.BluetoothUuidSchema,
+      characteristicUuid: Bluetooth.BluetoothUuidSchema,
+      type: z.enum([
+        'read',
+        'write-with-response',
+        'write-without-response',
+        'subscribe-to-notifications',
+        'unsubscribe-from-notifications',
+      ]),
+      data: z.array(z.number().int().nonnegative()).optional(),
+    }),
+  );
 }
 export namespace Bluetooth {
-export const DescriptorEventGeneratedParametersSchema = z.lazy(() => z.object({
-"context":z.string(),"address":z.string(),"serviceUuid":Bluetooth.BluetoothUuidSchema,"characteristicUuid":Bluetooth.BluetoothUuidSchema,"descriptorUuid":Bluetooth.BluetoothUuidSchema,"type":z.enum(["read","write",]),"data":z.array(z.number().int().nonnegative()).optional()}));
+  export const DescriptorEventGeneratedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.descriptorEventGenerated'),
+      params: Bluetooth.DescriptorEventGeneratedParametersSchema,
+    }),
+  );
+}
+export namespace Bluetooth {
+  export const DescriptorEventGeneratedParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      serviceUuid: Bluetooth.BluetoothUuidSchema,
+      characteristicUuid: Bluetooth.BluetoothUuidSchema,
+      descriptorUuid: Bluetooth.BluetoothUuidSchema,
+      type: z.enum(['read', 'write']),
+      data: z.array(z.number().int().nonnegative()).optional(),
+    }),
+  );
 }

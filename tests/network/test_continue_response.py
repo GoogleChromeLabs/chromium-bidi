@@ -81,13 +81,12 @@ async def test_continue_response_invalid_status_code(websocket, context_id,
                                               url=url_example,
                                               phase="responseStarted")
 
-    with pytest.raises(
-            Exception,
-            match=re.compile(
-                str({
-                    "error": "invalid argument",
-                    "message": 'Invalid input in "statusCode".*'
-                }))):
+    with pytest.raises(Exception,
+                       match=re.compile(
+                           str({
+                               "error": "invalid argument",
+                               "message": 'Invalid input in "statusCode".*'
+                           }))):
         await execute_command(
             websocket, {
                 "method": "network.continueResponse",
@@ -106,12 +105,11 @@ async def test_continue_response_invalid_reason_phrase(websocket, context_id,
                                               url=url_example,
                                               phase="responseStarted")
 
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "invalid argument",
-                "message": 'Invalid input in "reasonPhrase".'
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": 'Invalid input in "reasonPhrase".'
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.continueResponse",
@@ -130,12 +128,11 @@ async def test_continue_response_invalid_headers(websocket, context_id,
                                               url=url_example,
                                               phase="responseStarted")
 
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "invalid argument",
-                "message": 'Invalid input in "headers".'
-            })):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": 'Invalid input in "headers".'
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.continueResponse",

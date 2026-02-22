@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2024 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -22,26 +21,38 @@
  * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
  */
 
-export type UserAgentClientHintsCommand = (UserAgentClientHints.SetClientHintsOverrideCommand);
+export type UserAgentClientHintsCommand =
+  UserAgentClientHints.SetClientHintsOverrideCommand;
 export namespace UserAgentClientHints {
-export type SetClientHintsOverrideCommand = (({
-"method":("userAgentClientHints.setClientHintsOverride"),"params":(({
-"clientHints":(UserAgentClientHints.ClientHintsMetadata| null),"contexts"?:([
-(string),...(string)[]]),"userContexts"?:([
-(string),...(string)[]])}))}));
+  export type SetClientHintsOverrideCommand = {
+    method: 'userAgentClientHints.setClientHintsOverride';
+    params: {
+      clientHints: UserAgentClientHints.ClientHintsMetadata | null;
+      contexts?: [string, ...string[]];
+      userContexts?: [string, ...string[]];
+    };
+  };
 }
 export namespace UserAgentClientHints {
-export type ClientHintsMetadata = (({
-"brands"?:([
-...((UserAgentClientHints.BrandVersion)[])]),"fullVersionList"?:([
-...((UserAgentClientHints.BrandVersion)[])]),"platform"?:(string),"platformVersion"?:(string),"architecture"?:(string),"model"?:(string),"mobile"?:(boolean),"bitness"?:(string),"wow64"?:(boolean),"formFactors"?:([
-...((string)[])])}));
+  export type ClientHintsMetadata = {
+    brands?: [...UserAgentClientHints.BrandVersion[]];
+    fullVersionList?: [...UserAgentClientHints.BrandVersion[]];
+    platform?: string;
+    platformVersion?: string;
+    architecture?: string;
+    model?: string;
+    mobile?: boolean;
+    bitness?: string;
+    wow64?: boolean;
+    formFactors?: [...string[]];
+  };
 }
 export namespace UserAgentClientHints {
-export type BrandVersion = (({
-"brand":(string),"version":(string)}));
+  export type BrandVersion = {
+    brand: string;
+    version: string;
+  };
 }
 export namespace UserAgentClientHints {
-export type SetClientHintsOverrideResult = ((Record<string, never>
-));
+  export type SetClientHintsOverrideResult = Record<string, never>;
 }

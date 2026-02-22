@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2024 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -27,22 +26,50 @@
 
 import * as z from 'zod';
 
-export const 
-UserAgentClientHintsCommandSchema = z.lazy(() => UserAgentClientHints.SetClientHintsOverrideCommandSchema);
+export const UserAgentClientHintsCommandSchema = z.lazy(
+  () => UserAgentClientHints.SetClientHintsOverrideCommandSchema,
+);
 export namespace UserAgentClientHints {
-export const SetClientHintsOverrideCommandSchema = z.lazy(() => z.object({
-"method":z.literal("userAgentClientHints.setClientHintsOverride"),"params":z.object({
-"clientHints":z.union([UserAgentClientHints.ClientHintsMetadataSchema,z.null()]),"contexts":z.array(z.string()).min(1).optional(),"userContexts":z.array(z.string()).min(1).optional()})}));
+  export const SetClientHintsOverrideCommandSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('userAgentClientHints.setClientHintsOverride'),
+      params: z.object({
+        clientHints: z.union([
+          UserAgentClientHints.ClientHintsMetadataSchema,
+          z.null(),
+        ]),
+        contexts: z.array(z.string()).min(1).optional(),
+        userContexts: z.array(z.string()).min(1).optional(),
+      }),
+    }),
+  );
 }
 export namespace UserAgentClientHints {
-export const ClientHintsMetadataSchema = z.lazy(() => z.object({
-"brands":z.array(UserAgentClientHints.BrandVersionSchema).optional(),"fullVersionList":z.array(UserAgentClientHints.BrandVersionSchema).optional(),"platform":z.string().optional(),"platformVersion":z.string().optional(),"architecture":z.string().optional(),"model":z.string().optional(),"mobile":z.boolean().optional(),"bitness":z.string().optional(),"wow64":z.boolean().optional(),"formFactors":z.array(z.string()).optional()}));
+  export const ClientHintsMetadataSchema = z.lazy(() =>
+    z.object({
+      brands: z.array(UserAgentClientHints.BrandVersionSchema).optional(),
+      fullVersionList: z
+        .array(UserAgentClientHints.BrandVersionSchema)
+        .optional(),
+      platform: z.string().optional(),
+      platformVersion: z.string().optional(),
+      architecture: z.string().optional(),
+      model: z.string().optional(),
+      mobile: z.boolean().optional(),
+      bitness: z.string().optional(),
+      wow64: z.boolean().optional(),
+      formFactors: z.array(z.string()).optional(),
+    }),
+  );
 }
 export namespace UserAgentClientHints {
-export const BrandVersionSchema = z.lazy(() => z.object({
-"brand":z.string(),"version":z.string()}));
+  export const BrandVersionSchema = z.lazy(() =>
+    z.object({
+      brand: z.string(),
+      version: z.string(),
+    }),
+  );
 }
 export namespace UserAgentClientHints {
-export const SetClientHintsOverrideResultSchema = z.lazy(() => z.object({
-}));
+  export const SetClientHintsOverrideResultSchema = z.lazy(() => z.object({}));
 }

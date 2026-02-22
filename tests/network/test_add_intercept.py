@@ -23,13 +23,12 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
 
 @pytest.mark.asyncio
 async def test_add_intercept_invalid_empty_phases(websocket):
-    with pytest.raises(
-            Exception,
-            match=re.escape(
-                str({
-                    "error": "invalid argument",
-                    "message": "Invalid input in \"phases\"."
-                }))):
+    with pytest.raises(Exception,
+                       match=re.escape(
+                           str({
+                               "error": "invalid argument",
+                               "message": "Invalid input in \"phases\"."
+                           }))):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
