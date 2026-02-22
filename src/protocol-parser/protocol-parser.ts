@@ -20,6 +20,9 @@
  * Parser types should match the `../protocol` types.
  */
 import {z, type ZodType} from 'zod';
+import {en} from 'zod/locales';
+
+z.config(en());
 
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
