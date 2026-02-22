@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2024 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -23,18 +22,24 @@
  */
 
 export namespace Speculation {
-export const enum PreloadingStatus {Pending = "pending",
-Ready = "ready",
-Success = "success",
-Failure = "failure",
+  export const enum PreloadingStatus {
+    Pending = 'pending',
+    Ready = 'ready',
+    Success = 'success',
+    Failure = 'failure',
+  }
 }
-}
-export type SpeculationEvent = (Speculation.PrefetchStatusUpdated);
+export type SpeculationEvent = Speculation.PrefetchStatusUpdated;
 export namespace Speculation {
-export type PrefetchStatusUpdated = ({
-"method":("speculation.prefetchStatusUpdated"),"params":(Speculation.PrefetchStatusUpdatedParameters)});
+  export type PrefetchStatusUpdated = {
+    method: 'speculation.prefetchStatusUpdated';
+    params: Speculation.PrefetchStatusUpdatedParameters;
+  };
 }
 export namespace Speculation {
-export type PrefetchStatusUpdatedParameters = (({
-"context":(string),"url":(string),"status":(Speculation.PreloadingStatus)}));
+  export type PrefetchStatusUpdatedParameters = {
+    context: string;
+    url: string;
+    status: Speculation.PreloadingStatus;
+  };
 }

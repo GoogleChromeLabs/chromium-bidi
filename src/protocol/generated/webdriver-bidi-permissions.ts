@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2024 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -22,22 +21,31 @@
  * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
  */
 
-export type PermissionsCommand = (Permissions.SetPermission);
+export type PermissionsCommand = Permissions.SetPermission;
 export namespace Permissions {
-export type PermissionDescriptor = (({
-"name":(string)}));
+  export type PermissionDescriptor = {
+    name: string;
+  };
 }
 export namespace Permissions {
-export const enum PermissionState {Granted = "granted",
-Denied = "denied",
-Prompt = "prompt",
-}
-}
-export namespace Permissions {
-export type SetPermission = ({
-"method":("permissions.setPermission"),"params":(Permissions.SetPermissionParameters)});
+  export const enum PermissionState {
+    Granted = 'granted',
+    Denied = 'denied',
+    Prompt = 'prompt',
+  }
 }
 export namespace Permissions {
-export type SetPermissionParameters = (({
-"descriptor":(Permissions.PermissionDescriptor),"state":(Permissions.PermissionState),"origin":(string),"embeddedOrigin"?:(string),"userContext"?:(string)}));
+  export type SetPermission = {
+    method: 'permissions.setPermission';
+    params: Permissions.SetPermissionParameters;
+  };
+}
+export namespace Permissions {
+  export type SetPermissionParameters = {
+    descriptor: Permissions.PermissionDescriptor;
+    state: Permissions.PermissionState;
+    origin: string;
+    embeddedOrigin?: string;
+    userContext?: string;
+  };
 }
