@@ -72,7 +72,7 @@ async def test_provide_response_invalid_status_code(websocket, context_id,
             match=re.compile(
                 str({
                     "error": "invalid argument",
-                    "message": 'Number must be greater than or equal to 0 in "statusCode".*'
+                    "message": 'Invalid input in "statusCode".*'
                 }))):
         await execute_command(
             websocket, {
@@ -96,7 +96,7 @@ async def test_provide_response_invalid_reason_phrase(websocket, context_id,
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": 'Expected string, received array in "reasonPhrase".'
+                "message": 'Invalid input in "reasonPhrase".'
             })):
         await execute_command(
             websocket, {
@@ -120,7 +120,7 @@ async def test_provide_response_invalid_headers(websocket, context_id,
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": 'Expected array, received string in "headers".'
+                "message": 'Invalid input in "headers".'
             })):
         await execute_command(
             websocket, {
