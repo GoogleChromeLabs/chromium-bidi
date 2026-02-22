@@ -28,7 +28,7 @@ async def test_add_intercept_invalid_empty_phases(websocket):
             match=re.escape(
                 str({
                     "error": "invalid argument",
-                    "message": "Array must contain at least 1 element(s) in \"phases\"."
+                    "message": "Invalid input in \"phases\"."
                 }))):
         await execute_command(
             websocket, {
