@@ -114,14 +114,14 @@
     <div class="headings">
       <h1>
         <span>
-          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/73b710ba3bea7a6bed5dfdd43f588a9090bbb0a3"><code>73b710ba</code></a>)
+          Chromium-BiDi's (<a href="https://github.com/GoogleChromeLabs/chromium-bidi/commit/98c9fd0db3b0411f64d0b923dc914b71703e2936"><code>98c9fd0d</code></a>)
         </span><br>
         <span>
           test results for WPT (<a href="https://github.com/web-platform-tests/wpt/commit/2bbce9fe5a16fd41f10ffe9e71b8c811c1355f8f"><code>2bbce9fe</code></a>)
             
         </span><br>
         <span>
-          running Chrome 147.0.7699.0 @ <time>2026-02-23</time>
+          running Chrome 147.0.7700.0 @ <time>2026-02-24</time>
         </span>
       
     </div>
@@ -7425,7 +7425,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_end/download_end.py/test_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;6ae9e042-0326-44d2-a081-6455df35ba6d&#39; == &#39;67755360-b8d9-4e3e-9ce4-44c64e86a547&#39;</small>
+          <br /><small>AssertionError: assert &#39;c86859ea-6f0e-4a0a-8fda-13304e6aedba&#39; == &#39;b0dafc8e-8ea3-4a08-8fd4-96019b48a607&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -7548,7 +7548,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py/test_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;c7bf9cea-c3be-478e-b791-80c6686cfb12&#39; == &#39;4497e569-308d-4885-8c11-cb8b2b4fa97f&#39;</small>
+          <br /><small>AssertionError: assert &#39;0ab4becf-3636-406c-84f1-1c6c188ebe43&#39; == &#39;03665a60-9d7a-4894-be8b-dffa15b31182&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -7576,7 +7576,7 @@
           <p class="non-collapsible-item path">
           <span class="short-name">test_redirect_to_content_disposition_header</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py/test_redirect_to_content_disposition_header</span>
-          <br /><small>AssertionError: assert &#39;98f2700c-3c92-4779-a826-5e6143fc7f5f&#39; == &#39;80f8d422-2653-41ee-bb30-4f14e8ba5e63&#39;</small>
+          <br /><small>AssertionError: assert &#39;f49cbd25-90d2-400a-8370-57d21254ec53&#39; == &#39;62a11373-0056-4b93-b0ba-e0fa9d3ca42e&#39;</small>
         </p>
         </div>
         <div class="result">
@@ -16635,7 +16635,7 @@
         <summary class="path part">
           <span class="short-name">set_viewport</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport</span>
-          <span class="stat"><b>85/86</b></span>
+          <span class="stat"><b>84/86</b></span>
         </summary>
         
     <div class="test-card">
@@ -17611,10 +17611,10 @@
 
     <div class="test-card">
       <details>
-        <summary class="path pass">
+        <summary class="path part">
           <span class="short-name">viewport.py</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;set_viewport&#47;viewport.py</span>
-          <span class="stat"><b>18/18</b></span>
+          <span class="stat"><b>17/18</b></span>
         </summary>
         
       <div class="test-card test-card-subtest pass">
@@ -17729,17 +17729,17 @@
           </span>
         </div>
       </div>
-      <div class="test-card test-card-subtest pass">
+      <div class="test-card test-card-subtest fail">
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">test_reset_to_default</span>
           <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py/test_reset_to_default</span>
-          
+          <br /><small>AssertionError: assert {&#39;height&#39;: 333, &#39;width&#39;: 666} == {&#39;height&#39;: 513, &#39;width&#39;: 800}</small>
         </p>
         </div>
         <div class="result">
           <span>
-            <b>PASS</b>
+            <b>FAIL</b>
           </span>
         </div>
       </div>
@@ -18483,26 +18483,37 @@
 
     <div class="test-card">
       <details>
-        <summary class="path part">
+        <summary class="path pass">
           <span class="short-name">user_prompt_opened</span>
           <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;user_prompt_opened</span>
-          <span class="stat"><b>17/18</b></span>
+          <span class="stat"><b>18/18</b></span>
         </summary>
         
-      <div class="test-card test-card-subtest fail">
+    <div class="test-card">
+      <details>
+        <summary class="path pass">
+          <span class="short-name">beforeunload.py</span>
+          <span class="long-name hidden">&#47;webdriver&#47;tests&#47;bidi&#47;browsing_context&#47;user_prompt_opened&#47;beforeunload.py</span>
+          <span class="stat"><b>1/1</b></span>
+        </summary>
+        
+      <div class="test-card test-card-subtest pass">
         <div class="test-name">
           <p class="non-collapsible-item path">
-          <span class="short-name">beforeunload.py</span>
-          <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py</span>
+          <span class="short-name">test_beforeunload</span>
+          <span class="long-name hidden">/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py/test_beforeunload</span>
           
         </p>
         </div>
         <div class="result">
           <span>
-            <b>TIMEOUT</b>
+            <b>PASS</b>
           </span>
         </div>
       </div>
+      </details>
+    </div>
+
     <div class="test-card">
       <details>
         <summary class="path pass">
