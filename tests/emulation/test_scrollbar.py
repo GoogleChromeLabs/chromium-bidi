@@ -68,7 +68,7 @@ async def test_scrollbar_type_overlay(websocket, context_id,
     overlay_width = await get_scrollbar_width(context_id)
     assert overlay_width == 0, f"Expected overlay scrollbar width to be 0, got {overlay_width}"
 
-    # 4. Set scrollbar type to default (can be either classic or overlay).
+    # 4. Set scrollbar type to `classic`.
     await execute_command(
         websocket, {
             'method': 'emulation.setScrollbarTypeOverride',
@@ -78,7 +78,8 @@ async def test_scrollbar_type_overlay(websocket, context_id,
             }
         })
 
-    # 5. Verify scrollbar width matches initial.
+    # 5. Verify scrollbar width matches initial (if the system default is overlay, then
+    # `classic` does not have effect).
     default_width = await get_scrollbar_width(context_id)
     assert default_width == initial_width, f"Expected default scrollbar width to be {initial_width}, got {default_width}"
 
