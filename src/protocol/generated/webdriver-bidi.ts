@@ -1323,7 +1323,7 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export type SetScrollbarTypeOverrideParameters = {
-    scrollbarType: 'default' | 'overlay' | null;
+    scrollbarType: 'classic' | 'overlay' | null;
     contexts?: [
       BrowsingContext.BrowsingContext,
       ...BrowsingContext.BrowsingContext[],

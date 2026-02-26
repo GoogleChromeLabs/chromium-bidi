@@ -74,7 +74,7 @@ async def test_scrollbar_type_overlay(websocket, context_id,
             'method': 'emulation.setScrollbarTypeOverride',
             'params': {
                 'contexts': [context_id],
-                'scrollbarType': 'default'
+                'scrollbarType': 'classic'
             }
         })
 

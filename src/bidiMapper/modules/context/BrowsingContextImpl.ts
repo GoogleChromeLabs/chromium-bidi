@@ -2007,7 +2007,7 @@ export class BrowsingContextImpl {
   }
 
   async setScrollbarTypeOverride(
-    scrollbarType: 'default' | 'overlay' | null,
+    scrollbarType: 'classic' | 'overlay' | null,
   ): Promise<void> {
     const config = this.#configStorage.getActiveConfig(
       this.id,
