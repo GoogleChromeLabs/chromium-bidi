@@ -22,7 +22,7 @@ on:
     inputs:
       verbose:
         description: Verbose logging
-        default: false
+        default: true
         required: false
         type: boolean
 
@@ -41,31 +41,65 @@ jobs:
         run: 'exit 1'
       - run: 'exit 0'
   e2e:
-    name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}
+    name: ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-${{ matrix.this_repeat }}
     strategy:
       fail-fast: false
       matrix:
         # TODO(#876): Add Windows CI.
-        os: [ubuntu-latest, macos-latest]
-        head: [headful, 'new-headless', 'old-headless']
+        # os: [macos-latest]
+        os: [ubuntu-latest]
+        # head: [headful, 'new-headless', 'old-headless']
+        head: ['new-headless']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
-        kind: [cd, node]
-        total_chunks: [6]
-        this_chunk: [0, 1, 2, 3, 4, 5]
-        exclude:
-          # Run e2e via NodeJS only in new headless ubuntu.
-          - os: macos-latest
-            kind: node
-          - os: ubuntu-latest
-            kind: node
-            head: headful
-          - os: ubuntu-latest
-            kind: node
-            head: old-headless
-          # TODO(#3294): Enable headful chromedriver on ubuntu.
-          - os: ubuntu-latest
-            head: headful
-            kind: cd
+        # kind: [cd, node]
+        kind: [node]
+        total_chunks: [3]
+        this_chunk: [0, 1, 2]
+        # `REPEAT_TESTS` in e2e does not work with snapshots, so need to repeat it manually.
+        total_repeat_tests: [40]
+        this_repeat:
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+          ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -104,10 +138,8 @@ jobs:
           --this-chunk=${{ matrix.this_chunk }}
           --total-chunks=${{ matrix.total_chunks }}
         env:
+          VERBOSE: true
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
-          # TODO: Fix tests and don't rerun them.
-          # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
-          RERUNS_TIMES: 4
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
@@ -117,13 +149,11 @@ jobs:
           --this-chunk=${{ matrix.this_chunk }}
           --total-chunks=${{ matrix.total_chunks }}
         env:
+          VERBOSE: true
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
-          # TODO: Fix tests and don't rerun them.
-          # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
-          RERUNS_TIMES: 4
       - name: Upload artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-artifacts
+          name: ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-${{ matrix.this_repeat }}-artifacts
           path: logs
