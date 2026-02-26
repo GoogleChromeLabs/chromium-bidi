@@ -80,7 +80,7 @@ async def test_scrollbar_type_overlay(websocket, context_id,
 
     # 5. Verify scrollbar width matches initial.
     default_width = await get_scrollbar_width(context_id)
-    assert default_width == initial_width, f"Expected classic scrollbar width to be {initial_width}, got {default_width}"
+    assert default_width == initial_width, f"Expected default scrollbar width to be {initial_width}, got {default_width}"
 
     # 6. Reset override (null).
     await execute_command(
