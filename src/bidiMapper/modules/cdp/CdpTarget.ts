@@ -597,7 +597,7 @@ export class CdpTarget {
     devicePixelRatio: number | null,
     screenOrientation: Emulation.ScreenOrientation | null,
     screenArea: Emulation.ScreenArea | null,
-    scrollbarType: 'classic' | 'overlay' | null = null,
+    scrollbarType: 'default' | 'overlay' | null = null,
   ) {
     if (
       viewport === null &&
