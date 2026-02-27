@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [15.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v15.0.0...chromium-bidi-v15.1.0) (2026-02-27)
+
+
+### Features
+
+* implement `emulation.setScrollbarTypeOverride` ([#4103](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4103)) ([16444a7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/16444a72eda3f21d6771d2b265352e957958c009))
+
 ## [15.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v14.0.0...chromium-bidi-v15.0.0) (2026-02-11)
 
 
