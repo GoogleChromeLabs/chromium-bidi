@@ -67,12 +67,13 @@ async def test_provide_response_invalid_status_code(websocket, context_id,
                                               url=url_example,
                                               phase="beforeRequestSent")
 
-    with pytest.raises(Exception,
-                       match=re.compile(
-                           str({
-                               "error": "invalid argument",
-                               "message": 'Too small: expected number to be >=0 in "statusCode".*'
-                           }))):
+    with pytest.raises(
+            Exception,
+            match=re.compile(
+                str({
+                    "error": "invalid argument",
+                    "message": 'Too small: expected number to be >=0 in "statusCode".*'
+                }))):
         await execute_command(
             websocket, {
                 "method": "network.provideResponse",
@@ -91,11 +92,12 @@ async def test_provide_response_invalid_reason_phrase(websocket, context_id,
                                               url=url_example,
                                               phase="beforeRequestSent")
 
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "invalid argument",
-                           "message": 'Invalid input: expected string, received array in "reasonPhrase".'
-                       })):
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": 'Invalid input: expected string, received array in "reasonPhrase".'
+            })):
         await execute_command(
             websocket, {
                 "method": "network.provideResponse",
@@ -114,11 +116,12 @@ async def test_provide_response_invalid_headers(websocket, context_id,
                                               url=url_example,
                                               phase="beforeRequestSent")
 
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "invalid argument",
-                           "message": 'Invalid input: expected array, received string in "headers".'
-                       })):
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": 'Invalid input: expected array, received string in "headers".'
+            })):
         await execute_command(
             websocket, {
                 "method": "network.provideResponse",

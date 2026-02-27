@@ -22,8 +22,6 @@
 import {z, type ZodType} from 'zod';
 import {en} from 'zod/locales';
 
-z.config(en());
-
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
 
@@ -31,6 +29,8 @@ import * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js
 import * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import * as WebDriverBidiUAClientHints from './generated/webdriver-bidi-ua-client-hints.js';
 import * as WebDriverBidi from './generated/webdriver-bidi.js';
+
+z.config(en());
 
 export function parseObject<T extends ZodType>(
   obj: unknown,
