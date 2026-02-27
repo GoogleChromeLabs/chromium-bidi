@@ -105,6 +105,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !cancelled() }}
     steps:
-      - if: ${{ needs.puppeteer-test.result != 'success' && (contains(github.event.pull_request.labels.*.name, 'puppeteer-required') }}
+      - if: ${{ needs.puppeteer-test.result != 'success' && contains(github.event.pull_request.labels.*.name, 'puppeteer-required') }}
         run: 'exit 1'
       - run: 'exit 0'
