@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772114988705,
+  "lastUpdate": 1772182519171,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -28843,6 +28843,294 @@ window.BENCHMARK_DATA = {
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
             "value": 201.4474580000183,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0c13a56d52d7e17ae136ca56630fe6d25cc91465",
+          "message": "chore(deps-dev): Bump the all group across 1 directory with 6 updates (#4106)\n\nBumps the all group with 6 updates in the / directory:\n\n| Package | From | To |\n| --- | --- | --- |\n| [@puppeteer/browsers](https://github.com/puppeteer/puppeteer) |\n`2.12.1` | `2.13.0` |\n| [@rollup/wasm-node](https://github.com/rollup/rollup) | `4.57.1` |\n`4.59.0` |\n|\n[@types/node](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/HEAD/types/node)\n| `20.19.33` | `20.19.34` |\n| [eslint](https://github.com/eslint/eslint) | `10.0.0` | `10.0.2` |\n| [selenium-webdriver](https://github.com/SeleniumHQ/selenium) |\n`4.40.0` | `4.41.0` |\n|\n[typescript-eslint](https://github.com/typescript-eslint/typescript-eslint/tree/HEAD/packages/typescript-eslint)\n| `8.55.0` | `8.56.1` |\n\n\nUpdates `@puppeteer/browsers` from 2.12.1 to 2.13.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/puppeteer/puppeteer/releases\"><code>@​puppeteer/browsers</code>'s\nreleases</a>.</em></p>\n<blockquote>\n<h2>browsers: v2.13.0</h2>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/browsers-v2.12.1...browsers-v2.13.0\">2.13.0</a>\n(2026-02-18)</h2>\n<h3>🎉 Features</h3>\n<ul>\n<li>allow configuring the output of <code>@​puppeteer/browsers</code>\ninstall (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14657\">#14657</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/1ce908e424aff2e9a04250c26822ff66dedb636b\">1ce908e</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/puppeteer/puppeteer/blob/main/CHANGELOG.md\"><code>@​puppeteer/browsers</code>'s\nchangelog</a>.</em></p>\n<blockquote>\n<h2><a\nhref=\"https://github.com/puppeteer/puppeteer/compare/puppeteer-v22.12.1...puppeteer-v22.13.0\">22.13.0</a>\n(2024-07-11)</h2>\n<h3>Bug Fixes</h3>\n<ul>\n<li>add an option to not wait for fonts when pdf printing (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12675\">#12675</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/a573dbd7ed858651b92dc5deafe2ebdbe86b5f4c\">a573dbd</a>)</li>\n<li>add browser entrypoint to package.json of puppeteer-core (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12729\">#12729</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/669c86b203e7ad18e7be3d6fc847872c48d05617\">669c86b</a>)</li>\n<li><strong>cli:</strong> puppeteer CLI should read the project\nconfiguration (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12730\">#12730</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/bca750afe204cc3bafb0a34a0f92b0bac5a6a55f\">bca750a</a>)</li>\n<li>correct validation of the quality parameter in page.screenshot (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12725\">#12725</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/2f8abd7a6c9be7f3ee5123e55da76c51ea132c58\">2f8abd7</a>)</li>\n<li>do not allow switching tabs while the screenshot operation is in\nprogress (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12724\">#12724</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/a3345f6686c7634904fbd72df12588f3e230878f\">a3345f6</a>)</li>\n<li>don't rely on Buffer to be present (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12702\">#12702</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/3c02ceffa366f747c84fa38af058c8b2dab7e3c5\">3c02cef</a>)</li>\n<li>ensure existing targets are attached to pages (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12677\">#12677</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/d1d8489a9616375f5195ea226b7123345402030b\">d1d8489</a>)</li>\n<li>make sure bindings are working after a page is restored from bfcache\n(<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12663\">#12663</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/570b1a862eed1ce86dba318e143d7d4191a89c3b\">570b1a8</a>)</li>\n<li>support evaluateOnNewDocument for out-of-process frames (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12714\">#12714</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/eac7cda537255eedb61e4ac689c1c919f892d491\">eac7cda</a>)</li>\n<li>support out-of-process iframes in exposeFunction (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12722\">#12722</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/b6b536bb2f38b052b12a8902be348132c78a04f6\">b6b536b</a>)</li>\n</ul>\n<h3>Dependencies</h3>\n<ul>\n<li>The following workspace dependencies were updated\n<ul>\n<li>dependencies\n<ul>\n<li>puppeteer-core bumped from 22.12.1 to 22.13.0</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n<h3>Features</h3>\n<ul>\n<li><strong>webdriver:</strong> implement page.setCacheEnabled (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/12691\">#12691</a>)\n(<a\nhref=\"https://github.com/puppeteer/puppeteer/commit/e44d900c0cb7c725f88a477375f7b9658ef92eb8\">e44d900</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/c771d9cc0c6c3611532e18d89291c2d734f736ab\"><code>c771d9c</code></a>\nchore: release main (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14688\">#14688</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/e315ef69aac06a53659b50a2ebd426d0a47f1d63\"><code>e315ef6</code></a>\nchore: disable blank issues (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14699\">#14699</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/b8b1004764fed66f3aac9841da4aa5b001b4b221\"><code>b8b1004</code></a>\nfix(cdp): add missing .catch(debugError) to void initialize() in\nonAttachedTo...</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/27d4bea32eb971b610fc7e225aea1b5ac3444e74\"><code>27d4bea</code></a>\ntest: fix of Windows and MacOS (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14698\">#14698</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/eed313fc67d4e3b5c9b9440acb5b3262dac5e679\"><code>eed313f</code></a>\nfix: roll to Firefox 147.0.4 (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14697\">#14697</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/4b65f3acf6986c0ef093448cb343634180c675e3\"><code>4b65f3a</code></a>\nchore: use the Type in issue template (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14691\">#14691</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/c2eaedc74beeebf786a7583a7bfe2d923d741fb9\"><code>c2eaedc</code></a>\nci: track flaky from the UI (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14690\">#14690</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/7f5e91cf2910ada4b91cd023e29e6e23f3766b3a\"><code>7f5e91c</code></a>\nchore(deps): bump node from <code>1de022d</code> to <code>00e9195</code>\nin /docker in the all grou...</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/898ba7f957fa2117111378777ebc62e7f997b973\"><code>898ba7f</code></a>\nchore: extract const in Dialog validation (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14689\">#14689</a>)</li>\n<li><a\nhref=\"https://github.com/puppeteer/puppeteer/commit/1ce908e424aff2e9a04250c26822ff66dedb636b\"><code>1ce908e</code></a>\nfeat: allow configuring the output of <code>@​puppeteer/browsers</code>\ninstall (<a\nhref=\"https://redirect.github.com/puppeteer/puppeteer/issues/14657\">#14657</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/puppeteer/puppeteer/compare/browsers-v2.12.1...browsers-v2.13.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `@rollup/wasm-node` from 4.57.1 to 4.59.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/releases\"><code>@​rollup/wasm-node</code>'s\nreleases</a>.</em></p>\n<blockquote>\n<h2>v4.59.0</h2>\n<h2>4.59.0</h2>\n<p><em>2026-02-22</em></p>\n<h3>Features</h3>\n<ul>\n<li>Throw when the generated bundle contains paths that would leave the\noutput directory (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6276\">#6276</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6275\">#6275</a>:\nValidate bundle stays within output dir (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n</ul>\n<h2>v4.58.0</h2>\n<h2>4.58.0</h2>\n<p><em>2026-02-20</em></p>\n<h3>Features</h3>\n<ul>\n<li>Also support <code>__NO_SIDE_EFFECTS__</code> annotation before\nvariable declarations declaring function expressions (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6272\">#6272</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6256\">#6256</a>:\ndocs: document PreRenderedChunk properties including isDynamicEntry and\nisImplicitEntry (<a\nhref=\"https://github.com/njg7194\"><code>@​njg7194</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6259\">#6259</a>:\ndocs: Correct typo and improve sentence structure in docs for\n<code>output.experimentalMinChunkSize</code> (<a\nhref=\"https://github.com/millerick\"><code>@​millerick</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6260\">#6260</a>:\nfix(deps): update rust crate swc_compiler_base to v47 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6261\">#6261</a>:\nfix(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6262\">#6262</a>:\nAvoid unnecessary cloning of the code string (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6263\">#6263</a>:\nfix(deps): update minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6265\">#6265</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6267\">#6267</a>:\nfix(deps): update minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6268\">#6268</a>:\nchore(deps): update dependency eslint-plugin-unicorn to v63 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6269\">#6269</a>:\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6270\">#6270</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6272\">#6272</a>:\nforward NO_SIDE_EFFECTS annotations to function expressions in variable\ndeclarations (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/rollup/rollup/blob/master/CHANGELOG.md\"><code>@​rollup/wasm-node</code>'s\nchangelog</a>.</em></p>\n<blockquote>\n<h2>4.59.0</h2>\n<p><em>2026-02-22</em></p>\n<h3>Features</h3>\n<ul>\n<li>Throw when the generated bundle contains paths that would leave the\noutput directory (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6276\">#6276</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6275\">#6275</a>:\nValidate bundle stays within output dir (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n</ul>\n<h2>4.58.0</h2>\n<p><em>2026-02-20</em></p>\n<h3>Features</h3>\n<ul>\n<li>Also support <code>__NO_SIDE_EFFECTS__</code> annotation before\nvariable declarations declaring function expressions (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6272\">#6272</a>)</li>\n</ul>\n<h3>Pull Requests</h3>\n<ul>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6256\">#6256</a>:\ndocs: document PreRenderedChunk properties including isDynamicEntry and\nisImplicitEntry (<a\nhref=\"https://github.com/njg7194\"><code>@​njg7194</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6259\">#6259</a>:\ndocs: Correct typo and improve sentence structure in docs for\n<code>output.experimentalMinChunkSize</code> (<a\nhref=\"https://github.com/millerick\"><code>@​millerick</code></a>, <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6260\">#6260</a>:\nfix(deps): update rust crate swc_compiler_base to v47 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6261\">#6261</a>:\nfix(deps): lock file maintenance minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6262\">#6262</a>:\nAvoid unnecessary cloning of the code string (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6263\">#6263</a>:\nfix(deps): update minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6265\">#6265</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6267\">#6267</a>:\nfix(deps): update minor/patch updates (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6268\">#6268</a>:\nchore(deps): update dependency eslint-plugin-unicorn to v63 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot], <a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6269\">#6269</a>:\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6270\">#6270</a>:\nchore(deps): lock file maintenance (<a\nhref=\"https://github.com/renovate\"><code>@​renovate</code></a>[bot])</li>\n<li><a\nhref=\"https://redirect.github.com/rollup/rollup/pull/6272\">#6272</a>:\nforward NO_SIDE_EFFECTS annotations to function expressions in variable\ndeclarations (<a\nhref=\"https://github.com/lukastaegert\"><code>@​lukastaegert</code></a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/ae846957f109690a866cc3e4c073613c338d3476\"><code>ae84695</code></a>\n4.59.0</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/b39616e9175b3d9fc3977c99153174c490805a93\"><code>b39616e</code></a>\nUpdate audit-resolve</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/c60770d7aaf750e512c1b2774989ea4596e660b2\"><code>c60770d</code></a>\nValidate bundle stays within output dir (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6275\">#6275</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/33f39c1f205ea2eadaf4b589e493453e2baa3662\"><code>33f39c1</code></a>\n4.58.0</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/b61c40803b717854c1c28937e8098e5ad3c7b8ca\"><code>b61c408</code></a>\nforward NO_SIDE_EFFECTS annotations to function expressions in variable\ndecla...</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/7f00689ec90e2cafb11c26eefbcac62343c936f6\"><code>7f00689</code></a>\nExtend agent instructions</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/e7b2b85af0901244ecc141b9d792c6db6b527ea4\"><code>e7b2b85</code></a>\nchore(deps): lock file maintenance (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6270\">#6270</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/2aa5da9baf82211b8207d268c8751630cb766970\"><code>2aa5da9</code></a>\nfix(deps): update minor/patch updates (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6267\">#6267</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/4319837c5448d0c10d89e9ded118888deec2eeec\"><code>4319837</code></a>\nchore(deps): update dependency lru-cache to v11 (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6269\">#6269</a>)</li>\n<li><a\nhref=\"https://github.com/rollup/rollup/commit/c3b6b4bdc4f2ed978fa233132a526957e6513233\"><code>c3b6b4b</code></a>\nchore(deps): update dependency eslint-plugin-unicorn to v63 (<a\nhref=\"https://redirect.github.com/rollup/rollup/issues/6268\">#6268</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/rollup/rollup/compare/v4.57.1...v4.59.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `@types/node` from 20.19.33 to 20.19.34\n<details>\n<summary>Commits</summary>\n<ul>\n<li>See full diff in <a\nhref=\"https://github.com/DefinitelyTyped/DefinitelyTyped/commits/HEAD/types/node\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `eslint` from 10.0.0 to 10.0.2\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/eslint/eslint/releases\">eslint's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v10.0.2</h2>\n<h2>Bug Fixes</h2>\n<ul>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/2b723616a4daeacd4605f11b4d087d4a7cae5c74\"><code>2b72361</code></a>\nfix: update <code>ajv</code> to <code>6.14.0</code> to address security\nvulnerabilities (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20537\">#20537</a>)\n(루밀LuMir)</li>\n</ul>\n<h2>Documentation</h2>\n<ul>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/13eeedbbd16218b0da1425b78cb284937fd964ca\"><code>13eeedb</code></a>\ndocs: link rule type explanation to CLI option --fix-type (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20548\">#20548</a>)\n(Mike McCready)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/98cbf6ba53a1fb2028d25078c7049a538d0e392c\"><code>98cbf6b</code></a>\ndocs: update migration guide per Program range change (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20534\">#20534</a>)\n(Huáng Jùnliàng)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/61a24054411fa56ce74bef554846caa9d8cb01f5\"><code>61a2405</code></a>\ndocs: add missing semicolon in vars-on-top rule example (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20533\">#20533</a>)\n(Abilash)</li>\n</ul>\n<h2>Chores</h2>\n<ul>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/951223b29669885643f7854d7c824288ba962d7e\"><code>951223b</code></a>\nchore: update dependency <code>@​eslint/eslintrc</code> to ^3.3.4 (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20553\">#20553</a>)\n(renovate[bot])</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/6aa1afe6694f3fd7f82116109a5ef2ad18ece074\"><code>6aa1afe</code></a>\nchore: update dependency eslint-plugin-jsdoc to ^62.7.0 (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20536\">#20536</a>)\n(Milos Djermanovic)</li>\n</ul>\n<h2>v10.0.1</h2>\n<h2>Bug Fixes</h2>\n<ul>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/c87d5bded54c5cf491eb04c24c9d09bbbd42c23e\"><code>c87d5bd</code></a>\nfix: update eslint (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20531\">#20531</a>)\n(renovate[bot])</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/d84100115c14691691058f00779c94e74fca946a\"><code>d841001</code></a>\nfix: update <code>minimatch</code> to <code>10.2.1</code> to address\nsecurity vulnerabilities (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20519\">#20519</a>)\n(루밀LuMir)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/04c21475b3004904948f02049f2888b401d82c78\"><code>04c2147</code></a>\nfix: update error message for unused suppressions (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20496\">#20496</a>)\n(fnx)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/38b089c1726feac0e31a31d47941bd99e29ce003\"><code>38b089c</code></a>\nfix: update dependency <code>@​eslint/config-array</code> to ^0.23.1 (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20484\">#20484</a>)\n(renovate[bot])</li>\n</ul>\n<h2>Documentation</h2>\n<ul>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/5b3dbce50a1404a9f118afe810cefeee79388a2a\"><code>5b3dbce</code></a>\ndocs: add AI acknowledgement section to templates (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20431\">#20431</a>)\n(루밀LuMir)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/6f23076037d5879f20fb3be2ef094293b1e8d38c\"><code>6f23076</code></a>\ndocs: toggle nav in no-JS mode (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20476\">#20476</a>)\n(Tanuj Kanti)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/b69cfb32a16c5d5e9986390d484fae1d21e406f9\"><code>b69cfb3</code></a>\ndocs: Update README (GitHub Actions Bot)</li>\n</ul>\n<h2>Chores</h2>\n<ul>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/e5c281ffd038a3a7a3e5364db0b9378e0ad83020\"><code>e5c281f</code></a>\nchore: updates for v9.39.3 release (Jenkins)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/8c3832adb77cd993b4a24891900d5eeaaf093cdc\"><code>8c3832a</code></a>\nchore: update <code>@​typescript-eslint/parser</code> to ^8.56.0 (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20514\">#20514</a>)\n(Milos Djermanovic)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/8330d238ae6adb68bb6a1c9381e38cfedd990d94\"><code>8330d23</code></a>\ntest: add tests for config-api (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20493\">#20493</a>)\n(Milos Djermanovic)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/37d6e91e88fa6a2ca6d8726679096acff21ba6cc\"><code>37d6e91</code></a>\nchore: remove eslint v10 prereleases from eslint-config-eslint deps (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20494\">#20494</a>)\n(Milos Djermanovic)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/da7cd0e79197ad16e17052eef99df141de6dbfb1\"><code>da7cd0e</code></a>\nrefactor: cleanup error message templates (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20479\">#20479</a>)\n(Francesco Trotta)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/84fb885d49ac810e79a9491276b4828b53d913e5\"><code>84fb885</code></a>\nchore: package.json update for <code>@​eslint/js</code> release\n(Jenkins)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/1f667344b57c4c09b548d94bcfac1f91b6e5c63d\"><code>1f66734</code></a>\nchore: add <code>eslint</code> to <code>peerDependencies</code> of\n<code>@eslint/js</code> (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20467\">#20467</a>)\n(Milos Djermanovic)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/55122d6f971119607c85b0df8e62942171c939f7\"><code>55122d6</code></a>\n10.0.2</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/80f1e29ec87c07a1cef789c718d6167da59f35f6\"><code>80f1e29</code></a>\nBuild: changelog update for 10.0.2</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/951223b29669885643f7854d7c824288ba962d7e\"><code>951223b</code></a>\nchore: update dependency <code>@​eslint/eslintrc</code> to ^3.3.4 (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20553\">#20553</a>)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/13eeedbbd16218b0da1425b78cb284937fd964ca\"><code>13eeedb</code></a>\ndocs: link rule type explanation to CLI option --fix-type (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20548\">#20548</a>)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/6aa1afe6694f3fd7f82116109a5ef2ad18ece074\"><code>6aa1afe</code></a>\nchore: update dependency eslint-plugin-jsdoc to ^62.7.0 (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20536\">#20536</a>)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/2b723616a4daeacd4605f11b4d087d4a7cae5c74\"><code>2b72361</code></a>\nfix: update <code>ajv</code> to <code>6.14.0</code> to address security\nvulnerabilities (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20537\">#20537</a>)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/98cbf6ba53a1fb2028d25078c7049a538d0e392c\"><code>98cbf6b</code></a>\ndocs: update migration guide per Program range change (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20534\">#20534</a>)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/61a24054411fa56ce74bef554846caa9d8cb01f5\"><code>61a2405</code></a>\ndocs: add missing semicolon in vars-on-top rule example (<a\nhref=\"https://redirect.github.com/eslint/eslint/issues/20533\">#20533</a>)</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/0bd54976080936ce080ee2552d504180105593b4\"><code>0bd5497</code></a>\n10.0.1</li>\n<li><a\nhref=\"https://github.com/eslint/eslint/commit/ddb80ef7c78adbc3fb784e33f500d321e84ab51e\"><code>ddb80ef</code></a>\nBuild: changelog update for 10.0.1</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/eslint/eslint/compare/v10.0.0...v10.0.2\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `selenium-webdriver` from 4.40.0 to 4.41.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/SeleniumHQ/selenium/releases\">selenium-webdriver's\nreleases</a>.</em></p>\n<blockquote>\n<h2>Selenium 4.41.0</h2>\n<h2>Detailed Changelogs by Component</h2>\n<p><!-- raw HTML omitted --> <strong><a\nhref=\"https://github.com/SeleniumHQ/selenium/blob/trunk/java/CHANGELOG\">Java</a></strong>\n    |    <!-- raw HTML omitted --> <strong><a\nhref=\"https://github.com/SeleniumHQ/selenium/blob/trunk/py/CHANGES\">Python</a></strong>\n    |    <!-- raw HTML omitted --> <strong><a\nhref=\"https://github.com/SeleniumHQ/selenium/blob/trunk/dotnet/CHANGELOG\">DotNet</a></strong>\n    |    <!-- raw HTML omitted --> <strong><a\nhref=\"https://github.com/SeleniumHQ/selenium/blob/trunk/rb/CHANGES\">Ruby</a></strong>\n    |    <!-- raw HTML omitted --> <strong><a\nhref=\"https://github.com/SeleniumHQ/selenium/blob/trunk/javascript/selenium-webdriver/CHANGES.md\">JavaScript</a></strong>\n<!-- raw HTML omitted --></p>\n<!-- raw HTML omitted -->\n<h2>What's Changed</h2>\n<!-- raw HTML omitted -->\n<ul>\n<li>[py] Remove type stub packages from runtime dependencies by <a\nhref=\"https://github.com/cgoldberg\"><code>@​cgoldberg</code></a> in <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16945\">SeleniumHQ/selenium#16945</a></li>\n<li>Canonical approach to supporting AI agent directions by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16735\">SeleniumHQ/selenium#16735</a></li>\n<li>[build] Pre-release workflow improvements by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16946\">SeleniumHQ/selenium#16946</a></li>\n<li>[build] Prevent nightly releases during release window by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16948\">SeleniumHQ/selenium#16948</a></li>\n<li>[build] Fix Bazel NuGet push implementation by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16950\">SeleniumHQ/selenium#16950</a></li>\n<li>[build] Release workflow improvements by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16947\">SeleniumHQ/selenium#16947</a></li>\n<li>[build] Fix Bazel JSDocs implementation by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16949\">SeleniumHQ/selenium#16949</a></li>\n<li>[build] Create config files from environment variables for\npublishing by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16951\">SeleniumHQ/selenium#16951</a></li>\n<li>[js] create task to update dependencies by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16942\">SeleniumHQ/selenium#16942</a></li>\n<li>[build] Java release improvements and build verification tasks by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16952\">SeleniumHQ/selenium#16952</a></li>\n<li>[py] integrate mypy type checking with Bazel by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16958\">SeleniumHQ/selenium#16958</a></li>\n<li>[build] Migrate workflows to use centralized bazel.yml by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16955\">SeleniumHQ/selenium#16955</a></li>\n<li>[dotnet] [bidi] Simplify context aware command options by <a\nhref=\"https://github.com/nvborisenko\"><code>@​nvborisenko</code></a> in\n<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16954\">SeleniumHQ/selenium#16954</a></li>\n<li>[build] simplify release.yml: remove draft, build once during\npublish by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16960\">SeleniumHQ/selenium#16960</a></li>\n<li>[dotnet] [bidi] AOT safe json converter for\n<code>Input.Origin</code> class by <a\nhref=\"https://github.com/nvborisenko\"><code>@​nvborisenko</code></a> in\n<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16962\">SeleniumHQ/selenium#16962</a></li>\n<li>[dotnet] [bidi] AOT safe json converter for\n<code>OptionalConverter</code> by <a\nhref=\"https://github.com/nvborisenko\"><code>@​nvborisenko</code></a> in\n<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16963\">SeleniumHQ/selenium#16963</a></li>\n<li>[dotnet] [bidi] Null guard for event handlers by <a\nhref=\"https://github.com/nvborisenko\"><code>@​nvborisenko</code></a> in\n<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16967\">SeleniumHQ/selenium#16967</a></li>\n<li>[java] Improve error message for died grid by <a\nhref=\"https://github.com/asolntsev\"><code>@​asolntsev</code></a> in <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16938\">SeleniumHQ/selenium#16938</a></li>\n<li>[build] combine pre-release dependency updates by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16973\">SeleniumHQ/selenium#16973</a></li>\n<li>[rb] remove stored atoms these get generated by build by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16971\">SeleniumHQ/selenium#16971</a></li>\n<li>[dotnet] [bidi] Unignore some internal tests by <a\nhref=\"https://github.com/nvborisenko\"><code>@​nvborisenko</code></a> in\n<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16968\">SeleniumHQ/selenium#16968</a></li>\n<li>[build] run ruff on python files outside py directory by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16957\">SeleniumHQ/selenium#16957</a></li>\n<li>[py] Fix return type hint for <code>alert_is_present</code> by <a\nhref=\"https://github.com/nemowang2003\"><code>@​nemowang2003</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16975\">SeleniumHQ/selenium#16975</a></li>\n<li>Replace hardcoded bazel-selenium references with dynamic path\nresolution by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16976\">SeleniumHQ/selenium#16976</a></li>\n<li>No More CrazyFun! by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16972\">SeleniumHQ/selenium#16972</a></li>\n<li>[build] Remove update_gh_pages in favor of CI workflow by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16977\">SeleniumHQ/selenium#16977</a></li>\n<li>[build] Remove legacy rake helpers and unused code by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16978\">SeleniumHQ/selenium#16978</a></li>\n<li>[py] make bazel test target names consistent with other languages by\n<a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16969\">SeleniumHQ/selenium#16969</a></li>\n<li>[dotnet] [bidi] Fix namespace for Permissions module by <a\nhref=\"https://github.com/nvborisenko\"><code>@​nvborisenko</code></a> in\n<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16981\">SeleniumHQ/selenium#16981</a></li>\n<li>[dotnet] [bidi] Hide Broker as internal implementation by <a\nhref=\"https://github.com/nvborisenko\"><code>@​nvborisenko</code></a> in\n<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16982\">SeleniumHQ/selenium#16982</a></li>\n<li>[dotnet] [bidi] Refactor BiDi module initialization to pass BiDi\nexplicitly by <a\nhref=\"https://github.com/nvborisenko\"><code>@​nvborisenko</code></a> in\n<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16983\">SeleniumHQ/selenium#16983</a></li>\n<li>[build] Add DocFX updater script by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16980\">SeleniumHQ/selenium#16980</a></li>\n<li>[build] add reusable commit-changes.yml workflow by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16965\">SeleniumHQ/selenium#16965</a></li>\n<li>[java] fix JSON parsing of numbers with exponent by <a\nhref=\"https://github.com/joerg1985\"><code>@​joerg1985</code></a> in <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16961\">SeleniumHQ/selenium#16961</a></li>\n<li>[build] Skip macOS-only archive rules on unsupported platforms by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16985\">SeleniumHQ/selenium#16985</a></li>\n<li>[build] Split Rakefile into per-language task files by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16979\">SeleniumHQ/selenium#16979</a></li>\n<li>Implement fast bazel target lookup with index caching by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16974\">SeleniumHQ/selenium#16974</a></li>\n<li>[build] Remove git.add() calls from rake tasks by <a\nhref=\"https://github.com/titusfortner\"><code>@​titusfortner</code></a>\nin <a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/pull/16994\">SeleniumHQ/selenium#16994</a></li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/9fc754f90a9725756933b8a1788d5a583d7f509f\"><code>9fc754f</code></a>\n[build] Prepare for release of selenium-4.41.0 (<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/issues/17098\">#17098</a>)</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/d5f22eca5fe9b5574789315f2aeb8d6fde470e08\"><code>d5f22ec</code></a>\n[java] mark tests passing in latest chrome beta</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/89c59938eca2135cc175e00558ae1adf7bc270d9\"><code>89c5993</code></a>\n[build] fix auto-updating of browsers</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/4592f1b54fbb6e13c3239b59467ea97e154ac4c0\"><code>4592f1b</code></a>\n[build] ci-python jobs not currently matching by default</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/755d44cc09c46708563ec2f4fd3d05d9d1e6efe6\"><code>755d44c</code></a>\n[build] put cdp version support in changelogs</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/9aff5c7c2e75b300051c3baef62b7eba7c2e0ba5\"><code>9aff5c7</code></a>\n[build] cannot invoke a rake task twice by default</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/3a680a3f4fb957015a3e4634cacf8e0a235d85ec\"><code>3a680a3</code></a>\n[build] ignore the staging branch for the PR and apply all patches in\norder</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/20de9b9c3d073956a7a511174c800a8c4a38493c\"><code>20de9b9</code></a>\n[build] stage changes to an ephemeral staging branch since not all\nupdates ar...</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/aac9a2825271b5fef96aa3b0c7b4792b76a46e62\"><code>aac9a28</code></a>\n[py] Update test to check it's an integer rather than a value (<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/issues/17114\">#17114</a>)</li>\n<li><a\nhref=\"https://github.com/SeleniumHQ/selenium/commit/02ec15f16d968801e6778f47312619629bd5e7e5\"><code>02ec15f</code></a>\n[rb] Update dependencies (<a\nhref=\"https://redirect.github.com/SeleniumHQ/selenium/issues/17111\">#17111</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/SeleniumHQ/selenium/compare/selenium-4.40.0...selenium-4.41.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `typescript-eslint` from 8.55.0 to 8.56.1\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/releases\">typescript-eslint's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v8.56.1</h2>\n<h2>8.56.1 (2026-02-23)</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>chore(deps): update dependency minimatch to v10.2.2 by <a\nhref=\"https://github.com/benmccann\"><code>@​benmccann</code></a> in <a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/12074\">typescript-eslint/typescript-eslint#12074</a></li>\n</ul>\n<p>You can read about our <a\nhref=\"https://typescript-eslint.io/users/versioning\">versioning\nstrategy</a> and <a\nhref=\"https://typescript-eslint.io/users/releases\">releases</a> on our\nwebsite.</p>\n<h2>v8.56.0</h2>\n<h2>8.56.0 (2026-02-16)</h2>\n<h3>🚀 Features</h3>\n<ul>\n<li>support ESLint v10 (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/12057\">#12057</a>)</li>\n</ul>\n<h3>🩹 Fixes</h3>\n<ul>\n<li>use parser options from context.languageOptions (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/12043\">#12043</a>)</li>\n</ul>\n<h3>❤️ Thank You</h3>\n<ul>\n<li>Brad Zacher <a\nhref=\"https://github.com/bradzacher\"><code>@​bradzacher</code></a></li>\n<li>fnx <a\nhref=\"https://github.com/DMartens\"><code>@​DMartens</code></a></li>\n<li>Joshua Chen</li>\n</ul>\n<p>See <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/releases/tag/v8.56.0\">GitHub\nReleases</a> for more information.</p>\n<p>You can read about our <a\nhref=\"https://typescript-eslint.io/users/versioning\">versioning\nstrategy</a> and <a\nhref=\"https://typescript-eslint.io/users/releases\">releases</a> on our\nwebsite.</p>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-eslint/CHANGELOG.md\">typescript-eslint's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>8.56.1 (2026-02-23)</h2>\n<p>This was a version bump only for typescript-eslint to align it with\nother projects, there were no code changes.</p>\n<p>See <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/releases/tag/v8.56.1\">GitHub\nReleases</a> for more information.</p>\n<p>You can read about our <a\nhref=\"https://typescript-eslint.io/users/versioning\">versioning\nstrategy</a> and <a\nhref=\"https://typescript-eslint.io/users/releases\">releases</a> on our\nwebsite.</p>\n<h2>8.56.0 (2026-02-16)</h2>\n<h3>🚀 Features</h3>\n<ul>\n<li>support ESLint v10 (<a\nhref=\"https://redirect.github.com/typescript-eslint/typescript-eslint/pull/12057\">#12057</a>)</li>\n</ul>\n<h3>❤️ Thank You</h3>\n<ul>\n<li>Brad Zacher <a\nhref=\"https://github.com/bradzacher\"><code>@​bradzacher</code></a></li>\n<li>Joshua Chen</li>\n</ul>\n<p>See <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/releases/tag/v8.56.0\">GitHub\nReleases</a> for more information.</p>\n<p>You can read about our <a\nhref=\"https://typescript-eslint.io/users/versioning\">versioning\nstrategy</a> and <a\nhref=\"https://typescript-eslint.io/users/releases\">releases</a> on our\nwebsite.</p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commit/96a04a97454cf6b6ae8366711c09333bf6e2327a\"><code>96a04a9</code></a>\nchore(release): publish 8.56.1</li>\n<li><a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commit/8b8b68f200a48ee9d6f7be8670e964629375196c\"><code>8b8b68f</code></a>\nchore(release): publish 8.56.0</li>\n<li><a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commit/68a074fb61a10c3627f09678859fb4d42a3b88f5\"><code>68a074f</code></a>\nfeat: support ESLint v10 (<a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/tree/HEAD/packages/typescript-eslint/issues/12057\">#12057</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/typescript-eslint/typescript-eslint/commits/v8.56.1/packages/typescript-eslint\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-02-27T08:53:00Z",
+          "tree_id": "656fc16ee6ad08c6a60e47dd52956aa08db96c9d",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/0c13a56d52d7e17ae136ca56630fe6d25cc91465"
+        },
+        "date": 1772182517263,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 237.5003252000056,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 228.96929099999852,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 225.08558399999856,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 2619.4856751999964,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 2635.812833999978,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 2337.6829580000162,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 76.77955133853924,
+            "range": "5.933418709592854",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 70.94221038613424,
+            "range": "2.24979395702525",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 59.449553571367176,
+            "range": "1.3461336381711981",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 59.5284401108228,
+            "range": "0.4813825669555405",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 57.067443106058576,
+            "range": "0.1065354782914191",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 59.29168204652071,
+            "range": "0.1418968666863849",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 166.51928100000265,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 165.76047600000265,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 163.67385300000592,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2380.633324800004,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 2302.610959000006,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 2087.6322910000054,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 421.7606919587643,
+            "range": "21.367988085638622",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 500.811057519625,
+            "range": "13.89644553073817",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 512.1384495770151,
+            "range": "18.33022050128839",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 487.132509489126,
+            "range": "32.30320211549035",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 410.96374184037626,
+            "range": "13.655558564018483",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 385.6485354272866,
+            "range": "12.892786335222606",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 286.06553673333224,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 285.7234649999896,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 278.7360559999996,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 183.76890773333324,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 184.4938769999942,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 179.90819999999985,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 2149.6420834000105,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 2165.477917000004,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 2029.4393330000275,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 1801.7276251998737,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 1723.2487500000389,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 1594.3503339999552,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 272.8207899999982,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 267.8089990000103,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 265.38297399999067,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 212.86041660002866,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 214.71329100006642,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 201.08987499997966,
             "unit": "ms",
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           }
