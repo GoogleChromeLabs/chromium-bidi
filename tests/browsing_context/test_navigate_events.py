@@ -21,7 +21,9 @@ from test_helpers import (execute_command, goto_url, send_JSON_command,
 SNAPSHOT_EXCLUDE = props("timestamp", "timings", "headers", "stacktrace",
                          "response", "initiator", "realm", "clientWindow",
                          "originalOpener")
-KEYS_TO_STABILIZE = ['context', 'navigation', 'id', 'url', 'request']
+KEYS_TO_STABILIZE = [
+    'context', 'navigation', 'id', 'url', 'request', 'userContext'
+]
 
 
 async def set_beforeunload_handler(websocket, context_id, show_popup=False):

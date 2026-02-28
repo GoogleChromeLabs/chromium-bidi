@@ -38,7 +38,8 @@ async def test_browsingContext_create_eventsEmitted(websocket, read_messages):
         "type": "success",
         "id": command_id,
         "result": {
-            'context': 'stable_0'
+            'context': 'stable_0',
+            'userContext': 'default',
         }
     }, {
         "type": "event",
@@ -138,6 +139,7 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
             'navigation': 'stable_1',
             'timestamp': ANY_TIMESTAMP,
             'url': url_example,
+            'userContext': 'default',
         },
         'type': 'event',
     }, {
@@ -147,6 +149,7 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
             'navigation': 'stable_1',
             'timestamp': ANY_TIMESTAMP,
             'url': url_example,
+            'userContext': 'default',
         },
         'type': 'event',
     }, {
@@ -156,6 +159,7 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
             'navigation': 'stable_1',
             'timestamp': ANY_TIMESTAMP,
             'url': url_example,
+            'userContext': 'default',
         },
         'type': 'event',
     }, {
@@ -165,6 +169,7 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
             'navigation': 'stable_1',
             'timestamp': ANY_TIMESTAMP,
             'url': url_example,
+            'userContext': 'default',
         },
         'type': 'event',
     }]
@@ -309,6 +314,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             'navigation': 'stable_1',
             'timestamp': ANY_TIMESTAMP,
             'url': url_example,
+            'userContext': 'default',
         },
         'type': 'event',
     }, {
@@ -319,6 +325,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             'navigation': 'stable_1',
             'timestamp': ANY_TIMESTAMP,
             'url': url_example,
+            'userContext': 'default',
         },
     }, {
         'type': 'event',
@@ -328,6 +335,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             'navigation': 'stable_1',
             'timestamp': ANY_TIMESTAMP,
             'url': url_example,
+            'userContext': 'default',
         },
     }]
 
@@ -362,6 +370,7 @@ async def test_browsingContext_create_withUserContext(websocket, type,
         'id': command_id,
         'result': {
             'context': 'stable_0',
+            'userContext': user_context,
         },
         'type': 'success',
     }, {

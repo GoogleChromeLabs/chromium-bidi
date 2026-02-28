@@ -32,6 +32,7 @@ const ERROR_MESSAGE = 'ERROR_MESSAGE';
 const INITIAL_URL = 'about:blank';
 const LOADER_ID = 'LOADER_ID';
 const SOME_URL = 'SOME_URL';
+const USER_CONTEXT_ID = 'userContextId';
 const YET_ANOTHER_URL = 'YET_ANOTHER_URL';
 // keep-sorted end
 
@@ -64,6 +65,7 @@ describe('NavigationTracker', () => {
           navigation: navigationId,
           timestamp: sinon.match.any,
           url,
+          userContext: USER_CONTEXT_ID,
         },
       }),
       sinon.match(BROWSING_CONTEXT_ID),
@@ -76,6 +78,7 @@ describe('NavigationTracker', () => {
     navigationTracker = new NavigationTracker(
       INITIAL_URL,
       BROWSING_CONTEXT_ID,
+      USER_CONTEXT_ID,
       eventManager,
     );
     initialNavigationId = navigationTracker.currentNavigationId;

@@ -99,7 +99,8 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
             "level": "info",
             "source": {
                 "realm": ANY_STR,
-                "context": context_id
+                "context": context_id,
+                "userContext": "default",
             },
             "text": "window "
                     "undefined "
@@ -348,7 +349,8 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(
             "level": "error",
             "source": {
                 "realm": ANY_STR,
-                "context": context_id
+                "context": context_id,
+                "userContext": "default",
             },
             "text": "Error: some error",
             "timestamp": ANY_TIMESTAMP,
@@ -445,7 +447,8 @@ async def test_runtimeException_emitted(websocket, context_id):
             "level": "error",
             "source": {
                 "realm": ANY_STR,
-                "context": ANY_STR
+                "context": ANY_STR,
+                "userContext": "default",
             },
             "text": f"Error: {error_message}",
             "timestamp": ANY_TIMESTAMP,
@@ -509,7 +512,8 @@ async def test_runtimeException_buffered(websocket, context_id):
             "level": "error",
             "source": {
                 "realm": ANY_STR,
-                "context": ANY_STR
+                "context": ANY_STR,
+                "userContext": "default",
             },
             "text": f"Error: {error_message}",
             "timestamp": ANY_TIMESTAMP,

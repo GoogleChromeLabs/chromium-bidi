@@ -68,6 +68,7 @@ async def test_network_before_request_sent_event_navigation(
             "initiator": {
                 "type": "other"
             },
+            "userContext": "default",
             "timestamp": ANY_TIMESTAMP
         }
     })
