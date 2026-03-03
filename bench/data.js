@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772545705162,
+  "lastUpdate": 1772558259121,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -31441,6 +31441,336 @@ window.BENCHMARK_DATA = {
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
             "value": 213.08145900002273,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "bbbc0296007236644c8b731861d48c0e570fccc4",
+          "message": "chore(deps): Bump the all group across 1 directory with 4 updates (#4112)\n\nBumps the all group with 4 updates in the / directory:\n[actions/upload-artifact](https://github.com/actions/upload-artifact),\n[actions/download-artifact](https://github.com/actions/download-artifact),\n[actions/setup-go](https://github.com/actions/setup-go) and\n[github/codeql-action](https://github.com/github/codeql-action).\n\nUpdates `actions/upload-artifact` from 6.0.0 to 7.0.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/actions/upload-artifact/releases\">actions/upload-artifact's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v7.0.0</h2>\n<h2>v7 What's new</h2>\n<h3>Direct Uploads</h3>\n<p>Adds support for uploading single files directly (unzipped). Callers\ncan set the new <code>archive</code> parameter to <code>false</code> to\nskip zipping the file during upload. Right now, we only support single\nfiles. The action will fail if the glob passed resolves to multiple\nfiles. The <code>name</code> parameter is also ignored with this\nsetting. Instead, the name of the artifact will be the name of the\nuploaded file.</p>\n<h3>ESM</h3>\n<p>To support new versions of the <code>@actions/*</code> packages,\nwe've upgraded the package to ESM.</p>\n<h2>What's Changed</h2>\n<ul>\n<li>Add proxy integration test by <a\nhref=\"https://github.com/Link\"><code>@​Link</code></a>- in <a\nhref=\"https://redirect.github.com/actions/upload-artifact/pull/754\">actions/upload-artifact#754</a></li>\n<li>Upgrade the module to ESM and bump dependencies by <a\nhref=\"https://github.com/danwkennedy\"><code>@​danwkennedy</code></a> in\n<a\nhref=\"https://redirect.github.com/actions/upload-artifact/pull/762\">actions/upload-artifact#762</a></li>\n<li>Support direct file uploads by <a\nhref=\"https://github.com/danwkennedy\"><code>@​danwkennedy</code></a> in\n<a\nhref=\"https://redirect.github.com/actions/upload-artifact/pull/764\">actions/upload-artifact#764</a></li>\n</ul>\n<h2>New Contributors</h2>\n<ul>\n<li><a href=\"https://github.com/Link\"><code>@​Link</code></a>- made\ntheir first contribution in <a\nhref=\"https://redirect.github.com/actions/upload-artifact/pull/754\">actions/upload-artifact#754</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/actions/upload-artifact/compare/v6...v7.0.0\">https://github.com/actions/upload-artifact/compare/v6...v7.0.0</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/actions/upload-artifact/commit/bbbca2ddaa5d8feaa63e36b76fdaad77386f024f\"><code>bbbca2d</code></a>\nSupport direct file uploads (<a\nhref=\"https://redirect.github.com/actions/upload-artifact/issues/764\">#764</a>)</li>\n<li><a\nhref=\"https://github.com/actions/upload-artifact/commit/589182c5a4cec8920b8c1bce3e2fab1c97a02296\"><code>589182c</code></a>\nUpgrade the module to ESM and bump dependencies (<a\nhref=\"https://redirect.github.com/actions/upload-artifact/issues/762\">#762</a>)</li>\n<li><a\nhref=\"https://github.com/actions/upload-artifact/commit/47309c993abb98030a35d55ef7ff34b7fa1074b5\"><code>47309c9</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/actions/upload-artifact/issues/754\">#754</a>\nfrom actions/Link-/add-proxy-integration-tests</li>\n<li><a\nhref=\"https://github.com/actions/upload-artifact/commit/02a8460834e70dab0ce194c64360c59dc1475ef0\"><code>02a8460</code></a>\nAdd proxy integration test</li>\n<li>See full diff in <a\nhref=\"https://github.com/actions/upload-artifact/compare/b7c566a772e6b6bfb58ed0dc250532a479d7789f...bbbca2ddaa5d8feaa63e36b76fdaad77386f024f\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `actions/download-artifact` from 7.0.0 to 8.0.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/actions/download-artifact/releases\">actions/download-artifact's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v8.0.0</h2>\n<h2>v8 - What's new</h2>\n<h3>Direct downloads</h3>\n<p>To support direct uploads in <code>actions/upload-artifact</code>,\nthe action will no longer attempt to unzip all downloaded files.\nInstead, the action checks the <code>Content-Type</code> header ahead of\nunzipping and skips non-zipped files. Callers wishing to download a\nzipped file as-is can also set the new <code>skip-decompress</code>\nparameter to <code>false</code>.</p>\n<h3>Enforced checks (breaking)</h3>\n<p>A previous release introduced digest checks on the download. If a\ndownload hash didn't match the expected hash from the server, the action\nwould log a warning. Callers can now configure the behavior on mismatch\nwith the <code>digest-mismatch</code> parameter. To be secure by\ndefault, we are now defaulting the behavior to <code>error</code> which\nwill fail the workflow run.</p>\n<h3>ESM</h3>\n<p>To support new versions of the @actions/* packages, we've upgraded\nthe package to ESM.</p>\n<h2>What's Changed</h2>\n<ul>\n<li>Don't attempt to un-zip non-zipped downloads by <a\nhref=\"https://github.com/danwkennedy\"><code>@​danwkennedy</code></a> in\n<a\nhref=\"https://redirect.github.com/actions/download-artifact/pull/460\">actions/download-artifact#460</a></li>\n<li>Add a setting to specify what to do on hash mismatch and default it\nto <code>error</code> by <a\nhref=\"https://github.com/danwkennedy\"><code>@​danwkennedy</code></a> in\n<a\nhref=\"https://redirect.github.com/actions/download-artifact/pull/461\">actions/download-artifact#461</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/actions/download-artifact/compare/v7...v8.0.0\">https://github.com/actions/download-artifact/compare/v7...v8.0.0</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3\"><code>70fc10c</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/actions/download-artifact/issues/461\">#461</a>\nfrom actions/danwkennedy/digest-mismatch-behavior</li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/f258da9a506b755b84a09a531814700b86ccfc62\"><code>f258da9</code></a>\nAdd change docs</li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/ccc058e5fbb0bb2352213eaec3491e117cbc4a5c\"><code>ccc058e</code></a>\nFix linting issues</li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/bd7976ba57ecea96e6f3df575eb922d11a12a9fd\"><code>bd7976b</code></a>\nAdd a setting to specify what to do on hash mismatch and default it to\n<code>error</code></li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/ac21fcf45e0aaee541c0f7030558bdad38d77d6c\"><code>ac21fcf</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/actions/download-artifact/issues/460\">#460</a>\nfrom actions/danwkennedy/download-no-unzip</li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/15999bff51058bc7c19b50ebbba518eaef7c26c0\"><code>15999bf</code></a>\nAdd note about package bumps</li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/974686ed5098c7f9c9289ec946b9058e496a2561\"><code>974686e</code></a>\nBump the version to <code>v8</code> and add release notes</li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/fbe48b1d2756394be4cd4358ed3bc1343b330e75\"><code>fbe48b1</code></a>\nUpdate test names to make it clearer what they do</li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/96bf374a614d4360e225874c3efd6893a3f285e7\"><code>96bf374</code></a>\nOne more test fix</li>\n<li><a\nhref=\"https://github.com/actions/download-artifact/commit/b8c4819ef592cbe04fd93534534b38f853864332\"><code>b8c4819</code></a>\nFix skip decompress test</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/actions/download-artifact/compare/37930b1c2abaa49bbe596cd826c3c89aef350131...70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `actions/setup-go` from 6.2.0 to 6.3.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/actions/setup-go/releases\">actions/setup-go's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v6.3.0</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>Update default Go module caching to use go.mod by <a\nhref=\"https://github.com/priyagupta108\"><code>@​priyagupta108</code></a>\nin <a\nhref=\"https://redirect.github.com/actions/setup-go/pull/705\">actions/setup-go#705</a></li>\n<li>Fix golang download url to go.dev by <a\nhref=\"https://github.com/178inaba\"><code>@​178inaba</code></a> in <a\nhref=\"https://redirect.github.com/actions/setup-go/pull/469\">actions/setup-go#469</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/actions/setup-go/compare/v6...v6.3.0\">https://github.com/actions/setup-go/compare/v6...v6.3.0</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/actions/setup-go/commit/4b73464bb391d4059bd26b0524d20df3927bd417\"><code>4b73464</code></a>\nFix golang download url to go.dev (<a\nhref=\"https://redirect.github.com/actions/setup-go/issues/469\">#469</a>)</li>\n<li><a\nhref=\"https://github.com/actions/setup-go/commit/a5f9b05d2d216f63e13859e0d847461041025775\"><code>a5f9b05</code></a>\nUpdate default Go module caching to use go.mod (<a\nhref=\"https://redirect.github.com/actions/setup-go/issues/705\">#705</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/actions/setup-go/compare/7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5...4b73464bb391d4059bd26b0524d20df3927bd417\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `github/codeql-action` from 4.32.0 to 4.32.4\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/github/codeql-action/releases\">github/codeql-action's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v4.32.4</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a\nhref=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.24.2\">2.24.2</a>.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3493\">#3493</a></li>\n<li>Added an experimental change which improves how certificates are\ngenerated for the authentication proxy that is used by the CodeQL Action\nin Default Setup when <a\nhref=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">private\npackage registries are configured</a>. This is expected to generate more\nwidely compatible certificates and should have no impact on analyses\nwhich are working correctly already. We expect to roll this change out\nto everyone in February. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3473\">#3473</a></li>\n<li>When the CodeQL Action is run <a\nhref=\"https://docs.github.com/en/code-security/how-tos/scan-code-for-vulnerabilities/troubleshooting/troubleshooting-analysis-errors/logs-not-detailed-enough#creating-codeql-debugging-artifacts-for-codeql-default-setup\">with\ndebugging enabled in Default Setup</a> and <a\nhref=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">private\npackage registries are configured</a>, the &quot;Setup proxy for\nregistries&quot; step will output additional diagnostic information that\ncan be used for troubleshooting. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3486\">#3486</a></li>\n<li>Added a setting which allows the CodeQL Action to enable network\ndebugging for Java programs. This will help GitHub staff support\ncustomers with troubleshooting issues in GitHub-managed CodeQL\nworkflows, such as Default Setup. This setting can only be enabled by\nGitHub staff. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3485\">#3485</a></li>\n<li>Added a setting which enables GitHub-managed workflows, such as\nDefault Setup, to use a <a\nhref=\"https://github.com/dsp-testing/codeql-cli-nightlies\">nightly\nCodeQL CLI release</a> instead of the latest, stable release that is\nused by default. This will help GitHub staff support customers whose\nanalyses for a given repository or organization require early access to\na change in an upcoming CodeQL CLI release. This setting can only be\nenabled by GitHub staff. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3484\">#3484</a></li>\n</ul>\n<h2>v4.32.3</h2>\n<ul>\n<li>Added experimental support for testing connections to <a\nhref=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">private\npackage registries</a>. This feature is not currently enabled for any\nanalysis. In the future, it may be enabled by default for Default Setup.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3466\">#3466</a></li>\n</ul>\n<h2>v4.32.2</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a\nhref=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.24.1\">2.24.1</a>.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3460\">#3460</a></li>\n</ul>\n<h2>v4.32.1</h2>\n<ul>\n<li>A warning is now shown in Default Setup workflow logs if a <a\nhref=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">private\npackage registry is configured</a> using a GitHub Personal Access Token\n(PAT), but no username is configured. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3422\">#3422</a></li>\n<li>Fixed a bug which caused the CodeQL Action to fail when repository\nproperties cannot successfully be retrieved. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3421\">#3421</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/github/codeql-action/blob/main/CHANGELOG.md\">github/codeql-action's\nchangelog</a>.</em></p>\n<blockquote>\n<h1>CodeQL Action Changelog</h1>\n<p>See the <a\nhref=\"https://github.com/github/codeql-action/releases\">releases\npage</a> for the relevant changes to the CodeQL CLI and language\npacks.</p>\n<h2>[UNRELEASED]</h2>\n<p>No user facing changes.</p>\n<h2>4.32.4 - 20 Feb 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a\nhref=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.24.2\">2.24.2</a>.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3493\">#3493</a></li>\n<li>Added an experimental change which improves how certificates are\ngenerated for the authentication proxy that is used by the CodeQL Action\nin Default Setup when <a\nhref=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">private\npackage registries are configured</a>. This is expected to generate more\nwidely compatible certificates and should have no impact on analyses\nwhich are working correctly already. We expect to roll this change out\nto everyone in February. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3473\">#3473</a></li>\n<li>When the CodeQL Action is run <a\nhref=\"https://docs.github.com/en/code-security/how-tos/scan-code-for-vulnerabilities/troubleshooting/troubleshooting-analysis-errors/logs-not-detailed-enough#creating-codeql-debugging-artifacts-for-codeql-default-setup\">with\ndebugging enabled in Default Setup</a> and <a\nhref=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">private\npackage registries are configured</a>, the &quot;Setup proxy for\nregistries&quot; step will output additional diagnostic information that\ncan be used for troubleshooting. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3486\">#3486</a></li>\n<li>Added a setting which allows the CodeQL Action to enable network\ndebugging for Java programs. This will help GitHub staff support\ncustomers with troubleshooting issues in GitHub-managed CodeQL\nworkflows, such as Default Setup. This setting can only be enabled by\nGitHub staff. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3485\">#3485</a></li>\n<li>Added a setting which enables GitHub-managed workflows, such as\nDefault Setup, to use a <a\nhref=\"https://github.com/dsp-testing/codeql-cli-nightlies\">nightly\nCodeQL CLI release</a> instead of the latest, stable release that is\nused by default. This will help GitHub staff support customers whose\nanalyses for a given repository or organization require early access to\na change in an upcoming CodeQL CLI release. This setting can only be\nenabled by GitHub staff. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3484\">#3484</a></li>\n</ul>\n<h2>4.32.3 - 13 Feb 2026</h2>\n<ul>\n<li>Added experimental support for testing connections to <a\nhref=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">private\npackage registries</a>. This feature is not currently enabled for any\nanalysis. In the future, it may be enabled by default for Default Setup.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3466\">#3466</a></li>\n</ul>\n<h2>4.32.2 - 05 Feb 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a\nhref=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.24.1\">2.24.1</a>.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3460\">#3460</a></li>\n</ul>\n<h2>4.32.1 - 02 Feb 2026</h2>\n<ul>\n<li>A warning is now shown in Default Setup workflow logs if a <a\nhref=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">private\npackage registry is configured</a> using a GitHub Personal Access Token\n(PAT), but no username is configured. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3422\">#3422</a></li>\n<li>Fixed a bug which caused the CodeQL Action to fail when repository\nproperties cannot successfully be retrieved. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3421\">#3421</a></li>\n</ul>\n<h2>4.32.0 - 26 Jan 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a\nhref=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.24.0\">2.24.0</a>.\n<a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3425\">#3425</a></li>\n</ul>\n<h2>4.31.11 - 23 Jan 2026</h2>\n<ul>\n<li>When running a Default Setup workflow with <a\nhref=\"https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging\">Actions\ndebugging enabled</a>, the CodeQL Action will now use more unique names\nwhen uploading logs from the Dependabot authentication proxy as workflow\nartifacts. This ensures that the artifact names do not clash between\nmultiple jobs in a build matrix. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3409\">#3409</a></li>\n<li>Improved error handling throughout the CodeQL Action. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3415\">#3415</a></li>\n<li>Added experimental support for automatically excluding <a\nhref=\"https://docs.github.com/en/repositories/working-with-files/managing-files/customizing-how-changed-files-appear-on-github\">generated\nfiles</a> from the analysis. This feature is not currently enabled for\nany analysis. In the future, it may be enabled by default for some\nGitHub-managed analyses. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3318\">#3318</a></li>\n<li>The changelog extracts that are included with releases of the CodeQL\nAction are now shorter to avoid duplicated information from appearing in\nDependabot PRs. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3403\">#3403</a></li>\n</ul>\n<h2>4.31.10 - 12 Jan 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to 2.23.9. <a\nhref=\"https://redirect.github.com/github/codeql-action/pull/3393\">#3393</a></li>\n</ul>\n<h2>4.31.9 - 16 Dec 2025</h2>\n<p>No user facing changes.</p>\n<h2>4.31.8 - 11 Dec 2025</h2>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/89a39a4e59826350b863aa6b6252a07ad50cf83e\"><code>89a39a4</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/github/codeql-action/issues/3494\">#3494</a>\nfrom github/update-v4.32.4-39ba80c47</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/e5d84c885c00d506f7816d26a298534dbbffac6d\"><code>e5d84c8</code></a>\nApply remaining review suggestions</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/0c202097b5de484e2a3725d4467f9cb7e3107881\"><code>0c20209</code></a>\nApply suggestions from code review</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/314172e5a1e1691ba4ad232b3d0230ceaf3d9239\"><code>314172e</code></a>\nFix typo</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/cdda72d36b93310932b0afe1784acd0209d190dd\"><code>cdda72d</code></a>\nAdd changelog entries</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/cfda84cc5509282e2adc1570c3cf29c3167ae87f\"><code>cfda84c</code></a>\nUpdate changelog for v4.32.4</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/39ba80c47550c834104c0f222b502461ac312c29\"><code>39ba80c</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/github/codeql-action/issues/3493\">#3493</a>\nfrom github/update-bundle/codeql-bundle-v2.24.2</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/00150dad957fc9c1cba52bdab82e458ae5c09fe5\"><code>00150da</code></a>\nAdd changelog note</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/d97dce6561ae3dd4e4db9bfa95479f7572bd7566\"><code>d97dce6</code></a>\nUpdate default bundle to codeql-bundle-v2.24.2</li>\n<li><a\nhref=\"https://github.com/github/codeql-action/commit/50fdbb9ec845c41d6d3509d794e3a28af7032c59\"><code>50fdbb9</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/github/codeql-action/issues/3492\">#3492</a>\nfrom github/henrymercer/new-repository-properties-ff</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/github/codeql-action/compare/b20883b0cd1f46c72ae0ba6d1090936928f9fa30...89a39a4e59826350b863aa6b6252a07ad50cf83e\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's major version (unless you unignore this specific\ndependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this\ngroup update PR and stop Dependabot creating any more for the specific\ndependency's minor version (unless you unignore this specific\ndependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR\nand stop Dependabot creating any more for the specific dependency\n(unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore\nconditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will\nremove the ignore condition of the specified dependency and ignore\nconditions\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-03-03T17:15:54Z",
+          "tree_id": "5f07a19c046d12255f7bd72164fe52ebfef44c60",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/bbbc0296007236644c8b731861d48c0e570fccc4"
+        },
+        "date": 1772558257004,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 287.0828833999781,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 270.46300000000656,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 258.6900829999763,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 2383.392958200011,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 2485.585291999996,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 2042.7498750000268,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 48.872039749098604,
+            "range": "2.220027068325304",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 44.544770504148644,
+            "range": "0.6912291614105188",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 42.040598290349976,
+            "range": "0.5348461970431113",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 57.09625066314086,
+            "range": "0.6212996730731122",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 53.97209809983438,
+            "range": "0.1959423531069363",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 57.649705312071234,
+            "range": "0.1915031229889969",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 166.76807080000157,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 167.00656300000105,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 165.02360900000212,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2737.4822500000164,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 2507.824375000041,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 2160.028333000014,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 422.0546424508396,
+            "range": "11.346606156424716",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 468.7125177260133,
+            "range": "8.255210105764",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 445.5141816829794,
+            "range": "9.946888740865289",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 470.23957341196,
+            "range": "23.286977762750052",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 362.1982196450309,
+            "range": "7.657611100584635",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 349.6468724420325,
+            "range": "6.9390994844962",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 276.7507419999987,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 278.2543670000024,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 264.7717720000031,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 183.92506740000084,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 183.2543910000055,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 179.610088000004,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 350.01342809856226,
+            "range": "3.41996689371713",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 358.2621384621797,
+            "range": "2.1375956387912884",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 370.52173579221625,
+            "range": "13.212314922916235",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 458.2200276502193,
+            "range": "14.983611926736213",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 318.3647952520659,
+            "range": "2.612244318229781",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 326.77950990385284,
+            "range": "2.9180783636935264",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 2050.968274800016,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 1998.4915830000318,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 1888.5509579999962,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 2675.4195914000206,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 2595.230708000031,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 2193.9979580000113,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 277.1459559333228,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 279.4365549999611,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 266.4537180000366,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 206.57245840000087,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 218.3084999999778,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 150.54274999999961,
             "unit": "ms",
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           }
