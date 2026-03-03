@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772545653256,
+  "lastUpdate": 1772545686896,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -30781,6 +30781,336 @@ window.BENCHMARK_DATA = {
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
             "value": 230.3545840000112,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "74c4758718828ea2f970be5dfe4d1617ac7fb40e",
+          "message": "chore(deps-dev): Bump fast-xml-parser from 5.3.6 to 5.4.1 (#4108)\n\nBumps\n[fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)\nfrom 5.3.6 to 5.4.1.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/releases\">fast-xml-parser's\nreleases</a>.</em></p>\n<blockquote>\n<h2>Separate Builder</h2>\n<p>XML Builder was the part of <a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-builder\">fast-xml-parser</a>\nfor years. But considering that any bug in builder may false-alarm the\nusers who are only using parser and vice-versa, we have decided to split\nit into a separate package.</p>\n<h2>Migration</h2>\n<p>To migrate to fast-xml-builder;</p>\n<p>From</p>\n<pre lang=\"js\"><code>import { XMLBuilder } from\n&quot;fast-xml-parser&quot;;\n</code></pre>\n<p>To</p>\n<pre lang=\"js\"><code>import XMLBuilder from\n&quot;fast-xml-builder&quot;;\n</code></pre>\n<p>XMLBuilder will be removed from current package in any next major\nversion of this library. So better to migrate.</p>\n<h2>support strictReservedNames</h2>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/compare/v5.3.9...v5.3.9\">https://github.com/NaturalIntelligence/fast-xml-parser/compare/v5.3.9...v5.3.9</a></p>\n<h2>handle non-array input for XML builder &amp;&amp; support\nmaxNestedTags</h2>\n<ul>\n<li>support maxNestedTags</li>\n<li>handle non-array input for XML builder when preserveOrder is true\n(By <a href=\"https://github.com/Angelopvtac\">Angelo Coetzee</a>)</li>\n<li>save use of js properies\n<strong>Full Changelog</strong>: <a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/compare/v5.3.7...v5.3.8\">https://github.com/NaturalIntelligence/fast-xml-parser/compare/v5.3.7...v5.3.8</a></li>\n</ul>\n<h2>CJS typing fix</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>Unexport <code>X2jOptions</code> at declaration site by <a\nhref=\"https://github.com/Drarig29\"><code>@​Drarig29</code></a> in <a\nhref=\"https://redirect.github.com/NaturalIntelligence/fast-xml-parser/pull/787\">NaturalIntelligence/fast-xml-parser#787</a></li>\n</ul>\n<h2>New Contributors</h2>\n<ul>\n<li><a href=\"https://github.com/Drarig29\"><code>@​Drarig29</code></a>\nmade their first contribution in <a\nhref=\"https://redirect.github.com/NaturalIntelligence/fast-xml-parser/pull/787\">NaturalIntelligence/fast-xml-parser#787</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/compare/v5.3.6...v5.3.7\">https://github.com/NaturalIntelligence/fast-xml-parser/compare/v5.3.6...v5.3.7</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/blob/master/CHANGELOG.md\">fast-xml-parser's\nchangelog</a>.</em></p>\n<blockquote>\n<p><!-- raw HTML omitted -->Note: If you find missing information about\nparticular minor version, that version must have been changed without\nany functional change in this library.<!-- raw HTML omitted --></p>\n<p>Note: Due to some last quick changes on v4, detail of v4.5.3 &amp;\nv4.5.4 are not updated here. v4.5.4x is the last tag of v4 in github\nrepository. I'm extremely sorry for the confusion</p>\n<p><strong>5.4.1  / 2026-02-25</strong></p>\n<ul>\n<li>fix (<a\nhref=\"https://redirect.github.com/NaturalIntelligence/fast-xml-parser/issues/785\">#785</a>)\nunpairedTag node should not have tag content</li>\n</ul>\n<p><strong>5.4.0  / 2026-02-25</strong></p>\n<ul>\n<li>migrate to fast-xml-builder</li>\n</ul>\n<p><strong>5.3.9 / 2026-02-25</strong></p>\n<ul>\n<li>support strictReservedNames</li>\n</ul>\n<p><strong>5.3.8 / 2026-02-25</strong></p>\n<ul>\n<li>support maxNestedTags</li>\n<li>handle non-array input for XML builder when preserveOrder is true\n(By <a href=\"https://github.com/Angelopvtac\">Angelo Coetzee</a>)</li>\n<li>save use of js properies</li>\n</ul>\n<p><strong>5.3.7 / 2026-02-20</strong></p>\n<ul>\n<li>fix typings for CJS (By <a\nhref=\"https://github.com/Drarig29\">Corentin Girard</a>)</li>\n</ul>\n<p><strong>5.3.6 / 2026-02-14</strong></p>\n<ul>\n<li>Improve security and performance of entity processing\n<ul>\n<li>new options <code>maxEntitySize</code>,\n<code>maxExpansionDepth</code>, <code>maxTotalExpansions</code>,\n<code>maxExpandedLength</code>,\n<code>allowedTags</code>,<code>tagFilter</code></li>\n<li>fast return when no edtity is present</li>\n<li>improvement replacement logic to reduce number of calls</li>\n</ul>\n</li>\n</ul>\n<p><strong>5.3.5 / 2026-02-08</strong></p>\n<ul>\n<li>fix: Escape regex char in entity name</li>\n<li>update strnum to 2.1.2</li>\n<li>add missing exports in CJS typings</li>\n</ul>\n<p><strong>5.3.4 / 2026-01-30</strong></p>\n<ul>\n<li>fix: handle HTML numeric and hex entities when out of range</li>\n</ul>\n<p><strong>5.3.3 / 2025-12-12</strong></p>\n<ul>\n<li>fix <a\nhref=\"https://redirect.github.com/NaturalIntelligence/fast-xml-parser/issues/775\">#775</a>:\ntransformTagName with allowBooleanAttributes adds an unnecessary\nattribute</li>\n</ul>\n<p><strong>5.3.2 / 2025-11-14</strong></p>\n<ul>\n<li>fix for import statement for v6</li>\n</ul>\n<p><strong>5.3.1 / 2025-11-03</strong></p>\n<ul>\n<li>Performance improvement for stopNodes (By <a\nhref=\"https://github.com/macieklamberski\">Maciek Lamberski</a>)</li>\n</ul>\n<p><strong>5.3.0 / 2025-10-03</strong></p>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/4e7ca80e788a23b07531ac2ff8906e5e9f4bf892\"><code>4e7ca80</code></a>\nupdate release info</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/36023b496382717c82bd68863b3f95629d0c9311\"><code>36023b4</code></a>\nfix (<a\nhref=\"https://redirect.github.com/NaturalIntelligence/fast-xml-parser/issues/785\">#785</a>)\nunpairedTag node should not have tag content</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/b3660266f53e383193ae152cde878d9b2db7240f\"><code>b366026</code></a>\nseparate builder</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/6f333a85693e20713fea2d733795fef7e11ac51c\"><code>6f333a8</code></a>\nupdate release info</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/c3ffbab9e5a2bab9db65803933d0af656076fc33\"><code>c3ffbab</code></a>\nsupport strictReservedNames</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/c692040f6b5f5045d38b66b1da04e4d3abc97052\"><code>c692040</code></a>\nupdate release info</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/107e34c046d4997ee3b67a32d32eef52fe63edb2\"><code>107e34c</code></a>\navoid <code>{}</code> to create an empty object</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/60835a4c7279ddc349d192097fb41afa52930d8b\"><code>60835a4</code></a>\nsupport maxNestedTags</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/f55657c2b1cf29b433124390c32acba45a5a67aa\"><code>f55657c</code></a>\navoid direct call to hasOwnProperty</li>\n<li><a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/commit/c13a961910f14986295dd28484eee830fa1a0e8a\"><code>c13a961</code></a>\nhandle non-array input for XML builder when preserveOrder is true</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/NaturalIntelligence/fast-xml-parser/compare/v5.3.6...v5.4.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=fast-xml-parser&package-manager=npm_and_yarn&previous-version=5.3.6&new-version=5.4.1)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Maksim Sadym <69349599+sadym-chromium@users.noreply.github.com>",
+          "timestamp": "2026-03-03T14:45:31+01:00",
+          "tree_id": "5f2d7ac489618ebb8d88a936f1824c453aba7c98",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/74c4758718828ea2f970be5dfe4d1617ac7fb40e"
+        },
+        "date": 1772545684794,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 266.7826583999954,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 265.62841699998785,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 239.1629170000158,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 1822.12114999993,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 1842.1475420000206,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 1681.5621249998003,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 65.3838050000361,
+            "range": "6.020838282844421",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 81.52371264233648,
+            "range": "7.667666116045385",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 53.43435901385658,
+            "range": "3.2958175609331577",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 60.88422295972569,
+            "range": "0.5177761153580178",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 58.00024256344402,
+            "range": "0.1252564234964138",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 59.65075805297999,
+            "range": "0.1304315270091875",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 166.97716493333323,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 167.46804699999984,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 163.4560550000117,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2484.1856998000026,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 2401.7220829999815,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 2300.7921669999973,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 372.09102585361853,
+            "range": "22.9046209958273",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 478.28462249383597,
+            "range": "15.968775798551752",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 543.4288675551131,
+            "range": "23.974089839707236",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 386.48238613282865,
+            "range": "26.4215170769092",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 360.0616332806842,
+            "range": "14.703873320619302",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 404.9451639932267,
+            "range": "17.26645162201244",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 276.8853724000015,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 276.78145699999845,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 265.5427929999945,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 183.559397866667,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 183.07508399999506,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 179.4323710000043,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 356.41341568542845,
+            "range": "4.200977452856285",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 361.46383054656894,
+            "range": "2.310518849608588",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 378.01684959741783,
+            "range": "7.545797861661635",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 468.2475213602997,
+            "range": "15.462711295597146",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 325.35855491455334,
+            "range": "2.8490341927588707",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 333.26665584240124,
+            "range": "2.8458171112886097",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 1848.9718916000584,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 1926.8015840000317,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 1421.7226250000294,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 1826.0489252000298,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 1812.0947079999041,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 1642.2689590001482,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 282.81025686666226,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 284.0286370000058,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 265.5785700000024,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 247.14432500000498,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 248.145916999988,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 232.547583000013,
             "unit": "ms",
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           }
