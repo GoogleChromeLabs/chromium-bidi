@@ -50,6 +50,7 @@ export class WindowRealm extends Realm {
     realmId: Script.Realm,
     realmStorage: RealmStorage,
     sandbox: string | undefined,
+    userContext: string,
   ) {
     super(
       cdpClient,
@@ -59,6 +60,7 @@ export class WindowRealm extends Realm {
       origin,
       realmId,
       realmStorage,
+      userContext,
     );
 
     this.#browsingContextId = browsingContextId;
@@ -100,6 +102,7 @@ export class WindowRealm extends Realm {
       type: this.realmType,
       context: this.#browsingContextId,
       sandbox: this.sandbox,
+      userContext: this.browsingContext.userContext,
     };
   }
 
@@ -107,6 +110,7 @@ export class WindowRealm extends Realm {
     return {
       realm: this.realmId,
       context: this.browsingContext.id,
+      userContext: this.browsingContext.userContext,
     };
   }
 

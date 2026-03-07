@@ -123,6 +123,7 @@ export class BrowsingContextImpl {
     this.#navigationTracker = new NavigationTracker(
       url,
       id,
+      userContext,
       eventManager,
       logger,
     );
@@ -459,6 +460,7 @@ export class BrowsingContextImpl {
           params: {
             context: this.id,
             multiple: params.mode === 'selectMultiple',
+            userContext: this.userContext,
             element,
           },
         },
@@ -514,6 +516,7 @@ export class BrowsingContextImpl {
               context: this.id,
               timestamp: getTimestamp(),
               url: this.#navigationTracker.url,
+              userContext: this.userContext,
             },
           },
           this.id,
@@ -563,6 +566,7 @@ export class BrowsingContextImpl {
                   navigation: this.#navigationTracker.currentNavigationId,
                   timestamp: getTimestamp(),
                   url: this.#navigationTracker.url,
+                  userContext: this.userContext,
                 },
               },
               this.id,
@@ -583,6 +587,7 @@ export class BrowsingContextImpl {
                   navigation: this.#navigationTracker.currentNavigationId,
                   timestamp: getTimestamp(),
                   url: this.#navigationTracker.url,
+                  userContext: this.userContext,
                 },
               },
               this.id,
@@ -645,6 +650,7 @@ export class BrowsingContextImpl {
           uniqueId,
           this.#realmStorage,
           sandbox,
+          this.userContext,
         );
 
         if (auxData.isDefault) {
@@ -735,6 +741,7 @@ export class BrowsingContextImpl {
             type:
               this.#lastUserPromptType ??
               ('UNKNOWN' as BrowsingContext.UserPromptType),
+            userContext: this.userContext,
             userText:
               accepted && params.userInput ? params.userInput : undefined,
           },
@@ -777,6 +784,7 @@ export class BrowsingContextImpl {
             handler: promptHandler,
             type: promptType,
             message: params.message,
+            userContext: this.userContext,
             ...(params.type === 'prompt'
               ? {defaultValue: params.defaultPrompt}
               : {}),
@@ -818,6 +826,7 @@ export class BrowsingContextImpl {
               navigation: params.guid,
               timestamp: getTimestamp(),
               url: params.url,
+              userContext: this.userContext,
             },
           },
           this.id,
@@ -852,6 +861,7 @@ export class BrowsingContextImpl {
                   navigation: params.guid,
                   timestamp: getTimestamp(),
                   url,
+                  userContext: this.userContext,
                 },
               },
               this.id,
@@ -869,6 +879,7 @@ export class BrowsingContextImpl {
                   navigation: params.guid,
                   timestamp: getTimestamp(),
                   url,
+                  userContext: this.userContext,
                 },
               },
               this.id,
