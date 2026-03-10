@@ -632,6 +632,7 @@ export const BrowsingContextCommandSchema = z.lazy(() =>
     BrowsingContext.NavigateSchema,
     BrowsingContext.PrintSchema,
     BrowsingContext.ReloadSchema,
+    BrowsingContext.SetBypassCspSchema,
     BrowsingContext.SetViewportSchema,
     BrowsingContext.TraverseHistorySchema,
   ]),
@@ -648,6 +649,7 @@ export const BrowsingContextResultSchema = z.lazy(() =>
     BrowsingContext.NavigateResultSchema,
     BrowsingContext.PrintResultSchema,
     BrowsingContext.ReloadResultSchema,
+    BrowsingContext.SetBypassCspResultSchema,
     BrowsingContext.SetViewportResultSchema,
     BrowsingContext.TraverseHistoryResultSchema,
   ]),
@@ -1075,6 +1077,29 @@ export namespace BrowsingContext {
   export const ReloadResultSchema = z.lazy(
     () => BrowsingContext.NavigateResultSchema,
   );
+}
+export namespace BrowsingContext {
+  export const SetBypassCspSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.setBypassCSP'),
+      params: BrowsingContext.SetBypassCspParametersSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const SetBypassCspParametersSchema = z.lazy(() =>
+    z.object({
+      bypass: z.union([z.literal(true), z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const SetBypassCspResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace BrowsingContext {
   export const SetViewportSchema = z.lazy(() =>

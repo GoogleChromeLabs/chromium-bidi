@@ -471,6 +471,7 @@ export type BrowsingContextCommand =
   | BrowsingContext.Navigate
   | BrowsingContext.Print
   | BrowsingContext.Reload
+  | BrowsingContext.SetBypassCsp
   | BrowsingContext.SetViewport
   | BrowsingContext.TraverseHistory;
 export type BrowsingContextResult =
@@ -484,6 +485,7 @@ export type BrowsingContextResult =
   | BrowsingContext.NavigateResult
   | BrowsingContext.PrintResult
   | BrowsingContext.ReloadResult
+  | BrowsingContext.SetBypassCspResult
   | BrowsingContext.SetViewportResult
   | BrowsingContext.TraverseHistoryResult;
 export type BrowsingContextEvent =
@@ -877,6 +879,25 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type ReloadResult = BrowsingContext.NavigateResult;
+}
+export namespace BrowsingContext {
+  export type SetBypassCsp = {
+    method: 'browsingContext.setBypassCSP';
+    params: BrowsingContext.SetBypassCspParameters;
+  };
+}
+export namespace BrowsingContext {
+  export type SetBypassCspParameters = {
+    bypass: true | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  };
+}
+export namespace BrowsingContext {
+  export type SetBypassCspResult = EmptyResult;
 }
 export namespace BrowsingContext {
   export type SetViewport = {
