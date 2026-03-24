@@ -69,6 +69,50 @@ function getLogMethod(consoleApiType: string): string {
   return consoleApiType;
 }
 
+/**
+ * Returns args to use only for computing log.entryAdded 'text'.
+ * For %s, replace BiDi 'symbol' args with CDP 'description' (e.g. "Symbol(x)").
+  */
+function getArgsForText(
+  bidiArgs: Script.RemoteValue[],
+  cdpArgs: Protocol.Runtime.RemoteObject[],
+): Script.RemoteValue[] {
+  const first = bidiArgs[0];
+  if (!first || first.type !== 'string') {
+    return bidiArgs;
+  }
+  const format = first.value;
+  if (!format.includes('%')) {
+    return bidiArgs;
+  }
+  let argIndex = 1; // args[0] is the format string
+  let textArgs: Script.RemoteValue[] | null = null;
+  const CONSUMING_SPECIFIERS = 'sdifoOc_';
+  for (let i = 0; i < format.length - 1 && argIndex < bidiArgs.length; i++) {
+    if (format[i] !== '%') continue;
+    const spec = format[i + 1];
+    if (spec === undefined) continue;
+    if (spec === '%') {
+      i++;
+      continue;
+    }
+    if (!CONSUMING_SPECIFIERS.includes(spec)) continue;
+    if (spec === 's') {
+      const bidiArg = bidiArgs[argIndex];
+      if (bidiArg?.type === 'symbol') {
+        const desc = cdpArgs[argIndex]?.description;
+        if (typeof desc === 'string' && desc.length > 0) {
+          if (textArgs === null) textArgs = bidiArgs.slice();
+          textArgs[argIndex] = {type: 'string', value: desc};
+        }
+      }
+    }
+    argIndex++;
+    i++;
+  }
+  return textArgs ?? bidiArgs;
+}
+
 export class LogManager {
   readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
@@ -180,7 +224,10 @@ export class LogManager {
                 params: {
                   level: getLogLevel(params.type),
                   source: realm.source,
-                  text: getRemoteValuesText(args, true),
+                  text: getRemoteValuesText(
+                    getArgsForText(args, params.args),
+                    true,
+                  ),
                   timestamp: Math.round(params.timestamp),
                   stackTrace: getBidiStackTrace(params.stackTrace),
                   type: 'console',
