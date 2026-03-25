@@ -72,7 +72,7 @@ function getLogMethod(consoleApiType: string): string {
 /**
  * Returns args to use only for computing log.entryAdded 'text'.
  * For %s, replace BiDi 'symbol' args with CDP 'description' (e.g. "Symbol(x)").
-  */
+ */
 function getArgsForText(
   bidiArgs: Script.RemoteValue[],
   cdpArgs: Protocol.Runtime.RemoteObject[],
