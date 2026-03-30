@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772719588190,
+  "lastUpdate": 1774881028299,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -32085,6 +32085,336 @@ window.BENCHMARK_DATA = {
             "value": 212.92545800000084,
             "unit": "ms",
             "extra": "macos-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0f182ce17206c1b30ec416051d285623698f01f8",
+          "message": "chore(deps): Bump undici (#4122)\n\nBumps and [undici](https://github.com/nodejs/undici). These dependencies\nneeded to be updated together.\nUpdates `undici` from 6.23.0 to 6.24.1\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/nodejs/undici/releases\">undici's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v6.24.1</h2>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/nodejs/undici/compare/v6.24.0...v6.24.1\">https://github.com/nodejs/undici/compare/v6.24.0...v6.24.1</a></p>\n<h2>v6.24.0</h2>\n<h1>Undici v6.24.0 Security Release Notes (LTS)</h1>\n<p>This release backports fixes for security vulnerabilities affecting\nthe v6 line.</p>\n<h2>Upgrade guidance</h2>\n<p>All users on v6 should upgrade to <strong>v6.24.0</strong> or\nlater.</p>\n<h2>Fixed advisories</h2>\n<ul>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-2mjp-6q6p-2qxm\">GHSA-2mjp-6q6p-2qxm</a>\n/ CVE-2026-1525 (Medium)<br />\nInconsistent interpretation of HTTP requests (request/response smuggling\nclass issue).</p>\n</li>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-f269-vfmq-vjvj\">GHSA-f269-vfmq-vjvj</a>\n/ CVE-2026-1528 (High)<br />\nMalicious WebSocket 64-bit frame length handling could crash the\nclient.</p>\n</li>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-4992-7rv2-5pvq\">GHSA-4992-7rv2-5pvq</a>\n/ CVE-2026-1527 (Medium)<br />\nCRLF injection via the <code>upgrade</code> option.</p>\n</li>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-v9p9-hfj2-hcw8\">GHSA-v9p9-hfj2-hcw8</a>\n/ CVE-2026-2229 (High)<br />\nUnhandled exception from invalid <code>server_max_window_bits</code> in\nWebSocket permessage-deflate negotiation.</p>\n</li>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-vrm6-8vpv-qv8q\">GHSA-vrm6-8vpv-qv8q</a>\n/ CVE-2026-1526 (High)<br />\nUnbounded memory consumption in WebSocket permessage-deflate\ndecompression.</p>\n</li>\n</ul>\n<h2>Not applicable to v6</h2>\n<ul>\n<li><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-phc3-fgpg-7m6h\">GHSA-phc3-fgpg-7m6h</a>\n/ CVE-2026-2581 affects <code>&gt;= 7.17.0 &lt; 7.24.0</code> only.</li>\n</ul>\n<h2>Affected and patched ranges (v6)</h2>\n<ul>\n<li>CVE-2026-1525: affected <code>&lt; 6.24.0</code>, patched\n<code>6.24.0</code></li>\n<li>CVE-2026-1528: affected <code>&gt;= 6.0.0 &lt; 6.24.0</code>,\npatched <code>6.24.0</code></li>\n<li>CVE-2026-1527: affected <code>&lt; 6.24.0</code>, patched\n<code>6.24.0</code></li>\n<li>CVE-2026-2229: affected <code>&lt; 6.24.0</code>, patched\n<code>6.24.0</code></li>\n<li>CVE-2026-1526: affected <code>&lt; 6.24.0</code>, patched\n<code>6.24.0</code></li>\n</ul>\n<h2>References</h2>\n<ul>\n<li>GitHub Security Advisories: <a\nhref=\"https://github.com/nodejs/undici/security/advisories\">https://github.com/nodejs/undici/security/advisories</a></li>\n<li>NVD CVE-2026-1525: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-1525\">https://nvd.nist.gov/vuln/detail/CVE-2026-1525</a></li>\n<li>NVD CVE-2026-1528: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-1528\">https://nvd.nist.gov/vuln/detail/CVE-2026-1528</a></li>\n<li>NVD CVE-2026-1527: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-1527\">https://nvd.nist.gov/vuln/detail/CVE-2026-1527</a></li>\n<li>NVD CVE-2026-2229: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-2229\">https://nvd.nist.gov/vuln/detail/CVE-2026-2229</a></li>\n<li>NVD CVE-2026-1526: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-1526\">https://nvd.nist.gov/vuln/detail/CVE-2026-1526</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/c0cf656ef5e66f7372a7e57d08c6cbdd5b127e82\"><code>c0cf656</code></a>\nBumped v6.24.1</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/f5a9f0ccbe958e7d0cfd7b63a9a8d195378ac6f6\"><code>f5a9f0c</code></a>\nFix v6 release workflow branch targeting</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/af2cb8fe01320f189394bef193c2d5b441fcfe6f\"><code>af2cb8f</code></a>\nwqremove maxDecompressedMessageSize (<a\nhref=\"https://redirect.github.com/nodejs/undici/issues/4891\">#4891</a>)</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/8873c947271faf1ebc455bdc6158ecbc022ecfa9\"><code>8873c94</code></a>\nBumped v6.24.0</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/411bd01a42e7917009bbf686f7628b99d67bbce9\"><code>411bd01</code></a>\ntest(websocket): use node:assert for Node 18 compatibility</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/844bf59699d778944f78a24ae819c0e8f295766e\"><code>844bf59</code></a>\ntest: fix http2 lint regressions in backport</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/a444e4f13e8958b4e1ac42bc0d53ace7fba0a9c1\"><code>a444e4f</code></a>\ntest: stabilize h2 and tls-cert-leak under current test runner</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/dc032a1050d5489b8ce9b4c22aafba98a942f87b\"><code>dc032a1</code></a>\nfix: h2 CI (<a\nhref=\"https://redirect.github.com/nodejs/undici/issues/4395\">#4395</a>)</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/4cd3f4b3a2ef910ba728c47ae78294d956410450\"><code>4cd3f4b</code></a>\ntest: increase bitness in <code>test/fixtures/*.pem</code> (<a\nhref=\"https://redirect.github.com/nodejs/undici/issues/3659\">#3659</a>)</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/7df6442194b7a54e9ac734335e6e0a56a9bc6666\"><code>7df6442</code></a>\nfix: adapt websocket frame-limit handling for v6 parser</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/nodejs/undici/compare/v6.23.0...v6.24.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `undici` from 7.21.0 to 7.24.5\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/nodejs/undici/releases\">undici's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v6.24.1</h2>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/nodejs/undici/compare/v6.24.0...v6.24.1\">https://github.com/nodejs/undici/compare/v6.24.0...v6.24.1</a></p>\n<h2>v6.24.0</h2>\n<h1>Undici v6.24.0 Security Release Notes (LTS)</h1>\n<p>This release backports fixes for security vulnerabilities affecting\nthe v6 line.</p>\n<h2>Upgrade guidance</h2>\n<p>All users on v6 should upgrade to <strong>v6.24.0</strong> or\nlater.</p>\n<h2>Fixed advisories</h2>\n<ul>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-2mjp-6q6p-2qxm\">GHSA-2mjp-6q6p-2qxm</a>\n/ CVE-2026-1525 (Medium)<br />\nInconsistent interpretation of HTTP requests (request/response smuggling\nclass issue).</p>\n</li>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-f269-vfmq-vjvj\">GHSA-f269-vfmq-vjvj</a>\n/ CVE-2026-1528 (High)<br />\nMalicious WebSocket 64-bit frame length handling could crash the\nclient.</p>\n</li>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-4992-7rv2-5pvq\">GHSA-4992-7rv2-5pvq</a>\n/ CVE-2026-1527 (Medium)<br />\nCRLF injection via the <code>upgrade</code> option.</p>\n</li>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-v9p9-hfj2-hcw8\">GHSA-v9p9-hfj2-hcw8</a>\n/ CVE-2026-2229 (High)<br />\nUnhandled exception from invalid <code>server_max_window_bits</code> in\nWebSocket permessage-deflate negotiation.</p>\n</li>\n<li>\n<p><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-vrm6-8vpv-qv8q\">GHSA-vrm6-8vpv-qv8q</a>\n/ CVE-2026-1526 (High)<br />\nUnbounded memory consumption in WebSocket permessage-deflate\ndecompression.</p>\n</li>\n</ul>\n<h2>Not applicable to v6</h2>\n<ul>\n<li><a\nhref=\"https://github.com/nodejs/undici/security/advisories/GHSA-phc3-fgpg-7m6h\">GHSA-phc3-fgpg-7m6h</a>\n/ CVE-2026-2581 affects <code>&gt;= 7.17.0 &lt; 7.24.0</code> only.</li>\n</ul>\n<h2>Affected and patched ranges (v6)</h2>\n<ul>\n<li>CVE-2026-1525: affected <code>&lt; 6.24.0</code>, patched\n<code>6.24.0</code></li>\n<li>CVE-2026-1528: affected <code>&gt;= 6.0.0 &lt; 6.24.0</code>,\npatched <code>6.24.0</code></li>\n<li>CVE-2026-1527: affected <code>&lt; 6.24.0</code>, patched\n<code>6.24.0</code></li>\n<li>CVE-2026-2229: affected <code>&lt; 6.24.0</code>, patched\n<code>6.24.0</code></li>\n<li>CVE-2026-1526: affected <code>&lt; 6.24.0</code>, patched\n<code>6.24.0</code></li>\n</ul>\n<h2>References</h2>\n<ul>\n<li>GitHub Security Advisories: <a\nhref=\"https://github.com/nodejs/undici/security/advisories\">https://github.com/nodejs/undici/security/advisories</a></li>\n<li>NVD CVE-2026-1525: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-1525\">https://nvd.nist.gov/vuln/detail/CVE-2026-1525</a></li>\n<li>NVD CVE-2026-1528: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-1528\">https://nvd.nist.gov/vuln/detail/CVE-2026-1528</a></li>\n<li>NVD CVE-2026-1527: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-1527\">https://nvd.nist.gov/vuln/detail/CVE-2026-1527</a></li>\n<li>NVD CVE-2026-2229: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-2229\">https://nvd.nist.gov/vuln/detail/CVE-2026-2229</a></li>\n<li>NVD CVE-2026-1526: <a\nhref=\"https://nvd.nist.gov/vuln/detail/CVE-2026-1526\">https://nvd.nist.gov/vuln/detail/CVE-2026-1526</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/c0cf656ef5e66f7372a7e57d08c6cbdd5b127e82\"><code>c0cf656</code></a>\nBumped v6.24.1</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/f5a9f0ccbe958e7d0cfd7b63a9a8d195378ac6f6\"><code>f5a9f0c</code></a>\nFix v6 release workflow branch targeting</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/af2cb8fe01320f189394bef193c2d5b441fcfe6f\"><code>af2cb8f</code></a>\nwqremove maxDecompressedMessageSize (<a\nhref=\"https://redirect.github.com/nodejs/undici/issues/4891\">#4891</a>)</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/8873c947271faf1ebc455bdc6158ecbc022ecfa9\"><code>8873c94</code></a>\nBumped v6.24.0</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/411bd01a42e7917009bbf686f7628b99d67bbce9\"><code>411bd01</code></a>\ntest(websocket): use node:assert for Node 18 compatibility</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/844bf59699d778944f78a24ae819c0e8f295766e\"><code>844bf59</code></a>\ntest: fix http2 lint regressions in backport</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/a444e4f13e8958b4e1ac42bc0d53ace7fba0a9c1\"><code>a444e4f</code></a>\ntest: stabilize h2 and tls-cert-leak under current test runner</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/dc032a1050d5489b8ce9b4c22aafba98a942f87b\"><code>dc032a1</code></a>\nfix: h2 CI (<a\nhref=\"https://redirect.github.com/nodejs/undici/issues/4395\">#4395</a>)</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/4cd3f4b3a2ef910ba728c47ae78294d956410450\"><code>4cd3f4b</code></a>\ntest: increase bitness in <code>test/fixtures/*.pem</code> (<a\nhref=\"https://redirect.github.com/nodejs/undici/issues/3659\">#3659</a>)</li>\n<li><a\nhref=\"https://github.com/nodejs/undici/commit/7df6442194b7a54e9ac734335e6e0a56a9bc6666\"><code>7df6442</code></a>\nfix: adapt websocket frame-limit handling for v6 parser</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/nodejs/undici/compare/v6.23.0...v6.24.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-03-30T16:28:02+02:00",
+          "tree_id": "dc846f00dd640fc74924232cb318053fdcc4a7aa",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/0f182ce17206c1b30ec416051d285623698f01f8"
+        },
+        "date": 1774881024869,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 317.7229665999903,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 313.4630829999878,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 255.34574999997517,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 167.10766966666787,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 167.458345,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 161.96856300000206,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 166.66363753333258,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 166.2446320000015,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 156.32608199999254,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 212.4245252000037,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 214.2029999999977,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 207.52208400000427,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 2750.4337254000006,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 2831.040334000022,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 2352.175834000036,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 60.29622411831961,
+            "range": "0.6469854564671975",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 57.10733404715107,
+            "range": "0.20905105844563188",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 60.58694048242986,
+            "range": "0.2744456018810682",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2142.2636336000096,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 1895.5984589999844,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 1799.284,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 271.2808052000005,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 269.3818270000037,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 263.37150800000586,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 1916.8396747999964,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 1948.4998329999712,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 1708.9283330000171,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 71.60399466992826,
+            "range": "9.005433408559632",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 103.6809096768837,
+            "range": "7.511920874218816",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 60.95093838494156,
+            "range": "2.285783234177037",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 343.81851599146665,
+            "range": "5.363172875739478",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 354.1193329672056,
+            "range": "2.7201999350187918",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 372.3102122136587,
+            "range": "6.665631221718865",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 472.8886590557434,
+            "range": "15.969926730446371",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 327.6273856968935,
+            "range": "3.0315600443854005",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 344.39101719837214,
+            "range": "3.830834601339835",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 270.2334984666673,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 267.7420469999987,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 264.50323600001013,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 2459.857975200009,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 2429.4810420000204,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 2153.716292000013,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 423.47713904602654,
+            "range": "18.577148977759617",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 554.461097228449,
+            "range": "18.738307599946395",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 542.9948109700773,
+            "range": "10.901545084529554",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 597.0922886732897,
+            "range": "46.57268807422677",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 489.8955585108523,
+            "range": "25.46356549100465",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 404.01541882839405,
+            "range": "11.471965874899949",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
           }
         ]
       }
