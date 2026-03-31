@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774881028299,
+  "lastUpdate": 1774935743991,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -32413,6 +32413,294 @@ window.BENCHMARK_DATA = {
             "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
             "value": 404.01541882839405,
             "range": "11.471965874899949",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "086aeb905a5cb94c152aa461e94d39618f0995d6",
+          "message": "chore(deps): Bump requests from 2.32.5 to 2.33.0 in /examples (#4126)\n\nBumps [requests](https://github.com/psf/requests) from 2.32.5 to 2.33.0.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/psf/requests/releases\">requests's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v2.33.0</h2>\n<h2>2.33.0 (2026-03-25)</h2>\n<p><strong>Announcements</strong></p>\n<ul>\n<li>📣 Requests is adding inline types. If you have a typed code base\nthat uses Requests, please take a look at <a\nhref=\"https://redirect.github.com/psf/requests/issues/7271\">#7271</a>.\nGive it a try, and report any gaps or feedback you may have in the\nissue. 📣</li>\n</ul>\n<p><strong>Security</strong></p>\n<ul>\n<li>CVE-2026-25645 <code>requests.utils.extract_zipped_paths</code> now\nextracts contents to a non-deterministic location to prevent malicious\nfile replacement. This does not affect default usage of Requests, only\napplications calling the utility function directly.</li>\n</ul>\n<p><strong>Improvements</strong></p>\n<ul>\n<li>Migrated to a PEP 517 build system using setuptools. (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7012\">#7012</a>)</li>\n</ul>\n<p><strong>Bugfixes</strong></p>\n<ul>\n<li>Fixed an issue where an empty netrc entry could cause malformed\nauthentication to be applied to Requests on Python 3.11+. (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7205\">#7205</a>)</li>\n</ul>\n<p><strong>Deprecations</strong></p>\n<ul>\n<li>Dropped support for Python 3.9 following its end of support. (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7196\">#7196</a>)</li>\n</ul>\n<p><strong>Documentation</strong></p>\n<ul>\n<li>Various typo fixes and doc improvements.</li>\n</ul>\n<h2>New Contributors</h2>\n<ul>\n<li><a href=\"https://github.com/M0d3v1\"><code>@​M0d3v1</code></a> made\ntheir first contribution in <a\nhref=\"https://redirect.github.com/psf/requests/pull/6865\">psf/requests#6865</a></li>\n<li><a href=\"https://github.com/aminvakil\"><code>@​aminvakil</code></a>\nmade their first contribution in <a\nhref=\"https://redirect.github.com/psf/requests/pull/7220\">psf/requests#7220</a></li>\n<li><a href=\"https://github.com/E8Price\"><code>@​E8Price</code></a> made\ntheir first contribution in <a\nhref=\"https://redirect.github.com/psf/requests/pull/6960\">psf/requests#6960</a></li>\n<li><a href=\"https://github.com/mitre88\"><code>@​mitre88</code></a> made\ntheir first contribution in <a\nhref=\"https://redirect.github.com/psf/requests/pull/7244\">psf/requests#7244</a></li>\n<li><a href=\"https://github.com/magsen\"><code>@​magsen</code></a> made\ntheir first contribution in <a\nhref=\"https://redirect.github.com/psf/requests/pull/6553\">psf/requests#6553</a></li>\n<li><a\nhref=\"https://github.com/Rohan5commit\"><code>@​Rohan5commit</code></a>\nmade their first contribution in <a\nhref=\"https://redirect.github.com/psf/requests/pull/7227\">psf/requests#7227</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/psf/requests/blob/main/HISTORY.md#2330-2026-03-25\">https://github.com/psf/requests/blob/main/HISTORY.md#2330-2026-03-25</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/psf/requests/blob/main/HISTORY.md\">requests's\nchangelog</a>.</em></p>\n<blockquote>\n<h2>2.33.0 (2026-03-25)</h2>\n<p><strong>Announcements</strong></p>\n<ul>\n<li>📣 Requests is adding inline types. If you have a typed code base\nthat\nuses Requests, please take a look at <a\nhref=\"https://redirect.github.com/psf/requests/issues/7271\">#7271</a>.\nGive it a try, and report\nany gaps or feedback you may have in the issue. 📣</li>\n</ul>\n<p><strong>Security</strong></p>\n<ul>\n<li>CVE-2026-25645 <code>requests.utils.extract_zipped_paths</code> now\nextracts\ncontents to a non-deterministic location to prevent malicious file\nreplacement. This does not affect default usage of Requests, only\napplications calling the utility function directly.</li>\n</ul>\n<p><strong>Improvements</strong></p>\n<ul>\n<li>Migrated to a PEP 517 build system using setuptools. (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7012\">#7012</a>)</li>\n</ul>\n<p><strong>Bugfixes</strong></p>\n<ul>\n<li>Fixed an issue where an empty netrc entry could cause\nmalformed authentication to be applied to Requests on\nPython 3.11+. (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7205\">#7205</a>)</li>\n</ul>\n<p><strong>Deprecations</strong></p>\n<ul>\n<li>Dropped support for Python 3.9 following its end of support. (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7196\">#7196</a>)</li>\n</ul>\n<p><strong>Documentation</strong></p>\n<ul>\n<li>Various typo fixes and doc improvements.</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/psf/requests/commit/bc04dfd6dad4cb02cd92f5daa81eb562d280a761\"><code>bc04dfd</code></a>\nv2.33.0</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/66d21cb07bd6255b1280291c4fafb71803cdb3b7\"><code>66d21cb</code></a>\nMerge commit from fork</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/8b9bc8fc0f63be84602387913c4b689f19efd028\"><code>8b9bc8f</code></a>\nMove badges to top of README (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7293\">#7293</a>)</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/e331a288f369973f5de0ec8901c94cae4fa87286\"><code>e331a28</code></a>\nRemove unused extraction call (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7292\">#7292</a>)</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/753fd08c5eacce0aa0df73fe47e49525c67e0a29\"><code>753fd08</code></a>\ndocs: fix FAQ grammar in httplib2 example</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/774a0b837a194ee885d4fdd9ca947900cc3daf71\"><code>774a0b8</code></a>\ndocs(socks): same block as other sections</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/9c72a41bec8597f948c9d8caa5dc3f12273b3303\"><code>9c72a41</code></a>\nBump github/codeql-action from 4.33.0 to 4.34.1</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/ebf71906798ec82f34e07d3168f8b8aecaf8a3be\"><code>ebf7190</code></a>\nBump github/codeql-action from 4.32.0 to 4.33.0</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/0e4ae38f0c93d4f92a96c774bd52c069d12a4798\"><code>0e4ae38</code></a>\ndocs: exclude Response.is_permanent_redirect from API docs (<a\nhref=\"https://redirect.github.com/psf/requests/issues/7244\">#7244</a>)</li>\n<li><a\nhref=\"https://github.com/psf/requests/commit/d568f47278492e630cc990a259047c67991d007a\"><code>d568f47</code></a>\ndocs: clarify Quickstart POST example (<a\nhref=\"https://redirect.github.com/psf/requests/issues/6960\">#6960</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/psf/requests/compare/v2.32.5...v2.33.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=requests&package-manager=pip&previous-version=2.32.5&new-version=2.33.0)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-03-31T07:40:53+02:00",
+          "tree_id": "4bd696b6373b70a1f60a4ea693fdb8418c15fc3f",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/086aeb905a5cb94c152aa461e94d39618f0995d6"
+        },
+        "date": 1774935741529,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 306.63443340000356,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 320.9307910000092,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 271.8223750000135,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 183.51965713333365,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 184.0626549999982,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 179.89525299999798,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 166.95850546666784,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 166.07565500004284,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 164.06632000001764,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 274.2192501999966,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 261.8941669999799,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 245.87741700003107,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 1823.1908665999867,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 1863.7372499999856,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 1696.9527079999693,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 58.63500248043357,
+            "range": "1.8476129160802088",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 59.99812185008185,
+            "range": "0.15634211605607798",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 64.13358428433015,
+            "range": "0.18663412110262875",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2484.9826997999116,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 2614.6699159999116,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 2208.925334000014,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 275.2066676000008,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 269.87579499999015,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 265.39893599999687,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 2120.322225200016,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 2042.255042000022,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 1888.178334000031,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 50.65890943625201,
+            "range": "2.588544336084092",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 48.585952974415235,
+            "range": "0.7599461949198177",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 51.635930993028076,
+            "range": "0.7538017863457593",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 279.6301923333412,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 277.77485000001434,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 264.5132260000196,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 2005.8666499999847,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 1903.4077500000421,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 1826.529832999995,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 503.3109670930734,
+            "range": "12.85210762997763",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 518.2435087732899,
+            "range": "5.898209832914751",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 487.1361914201063,
+            "range": "10.916721410739914",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 523.5696129565088,
+            "range": "25.639920254722092",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 376.2113705910163,
+            "range": "5.136293563657518",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 367.4785263567026,
+            "range": "4.522195357536684",
             "unit": "Percent",
             "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
           }
