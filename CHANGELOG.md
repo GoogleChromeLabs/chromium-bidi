@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [16.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v15.0.0...chromium-bidi-v16.0.0) (2026-04-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 148.0.7764.0 ([#4115](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4115))
+
+### Features
+
+* **chrome:** update the pinned browser version to 148.0.7764.0 ([#4115](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4115)) ([4d8c783](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4d8c78331aa38a41eea84f304345ee1bd210aa44))
+* implement `emulation.setScrollbarTypeOverride` ([#4103](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4103)) ([16444a7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/16444a72eda3f21d6771d2b265352e957958c009))
+
 ## [15.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v14.0.0...chromium-bidi-v15.0.0) (2026-02-11)
 
 
