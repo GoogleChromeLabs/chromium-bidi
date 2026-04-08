@@ -17,7 +17,7 @@ import pytest
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
-KEYS_TO_STABILIZE = ['sharedId', 'context', 'realm', 'id']
+KEYS_TO_STABILIZE = ['sharedId', 'context', 'realm', 'id', 'userContext']
 
 
 @pytest.mark.asyncio
@@ -47,6 +47,7 @@ async def test_file_dialog_show_file_event(websocket, context_id, url_example,
         'params': {
             'context': context_id,
             'multiple': multiple,
+            'userContext': 'default',
         },
         'type': 'event',
     }
@@ -78,6 +79,7 @@ async def test_file_dialog_show_directory_event(websocket, context_id,
         'params': {
             'context': context_id,
             'multiple': False,
+            'userContext': 'default',
         },
         'type': 'event',
     }
