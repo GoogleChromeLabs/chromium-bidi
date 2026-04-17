@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1776404422532,
+  "lastUpdate": 1776404898064,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -35299,6 +35299,336 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
             "value": 214.33957300001794,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "85efabab261aa319c2b0d5f8a221dbab7f3e87e7",
+          "message": "chore(deps): Bump pillow from 12.1.1 to 12.2.0 (#4133)\n\nBumps [pillow](https://github.com/python-pillow/Pillow) from 12.1.1 to\n12.2.0.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/python-pillow/Pillow/releases\">pillow's\nreleases</a>.</em></p>\n<blockquote>\n<h2>12.2.0</h2>\n<p><a\nhref=\"https://pillow.readthedocs.io/en/stable/releasenotes/12.2.0.html\">https://pillow.readthedocs.io/en/stable/releasenotes/12.2.0.html</a></p>\n<h2>Documentation</h2>\n<ul>\n<li>Update 12.2.0 release notes <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9522\">#9522</a>\n[<a href=\"https://github.com/hugovk\"><code>@​hugovk</code></a>]</li>\n<li>Add loader plugins: AMOS abk, Atari Degas, 40+ more obscure formats\nvia Netpbm <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9482\">#9482</a>\n[<a href=\"https://github.com/bitplane\"><code>@​bitplane</code></a>]</li>\n<li>Update Python versions <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9515\">#9515</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Jeffrey A. Clark -&gt; Jeffrey 'Alex' Clark <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9513\">#9513</a>\n[<a\nhref=\"https://github.com/aclark4life\"><code>@​aclark4life</code></a>]</li>\n<li>Add release notes for <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9394\">#9394</a>,\n<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9419\">#9419</a>\nand <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9456\">#9456</a>\n<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9467\">#9467</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Add Amiga Workbench .info loader to 3rd party plugins list <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9459\">#9459</a>\n[<a href=\"https://github.com/bitplane\"><code>@​bitplane</code></a>]</li>\n<li>Merge PFM documentation into PPM <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9434\">#9434</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update macOS tested Pillow versions <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9431\">#9431</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Fix CVE number <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9430\">#9430</a>\n[<a href=\"https://github.com/hugovk\"><code>@​hugovk</code></a>]</li>\n</ul>\n<h2>Dependencies</h2>\n<ul>\n<li>Update xz to 5.8.3 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9523\">#9523</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update libjpeg-turbo to 3.1.4.1 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9507\">#9507</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update libpng to 1.6.56 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9499\">#9499</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update freetype to 2.14.3 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9485\">#9485</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Updated libavif to 1.4.1 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9479\">#9479</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Updated harfbuzz to 13.2.1 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9461\">#9461</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update Ghostscript to 10.7.0 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9469\">#9469</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update harfbuzz to 13.0.1 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9453\">#9453</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update libavif to 1.4.0 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9460\">#9460</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update freetype to 2.14.2 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9449\">#9449</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update actions/download-artifact action to v8 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9451\">#9451</a>\n[@<a href=\"https://github.com/apps/renovate\">renovate[bot]</a>]</li>\n<li>Updated libpng to 1.6.55 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9425\">#9425</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n</ul>\n<h2>Testing</h2>\n<ul>\n<li>Cleanup .spider extension in the same test where it is added <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9517\">#9517</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Run tests in parallel via tox for 3.5x speedup <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9516\">#9516</a>\n[<a href=\"https://github.com/hugovk\"><code>@​hugovk</code></a>]</li>\n<li>Enable colour in CI logs <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9486\">#9486</a>\n[<a href=\"https://github.com/hugovk\"><code>@​hugovk</code></a>]</li>\n<li>Update Ghostscript to 10.7.0 <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9469\">#9469</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Simplify TGA test code <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9477\">#9477</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Update tests to check for ValueError when encoding an empty image <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9464\">#9464</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Upgrade CI from <code>macos-15-intel</code> to\n<code>macos-26-intel</code> <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9454\">#9454</a>\n[<a href=\"https://github.com/hugovk\"><code>@​hugovk</code></a>]</li>\n<li>Add check-case-conflict hook <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9446\">#9446</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Specify platform when pulling docker image <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9440\">#9440</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>GHA: Cache libavif and webp builds for Ubuntu <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9437\">#9437</a>\n[<a href=\"https://github.com/hugovk\"><code>@​hugovk</code></a>]</li>\n<li>Update macOS tested Pillow versions <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9431\">#9431</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n</ul>\n<h2>Other changes</h2>\n<ul>\n<li>Check calloc return value <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9527\">#9527</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n<li>Check all allocs in the Arrow tree <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9488\">#9488</a>\n[<a\nhref=\"https://github.com/wiredfool\"><code>@​wiredfool</code></a>]</li>\n<li>Reject non-numeric elements inside list coords <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9526\">#9526</a>\n[<a href=\"https://github.com/hugovk\"><code>@​hugovk</code></a>]</li>\n<li>Move variable declaration inside define <a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9525\">#9525</a>\n[<a\nhref=\"https://github.com/radarhere\"><code>@​radarhere</code></a>]</li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/3c41c095064200a02672d89cc5ff629eaf4b0d4f\"><code>3c41c09</code></a>\n12.2.0 version bump</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/cdaa29eb520291c4f1fb50fb71ae46502d41e460\"><code>cdaa29e</code></a>\nCheck calloc return value (<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9527\">#9527</a>)</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/585b2f5a780722c8a5bfffb3a40f7f42e8a205be\"><code>585b2f5</code></a>\nCheck calloc return value</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/ecf011ea15991d4cebacd946e58270cc30b0f2c1\"><code>ecf011e</code></a>\nCheck all allocs in the Arrow tree (<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9488\">#9488</a>)</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/cf6de8ca9b23e714aa5310e1c791eda66fc0b670\"><code>cf6de8c</code></a>\nReject non-numeric elements inside list coords (<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9526\">#9526</a>)</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/ffdcede6516b28d9667c92929854023d17048b64\"><code>ffdcede</code></a>\nUpdate 12.2.0 release notes (<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9522\">#9522</a>)</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/7929d7760fe5a307ba5ae6eabdf70ae4486b147c\"><code>7929d77</code></a>\nAdded security release notes (<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/149\">#149</a>)</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/c4f7aa5dfb4dbd1242978ac235e01b9934ec6d3c\"><code>c4f7aa5</code></a>\nAdded security release notes</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/22cdb5f2e4b15250c06563b1124ac1667342712f\"><code>22cdb5f</code></a>\nMove variable declaration inside define (<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9525\">#9525</a>)</li>\n<li><a\nhref=\"https://github.com/python-pillow/Pillow/commit/fc15b3b01899408ec989d7804c5283e13802d057\"><code>fc15b3b</code></a>\nResize tall images vertically first (<a\nhref=\"https://redirect.github.com/python-pillow/Pillow/issues/9524\">#9524</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/python-pillow/Pillow/compare/12.1.1...12.2.0\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=pillow&package-manager=pip&previous-version=12.1.1&new-version=12.2.0)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-04-17T05:46:33Z",
+          "tree_id": "b9a54bd0c64bf69b43a0facb859c517895d96980",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/85efabab261aa319c2b0d5f8a221dbab7f3e87e7"
+        },
+        "date": 1776404895122,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2347.263516599992,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 2363.5918749999973,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 1829.4889170000488,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 2817.8575662000017,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 2995.2225410000037,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 2401.4567079999833,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 80.8952226716225,
+            "range": "4.908473335924598",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 49.904710254378074,
+            "range": "0.9083181761198553",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 44.85627044681367,
+            "range": "0.6608231699924618",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 2239.624558200012,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 2299.7345410000207,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 1902.0446250000305,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 353.18178654059807,
+            "range": "5.189488206325915",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 359.7165943136317,
+            "range": "1.8990814835771221",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 366.14016720269626,
+            "range": "8.460321782248418",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 486.04650233628274,
+            "range": "17.29883066211807",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 327.6830468923043,
+            "range": "2.8081831463816656",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 330.7856539462589,
+            "range": "1.9215968372335543",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 61.35285948026166,
+            "range": "0.546728745081579",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 59.70800240906048,
+            "range": "0.1462912879930578",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 63.61293274744541,
+            "range": "0.20517722629587432",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 201.5441583999973,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 200.48162499999478,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 191.04487499998868,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 270.40592473333095,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 268.56951299999565,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 265.131365000002,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 169.03964653333787,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 166.6993340000147,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 164.46833100002323,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 392.70417957523784,
+            "range": "8.850722077683258",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 417.9858189360194,
+            "range": "5.032436238529097",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 437.9382525523024,
+            "range": "9.709855893602324",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 481.14452253654207,
+            "range": "21.86929509180656",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 351.2894304090682,
+            "range": "5.961916815136127",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 371.45052755261014,
+            "range": "6.077256235573094",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 1791.6830998000023,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 1695.8877499999971,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 1526.6921670000215,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 135.87171806666638,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 134.32532800000274,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 118.15095900000472,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 240.0935332000131,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 241.49837499999194,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 196.13245800002232,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 275.0605699999975,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 277.7336099999843,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 263.4814269999879,
             "unit": "ms",
             "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
           }
