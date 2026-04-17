@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1776404898064,
+  "lastUpdate": 1776404997462,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -35629,6 +35629,336 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
             "value": 263.4814269999879,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4e681d648e3e43055c34e0aa5a1626bbb55c7bfe",
+          "message": "chore(deps): Bump lodash from 4.17.23 to 4.18.1 (#4129)\n\nBumps [lodash](https://github.com/lodash/lodash) from 4.17.23 to 4.18.1.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/lodash/lodash/releases\">lodash's\nreleases</a>.</em></p>\n<blockquote>\n<h2>4.18.1</h2>\n<h2>Bugs</h2>\n<p>Fixes a <code>ReferenceError</code> issue in <code>lodash</code>\n<code>lodash-es</code> <code>lodash-amd</code> and\n<code>lodash.template</code> when using the <code>template</code> and\n<code>fromPairs</code> functions from the modular builds. See <a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6167#issuecomment-4165269769\">lodash/lodash#6167</a></p>\n<p>These defects were related to how lodash distributions are built from\nthe main branch using <a\nhref=\"https://github.com/lodash-archive/lodash-cli\">https://github.com/lodash-archive/lodash-cli</a>.\nWhen internal dependencies change inside lodash functions, equivalent\nupdates need to be made to a mapping in the lodash-cli. (hey, it was\nahead of its time once upon a time!). We know this, but we missed it in\nthe last release. It's the kind of thing that passes in CI, but fails bc\nthe build is not the same thing you tested.</p>\n<p>There is no diff on main for this, but you can see the diffs for each\nof the npm packages on their respective branches:</p>\n<ul>\n<li><code>lodash</code>: <a\nhref=\"https://github.com/lodash/lodash/compare/4.18.0-npm...4.18.1-npm\">https://github.com/lodash/lodash/compare/4.18.0-npm...4.18.1-npm</a></li>\n<li><code>lodash-es</code>: <a\nhref=\"https://github.com/lodash/lodash/compare/4.18.0-es...4.18.1-es\">https://github.com/lodash/lodash/compare/4.18.0-es...4.18.1-es</a></li>\n<li><code>lodash-amd</code>: <a\nhref=\"https://github.com/lodash/lodash/compare/4.18.0-amd...4.18.1-amd\">https://github.com/lodash/lodash/compare/4.18.0-amd...4.18.1-amd</a></li>\n<li><code>lodash.template</code><a\nhref=\"https://github.com/lodash/lodash/compare/4.18.0-npm-packages...4.18.1-npm-packages\">https://github.com/lodash/lodash/compare/4.18.0-npm-packages...4.18.1-npm-packages</a></li>\n</ul>\n<h2>4.18.0</h2>\n<h2>v4.18.0</h2>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/lodash/lodash/compare/4.17.23...4.18.0\">https://github.com/lodash/lodash/compare/4.17.23...4.18.0</a></p>\n<h3>Security</h3>\n<p><strong><code>_.unset</code> / <code>_.omit</code></strong>: Fixed\nprototype pollution via <code>constructor</code>/<code>prototype</code>\npath traversal (<a\nhref=\"https://github.com/lodash/lodash/security/advisories/GHSA-f23m-r3pf-42rh\">GHSA-f23m-r3pf-42rh</a>,\n<a\nhref=\"https://github.com/lodash/lodash/commit/fe8d32eda854377349a4f922ab7655c8e5df9a0b\">fe8d32e</a>).\nPreviously, array-wrapped path segments and primitive roots could bypass\nthe existing guards, allowing deletion of properties from built-in\nprototypes. Now <code>constructor</code> and <code>prototype</code> are\nblocked unconditionally as non-terminal path keys, matching\n<code>baseSet</code>. Calls that previously returned <code>true</code>\nand deleted the property now return <code>false</code> and leave the\ntarget untouched.</p>\n<p><strong><code>_.template</code></strong>: Fixed code injection via\n<code>imports</code> keys (<a\nhref=\"https://github.com/lodash/lodash/security/advisories/GHSA-r5fr-rjxr-66jc\">GHSA-r5fr-rjxr-66jc</a>,\nCVE-2026-4800, <a\nhref=\"https://github.com/lodash/lodash/commit/879aaa93132d78c2f8d20c60279da9f8b21576d6\">879aaa9</a>).\nFixes an incomplete patch for CVE-2021-23337. The <code>variable</code>\noption was validated against <code>reForbiddenIdentifierChars</code> but\n<code>importsKeys</code> was left unguarded, allowing code injection via\nthe same <code>Function()</code> constructor sink. <code>imports</code>\nkeys containing forbidden identifier characters now throw\n<code>&quot;Invalid imports option passed into\n_.template&quot;</code>.</p>\n<h3>Docs</h3>\n<ul>\n<li>Add security notice for <code>_.template</code> in threat model and\nAPI docs (<a\nhref=\"https://redirect.github.com/lodash/lodash/pull/6099\">#6099</a>)</li>\n<li>Document <code>lower &gt; upper</code> behavior in\n<code>_.random</code> (<a\nhref=\"https://redirect.github.com/lodash/lodash/pull/6115\">#6115</a>)</li>\n<li>Fix quotes in <code>_.compact</code> jsdoc (<a\nhref=\"https://redirect.github.com/lodash/lodash/pull/6090\">#6090</a>)</li>\n</ul>\n<h3><code>lodash.*</code> modular packages</h3>\n<p><a\nhref=\"https://redirect.github.com/lodash/lodash/pull/6157\">Diff</a></p>\n<p>We have also regenerated and published a select number of the\n<code>lodash.*</code> modular packages.</p>\n<p>These modular packages had fallen out of sync significantly from the\nminor/patch updates to lodash. Specifically, we have brought the\nfollowing packages up to parity w/ the latest lodash release because\nthey have had CVEs on them in the past:</p>\n<ul>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.orderby\">lodash.orderby</a></li>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.tonumber\">lodash.tonumber</a></li>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.trim\">lodash.trim</a></li>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.trimend\">lodash.trimend</a></li>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.sortedindexby\">lodash.sortedindexby</a></li>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.zipobjectdeep\">lodash.zipobjectdeep</a></li>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.unset\">lodash.unset</a></li>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.omit\">lodash.omit</a></li>\n<li><a\nhref=\"https://www.npmjs.com/package/lodash.template\">lodash.template</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/cb0b9b9212521c08e3eafe7c8cb0af1b42b6649e\"><code>cb0b9b9</code></a>\nrelease(patch): bump main to 4.18.1 (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6177\">#6177</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/75535f57883b7225adb96de1cfc1cd4169cfcb51\"><code>75535f5</code></a>\nchore: prune stale advisory refs (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6170\">#6170</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/62e91bc6a39c98d85b9ada8c44d40593deaf82a4\"><code>62e91bc</code></a>\ndocs: remove n_ Node.js &lt; 6 REPL note from README (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6165\">#6165</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/59be2de61f8aa9461c7856533b51d31b7d8babc4\"><code>59be2de</code></a>\nrelease(minor): bump to 4.18.0 (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6161\">#6161</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/af634573030f979194871da7c68f79420992f53d\"><code>af63457</code></a>\nfix: broken tests for _.template 879aaa9</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/1073a7693e1727e0cf3641e5f71f75ddcf8de7c0\"><code>1073a76</code></a>\nfix: linting issues</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/879aaa93132d78c2f8d20c60279da9f8b21576d6\"><code>879aaa9</code></a>\nfix: validate imports keys in _.template</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/fe8d32eda854377349a4f922ab7655c8e5df9a0b\"><code>fe8d32e</code></a>\nfix: block prototype pollution in baseUnset via constructor/prototype\ntraversal</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/18ba0a32f42fd02117f096b032f89c984173462d\"><code>18ba0a3</code></a>\nrefactor(fromPairs): use baseAssignValue for consistent assignment (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6153\">#6153</a>)</li>\n<li><a\nhref=\"https://github.com/lodash/lodash/commit/b8190803d48d60b8c80ad45d39125f32fa618cb2\"><code>b819080</code></a>\nci: add dist sync validation workflow (<a\nhref=\"https://redirect.github.com/lodash/lodash/issues/6137\">#6137</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/lodash/lodash/compare/4.17.23...4.18.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=lodash&package-manager=npm_and_yarn&previous-version=4.17.23&new-version=4.18.1)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\nYou can disable automated security fix PRs for this repo from the\n[Security Alerts\npage](https://github.com/GoogleChromeLabs/chromium-bidi/network/alerts).\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-04-17T05:47:32Z",
+          "tree_id": "7a4e413c8c73d9b6f0fa12b48fc7453b72be887f",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/4e681d648e3e43055c34e0aa5a1626bbb55c7bfe"
+        },
+        "date": 1776404994750,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2134.8198333999903,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 1870.757167000022,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 1784.4694579999896,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 2944.4103831999996,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 2971.5488330000426,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 2290.173832999983,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 43.01551045277766,
+            "range": "3.3436366479895367",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 53.70949048955549,
+            "range": "3.9795629460985085",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 54.27442745446347,
+            "range": "2.388137211366132",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 1877.3421831999713,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 1720.9728329999052,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 1627.9890829998749,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 356.5825690544998,
+            "range": "8.87443103268889",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 362.0974473880155,
+            "range": "4.33402903619189",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 371.2412664548942,
+            "range": "4.402492085500386",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 479.76152156516594,
+            "range": "17.45157323817655",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 348.5579774613889,
+            "range": "7.268100180401289",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 340.8622309879627,
+            "range": "3.660218023150997",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 59.839469090851914,
+            "range": "0.4812994482948028",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 58.93214622687394,
+            "range": "0.1370620155868183",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 62.890809649822444,
+            "range": "0.19493582809537133",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 224.49630859999843,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 230.53545899999506,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 194.92983399999275,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 274.98386573333846,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 275.84178299997575,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 265.3165000000399,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 170.2476623333344,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 166.79815400004827,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 165.34537100005764,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 540.2282942703569,
+            "range": "28.03045817905196",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 567.2582186814656,
+            "range": "10.654686915507046",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 519.2419307283527,
+            "range": "14.170122703552387",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 547.9281651095149,
+            "range": "34.736793659661316",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 412.1167270086774,
+            "range": "9.30090959782964",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 382.04519864952607,
+            "range": "5.667555257082636",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 2519.1670668000143,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 2382.3407090000046,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 2247.5577500000554,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 163.72313506666578,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 166.10145300001022,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 153.9564599999892,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 193.23221679992457,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 194.87616599985813,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 129.5962919998601,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 267.56618300000054,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 267.87169500001085,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 261.9509059999956,
             "unit": "ms",
             "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
           }
