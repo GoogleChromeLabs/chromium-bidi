@@ -31,7 +31,7 @@ import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js'
 
 import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
-import {isSpecialScheme, type ParsedUrlPattern} from './NetworkUtils.js';
+import type {ParsedUrlPattern} from './NetworkUtils.js';
 
 /** Dispatches Network module commands. */
 export class NetworkProcessor {
@@ -312,165 +312,33 @@ export class NetworkProcessor {
     urlPatterns: Network.UrlPattern[],
   ): ParsedUrlPattern[] {
     return urlPatterns.map((urlPattern) => {
-      let patternUrl = '';
-      let hasProtocol = true;
-      let hasHostname = true;
-      let hasPort = true;
-      let hasPathname = true;
-      let hasSearch = true;
-
-      switch (urlPattern.type) {
-        case 'string': {
-          patternUrl = unescapeURLPattern(urlPattern.pattern);
-          break;
-        }
-        case 'pattern': {
-          if (urlPattern.protocol === undefined) {
-            hasProtocol = false;
-            patternUrl += 'http';
-          } else {
-            if (urlPattern.protocol === '') {
-              throw new InvalidArgumentException(
-                'URL pattern must specify a protocol',
-              );
-            }
-            urlPattern.protocol = unescapeURLPattern(urlPattern.protocol);
-            if (!urlPattern.protocol.match(/^[a-zA-Z+-.]+$/)) {
-              throw new InvalidArgumentException('Forbidden characters');
-            }
-            patternUrl += urlPattern.protocol;
-          }
-          const scheme = patternUrl.toLocaleLowerCase();
-          patternUrl += ':';
-          if (isSpecialScheme(scheme)) {
-            patternUrl += '//';
-          }
-          if (urlPattern.hostname === undefined) {
-            if (scheme !== 'file') {
-              patternUrl += 'placeholder';
-            }
-            hasHostname = false;
-          } else {
-            if (urlPattern.hostname === '') {
-              throw new InvalidArgumentException(
-                'URL pattern must specify a hostname',
-              );
-            }
-            if (urlPattern.protocol === 'file') {
-              throw new InvalidArgumentException(
-                `URL pattern protocol cannot be 'file'`,
-              );
-            }
-
-            urlPattern.hostname = unescapeURLPattern(urlPattern.hostname);
-
-            let insideBrackets = false;
-
-            for (const c of urlPattern.hostname) {
-              if (c === '/' || c === '?' || c === '#') {
-                throw new InvalidArgumentException(
-                  `'/', '?', '#' are forbidden in hostname`,
-                );
-              }
-              if (!insideBrackets && c === ':') {
-                throw new InvalidArgumentException(
-                  `':' is only allowed inside brackets in hostname`,
-                );
-              }
-              if (c === '[') {
-                insideBrackets = true;
-              }
-              if (c === ']') {
-                insideBrackets = false;
-              }
-            }
-
-            patternUrl += urlPattern.hostname;
-          }
-          if (urlPattern.port === undefined) {
-            hasPort = false;
-          } else {
-            if (urlPattern.port === '') {
-              throw new InvalidArgumentException(
-                `URL pattern must specify a port`,
-              );
-            }
-            urlPattern.port = unescapeURLPattern(urlPattern.port);
-
-            patternUrl += ':';
-
-            if (!urlPattern.port.match(/^\d+$/)) {
-              throw new InvalidArgumentException('Forbidden characters');
-            }
-
-            patternUrl += urlPattern.port;
-          }
-
-          if (urlPattern.pathname === undefined) {
-            hasPathname = false;
-          } else {
-            urlPattern.pathname = unescapeURLPattern(urlPattern.pathname);
-            if (urlPattern.pathname[0] !== '/') {
-              patternUrl += '/';
-            }
-            if (
-              urlPattern.pathname.includes('#') ||
-              urlPattern.pathname.includes('?')
-            ) {
-              throw new InvalidArgumentException('Forbidden characters');
-            }
-            patternUrl += urlPattern.pathname;
-          }
-
-          if (urlPattern.search === undefined) {
-            hasSearch = false;
-          } else {
-            urlPattern.search = unescapeURLPattern(urlPattern.search);
-            if (urlPattern.search[0] !== '?') {
-              patternUrl += '?';
-            }
-            if (urlPattern.search.includes('#')) {
-              throw new InvalidArgumentException('Forbidden characters');
-            }
-            patternUrl += urlPattern.search;
-          }
-          break;
-        }
-      }
-
-      const serializePort = (url: URL) => {
-        const defaultPorts: {[key: string]: null | number} = {
-          'ftp:': 21,
-          'file:': null,
-          'http:': 80,
-          'https:': 443,
-          'ws:': 80,
-          'wss:': 443,
-        };
-        if (
-          isSpecialScheme(url.protocol) &&
-          defaultPorts[url.protocol] !== null &&
-          (!url.port || String(defaultPorts[url.protocol]) === url.port)
-        ) {
-          return '';
-        } else if (url.port) {
-          return url.port;
-        }
-        return undefined;
-      };
-
       try {
-        const url = new URL(patternUrl);
-        return {
-          protocol: hasProtocol ? url.protocol.replace(/:$/, '') : undefined,
-          hostname: hasHostname ? url.hostname : undefined,
-          port: hasPort ? serializePort(url) : undefined,
-          pathname: hasPathname && url.pathname ? url.pathname : undefined,
-          search: hasSearch ? url.search : undefined,
-        };
+        switch (urlPattern.type) {
+          case 'string':
+            return new URLPattern(urlPattern.pattern);
+          case 'pattern': {
+            const pattern: any = {};
+            if (urlPattern.protocol !== undefined) {
+              pattern.protocol = urlPattern.protocol.replace(/:$/, '');
+            }
+            if (urlPattern.hostname !== undefined) {
+              pattern.hostname = urlPattern.hostname;
+            }
+            if (urlPattern.port !== undefined) {
+              pattern.port = urlPattern.port;
+            }
+            if (urlPattern.pathname !== undefined) {
+              pattern.pathname = urlPattern.pathname;
+            }
+            if (urlPattern.search !== undefined) {
+              pattern.search = urlPattern.search.replace(/^\?/, '');
+            }
+            return new URLPattern(pattern);
+          }
+        }
       } catch (err) {
         throw new InvalidArgumentException(
-          `${(err as Error).message} '${patternUrl}'`,
+          `Invalid URL pattern: ${(err as Error).message}`,
         );
       }
     });
@@ -653,25 +521,6 @@ export class NetworkProcessor {
 /**
  * See https://w3c.github.io/webdriver-bidi/#unescape-url-pattern
  */
-function unescapeURLPattern(pattern: string) {
-  const forbidden = new Set(['(', ')', '*', '{', '}']);
-  let result = '';
-  let isEscaped = false;
-  for (const c of pattern) {
-    if (!isEscaped) {
-      if (forbidden.has(c)) {
-        throw new InvalidArgumentException('Forbidden characters');
-      }
-      if (c === '\\') {
-        isEscaped = true;
-        continue;
-      }
-    }
-    result += c;
-    isEscaped = false;
-  }
-  return result;
-}
 
 // https://fetch.spec.whatwg.org/#header-name
 const FORBIDDEN_HEADER_NAME_SYMBOLS = new Set([
