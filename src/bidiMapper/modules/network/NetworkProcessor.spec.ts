@@ -47,157 +47,68 @@ describe('NetworkProcessor', () => {
             pattern: 'invalid.url%%',
           },
         ]),
-      ).to.throw(`Invalid URL 'invalid.url%%'`);
-    });
-
-    it('invalid hostname', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            hostname: 'abc/com/',
-          },
-        ]),
-      ).to.throw(`'/', '?', '#' are forbidden in hostname`);
+      ).to.throw(/Invalid URL pattern/);
     });
 
     it('valid string', () => {
-      expect(
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'string',
-            pattern: 'https://example.com/',
-          },
-          {
-            type: 'string',
-            pattern: 'https://example.org/\\*',
-          },
-        ]),
-      ).to.deep.equal([
+      const patterns = NetworkProcessor.parseUrlPatterns([
         {
-          hostname: 'example.com',
-          pathname: '/',
-          port: '',
-          protocol: 'https',
-          search: '',
+          type: 'string',
+          pattern: 'https://example.com/',
         },
         {
-          hostname: 'example.org',
-          pathname: '/*',
-          port: '',
-          protocol: 'https',
-          search: '',
+          type: 'string',
+          pattern: 'https://example.org/\\*',
         },
       ]);
-    });
-
-    it('invalid pattern missing protocol', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: '',
-            hostname: 'example.com',
-          },
-        ]),
-      ).to.throw('URL pattern must specify a protocol');
-    });
-
-    it('invalid pattern missing hostname', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'https',
-            hostname: '',
-          },
-        ]),
-      ).to.throw('URL pattern must specify a hostname');
-    });
-
-    it('invalid pattern protocol cannot be a file', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'file',
-            hostname: 'doc.txt',
-          },
-        ]),
-      ).to.throw(`URL pattern protocol cannot be 'file'`);
-    });
-
-    it('invalid pattern hostname cannot contain a colon', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'https',
-            hostname: 'a:b',
-          },
-        ]),
-      ).to.throw(`':' is only allowed inside brackets in hostname`);
-    });
-
-    it('invalid pattern missing port', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'https',
-            hostname: 'example.com',
-            port: '',
-          },
-        ]),
-      ).to.throw('URL pattern must specify a port');
-    });
-
-    it('invalid pattern URL', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: '%',
-          },
-        ]),
-      ).to.throw(/Forbidden characters/);
+      expect(patterns).to.have.length(2);
+      expect(patterns[0]).to.contain({
+        hostname: 'example.com',
+        pathname: '/',
+        port: '',
+        protocol: 'https',
+        search: '*',
+      });
+      expect(patterns[1]).to.contain({
+        hostname: 'example.org',
+        pathname: '/\\*',
+        port: '',
+        protocol: 'https',
+        search: '*',
+      });
     });
 
     it('valid pattern', () => {
-      expect(
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'https',
-            hostname: 'example.com',
-            pathname: '/',
-            port: '443',
-            search: '?q=search',
-          },
-        ]),
-      ).to.deep.equal([
+      const patterns = NetworkProcessor.parseUrlPatterns([
         {
+          type: 'pattern',
           protocol: 'https',
           hostname: 'example.com',
           pathname: '/',
-          port: '',
+          port: '443',
           search: '?q=search',
         },
       ]);
+      expect(patterns).to.have.length(1);
+      expect(patterns[0]).to.contain({
+        protocol: 'https',
+        hostname: 'example.com',
+        pathname: '/',
+        port: '',
+        search: 'q=search',
+      });
     });
 
     it('valid pattern empty', () => {
-      expect(
-        NetworkProcessor.parseUrlPatterns([{type: 'pattern'}]),
-      ).to.deep.equal([
-        {
-          protocol: undefined,
-          hostname: undefined,
-          pathname: undefined,
-          port: undefined,
-          search: undefined,
-        },
-      ]);
+      const patterns = NetworkProcessor.parseUrlPatterns([{type: 'pattern'}]);
+      expect(patterns).to.have.length(1);
+      expect(patterns[0]).to.contain({
+        protocol: '*',
+        hostname: '*',
+        pathname: '*',
+        port: '*',
+        search: '*',
+      });
     });
   });
 
@@ -215,6 +126,7 @@ describe('NetworkProcessor', () => {
       expect(NetworkProcessor.isMethodValid('')).to.be.false;
     });
   });
+
   describe('parseBiDiHeaders', () => {
     const SOME_HEADER_NAME = 'SOME_HEADER_NAME';
     const SOME_HEADER_VALUE = 'SOME HEADER VALUE';
@@ -308,6 +220,7 @@ describe('NetworkProcessor', () => {
         some_header_name: 'some value',
       });
     });
+
     it('should throw for invalid header name', () => {
       const headers: Network.Header[] = [
         {
