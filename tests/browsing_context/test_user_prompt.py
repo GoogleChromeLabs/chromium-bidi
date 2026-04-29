@@ -149,6 +149,7 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
             "type": prompt_type,
             'handler': expected_handler,
             "message": PROMPT_MESSAGE,
+            "userContext": "default",
             **({
                 "defaultValue": ""
             } if prompt_type == "prompt" else {}),
@@ -175,7 +176,8 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
         "params": {
             "context": targe_context_id,
             "accepted": expected_handler == 'accept',
-            "type": prompt_type
+            "type": prompt_type,
+            "userContext": "default",
         }
     }
 
@@ -287,6 +289,7 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
             'handler': expected_handler,
             'message': '',
             'type': 'beforeunload',
+            'userContext': 'default',
         },
         'type': 'event',
     }
