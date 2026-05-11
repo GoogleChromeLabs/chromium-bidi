@@ -160,6 +160,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   parseReloadParams(params: unknown): BrowsingContext.ReloadParameters {
     return params as BrowsingContext.ReloadParameters;
   }
+  parseSetBypassCspParams(
+    params: unknown,
+  ): BrowsingContext.SetBypassCspParameters {
+    return params as BrowsingContext.SetBypassCspParameters;
+  }
   parseSetViewportParams(
     params: unknown,
   ): BrowsingContext.SetViewportParameters {
@@ -169,11 +174,6 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     params: unknown,
   ): BrowsingContext.TraverseHistoryParameters {
     return params as BrowsingContext.TraverseHistoryParameters;
-  }
-  parseSetBypassCspParams(
-    params: unknown,
-  ): BrowsingContext.SetBypassCspParameters {
-    return params as BrowsingContext.SetBypassCspParameters;
   }
   // keep-sorted end
 

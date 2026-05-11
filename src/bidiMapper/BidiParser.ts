@@ -106,15 +106,15 @@ export interface BidiCommandParameterParser {
   parseNavigateParams(params: unknown): BrowsingContext.NavigateParameters;
   parsePrintParams(params: unknown): BrowsingContext.PrintParameters;
   parseReloadParams(params: unknown): BrowsingContext.ReloadParameters;
+  parseSetBypassCspParams(
+    params: unknown,
+  ): BrowsingContext.SetBypassCspParameters;
   parseSetViewportParams(
     params: unknown,
   ): BrowsingContext.SetViewportParameters;
   parseTraverseHistoryParams(
     params: unknown,
   ): BrowsingContext.TraverseHistoryParameters;
-  parseSetBypassCspParams(
-    params: unknown,
-  ): BrowsingContext.SetBypassCspParameters;
   // keep-sorted end
 
   // CDP module
