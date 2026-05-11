@@ -312,6 +312,15 @@ export namespace BrowsingContext {
       WebDriverBidi.BrowsingContext.TraverseHistoryParametersSchema,
     );
   }
+
+  export function parseSetBypassCspParams(
+    params: unknown,
+  ): Protocol.BrowsingContext.SetBypassCspParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.SetBypassCspParametersSchema,
+    ) as Protocol.BrowsingContext.SetBypassCspParameters;
+  }
   // keep-sorted end
 }
 

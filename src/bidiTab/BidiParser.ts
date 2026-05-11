@@ -171,6 +171,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): BrowsingContext.TraverseHistoryParameters {
     return Parser.BrowsingContext.parseTraverseHistoryParams(params);
   }
+  parseSetBypassCspParams(
+    params: unknown,
+  ): BrowsingContext.SetBypassCspParameters {
+    return Parser.BrowsingContext.parseSetBypassCspParams(params);
+  }
   // keep-sorted end
 
   // CDP module

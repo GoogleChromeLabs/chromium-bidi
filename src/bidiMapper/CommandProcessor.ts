@@ -302,6 +302,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#browsingContextProcessor.traverseHistory(
           this.#parser.parseTraverseHistoryParams(command.params),
         );
+      case 'browsingContext.setBypassCSP':
+        this.#parser.parseSetBypassCspParams(command.params);
+        throw new UnsupportedOperationException(
+          `Method ${command.method} is not implemented.`,
+        );
       // keep-sorted end
 
       // CDP module
