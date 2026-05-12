@@ -340,7 +340,11 @@ describe('NetworkUtils', () => {
 
       expect(
         networkUtils.matchUrlPattern(
-          createPattern({hostname: 'WEB-PLATFORM.TEST', type: 'pattern'}),
+          createPattern({
+            hostname: 'web-platform.test',
+            type: 'pattern',
+            protocol: 'https',
+          }),
           'https://web-platform.test/',
         ),
       ).to.equal(true);
@@ -353,7 +357,7 @@ describe('NetworkUtils', () => {
             hostname: 'example.test',
             port: '333',
             pathname: '/test',
-            search: '?query+another',
+            search: 'query\\+another',
           }),
           'https://example.test:333/test?query+another',
         ),

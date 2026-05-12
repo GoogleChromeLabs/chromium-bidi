@@ -320,57 +320,14 @@ export function isSpecialScheme(protocol: string): boolean {
   );
 }
 
-export interface ParsedUrlPattern {
-  protocol?: string;
-  hostname?: string;
-  port?: string;
-  pathname?: string;
-  search?: string;
-}
-
-function getScheme(url: URL) {
-  return url.protocol.replace(/:$/, '');
-}
+export type ParsedUrlPattern = URLPattern;
 
 /** Matches the given URLPattern against the given URL. */
 export function matchUrlPattern(
   pattern: ParsedUrlPattern,
   url: string,
 ): boolean {
-  // Roughly https://w3c.github.io/webdriver-bidi/#match-url-pattern
-  // plus some differences based on the URL parsing methods.
-  const parsedUrl = new URL(url);
-
-  if (
-    pattern.protocol !== undefined &&
-    pattern.protocol !== getScheme(parsedUrl)
-  ) {
-    return false;
-  }
-
-  if (
-    pattern.hostname !== undefined &&
-    pattern.hostname !== parsedUrl.hostname
-  ) {
-    return false;
-  }
-
-  if (pattern.port !== undefined && pattern.port !== parsedUrl.port) {
-    return false;
-  }
-
-  if (
-    pattern.pathname !== undefined &&
-    pattern.pathname !== parsedUrl.pathname
-  ) {
-    return false;
-  }
-
-  if (pattern.search !== undefined && pattern.search !== parsedUrl.search) {
-    return false;
-  }
-
-  return true;
+  return pattern.test(url);
 }
 
 export function bidiBodySizeFromCdpPostDataEntries(
