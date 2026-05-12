@@ -506,4 +506,19 @@ describe('NetworkStorage', () => {
       });
     });
   });
+
+  describe('disposal', () => {
+    it('should remove request on loading failed', () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSent();
+      const networkRequest = networkStorage.getRequestById(request.requestId);
+      expect(networkRequest).to.exist;
+
+      request.loadingFailed();
+
+      const storedRequest = networkStorage.getRequestById(request.requestId);
+      expect(storedRequest).to.not.exist;
+    });
+  });
 });
