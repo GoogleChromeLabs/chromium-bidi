@@ -890,6 +890,16 @@ export class NetworkRequest {
     this.waitNextPhase.reject(new Error('waitNextPhase disposed'));
   }
 
+  disposeData() {
+    this.#request = {};
+    this.#response = {
+      decodedSize: 0,
+      encodedSize: 0,
+    };
+    this.#requestOverrides = undefined;
+    this.#responseOverrides = undefined;
+  }
+
   async #continueWithAuth(
     authChallengeResponse: Protocol.Fetch.ContinueWithAuthRequest['authChallengeResponse'],
   ) {
