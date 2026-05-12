@@ -427,7 +427,8 @@ async def test_network_data_url_svg_completion(websocket, context_id):
   <!-- unique:1 padding:{padding} -->
   <rect width="100" height="100" fill="hsl(1,80%,50%)"/>
 </svg>"""
-    url = "data:image/svg+xml;base64," + base64.b64encode(svg.encode('utf-8')).decode('utf-8')
+    url = "data:image/svg+xml;base64," + base64.b64encode(
+        svg.encode('utf-8')).decode('utf-8')
 
     await send_JSON_command(
         websocket, {
