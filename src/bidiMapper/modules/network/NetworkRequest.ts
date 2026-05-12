@@ -638,7 +638,7 @@ export class NetworkRequest {
         },
       };
     });
-    this.#networkStorage.disposeRequest(this.id);
+    this.disposeData(this.id);
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
