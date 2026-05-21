@@ -20,6 +20,7 @@
  * Parser types should match the `../protocol` types.
  */
 import {z, type ZodType} from 'zod';
+import {en} from 'zod/locales';
 
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
@@ -29,6 +30,8 @@ import * as WebDriverBidiPermissions from './generated/webdriver-bidi-permission
 import * as WebDriverBidiUAClientHints from './generated/webdriver-bidi-ua-client-hints.js';
 import * as WebDriverBidi from './generated/webdriver-bidi.js';
 
+z.config(en());
+
 export function parseObject<T extends ZodType>(
   obj: unknown,
   schema: T,
@@ -37,7 +40,7 @@ export function parseObject<T extends ZodType>(
   if (parseResult.success) {
     return parseResult.data;
   }
-  const errorMessage = parseResult.error.errors
+  const errorMessage = parseResult.error.issues
     .map(
       (e) =>
         `${e.message} in ` +
