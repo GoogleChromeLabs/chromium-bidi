@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [16.0.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v16.0.1...chromium-bidi-v16.0.2) (2026-05-21)
+
+
+### Bug Fixes
+
+* **network:** don't retain information on the heap ([#4147](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4147)) ([1290f1e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1290f1e8e037c1498dfae7adb404d04765648da3))
+
 ## [16.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v16.0.0...chromium-bidi-v16.0.1) (2026-05-12)
 
 
