@@ -20,26 +20,3 @@
  * Run `node tools/generate-bidi-types.mjs` to regenerate.
  * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
  */
-
-export namespace Speculation {
-  export const enum PreloadingStatus {
-    Pending = 'pending',
-    Ready = 'ready',
-    Success = 'success',
-    Failure = 'failure',
-  }
-}
-export type SpeculationEvent = Speculation.PrefetchStatusUpdated;
-export namespace Speculation {
-  export type PrefetchStatusUpdated = {
-    method: 'speculation.prefetchStatusUpdated';
-    params: Speculation.PrefetchStatusUpdatedParameters;
-  };
-}
-export namespace Speculation {
-  export type PrefetchStatusUpdatedParameters = {
-    context: string;
-    url: string;
-    status: Speculation.PreloadingStatus;
-  };
-}
