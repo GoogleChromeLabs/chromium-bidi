@@ -15,6 +15,7 @@ wptreport*.json
 .ackrc
 .envrc
 .eslintcache
+.prettier-cache
 .nyc_output*
 .wireit/
 MANIFEST.json
