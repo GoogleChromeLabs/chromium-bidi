@@ -49,6 +49,7 @@ export class NavigationResult {
 export class NavigationState {
   readonly navigationId = uuidv4();
   readonly #browsingContextId: string;
+  readonly #userContext: string;
 
   #started = false;
   #finished = new Deferred<NavigationResult>();
@@ -66,10 +67,12 @@ export class NavigationState {
   constructor(
     url: string,
     browsingContextId: string,
+    userContext: string,
     isInitial: boolean,
     eventManager: EventManager,
   ) {
     this.#browsingContextId = browsingContextId;
+    this.#userContext = userContext;
     this.url = url;
     this.#isInitial = isInitial;
     this.#eventManager = eventManager;
@@ -81,6 +84,7 @@ export class NavigationState {
       navigation: this.navigationId,
       timestamp: getTimestamp(),
       url: this.url,
+      userContext: this.#userContext,
     };
   }
 
@@ -171,6 +175,7 @@ export class NavigationTracker {
   readonly #loaderIdToNavigationsMap = new Map<string, NavigationState>();
 
   readonly #browsingContextId: string;
+  readonly #userContext: string;
   /**
    * Last committed navigation is committed, but is not guaranteed to be finished, as it
    * can still wait for `load` or `DOMContentLoaded` events.
@@ -187,10 +192,12 @@ export class NavigationTracker {
   constructor(
     url: string,
     browsingContextId: string,
+    userContext: string,
     eventManager: EventManager,
     logger?: LoggerFn,
   ) {
     this.#browsingContextId = browsingContextId;
+    this.#userContext = userContext;
     this.#eventManager = eventManager;
     this.#logger = logger;
 
@@ -199,6 +206,7 @@ export class NavigationTracker {
     this.#lastCommittedNavigation = new NavigationState(
       url,
       browsingContextId,
+      userContext,
       urlMatchesAboutBlank(url),
       this.#eventManager,
     );
@@ -255,6 +263,7 @@ export class NavigationTracker {
     const navigation = new NavigationState(
       url,
       this.#browsingContextId,
+      this.#userContext,
       this.#isInitialNavigation,
       this.#eventManager,
     );
@@ -360,6 +369,7 @@ export class NavigationTracker {
         : new NavigationState(
             url,
             this.#browsingContextId,
+            this.#userContext,
             false,
             this.#eventManager,
           );

@@ -18,6 +18,7 @@ import {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
+  type Browser,
   ChromiumBidi,
   NoSuchHandleException,
   Script,
@@ -38,6 +39,7 @@ export abstract class Realm {
   readonly #logger?: LoggerFn;
   readonly #origin: string;
   readonly #realmId: Script.Realm;
+  readonly #userContext: Browser.UserContext;
   protected realmStorage: RealmStorage;
 
   constructor(
@@ -48,6 +50,7 @@ export abstract class Realm {
     origin: string,
     realmId: Script.Realm,
     realmStorage: RealmStorage,
+    userContext: Browser.UserContext,
   ) {
     this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
@@ -56,6 +59,7 @@ export abstract class Realm {
     this.#origin = origin;
     this.#realmId = realmId;
     this.realmStorage = realmStorage;
+    this.#userContext = userContext;
 
     this.realmStorage.addRealm(this);
   }
@@ -170,6 +174,10 @@ export abstract class Realm {
     return this.#realmId;
   }
 
+  get userContext(): Browser.UserContext {
+    return this.#userContext;
+  }
+
   get executionContextId(): Protocol.Runtime.ExecutionContextId {
     return this.#executionContextId;
   }
@@ -181,6 +189,7 @@ export abstract class Realm {
   get source(): Script.Source {
     return {
       realm: this.realmId,
+      userContext: this.#userContext,
     };
   }
 

@@ -47,6 +47,7 @@ async def test_realm_realmCreated(websocket, context_id, html,
             "origin": local_server_http.origin(),
             "realm": ANY_STR,
             "context": context_id,
+            "userContext": "default",
         }
     } == response
 
@@ -78,7 +79,8 @@ async def test_realm_realmCreated_sandbox(websocket, context_id):
             "origin": "null",
             "realm": ANY_STR,
             "context": context_id,
-            "sandbox": "SOME_SANDBOX"
+            "sandbox": "SOME_SANDBOX",
+            "userContext": "default",
         }
     } == response
 

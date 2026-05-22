@@ -390,6 +390,7 @@ export class CdpTargetManager {
         uniqueId,
         this.#realmStorage,
         realmType,
+        cdpTarget.userContext,
       );
       this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
     });

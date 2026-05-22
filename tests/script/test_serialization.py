@@ -1103,6 +1103,7 @@ async def test_channel_complexTypes(test_input, expected, websocket,
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
+                "userContext": "default",
             }
         }
     }

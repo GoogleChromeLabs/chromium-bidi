@@ -364,6 +364,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                     "request": network_id_2,
                     "url": url_example_another_origin,
                 }, ),
+            "userContext": "default",
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",

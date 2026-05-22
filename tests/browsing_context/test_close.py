@@ -154,6 +154,7 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
             "message": "",
             "type": "beforeunload",
             "handler": "ignore",
+            "userContext": "default",
         }
     }
 
@@ -269,6 +270,7 @@ async def test_browsingContext_navigate_prompt(websocket, context_id, html,
             "message": "",
             "type": "beforeunload",
             "handler": "ignore",
+            "userContext": "default",
         }
     }
 
