@@ -80,7 +80,7 @@ echo "Checking out w3c/permissions..."
 git clone --depth 1 https://github.com/w3c/permissions.git "$BUILD_DIR/permissions"
 (
   cd "$BUILD_DIR/permissions"
-  node ../webdriver-bidi/scripts/cddl/generate.js ./index.html > permissions.cddl
+  node ../webdriver-bidi/scripts/cddl/generate.js ./index.html && mv all.cddl permissions.cddl
 )
 cp "$BUILD_DIR/permissions/permissions.cddl" ./permissions.cddl
 
@@ -89,7 +89,7 @@ echo "Checking out WebBluetoothCG/web-bluetooth..."
 git clone --depth 1 https://github.com/WebBluetoothCG/web-bluetooth.git "$BUILD_DIR/web-bluetooth"
 (
   cd "$BUILD_DIR/web-bluetooth"
-  node ../webdriver-bidi/scripts/cddl/generate.js ./index.bs > web-bluetooth.cddl
+  node ../webdriver-bidi/scripts/cddl/generate.js ./index.bs && mv all.cddl web-bluetooth.cddl
 )
 cp "$BUILD_DIR/web-bluetooth/web-bluetooth.cddl" ./web-bluetooth.cddl
 
@@ -98,7 +98,7 @@ echo "Checking out WICG/nav-speculation..."
 git clone --depth 1 https://github.com/WICG/nav-speculation.git "$BUILD_DIR/nav-speculation"
 (
   cd "$BUILD_DIR/nav-speculation"
-  node ../webdriver-bidi/scripts/cddl/generate.js ./prefetch.bs > nav-speculation.cddl
+  node ../webdriver-bidi/scripts/cddl/generate.js ./prefetch.bs && mv all.cddl nav-speculation.cddl
 )
 cp "$BUILD_DIR/nav-speculation/nav-speculation.cddl" ./nav-speculation.cddl
 
@@ -107,7 +107,7 @@ echo "Checking out WICG/ua-client-hints..."
 git clone --depth 1 https://github.com/WICG/ua-client-hints.git "$BUILD_DIR/ua-client-hints"
 (
   cd "$BUILD_DIR/ua-client-hints"
-  node ../webdriver-bidi/scripts/cddl/generate.js ./index.bs > ua-client-hints.cddl
+  node ../webdriver-bidi/scripts/cddl/generate.js ./index.bs && mv all.cddl ua-client-hints.cddl
 )
 cp "$BUILD_DIR/ua-client-hints/ua-client-hints.cddl" ./ua-client-hints.cddl
 
