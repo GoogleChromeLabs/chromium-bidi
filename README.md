@@ -177,7 +177,12 @@ We use [cddlconv](https://github.com/google/cddlconv) to generate our WebDriverB
 
 ### Code Formatting & Linting
 
-We use [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) with native caching to format and lint the codebase. 
+We use a suite of tools to format and lint the codebase:
+
+- [keep-sorted](https://github.com/google/keep-sorted) to automatically sort lists, imports, and keys.
+- [ESLint](https://eslint.org/) to lint JavaScript and TypeScript files.
+- [Prettier](https://prettier.io/) to format JavaScript, TypeScript, JSON, and Markdown files.
+- [Ruff](https://docs.astral.sh/ruff/) to lint and format Python files.
 
 To check and auto-format the entire codebase, run:
 
@@ -185,7 +190,12 @@ To check and auto-format the entire codebase, run:
 npm run format
 ```
 
-This command sequentially executes `eslint --cache --fix` and `prettier --cache --write`.
+This command sequentially executes the following steps:
+
+1. `keep-sorted --mode=fix`
+2. `eslint --cache --fix`
+3. `prettier --cache --write`
+4. `ruff check --fix` and `ruff format`
 
 ### Starting WebDriver BiDi Server
 
