@@ -333,6 +333,35 @@ export class BrowserProcessor {
   }
 }
 
+export function asserProxyHost(proxyHost: string): void {
+  // A "host and optional port" string is defined as being a valid host, optionally
+  // followed by a colon and a valid port.
+  if (proxyHost.includes('://')) {
+    throw new InvalidArgumentException('Proxy URL should not have a scheme');
+  }
+  if (proxyHost.includes('/')) {
+    throw new InvalidArgumentException('Proxy URL should not have a path');
+  }
+  if (proxyHost.includes('?')) {
+    throw new InvalidArgumentException(
+      'Proxy URL should not have search parameters',
+    );
+  }
+  if (proxyHost.includes('#')) {
+    throw new InvalidArgumentException('Proxy URL should not have a hash');
+  }
+
+  try {
+    new URL(`http://${proxyHost}`);
+  } catch (error) {
+    throw error instanceof TypeError
+      ? new InvalidArgumentException(
+          `Invalid proxy format: ${proxyHost}. ${error.message}`,
+        )
+      : error;
+  }
+}
+
 /**
  * Proxy config parse implementation:
  * https://source.chromium.org/chromium/chromium/src/+/main:net/proxy_resolution/proxy_config.h;drc=743a82d08e59d803c94ee1b8564b8b11dd7b462f;l=107
@@ -367,13 +396,13 @@ export function getProxyStr(
 
     // HTTP Proxy
     if (proxyConfig.httpProxy !== undefined) {
-      // servers.push(proxyConfig.httpProxy);
+      asserProxyHost(proxyConfig.httpProxy);
       servers.push(`http=${proxyConfig.httpProxy}`);
     }
 
     // SSL Proxy (uses 'https' scheme)
     if (proxyConfig.sslProxy !== undefined) {
-      // servers.push(proxyConfig.sslProxy);
+      asserProxyHost(proxyConfig.sslProxy);
       servers.push(`https=${proxyConfig.sslProxy}`);
     }
 
@@ -400,6 +429,7 @@ export function getProxyStr(
           `'socksVersion' must be between 0 and 255`,
         );
       }
+      asserProxyHost(proxyConfig.socksProxy);
       servers.push(
         `socks=socks${proxyConfig.socksVersion}://${proxyConfig.socksProxy}`,
       );
