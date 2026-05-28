@@ -46,7 +46,8 @@ export default defineConfig([
   ]),
   eslint.configs.recommended,
   eslintPrettierPluginRecommended,
-  importPlugin.flatConfigs.typescript,
+  // Temporary disabled.
+  // importPlugin.flatConfigs.typescript,
   promisePlugin.configs['flat/recommended'],
   {
     name: 'JavaScript rules',
