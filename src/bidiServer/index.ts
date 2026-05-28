@@ -34,11 +34,12 @@ export function parseCommandLineArgs() {
         default: process.env['VERBOSE'] === 'true',
       },
     },
+    strict: false,
   });
 
   return {
     port: Number(values.port),
-    verbose: values.verbose,
+    verbose: Boolean(values.verbose),
   };
 }
 
