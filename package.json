@@ -163,7 +163,7 @@
     "chai": "6.2.2",
     "chai-as-promised": "8.0.2",
     "debug": "4.4.3",
-    "devtools-protocol": "0.0.1624250",
+    "devtools-protocol": "0.0.1636713",
     "eslint": "10.3.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
