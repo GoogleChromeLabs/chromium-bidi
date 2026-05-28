@@ -158,7 +158,6 @@
     "@types/node": "20.19.35",
     "@types/sinon": "21.0.1",
     "@types/websocket": "1.0.10",
-    "@types/ws": "8.18.1",
     "chai": "6.2.2",
     "chai-as-promised": "8.0.2",
     "devtools-protocol": "0.0.1636713",
