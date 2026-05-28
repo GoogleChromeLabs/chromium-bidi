@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-import {describe, it} from 'node:test';
+
 import type {Protocol} from 'devtools-protocol';
 
 import {

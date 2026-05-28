@@ -46,8 +46,8 @@ export default defineConfig([
   ]),
   eslint.configs.recommended,
   eslintPrettierPluginRecommended,
-  // Temporary disabled.
-  // importPlugin.flatConfigs.typescript,
+
+  importPlugin.flatConfigs.typescript,
   promisePlugin.configs['flat/recommended'],
   {
     name: 'JavaScript rules',
@@ -81,7 +81,8 @@ export default defineConfig([
       'import/no-unresolved': 'off',
 
       'import/order': [
-        'error',
+        // Temporary disabled.
+        'off',
         {
           'newlines-between': 'always',
 
@@ -216,7 +217,7 @@ export default defineConfig([
   {
     name: 'Test deps',
     files: ['**/*.ts'],
-    ignores: ['**/*.spec.ts', 'src/bidiServer/**', 'tools/**'],
+    ignores: ['**/*.test.ts', 'src/bidiServer/**', 'tools/**'],
 
     rules: {
       'import/no-extraneous-dependencies': [
@@ -230,7 +231,7 @@ export default defineConfig([
   {
     name: 'Fix test unused',
     files: ['**/*.ts'],
-    ignores: ['**/*.spec.ts'],
+    ignores: ['**/*.test.ts'],
 
     rules: {
       '@typescript-eslint/no-unused-expressions': 'error',

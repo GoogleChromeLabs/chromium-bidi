@@ -14,7 +14,7 @@
     "e2e:old-headless": "HEADLESS=old npm run e2e --",
     "e2e": "wireit",
     "flake8": "flake8 examples/ tests/",
-    "format": " npm run format:eslint && npm run format:prettier && npm run format:py",
+    "format": "npm run format:eslint && npm run format:prettier && npm run format:py && npm run format:keep-sorted",
     "format:eslint": "eslint --cache --fix .",
     "format:keep-sorted": "keep-sorted --mode=fix $(git ls-files | grep -v '^wpt$')",
     "format:prettier": "prettier --cache --write .",
@@ -134,7 +134,7 @@
   },
   "files": [
     "lib",
-    "!lib/**/*.spec.*",
+    "!lib/**/*.test.*",
     "!*.tsbuildinfo",
     ".browser"
   ],
