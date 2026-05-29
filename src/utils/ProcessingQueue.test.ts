@@ -66,7 +66,7 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.reject(error));
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = new ProcessingQueue<number>(processor, () => logger);
     const deferred = new Deferred<Result<number>>();
 
     queue.add(deferred, '');
@@ -92,7 +92,7 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.resolve());
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = new ProcessingQueue<number>(processor, () => logger);
     const deferred1 = new Deferred<Result<number>>();
     const deferred2 = new Deferred<Result<number>>();
 
@@ -121,7 +121,7 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.resolve());
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = new ProcessingQueue<number>(processor, () => logger);
     const deferred1 = new Deferred<Result<number>>();
     const deferred2 = new Deferred<Result<number>>();
 
@@ -181,7 +181,7 @@ describe('ProcessingQueue', () => {
   it('processing log name when starting to process new values', async () => {
     const processor = sinon.stub().returns(Promise.resolve());
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = new ProcessingQueue<number>(processor, () => logger);
     const eventNames = [
       'EventNameOne',
       'EventNameTwo',
