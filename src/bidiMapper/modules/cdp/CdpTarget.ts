@@ -589,6 +589,10 @@ export class CdpTarget {
     );
   }
 
+  #isAndroidTarget(): boolean {
+    return /Android/i.test(this.#defaultUserAgent);
+  }
+
   async setDeviceMetricsOverride(
     viewport: BrowsingContext.Viewport | null,
     devicePixelRatio: number | null,
@@ -614,7 +618,7 @@ export class CdpTarget {
         deviceScaleFactor: devicePixelRatio ?? 0,
         screenOrientation:
           this.#toCdpScreenOrientationAngle(screenOrientation) ?? undefined,
-        mobile: false,
+        mobile: this.#isAndroidTarget(),
         screenWidth: screenArea?.width,
         screenHeight: screenArea?.height,
         scrollbarType: scrollbarType === 'overlay' ? 'overlay' : 'default',
