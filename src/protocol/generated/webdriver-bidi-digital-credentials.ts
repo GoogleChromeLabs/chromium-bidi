@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC.
+ * Copyright 2026 Google LLC.
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * as Cdp from './cdp.js';
-export * as ChromiumBidi from './chromium-bidi.js';
-export * from './generated/webdriver-bidi.js';
-export * from './ErrorResponse.js';
-export * from './generated/webdriver-bidi-permissions.js';
-export * from './generated/webdriver-bidi-bluetooth.js';
-export * from './generated/webdriver-bidi-nav-speculation.js';
-export * from './generated/webdriver-bidi-digital-credentials.js';
-// Alias is required, as `UAClientHints` spec defines `Emulation` namespace.
-export * as UAClientHints from './generated/webdriver-bidi-ua-client-hints.js';
+
+export type DigitalCredentialsCommand = DigitalCredentials.SetVirtualWalletBehavior;
+
+export namespace DigitalCredentials {
+  export type VirtualWalletAction = 'decline' | 'respond' | 'wait' | 'clear';
+
+  export type SetVirtualWalletBehavior = {
+    method: 'digitalCredentials.setVirtualWalletBehavior';
+    params: DigitalCredentials.SetVirtualWalletBehaviorParameters;
+  };
+
+  export type SetVirtualWalletBehaviorParameters = {
+    action: DigitalCredentials.VirtualWalletAction;
+    context?: string;
+    protocol?: string;
+    response?: Record<string, any>;
+  };
+}

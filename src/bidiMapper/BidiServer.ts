@@ -40,6 +40,7 @@ import {
   EventManagerEvents,
 } from './modules/session/EventManager.js';
 import {SpeculationProcessor} from './modules/speculation/SpeculationProcessor.js';
+import {DigitalCredentialsProcessor} from './modules/digitalCredentials/DigitalCredentialsProcessor.js';
 import type {OutgoingMessage} from './OutgoingMessage.js';
 
 interface BidiServerEvent extends Record<string | symbol, unknown> {
@@ -57,6 +58,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   #preloadScriptStorage = new PreloadScriptStorage();
   #bluetoothProcessor: BluetoothProcessor;
   #speculationProcessor: SpeculationProcessor;
+  #digitalCredentialsProcessor: DigitalCredentialsProcessor;
 
   #logger?: LoggerFn;
 
@@ -114,6 +116,9 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#eventManager,
       this.#logger,
     );
+    this.#digitalCredentialsProcessor = new DigitalCredentialsProcessor(
+      this.#browsingContextStorage,
+    );
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,
@@ -124,6 +129,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       networkStorage,
       contextConfigStorage,
       this.#bluetoothProcessor,
+      this.#digitalCredentialsProcessor,
       userContextStorage,
       parser,
       async (options: MapperOptions) => {
@@ -152,6 +158,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           contextConfigStorage,
           this.#bluetoothProcessor,
           this.#speculationProcessor,
+          this.#digitalCredentialsProcessor,
           this.#preloadScriptStorage,
           defaultUserContextId,
           defaultUserAgent,
