@@ -238,6 +238,7 @@ export class CdpTargetManager {
         if (maybeContext && targetInfo.type === 'iframe') {
           // OOPiF.
           maybeContext.updateCdpTarget(cdpTarget);
+          void this.#digitalCredentialsProcessor.applyBehavior(maybeContext);
         } else {
           // If attaching to existing browser instance, there could be OOPiF targets. This
           // case is handled by the `findFrameParentId` method.
@@ -246,7 +247,7 @@ export class CdpTargetManager {
             parentSessionCdpClient.sessionId,
           );
           // New context.
-          BrowsingContextImpl.create(
+          const context = BrowsingContextImpl.create(
             targetInfo.targetId,
             parentId,
             userContext,
@@ -267,6 +268,7 @@ export class CdpTargetManager {
             targetInfo.openerFrameId ?? targetInfo.openerId,
             this.#logger,
           );
+          void this.#digitalCredentialsProcessor.applyBehavior(context);
         }
         return;
       }
@@ -372,10 +374,6 @@ export class CdpTargetManager {
     this.#networkStorage.onCdpTargetCreated(target);
     this.#bluetoothProcessor.onCdpTargetCreated(target);
     this.#speculationProcessor.onCdpTargetCreated(target);
-    this.#digitalCredentialsProcessor.onCdpTargetCreated(
-      target,
-      targetInfo.type,
-    );
 
     return target;
   }
