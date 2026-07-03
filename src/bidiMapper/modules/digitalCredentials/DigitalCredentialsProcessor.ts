@@ -33,7 +33,7 @@ type Behavior = Omit<
 export class DigitalCredentialsProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #contextConfigStorage: ContextConfigStorage;
-  readonly #appliedTargets = new WeakSet<CdpTarget>();
+
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
@@ -119,15 +119,11 @@ export class DigitalCredentialsProcessor {
     const behavior = config.digitalCredentialsBehavior;
 
     if (behavior === null || behavior === undefined) {
-      if (this.#appliedTargets.has(target)) {
-        await this.#sendCdpCommand(target, {action: 'clear'});
-        this.#appliedTargets.delete(target);
-      }
+      await this.#sendCdpCommand(target, {action: 'clear'});
       return;
     }
 
     await this.#sendCdpCommand(target, behavior);
-    this.#appliedTargets.add(target);
   }
 
   async #sendCdpCommand(cdpTarget: CdpTarget, behavior: Behavior) {

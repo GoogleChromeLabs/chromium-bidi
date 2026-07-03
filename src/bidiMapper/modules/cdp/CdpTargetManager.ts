@@ -57,6 +57,7 @@ export class CdpTargetManager {
   readonly #realmStorage: RealmStorage;
   readonly #configStorage: ContextConfigStorage;
   readonly #speculationProcessor: SpeculationProcessor;
+
   readonly #defaultUserContextId: Browser.UserContext;
   readonly #defaultUserAgent: string;
   readonly #logger?: LoggerFn;
