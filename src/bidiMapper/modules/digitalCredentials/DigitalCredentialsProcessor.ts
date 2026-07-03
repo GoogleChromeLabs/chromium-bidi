@@ -84,12 +84,39 @@ export class DigitalCredentialsProcessor {
     return {};
   }
 
-  async applyBehavior(browsingContext: BrowsingContextImpl) {
+  async applyBehaviorForTarget(target: CdpTarget, ignoreErrors = false) {
     try {
-      await this.#applyBehaviorToTarget(browsingContext.cdpTarget);
-    } catch {
-      // Ignore errors, as the target might not support the DigitalCredentials domain
-      // (e.g. if the browser version is too old).
+      const contexts = this.#browsingContextStorage
+        .getAllContexts()
+        .filter((c) => c.cdpTarget === target);
+      if (contexts.length === 0) {
+        return;
+      }
+
+      let chosenBehavior: Behavior | undefined = undefined;
+      for (const context of contexts) {
+        const behavior = this.#getBehaviorForContext(context);
+        if (behavior !== undefined) {
+          chosenBehavior = behavior;
+          break;
+        }
+      }
+
+      const behaviorToApply = chosenBehavior ?? this.#defaultBehavior;
+      if (behaviorToApply === undefined) {
+        if (this.#appliedTargets.has(target)) {
+          await this.#sendCdpCommand(target, {action: 'clear'});
+          this.#appliedTargets.delete(target);
+        }
+        return;
+      }
+
+      await this.#sendCdpCommand(target, behaviorToApply);
+      this.#appliedTargets.add(target);
+    } catch (error) {
+      if (!ignoreErrors) {
+        throw error;
+      }
     }
   }
 
@@ -101,38 +128,10 @@ export class DigitalCredentialsProcessor {
     }
 
     await Promise.all(
-      Array.from(targets).map((target) => this.#applyBehaviorToTarget(target)),
+      Array.from(targets).map((target) =>
+        this.applyBehaviorForTarget(target, false),
+      ),
     );
-  }
-
-  async #applyBehaviorToTarget(target: CdpTarget) {
-    const contexts = this.#browsingContextStorage
-      .getAllContexts()
-      .filter((c) => c.cdpTarget === target);
-    if (contexts.length === 0) {
-      return;
-    }
-
-    let chosenBehavior: Behavior | undefined = undefined;
-    for (const context of contexts) {
-      const behavior = this.#getBehaviorForContext(context);
-      if (behavior !== undefined) {
-        chosenBehavior = behavior;
-        break;
-      }
-    }
-
-    const behaviorToApply = chosenBehavior ?? this.#defaultBehavior;
-    if (behaviorToApply === undefined) {
-      if (this.#appliedTargets.has(target)) {
-        await this.#sendCdpCommand(target, {action: 'clear'});
-        this.#appliedTargets.delete(target);
-      }
-      return;
-    }
-
-    await this.#sendCdpCommand(target, behaviorToApply);
-    this.#appliedTargets.add(target);
   }
 
   #getBehaviorForContext(context: BrowsingContextImpl): Behavior | undefined {

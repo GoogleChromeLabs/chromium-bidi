@@ -271,7 +271,7 @@ describe('DigitalCredentialsProcessor', () => {
         newMockContext,
       ]);
 
-      await processor.applyBehavior(newMockContext);
+      await processor.applyBehaviorForTarget(newMockTarget);
 
       assert.isTrue(newMockCdpClient.sendCommand.calledOnce);
       assert.isTrue(
@@ -329,7 +329,7 @@ describe('DigitalCredentialsProcessor', () => {
 
       browsingContextStorage.getAllContexts.returns([mockContext, newMockContext]);
 
-      await processor.applyBehavior(newMockContext);
+      await processor.applyBehaviorForTarget(newMockTarget);
 
       // New target should NOT receive clear because it never had behavior applied
       assert.isFalse(newMockCdpClient.sendCommand.called);
@@ -379,7 +379,7 @@ describe('DigitalCredentialsProcessor', () => {
         childContext,
       ]);
 
-      await processor.applyBehavior(childContext);
+      await processor.applyBehaviorForTarget(mockTarget2);
 
       // Child target should NOT get parent's behavior (no inheritance)
       assert.isFalse(mockCdpClient2.sendCommand.called);

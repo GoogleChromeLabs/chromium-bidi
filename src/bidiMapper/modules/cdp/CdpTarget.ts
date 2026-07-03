@@ -88,6 +88,8 @@ export class CdpTarget {
     auth: false,
   };
 
+  readonly #preUnblock?: (target: CdpTarget) => Promise<void>;
+
   static create(
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
@@ -102,6 +104,7 @@ export class CdpTarget {
     userContext: Browser.UserContext,
     defaultUserAgent: string,
     logger?: LoggerFn,
+    preUnblock?: (target: CdpTarget) => Promise<void>,
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -117,6 +120,7 @@ export class CdpTarget {
       userContext,
       defaultUserAgent,
       logger,
+      preUnblock,
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
@@ -144,6 +148,7 @@ export class CdpTarget {
     userContext: Browser.UserContext,
     defaultUserAgent: string,
     logger: LoggerFn | undefined,
+    preUnblock?: (target: CdpTarget) => Promise<void>,
   ) {
     this.#defaultUserAgent = defaultUserAgent;
     this.userContext = userContext;
@@ -158,6 +163,7 @@ export class CdpTarget {
     this.#browsingContextStorage = browsingContextStorage;
     this.contextConfigStorage = configStorage;
     this.#logger = logger;
+    this.#preUnblock = preUnblock;
   }
 
   /** Returns a deferred that resolves when the target is unblocked. */
@@ -230,8 +236,8 @@ export class CdpTarget {
       // coming.
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
       this.#cdpClient
-        .sendCommand('Page.getFrameTree')
-        .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
+          .sendCommand('Page.getFrameTree')
+          .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
       this.#cdpClient.sendCommand('Runtime.enable'),
       this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
         enabled: true,
@@ -239,13 +245,13 @@ export class CdpTarget {
       // Enabling CDP Network domain is required for navigation detection:
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
       this.#cdpClient
-        .sendCommand('Network.enable', {
-          // If `googDisableNetworkDurableMessages` flag is set, do not enable durable
-          // messages.
-          enableDurableMessages: config.disableNetworkDurableMessages !== true,
-          maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
-        })
-        .then(() => this.toggleNetworkIfNeeded()),
+          .sendCommand('Network.enable', {
+            // If `googDisableNetworkDurableMessages` flag is set, do not enable durable
+            // messages.
+            enableDurableMessages: config.disableNetworkDurableMessages !== true,
+            maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
+          })
+          .then(() => this.toggleNetworkIfNeeded()),
       this.#cdpClient.sendCommand('Target.setAutoAttach', {
         autoAttach: true,
         waitForDebuggerOnStart: true,
@@ -254,6 +260,7 @@ export class CdpTarget {
       this.#updateWindowId(),
       this.#setUserContextConfig(config),
       this.#initAndEvaluatePreloadScripts(),
+      this.#preUnblock?.(this),
       this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
       // Resume tab execution as well if it was paused by the debugger.
       this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
