@@ -13,7 +13,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import asyncio
 import json
 
 import pytest
@@ -100,7 +99,6 @@ async def test_digital_credentials_decline(websocket, context_id, url_secure_con
     result = await trigger_credentials_get(websocket, context_id)
     assert result["status"] == "error"
     assert result["name"] == "NotAllowedError"
-
 
 
 @pytest.mark.asyncio

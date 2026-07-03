@@ -19,7 +19,7 @@ import {
   InvalidArgumentException,
   UnsupportedOperationException,
   type EmptyResult,
-  type DigitalCredentials,
+  DigitalCredentials,
 } from '../../../protocol/protocol.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
@@ -47,7 +47,7 @@ export class DigitalCredentialsProcessor {
   ): Promise<EmptyResult> {
     const {context, action, protocol, response} = params;
 
-    if (action === 'respond') {
+    if (action === DigitalCredentials.VirtualWalletAction.Respond) {
       if (protocol === undefined || response === undefined) {
         throw new InvalidArgumentException(
           "Protocol and response are required when action is 'respond'",
@@ -62,7 +62,7 @@ export class DigitalCredentialsProcessor {
     }
 
     if (context === undefined) {
-      if (action === 'clear') {
+      if (action === DigitalCredentials.VirtualWalletAction.Clear) {
         this.#contextConfigStorage.updateGlobalConfig({
           digitalCredentialsBehavior: null,
         });
@@ -78,7 +78,7 @@ export class DigitalCredentialsProcessor {
           'Only top-level contexts are supported',
         );
       }
-      if (action === 'clear') {
+      if (action === DigitalCredentials.VirtualWalletAction.Clear) {
         this.#contextConfigStorage.updateBrowsingContextConfig(context, {
           digitalCredentialsBehavior: null,
         });
