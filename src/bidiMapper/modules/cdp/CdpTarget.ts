@@ -722,13 +722,12 @@ export class CdpTarget {
     if (config.digitalCredentialsBehavior && this.id === this.topLevelId) {
       promises.push(
         this.cdpClient
-          // @ts-expect-error: DigitalCredentials.setVirtualWalletBehavior is not yet in devtools-protocol
           .sendCommand('DigitalCredentials.setVirtualWalletBehavior', {
             action: config.digitalCredentialsBehavior.action,
             behavior: config.digitalCredentialsBehavior.action,
             protocol: config.digitalCredentialsBehavior.protocol,
             response: config.digitalCredentialsBehavior.response,
-          })
+          } as any)
           .catch(() => {
             // Ignore CDP errors, as the command is not supported by iframe targets
             // or older browser versions.

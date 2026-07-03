@@ -127,14 +127,13 @@ export class DigitalCredentialsProcessor {
 
   async #sendCdpCommand(cdpTarget: CdpTarget, behavior: Behavior) {
     await cdpTarget.cdpClient.sendCommand(
-      // @ts-expect-error: DigitalCredentials.setVirtualWalletBehavior is not yet in devtools-protocol
       'DigitalCredentials.setVirtualWalletBehavior',
       {
         action: behavior.action,
         behavior: behavior.action,
         protocol: behavior.protocol,
         response: behavior.response,
-      },
+      } as any,
     );
   }
 }
