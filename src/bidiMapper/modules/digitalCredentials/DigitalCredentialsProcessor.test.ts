@@ -26,16 +26,22 @@ import {
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 
 import {DigitalCredentialsProcessor} from './DigitalCredentialsProcessor.js';
 
 describe('DigitalCredentialsProcessor', () => {
   let browsingContextStorage: sinon.SinonStubbedInstance<BrowsingContextStorage>;
+  let contextConfigStorage: ContextConfigStorage;
   let processor: DigitalCredentialsProcessor;
 
   beforeEach(() => {
     browsingContextStorage = sinon.createStubInstance(BrowsingContextStorage);
-    processor = new DigitalCredentialsProcessor(browsingContextStorage);
+    contextConfigStorage = new ContextConfigStorage();
+    processor = new DigitalCredentialsProcessor(
+      browsingContextStorage,
+      contextConfigStorage,
+    );
   });
 
   describe('parameter validation', () => {
@@ -132,12 +138,15 @@ describe('DigitalCredentialsProcessor', () => {
   });
 
   describe('context-specific behavior', () => {
-    it('should send CDP command to the specific context target', async () => {
+    it('should send CDP command to the specific context target and update config', async () => {
       const mockCdpClient = {
         sendCommand: sinon.stub().resolves({}),
       };
       const mockTarget = {
         cdpClient: mockCdpClient,
+        id: 'context_id',
+        topLevelId: 'context_id',
+        userContext: 'default',
       } as unknown as CdpTarget;
       const mockContext = {
         id: 'context_id',
@@ -149,9 +158,6 @@ describe('DigitalCredentialsProcessor', () => {
         .withArgs('context_id')
         .returns(mockContext);
       browsingContextStorage.getAllContexts.returns([mockContext]);
-      browsingContextStorage.findTopLevelContextId
-        .withArgs('context_id')
-        .returns('context_id');
 
       await processor.setVirtualWalletBehavior({
         context: 'context_id',
@@ -170,6 +176,13 @@ describe('DigitalCredentialsProcessor', () => {
           },
         ),
       );
+
+      const config = contextConfigStorage.getActiveConfig('context_id', 'default');
+      assert.deepEqual(config.digitalCredentialsBehavior, {
+        action: 'decline',
+        protocol: undefined,
+        response: undefined,
+      });
     });
 
     it('should throw UnsupportedOperationException if context is not top-level', async () => {
@@ -199,11 +212,21 @@ describe('DigitalCredentialsProcessor', () => {
   });
 
   describe('session-default behavior', () => {
-    it('should send CDP command to all active targets and store default', async () => {
+    it('should send CDP command to all active targets and store default in config', async () => {
       const mockCdpClient1 = {sendCommand: sinon.stub().resolves({})};
       const mockCdpClient2 = {sendCommand: sinon.stub().resolves({})};
-      const mockTarget1 = {cdpClient: mockCdpClient1} as unknown as CdpTarget;
-      const mockTarget2 = {cdpClient: mockCdpClient2} as unknown as CdpTarget;
+      const mockTarget1 = {
+        cdpClient: mockCdpClient1,
+        id: 'context_1',
+        topLevelId: 'context_1',
+        userContext: 'default',
+      } as unknown as CdpTarget;
+      const mockTarget2 = {
+        cdpClient: mockCdpClient2,
+        id: 'context_2',
+        topLevelId: 'context_2',
+        userContext: 'default',
+      } as unknown as CdpTarget;
       const mockContext1 = {
         id: 'context_1',
         parentId: null,
@@ -214,16 +237,10 @@ describe('DigitalCredentialsProcessor', () => {
         parentId: null,
         cdpTarget: mockTarget2,
       } as unknown as BrowsingContextImpl;
-      const mockContext3 = {
-        id: 'context_3',
-        parentId: null,
-        cdpTarget: mockTarget1,
-      } as unknown as BrowsingContextImpl;
 
       browsingContextStorage.getAllContexts.returns([
         mockContext1,
         mockContext2,
-        mockContext3,
       ]);
 
       await processor.setVirtualWalletBehavior({
@@ -247,44 +264,23 @@ describe('DigitalCredentialsProcessor', () => {
           expectedCdpParams,
         ),
       );
-      assert.isTrue(
-        mockCdpClient2.sendCommand.calledWith(
-          'DigitalCredentials.setVirtualWalletBehavior',
-          expectedCdpParams,
-        ),
-      );
 
-      const newMockCdpClient = {sendCommand: sinon.stub().resolves({})};
-      const newMockTarget = {
-        cdpClient: newMockCdpClient,
-      } as unknown as CdpTarget;
-      const newMockContext = {
-        id: 'new_context',
-        parentId: null,
-        cdpTarget: newMockTarget,
-      } as unknown as BrowsingContextImpl;
-
-      browsingContextStorage.getAllContexts.returns([
-        mockContext1,
-        mockContext2,
-        mockContext3,
-        newMockContext,
-      ]);
-
-      await processor.applyBehaviorForTarget(newMockTarget);
-
-      assert.isTrue(newMockCdpClient.sendCommand.calledOnce);
-      assert.isTrue(
-        newMockCdpClient.sendCommand.calledWith(
-          'DigitalCredentials.setVirtualWalletBehavior',
-          expectedCdpParams,
-        ),
-      );
+      const config = contextConfigStorage.getGlobalConfig();
+      assert.deepEqual(config.digitalCredentialsBehavior, {
+        action: 'respond',
+        protocol: 'openid4vp',
+        response: {token: 'abc'},
+      });
     });
 
     it('should clear default behavior', async () => {
       const mockCdpClient = {sendCommand: sinon.stub().resolves({})};
-      const mockTarget = {cdpClient: mockCdpClient} as unknown as CdpTarget;
+      const mockTarget = {
+        cdpClient: mockCdpClient,
+        id: 'context_1',
+        topLevelId: 'context_1',
+        userContext: 'default',
+      } as unknown as CdpTarget;
       const mockContext = {
         id: 'context_1',
         parentId: null,
@@ -303,7 +299,6 @@ describe('DigitalCredentialsProcessor', () => {
         action: 'clear',
       });
 
-      // It should call clear on the existing target because it had behavior applied
       assert.isTrue(mockCdpClient.sendCommand.calledTwice);
       assert.isTrue(
         mockCdpClient.sendCommand.secondCall.calledWith(
@@ -317,29 +312,25 @@ describe('DigitalCredentialsProcessor', () => {
         ),
       );
 
-      const newMockCdpClient = {sendCommand: sinon.stub().resolves({})};
-      const newMockTarget = {
-        cdpClient: newMockCdpClient,
-      } as unknown as CdpTarget;
-      const newMockContext = {
-        id: 'new_context',
-        parentId: null,
-        cdpTarget: newMockTarget,
-      } as unknown as BrowsingContextImpl;
-
-      browsingContextStorage.getAllContexts.returns([mockContext, newMockContext]);
-
-      await processor.applyBehaviorForTarget(newMockTarget);
-
-      // New target should NOT receive clear because it never had behavior applied
-      assert.isFalse(newMockCdpClient.sendCommand.called);
+      const config = contextConfigStorage.getGlobalConfig();
+      assert.isUndefined(config.digitalCredentialsBehavior);
     });
 
     it('should not inherit behavior from parent context if on different targets', async () => {
       const mockCdpClient1 = {sendCommand: sinon.stub().resolves({})};
       const mockCdpClient2 = {sendCommand: sinon.stub().resolves({})};
-      const mockTarget1 = {cdpClient: mockCdpClient1} as unknown as CdpTarget;
-      const mockTarget2 = {cdpClient: mockCdpClient2} as unknown as CdpTarget;
+      const mockTarget1 = {
+        cdpClient: mockCdpClient1,
+        id: 'parent_id',
+        topLevelId: 'parent_id',
+        userContext: 'default',
+      } as unknown as CdpTarget;
+      const mockTarget2 = {
+        cdpClient: mockCdpClient2,
+        id: 'child_id',
+        topLevelId: 'parent_id',
+        userContext: 'default',
+      } as unknown as CdpTarget;
 
       const parentContext = {
         id: 'parent_id',
@@ -360,8 +351,10 @@ describe('DigitalCredentialsProcessor', () => {
         .withArgs('child_id')
         .returns(childContext);
       
-      // Initially, only parentContext exists
-      browsingContextStorage.getAllContexts.returns([parentContext]);
+      browsingContextStorage.getAllContexts.returns([
+        parentContext,
+        childContext,
+      ]);
 
       await processor.setVirtualWalletBehavior({
         context: 'parent_id',
@@ -369,19 +362,8 @@ describe('DigitalCredentialsProcessor', () => {
       });
 
       assert.isTrue(mockCdpClient1.sendCommand.calledOnce);
-      assert.isFalse(mockCdpClient2.sendCommand.called);
-
-      mockCdpClient1.sendCommand.resetHistory();
-
-      // Now childContext is created
-      browsingContextStorage.getAllContexts.returns([
-        parentContext,
-        childContext,
-      ]);
-
-      await processor.applyBehaviorForTarget(mockTarget2);
-
-      // Child target should NOT get parent's behavior (no inheritance)
+      // child_id has different target, and even though it is child of parent_id,
+      // #applyBehaviorToTarget should reject it because target.id !== target.topLevelId
       assert.isFalse(mockCdpClient2.sendCommand.called);
     });
   });

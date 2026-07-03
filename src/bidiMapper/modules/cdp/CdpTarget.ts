@@ -88,8 +88,6 @@ export class CdpTarget {
     auth: false,
   };
 
-  readonly #preUnblock?: (target: CdpTarget) => Promise<void>;
-
   static create(
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
@@ -104,7 +102,6 @@ export class CdpTarget {
     userContext: Browser.UserContext,
     defaultUserAgent: string,
     logger?: LoggerFn,
-    preUnblock?: (target: CdpTarget) => Promise<void>,
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -120,7 +117,6 @@ export class CdpTarget {
       userContext,
       defaultUserAgent,
       logger,
-      preUnblock,
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
@@ -148,7 +144,6 @@ export class CdpTarget {
     userContext: Browser.UserContext,
     defaultUserAgent: string,
     logger: LoggerFn | undefined,
-    preUnblock?: (target: CdpTarget) => Promise<void>,
   ) {
     this.#defaultUserAgent = defaultUserAgent;
     this.userContext = userContext;
@@ -163,7 +158,6 @@ export class CdpTarget {
     this.#browsingContextStorage = browsingContextStorage;
     this.contextConfigStorage = configStorage;
     this.#logger = logger;
-    this.#preUnblock = preUnblock;
   }
 
   /** Returns a deferred that resolves when the target is unblocked. */
@@ -260,7 +254,6 @@ export class CdpTarget {
       this.#updateWindowId(),
       this.#setUserContextConfig(config),
       this.#initAndEvaluatePreloadScripts(),
-      this.#preUnblock?.(this),
       this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
       // Resume tab execution as well if it was paused by the debugger.
       this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
@@ -724,6 +717,23 @@ export class CdpTarget {
 
     if (config.maxTouchPoints !== undefined) {
       promises.push(this.setTouchOverride(config.maxTouchPoints));
+    }
+
+    if (config.digitalCredentialsBehavior && this.id === this.topLevelId) {
+      promises.push(
+        this.cdpClient
+          // @ts-expect-error: DigitalCredentials.setVirtualWalletBehavior is not yet in devtools-protocol
+          .sendCommand('DigitalCredentials.setVirtualWalletBehavior', {
+            action: config.digitalCredentialsBehavior.action,
+            behavior: config.digitalCredentialsBehavior.action,
+            protocol: config.digitalCredentialsBehavior.protocol,
+            response: config.digitalCredentialsBehavior.response,
+          })
+          .catch(() => {
+            // Ignore CDP errors, as the command is not supported by iframe targets
+            // or older browser versions.
+          }),
+      );
     }
 
     await Promise.all(promises);

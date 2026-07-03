@@ -367,9 +367,6 @@ export class CdpTargetManager {
       // Pass the cached default User Agent to the new target.
       this.#defaultUserAgent,
       this.#logger,
-      async (target) => {
-        await this.#digitalCredentialsProcessor.applyBehaviorForTarget(target);
-      },
     );
 
     this.#networkStorage.onCdpTargetCreated(target);

@@ -118,6 +118,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
     this.#digitalCredentialsProcessor = new DigitalCredentialsProcessor(
       this.#browsingContextStorage,
+      contextConfigStorage,
     );
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,

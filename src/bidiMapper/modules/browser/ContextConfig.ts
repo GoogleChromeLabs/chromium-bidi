@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {
   Browser,
   BrowsingContext,
+  DigitalCredentials,
   Emulation,
   Session,
   UAClientHints,
@@ -35,6 +36,10 @@ export class ContextConfig {
   acceptInsecureCerts?: boolean;
   clientHints?: UAClientHints.UserAgentClientHints.ClientHintsMetadata | null;
   devicePixelRatio?: number | null;
+  digitalCredentialsBehavior?: Omit<
+    DigitalCredentials.SetVirtualWalletBehaviorParameters,
+    'context'
+  > | null;
   disableNetworkDurableMessages?: true;
   downloadBehavior?: Browser.DownloadBehavior | null;
   emulatedNetworkConditions?: Emulation.NetworkConditions | null;

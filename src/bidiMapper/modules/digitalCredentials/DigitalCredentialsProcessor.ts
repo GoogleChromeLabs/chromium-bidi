@@ -21,6 +21,7 @@ import {
   type EmptyResult,
   type DigitalCredentials,
 } from '../../../protocol/protocol.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -32,12 +33,15 @@ type Behavior = Omit<
 
 export class DigitalCredentialsProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
-  #defaultBehavior: Behavior | undefined = undefined;
-  readonly #contextBehaviors = new Map<string, Behavior>();
+  readonly #contextConfigStorage: ContextConfigStorage;
   readonly #appliedTargets = new WeakSet<CdpTarget>();
 
-  constructor(browsingContextStorage: BrowsingContextStorage) {
+  constructor(
+    browsingContextStorage: BrowsingContextStorage,
+    contextConfigStorage: ContextConfigStorage,
+  ) {
     this.#browsingContextStorage = browsingContextStorage;
+    this.#contextConfigStorage = contextConfigStorage;
   }
 
   async setVirtualWalletBehavior(
@@ -61,9 +65,13 @@ export class DigitalCredentialsProcessor {
 
     if (context === undefined) {
       if (action === 'clear') {
-        this.#defaultBehavior = undefined;
+        this.#contextConfigStorage.updateGlobalConfig({
+          digitalCredentialsBehavior: null,
+        });
       } else {
-        this.#defaultBehavior = {action, protocol, response};
+        this.#contextConfigStorage.updateGlobalConfig({
+          digitalCredentialsBehavior: {action, protocol, response},
+        });
       }
     } else {
       const browsingContext = this.#browsingContextStorage.getContext(context);
@@ -73,51 +81,19 @@ export class DigitalCredentialsProcessor {
         );
       }
       if (action === 'clear') {
-        this.#contextBehaviors.delete(context);
+        this.#contextConfigStorage.updateBrowsingContextConfig(context, {
+          digitalCredentialsBehavior: null,
+        });
       } else {
-        this.#contextBehaviors.set(context, {action, protocol, response});
+        this.#contextConfigStorage.updateBrowsingContextConfig(context, {
+          digitalCredentialsBehavior: {action, protocol, response},
+        });
       }
     }
 
     await this.#applyToAllTargets();
 
     return {};
-  }
-
-  async applyBehaviorForTarget(target: CdpTarget, ignoreErrors = false) {
-    try {
-      const contexts = this.#browsingContextStorage
-        .getAllContexts()
-        .filter((c) => c.cdpTarget === target);
-      if (contexts.length === 0) {
-        return;
-      }
-
-      let chosenBehavior: Behavior | undefined = undefined;
-      for (const context of contexts) {
-        const behavior = this.#getBehaviorForContext(context);
-        if (behavior !== undefined) {
-          chosenBehavior = behavior;
-          break;
-        }
-      }
-
-      const behaviorToApply = chosenBehavior ?? this.#defaultBehavior;
-      if (behaviorToApply === undefined) {
-        if (this.#appliedTargets.has(target)) {
-          await this.#sendCdpCommand(target, {action: 'clear'});
-          this.#appliedTargets.delete(target);
-        }
-        return;
-      }
-
-      await this.#sendCdpCommand(target, behaviorToApply);
-      this.#appliedTargets.add(target);
-    } catch (error) {
-      if (!ignoreErrors) {
-        throw error;
-      }
-    }
   }
 
   async #applyToAllTargets() {
@@ -128,23 +104,43 @@ export class DigitalCredentialsProcessor {
     }
 
     await Promise.all(
-      Array.from(targets).map((target) =>
-        this.applyBehaviorForTarget(target, false),
-      ),
+      Array.from(targets).map((target) => this.#applyBehaviorToTarget(target)),
     );
   }
 
-  #getBehaviorForContext(context: BrowsingContextImpl): Behavior | undefined {
-    return this.#contextBehaviors.get(context.id);
+  async #applyBehaviorToTarget(target: CdpTarget) {
+    if (target.id !== target.topLevelId) {
+      return;
+    }
+    const config = this.#contextConfigStorage.getActiveConfig(
+      target.topLevelId,
+      target.userContext,
+    );
+
+    const behavior = config.digitalCredentialsBehavior;
+
+    if (behavior === null || behavior === undefined) {
+      if (this.#appliedTargets.has(target)) {
+        await this.#sendCdpCommand(target, {action: 'clear'});
+        this.#appliedTargets.delete(target);
+      }
+      return;
+    }
+
+    await this.#sendCdpCommand(target, behavior);
+    this.#appliedTargets.add(target);
   }
 
   async #sendCdpCommand(cdpTarget: CdpTarget, behavior: Behavior) {
-    // @ts-expect-error: DigitalCredentials.setVirtualWalletBehavior is not yet in devtools-protocol
-    await cdpTarget.cdpClient.sendCommand('DigitalCredentials.setVirtualWalletBehavior', {
-      action: behavior.action,
-      behavior: behavior.action,
-      protocol: behavior.protocol,
-      response: behavior.response,
-    });
+    await cdpTarget.cdpClient.sendCommand(
+      // @ts-expect-error: DigitalCredentials.setVirtualWalletBehavior is not yet in devtools-protocol
+      'DigitalCredentials.setVirtualWalletBehavior',
+      {
+        action: behavior.action,
+        behavior: behavior.action,
+        protocol: behavior.protocol,
+        response: behavior.response,
+      },
+    );
   }
 }
