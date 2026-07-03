@@ -129,17 +129,7 @@ export class DigitalCredentialsProcessor {
   }
 
   #getBehaviorForContext(context: BrowsingContextImpl): Behavior | undefined {
-    let current: BrowsingContextImpl | null = context;
-    while (current !== null) {
-      const behavior = this.#contextBehaviors.get(current.id);
-      if (behavior !== undefined) {
-        return behavior;
-      }
-      current = current.parentId
-        ? this.#browsingContextStorage.getContext(current.parentId)
-        : null;
-    }
-    return undefined;
+    return this.#contextBehaviors.get(context.id);
   }
 
   async #sendCdpCommand(cdpTarget: CdpTarget, behavior: Behavior) {

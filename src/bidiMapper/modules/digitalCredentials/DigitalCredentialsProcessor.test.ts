@@ -306,20 +306,22 @@ describe('DigitalCredentialsProcessor', () => {
       assert.isFalse(newMockCdpClient.sendCommand.called);
     });
 
-    it('should inherit behavior from parent context', async () => {
-      const mockCdpClient = {sendCommand: sinon.stub().resolves({})};
-      const mockTarget = {cdpClient: mockCdpClient} as unknown as CdpTarget;
+    it('should not inherit behavior from parent context if on different targets', async () => {
+      const mockCdpClient1 = {sendCommand: sinon.stub().resolves({})};
+      const mockCdpClient2 = {sendCommand: sinon.stub().resolves({})};
+      const mockTarget1 = {cdpClient: mockCdpClient1} as unknown as CdpTarget;
+      const mockTarget2 = {cdpClient: mockCdpClient2} as unknown as CdpTarget;
 
       const parentContext = {
         id: 'parent_id',
         parentId: null,
-        cdpTarget: mockTarget,
+        cdpTarget: mockTarget1,
       } as unknown as BrowsingContextImpl;
 
       const childContext = {
         id: 'child_id',
         parentId: 'parent_id',
-        cdpTarget: mockTarget,
+        cdpTarget: mockTarget2,
       } as unknown as BrowsingContextImpl;
 
       browsingContextStorage.getContext
@@ -338,22 +340,14 @@ describe('DigitalCredentialsProcessor', () => {
         action: 'decline',
       });
 
-      mockCdpClient.sendCommand.resetHistory();
+      assert.isTrue(mockCdpClient1.sendCommand.calledOnce);
+      assert.isFalse(mockCdpClient2.sendCommand.called);
+
+      mockCdpClient1.sendCommand.resetHistory();
 
       await processor.applyBehavior(childContext);
 
-      assert.isTrue(mockCdpClient.sendCommand.calledOnce);
-      assert.isTrue(
-        mockCdpClient.sendCommand.calledWith(
-          'DigitalCredentials.setVirtualWalletBehavior',
-          {
-            action: 'decline',
-            behavior: 'decline',
-            protocol: undefined,
-            response: undefined,
-          },
-        ),
-      );
+      assert.isFalse(mockCdpClient2.sendCommand.called);
     });
   });
 });
