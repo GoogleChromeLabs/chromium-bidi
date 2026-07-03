@@ -144,6 +144,7 @@ describe('DigitalCredentialsProcessor', () => {
           'DigitalCredentials.setVirtualWalletBehavior',
           {
             action: 'decline',
+            behavior: 'decline',
             protocol: undefined,
             response: undefined,
           },
@@ -186,6 +187,7 @@ describe('DigitalCredentialsProcessor', () => {
 
       const expectedCdpParams = {
         action: 'respond',
+        behavior: 'respond',
         protocol: 'openid4vp',
         response: {token: 'abc'},
       };
@@ -231,10 +233,27 @@ describe('DigitalCredentialsProcessor', () => {
 
       const newMockCdpClient = {sendCommand: sinon.stub().resolves({})};
       const newMockTarget = {
-        cdpClient: newMockCdpClient,
+        cdpTarget: newMockCdpClient,
       } as unknown as CdpTarget;
 
       await processor.onCdpTargetCreated(newMockTarget);
+
+      assert.isFalse(newMockCdpClient.sendCommand.called);
+    });
+
+    it('should ignore non-page/iframe targets on creation', async () => {
+      browsingContextStorage.getAllContexts.returns([]);
+
+      await processor.setVirtualWalletBehavior({
+        action: 'decline',
+      });
+
+      const newMockCdpClient = {sendCommand: sinon.stub().resolves({})};
+      const newMockTarget = {
+        cdpClient: newMockCdpClient,
+      } as unknown as CdpTarget;
+
+      await processor.onCdpTargetCreated(newMockTarget, 'worker');
 
       assert.isFalse(newMockCdpClient.sendCommand.called);
     });

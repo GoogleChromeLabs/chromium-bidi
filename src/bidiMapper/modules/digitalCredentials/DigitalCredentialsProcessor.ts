@@ -82,7 +82,15 @@ export class DigitalCredentialsProcessor {
     return {};
   }
 
-  async onCdpTargetCreated(cdpTarget: CdpTarget) {
+  async onCdpTargetCreated(cdpTarget: CdpTarget, targetType?: string) {
+    if (
+      targetType !== undefined &&
+      targetType !== 'page' &&
+      targetType !== 'iframe'
+    ) {
+      return;
+    }
+
     if (this.#defaultBehavior !== undefined) {
       try {
         await this.#sendCdpCommand(cdpTarget, this.#defaultBehavior);
@@ -100,10 +108,12 @@ export class DigitalCredentialsProcessor {
       'context'
     >,
   ) {
+    // @ts-expect-error: DigitalCredentials.setVirtualWalletBehavior is not yet in devtools-protocol
     await cdpTarget.cdpClient.sendCommand(
-      'DigitalCredentials.setVirtualWalletBehavior' as any,
+      'DigitalCredentials.setVirtualWalletBehavior',
       {
         action: behavior.action,
+        behavior: behavior.action,
         protocol: behavior.protocol,
         response: behavior.response,
       },

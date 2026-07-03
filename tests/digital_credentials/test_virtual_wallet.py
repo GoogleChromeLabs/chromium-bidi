@@ -66,7 +66,6 @@ async def trigger_credentials_get(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.xfail(reason="CDP command DigitalCredentials.setVirtualWalletBehavior not yet available in pinned Chrome")
 async def test_digital_credentials_decline(websocket, context_id, url_secure_context):
     await goto_url(websocket, context_id, url_secure_context)
 
@@ -90,7 +89,6 @@ async def test_digital_credentials_decline(websocket, context_id, url_secure_con
 
 
 @pytest.mark.asyncio
-@pytest.mark.xfail(reason="CDP command DigitalCredentials.setVirtualWalletBehavior not yet available in pinned Chrome")
 async def test_digital_credentials_wait_then_decline(
     websocket, context_id, url_secure_context
 ):
@@ -136,7 +134,6 @@ async def test_digital_credentials_wait_then_decline(
 
 
 @pytest.mark.asyncio
-@pytest.mark.xfail(reason="CDP command DigitalCredentials.setVirtualWalletBehavior not yet available in pinned Chrome")
 async def test_digital_credentials_respond(websocket, context_id, url_secure_context):
     await goto_url(websocket, context_id, url_secure_context)
 

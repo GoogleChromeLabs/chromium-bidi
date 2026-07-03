@@ -372,7 +372,10 @@ export class CdpTargetManager {
     this.#networkStorage.onCdpTargetCreated(target);
     this.#bluetoothProcessor.onCdpTargetCreated(target);
     this.#speculationProcessor.onCdpTargetCreated(target);
-    this.#digitalCredentialsProcessor.onCdpTargetCreated(target);
+    this.#digitalCredentialsProcessor.onCdpTargetCreated(
+      target,
+      targetInfo.type,
+    );
 
     return target;
   }
