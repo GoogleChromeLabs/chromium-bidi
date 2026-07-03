@@ -26,6 +26,11 @@ import type {
   UAClientHints,
 } from '../../../protocol/protocol.js';
 
+type DigitalCredentialsBehavior = Omit<
+  DigitalCredentials.SetVirtualWalletBehaviorParameters,
+  'context'
+> | null;
+
 /**
  * Represents a context configurations. It can be global, per User Context, or per
  * Browsing Context. The undefined value means the config will be taken from the upstream
@@ -36,7 +41,7 @@ export class ContextConfig {
   acceptInsecureCerts?: boolean;
   clientHints?: UAClientHints.UserAgentClientHints.ClientHintsMetadata | null;
   devicePixelRatio?: number | null;
-  digitalCredentialsBehavior?: Omit<DigitalCredentials.SetVirtualWalletBehaviorParameters, 'context'> | null;
+  digitalCredentialsBehavior?: DigitalCredentialsBehavior;
   disableNetworkDurableMessages?: true;
   downloadBehavior?: Browser.DownloadBehavior | null;
   emulatedNetworkConditions?: Emulation.NetworkConditions | null;
