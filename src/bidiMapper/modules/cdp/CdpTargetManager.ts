@@ -22,7 +22,7 @@ import type {Browser} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
-import type {DigitalCredentialsProcessor} from '../digitalCredentials/DigitalCredentialsProcessor.js';
+
 import {
   BrowsingContextImpl,
   serializeOrigin,
@@ -58,7 +58,6 @@ export class CdpTargetManager {
   readonly #realmStorage: RealmStorage;
   readonly #configStorage: ContextConfigStorage;
   readonly #speculationProcessor: SpeculationProcessor;
-  readonly #digitalCredentialsProcessor: DigitalCredentialsProcessor;
 
   readonly #defaultUserContextId: Browser.UserContext;
   readonly #defaultUserAgent: string;
@@ -75,7 +74,6 @@ export class CdpTargetManager {
     configStorage: ContextConfigStorage,
     bluetoothProcessor: BluetoothProcessor,
     speculationProcessor: SpeculationProcessor,
-    digitalCredentialsProcessor: DigitalCredentialsProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
     defaultUserAgent: string,
@@ -92,7 +90,7 @@ export class CdpTargetManager {
     this.#configStorage = configStorage;
     this.#bluetoothProcessor = bluetoothProcessor;
     this.#speculationProcessor = speculationProcessor;
-    this.#digitalCredentialsProcessor = digitalCredentialsProcessor;
+
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
     this.#defaultUserAgent = defaultUserAgent;

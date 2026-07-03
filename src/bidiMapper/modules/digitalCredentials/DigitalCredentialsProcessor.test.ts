@@ -177,7 +177,10 @@ describe('DigitalCredentialsProcessor', () => {
         ),
       );
 
-      const config = contextConfigStorage.getActiveConfig('context_id', 'default');
+      const config = contextConfigStorage.getActiveConfig(
+        'context_id',
+        'default',
+      );
       assert.deepEqual(config.digitalCredentialsBehavior, {
         action: 'decline',
         protocol: undefined,
@@ -350,7 +353,7 @@ describe('DigitalCredentialsProcessor', () => {
       browsingContextStorage.getContext
         .withArgs('child_id')
         .returns(childContext);
-      
+
       browsingContextStorage.getAllContexts.returns([
         parentContext,
         childContext,

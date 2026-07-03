@@ -159,7 +159,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           contextConfigStorage,
           this.#bluetoothProcessor,
           this.#speculationProcessor,
-          this.#digitalCredentialsProcessor,
           this.#preloadScriptStorage,
           defaultUserContextId,
           defaultUserAgent,

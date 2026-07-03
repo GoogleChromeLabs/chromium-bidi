@@ -230,8 +230,8 @@ export class CdpTarget {
       // coming.
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
       this.#cdpClient
-          .sendCommand('Page.getFrameTree')
-          .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
+        .sendCommand('Page.getFrameTree')
+        .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
       this.#cdpClient.sendCommand('Runtime.enable'),
       this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
         enabled: true,
@@ -239,13 +239,13 @@ export class CdpTarget {
       // Enabling CDP Network domain is required for navigation detection:
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
       this.#cdpClient
-          .sendCommand('Network.enable', {
-            // If `googDisableNetworkDurableMessages` flag is set, do not enable durable
-            // messages.
-            enableDurableMessages: config.disableNetworkDurableMessages !== true,
-            maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
-          })
-          .then(() => this.toggleNetworkIfNeeded()),
+        .sendCommand('Network.enable', {
+          // If `googDisableNetworkDurableMessages` flag is set, do not enable durable
+          // messages.
+          enableDurableMessages: config.disableNetworkDurableMessages !== true,
+          maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
+        })
+        .then(() => this.toggleNetworkIfNeeded()),
       this.#cdpClient.sendCommand('Target.setAutoAttach', {
         autoAttach: true,
         waitForDebuggerOnStart: true,
