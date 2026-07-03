@@ -17,6 +17,7 @@
 
 import {
   InvalidArgumentException,
+  UnsupportedOperationException,
   type EmptyResult,
   type DigitalCredentials,
 } from '../../../protocol/protocol.js';
@@ -65,6 +66,12 @@ export class DigitalCredentialsProcessor {
         this.#defaultBehavior = {action, protocol, response};
       }
     } else {
+      const browsingContext = this.#browsingContextStorage.getContext(context);
+      if (browsingContext.parentId !== null) {
+        throw new UnsupportedOperationException(
+          'Only top-level contexts are supported',
+        );
+      }
       if (action === 'clear') {
         this.#contextBehaviors.delete(context);
       } else {

@@ -21,6 +21,7 @@ import sinon from 'sinon';
 
 import {
   InvalidArgumentException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
@@ -148,6 +149,9 @@ describe('DigitalCredentialsProcessor', () => {
         .withArgs('context_id')
         .returns(mockContext);
       browsingContextStorage.getAllContexts.returns([mockContext]);
+      browsingContextStorage.findTopLevelContextId
+        .withArgs('context_id')
+        .returns('context_id');
 
       await processor.setVirtualWalletBehavior({
         context: 'context_id',
@@ -166,6 +170,31 @@ describe('DigitalCredentialsProcessor', () => {
           },
         ),
       );
+    });
+
+    it('should throw UnsupportedOperationException if context is not top-level', async () => {
+      const mockContext = {
+        id: 'child_context_id',
+        parentId: 'parent_context_id',
+      } as unknown as BrowsingContextImpl;
+
+      browsingContextStorage.getContext
+        .withArgs('child_context_id')
+        .returns(mockContext);
+
+      try {
+        await processor.setVirtualWalletBehavior({
+          context: 'child_context_id',
+          action: 'decline',
+        });
+        assert.fail('Expected UnsupportedOperationException to be thrown');
+      } catch (error) {
+        assert.instanceOf(error, UnsupportedOperationException);
+        assert.strictEqual(
+          (error as Error).message,
+          'Only top-level contexts are supported',
+        );
+      }
     });
   });
 
@@ -330,10 +359,9 @@ describe('DigitalCredentialsProcessor', () => {
       browsingContextStorage.getContext
         .withArgs('child_id')
         .returns(childContext);
-      browsingContextStorage.getAllContexts.returns([
-        parentContext,
-        childContext,
-      ]);
+      
+      // Initially, only parentContext exists
+      browsingContextStorage.getAllContexts.returns([parentContext]);
 
       await processor.setVirtualWalletBehavior({
         context: 'parent_id',
@@ -345,8 +373,15 @@ describe('DigitalCredentialsProcessor', () => {
 
       mockCdpClient1.sendCommand.resetHistory();
 
+      // Now childContext is created
+      browsingContextStorage.getAllContexts.returns([
+        parentContext,
+        childContext,
+      ]);
+
       await processor.applyBehavior(childContext);
 
+      // Child target should NOT get parent's behavior (no inheritance)
       assert.isFalse(mockCdpClient2.sendCommand.called);
     });
   });
