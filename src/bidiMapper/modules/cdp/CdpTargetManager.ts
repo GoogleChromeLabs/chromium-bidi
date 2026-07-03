@@ -22,7 +22,6 @@ import type {Browser} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
-
 import {
   BrowsingContextImpl,
   serializeOrigin,
@@ -58,7 +57,6 @@ export class CdpTargetManager {
   readonly #realmStorage: RealmStorage;
   readonly #configStorage: ContextConfigStorage;
   readonly #speculationProcessor: SpeculationProcessor;
-
   readonly #defaultUserContextId: Browser.UserContext;
   readonly #defaultUserAgent: string;
   readonly #logger?: LoggerFn;
@@ -90,7 +88,6 @@ export class CdpTargetManager {
     this.#configStorage = configStorage;
     this.#bluetoothProcessor = bluetoothProcessor;
     this.#speculationProcessor = speculationProcessor;
-
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
     this.#defaultUserAgent = defaultUserAgent;
