@@ -14,18 +14,15 @@
 #  limitations under the License.
 
 import asyncio
+
 import pytest
 from test_helpers import execute_command, goto_url
 
 # The Digital Credentials API options used in the tests.
 CREDENTIAL_OPTIONS = {
-    "digital": {
-        "providers": [{
-            "protocol": "openid4vp",
-            "request": "example_request"
-        }]
-    }
+    "digital": {"providers": [{"protocol": "openid4vp", "request": "example_request"}]}
 }
+
 
 async def trigger_credentials_get(websocket, context_id):
     """Triggers navigator.credentials.get in the page and returns the evaluation result."""
@@ -67,10 +64,9 @@ async def trigger_credentials_get(websocket, context_id):
     )
     return result["result"]
 
+
 @pytest.mark.asyncio
-async def test_digital_credentials_decline(
-    websocket, context_id, url_secure_context
-):
+async def test_digital_credentials_decline(websocket, context_id, url_secure_context):
     await goto_url(websocket, context_id, url_secure_context)
 
     # Set behavior to decline
@@ -90,6 +86,7 @@ async def test_digital_credentials_decline(
     result = await trigger_credentials_get(websocket, context_id)
     assert result["value"]["status"] == "error"
     assert result["value"]["name"] == "NotAllowedError"
+
 
 @pytest.mark.asyncio
 async def test_digital_credentials_wait_then_decline(
@@ -135,10 +132,9 @@ async def test_digital_credentials_wait_then_decline(
     assert result["value"]["status"] == "error"
     assert result["value"]["name"] == "NotAllowedError"
 
+
 @pytest.mark.asyncio
-async def test_digital_credentials_respond(
-    websocket, context_id, url_secure_context
-):
+async def test_digital_credentials_respond(websocket, context_id, url_secure_context):
     await goto_url(websocket, context_id, url_secure_context)
 
     # Set behavior to respond with mock token
@@ -150,9 +146,7 @@ async def test_digital_credentials_respond(
                 "context": context_id,
                 "action": "respond",
                 "protocol": "openid4vp",
-                "response": {
-                    "token": "mock_token_123"
-                }
+                "response": {"token": "mock_token_123"},
             },
         },
     )

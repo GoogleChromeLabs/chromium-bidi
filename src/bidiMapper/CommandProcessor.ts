@@ -52,7 +52,7 @@ import type {EventManager} from './modules/session/EventManager.js';
 import {SessionProcessor} from './modules/session/SessionProcessor.js';
 import {StorageProcessor} from './modules/storage/StorageProcessor.js';
 import {WebExtensionProcessor} from './modules/webExtension/WebExtensionProcessor.js';
-import {DigitalCredentialsProcessor} from './modules/digitalCredentials/DigitalCredentialsProcessor.js';
+import type {DigitalCredentialsProcessor} from './modules/digitalCredentials/DigitalCredentialsProcessor.js';
 import {OutgoingMessage} from './OutgoingMessage.js';
 
 export const enum CommandProcessorEvents {

@@ -158,10 +158,16 @@ describe('DigitalCredentialsProcessor', () => {
       const mockCdpClient2 = {sendCommand: sinon.stub().resolves({})};
       const mockTarget1 = {cdpClient: mockCdpClient1} as unknown as CdpTarget;
       const mockTarget2 = {cdpClient: mockCdpClient2} as unknown as CdpTarget;
-      const mockContext1 = {cdpTarget: mockTarget1} as unknown as BrowsingContextImpl;
-      const mockContext2 = {cdpTarget: mockTarget2} as unknown as BrowsingContextImpl;
+      const mockContext1 = {
+        cdpTarget: mockTarget1,
+      } as unknown as BrowsingContextImpl;
+      const mockContext2 = {
+        cdpTarget: mockTarget2,
+      } as unknown as BrowsingContextImpl;
 
-      const mockContext3 = {cdpTarget: mockTarget1} as unknown as BrowsingContextImpl;
+      const mockContext3 = {
+        cdpTarget: mockTarget1,
+      } as unknown as BrowsingContextImpl;
 
       browsingContextStorage.getAllContexts.returns([
         mockContext1,
@@ -197,7 +203,9 @@ describe('DigitalCredentialsProcessor', () => {
       );
 
       const newMockCdpClient = {sendCommand: sinon.stub().resolves({})};
-      const newMockTarget = {cdpClient: newMockCdpClient} as unknown as CdpTarget;
+      const newMockTarget = {
+        cdpClient: newMockCdpClient,
+      } as unknown as CdpTarget;
 
       await processor.onCdpTargetCreated(newMockTarget);
 
@@ -222,7 +230,9 @@ describe('DigitalCredentialsProcessor', () => {
       });
 
       const newMockCdpClient = {sendCommand: sinon.stub().resolves({})};
-      const newMockTarget = {cdpClient: newMockCdpClient} as unknown as CdpTarget;
+      const newMockTarget = {
+        cdpClient: newMockCdpClient,
+      } as unknown as CdpTarget;
 
       await processor.onCdpTargetCreated(newMockTarget);
 

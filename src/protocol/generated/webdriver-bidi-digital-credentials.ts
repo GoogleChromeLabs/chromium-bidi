@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-export type DigitalCredentialsCommand = DigitalCredentials.SetVirtualWalletBehavior;
+export type DigitalCredentialsCommand =
+  DigitalCredentials.SetVirtualWalletBehavior;
 
 export namespace DigitalCredentials {
   export type VirtualWalletAction = 'decline' | 'respond' | 'wait' | 'clear';

@@ -52,14 +52,7 @@ export class DigitalCredentialsProcessor {
       }
     }
 
-    if (context !== undefined) {
-      const browsingContext = this.#browsingContextStorage.getContext(context);
-      await this.#sendCdpCommand(browsingContext.cdpTarget, {
-        action,
-        protocol,
-        response,
-      });
-    } else {
+    if (context === undefined) {
       if (action === 'clear') {
         this.#defaultBehavior = undefined;
       } else {
@@ -77,6 +70,13 @@ export class DigitalCredentialsProcessor {
           this.#sendCdpCommand(target, {action, protocol, response}),
         ),
       );
+    } else {
+      const browsingContext = this.#browsingContextStorage.getContext(context);
+      await this.#sendCdpCommand(browsingContext.cdpTarget, {
+        action,
+        protocol,
+        response,
+      });
     }
 
     return {};

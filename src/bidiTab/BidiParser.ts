@@ -413,7 +413,9 @@ export class BidiParser implements BidiCommandParameterParser {
   parseSetVirtualWalletBehaviorParams(
     params: unknown,
   ): DigitalCredentials.SetVirtualWalletBehaviorParameters {
-    return Parser.DigitalCredentials.parseSetVirtualWalletBehaviorParams(params);
+    return Parser.DigitalCredentials.parseSetVirtualWalletBehaviorParams(
+      params,
+    );
   }
   // keep-sorted end
 }
