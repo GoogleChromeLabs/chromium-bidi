@@ -34,7 +34,6 @@ export class DigitalCredentialsProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #contextConfigStorage: ContextConfigStorage;
 
-
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     contextConfigStorage: ContextConfigStorage,
