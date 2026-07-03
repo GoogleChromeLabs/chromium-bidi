@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1783066387705,
+  "lastUpdate": 1783075950777,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -46285,6 +46285,210 @@ window.BENCHMARK_DATA = {
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
             "value": 128.30566700000645,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c8b1770ec5b4fd2e29df911d0ec7234f59cd6b6f",
+          "message": "chore(deps): Bump wpt from `08557e6` to `62ffcb6` (#4195)\n\nBumps [wpt](https://github.com/web-platform-tests/wpt) from `08557e6` to\n`62ffcb6`.\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/62ffcb685da9cf5fc1f58a52b3d6daaa2001f242\"><code>62ffcb6</code></a>\n[WebAudio] AudioContext uses new FrameVisibilityObserver methods</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c331d056e3065d8fa4dbc93a073da2c4afed1d27\"><code>c331d05</code></a>\n[SVG] Change <code>path-length</code> CSS property from &lt;number&gt;\nto &lt;length&gt;</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/080962fd4dd37c44fec9ba682aeb1a63d4e159ca\"><code>080962f</code></a>\nRevert &quot;Bug 2014622 - part 1: Make <code>nsINode</code> API for\n`TreeKind::FlatForSelect...</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/0b8f26fb06facf69b2173e931f1161f5b3375107\"><code>0b8f26f</code></a>\nRegenerate layout object when select appearance changes</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/f9c92d2763226ff0a151039ebdaefff5231b4b21\"><code>f9c92d2</code></a>\nReland &quot;Match SVG attribute values case-sensitively when applying\nstyle&quot;</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/c9ff0c5d38e90d0d33d222bbfcd631cfc32a4663\"><code>c9ff0c5</code></a>\nRemove fake UI flag for digital credentials API tests (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/61027\">#61027</a>)</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/cfa794f330967a533994c2debb2f9827e3c11dc7\"><code>cfa794f</code></a>\nTest that cyclic references involving non-custom properties are\ninvalidated.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/951865125b703d3b395355bca9c8445881ab9c45\"><code>9518651</code></a>\nRound scroll-snap test heights to whole pixels to keep snap points\nintegral.</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/6784d9c3aef495e910fc4fce0858a4e87df86463\"><code>6784d9c</code></a>\n[sda] Update wording of sub-test for timeline-scope</li>\n<li><a\nhref=\"https://github.com/web-platform-tests/wpt/commit/3cbf7993baf1badc2c4d4d32954f8f8c95e23106\"><code>3cbf799</code></a>\nMove test out of duplicate wai-aria/role/role directory (<a\nhref=\"https://redirect.github.com/web-platform-tests/wpt/issues/61008\">#61008</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/web-platform-tests/wpt/compare/08557e6ecf9aade8debc9323c858ec5166c3360f...62ffcb685da9cf5fc1f58a52b3d6daaa2001f242\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2026-07-03T12:49:58+02:00",
+          "tree_id": "f206b179d9b394ee7889f0b6a33173f95babcb2c",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/c8b1770ec5b4fd2e29df911d0ec7234f59cd6b6f"
+        },
+        "date": 1783075947761,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 867.2511418000227,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 866.0268330000349,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 706.8664590000253,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 1041.852258400013,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 1022.0993750000105,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 927.1796670000185,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 212.55858100000182,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 214.11210400000869,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 198.15564200001745,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 853.3967916000165,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 868.7396249999892,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 682.689875000051,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 167.0010319999979,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 168.509102999991,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 160.75410800002032,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 826.7127333999952,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 835.8057919999737,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 759.5232920000399,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 188.155966599993,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 189.79725000002645,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 163.5883749999607,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 187.4017783999979,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 184.19254500000193,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 178.86187699997436,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 199.74980613333364,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 200.86373700002014,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 185.06680000001552,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 166.54859999999303,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 167.82762500000104,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 143.60016699998823,
             "unit": "ms",
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           }
