@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1783331146200,
+  "lastUpdate": 1783333360696,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -47101,6 +47101,210 @@ window.BENCHMARK_DATA = {
           {
             "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
             "value": 130.8358750000025,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "OrKoN@users.noreply.github.com",
+            "name": "Alex Rudenko",
+            "username": "OrKoN"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b511b62027b0fd45099d47eabd60e721b9d037a4",
+          "message": "chore(main): release chromium-bidi 17.0.0 (#4202)\n\n:robot: I have created a release *beep* *boop*\n---\n\n\n##\n[17.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v16.0.1...chromium-bidi-v17.0.0)\n(2026-07-06)\n\n\n### ⚠ BREAKING CHANGES\n\n* **chrome:** update the pinned browser version to 152.0.7923.0\n([#4194](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4194))\n* **chrome:** update the pinned browser version to 151.0.7888.0\n([#4174](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4174))\n* **chrome:** update the pinned browser version to 150.0.7863.0\n([#4164](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4164))\n\n### Features\n\n* **chrome:** update the pinned browser version to 150.0.7863.0\n([#4164](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4164))\n([257e79e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/257e79ea1acd57d6b643ed10d5640d411f607dcb))\n* **chrome:** update the pinned browser version to 151.0.7888.0\n([#4174](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4174))\n([b66d6ba](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b66d6bae722b9af50be4d880c5b65944c938a08c))\n* **chrome:** update the pinned browser version to 152.0.7923.0\n([#4194](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4194))\n([fededde](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fededde179302dcfe28417ce70c393961c5dba00))\n* implement digitalCredentials.setVirtualWalletBehavior\n([#4196](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4196))\n([9046114](https://github.com/GoogleChromeLabs/chromium-bidi/commit/90461142c6810a527a1d474d5b068a6895960f80))\n\n\n### Bug Fixes\n\n* **network:** don't retain information on the heap\n([#4147](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4147))\n([1290f1e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1290f1e8e037c1498dfae7adb404d04765648da3))\n\n\n### Performance Improvements\n\n* allow loggin per perfix\n([#4169](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4169))\n([243f4b8](https://github.com/GoogleChromeLabs/chromium-bidi/commit/243f4b88155852883fd089d78a39f5e86802f8ff))\n\n---\nThis PR was generated with [Release\nPlease](https://github.com/googleapis/release-please). See\n[documentation](https://github.com/googleapis/release-please#release-please).",
+          "timestamp": "2026-07-06T12:20:03+02:00",
+          "tree_id": "2732efb9b9c540ad02be7872737af0d2c56c5ac0",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/b511b62027b0fd45099d47eabd60e721b9d037a4"
+        },
+        "date": 1783333358096,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 780.4670831999999,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 793.5410000000047,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 676.9157080000241,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 772.023408400014,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 761.7735830000356,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 673.1935420000354,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 209.76411513333156,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 210.4563750000068,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 199.19335800000226,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 912.2586499999898,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 896.7434580000031,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 800.3844589999858,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 168.05900919999885,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 167.3676389999912,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 164.31731500000524,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 940.9925833999864,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 964.9337500000001,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 777.930916999992,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 171.439458399999,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 179.03133300001173,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 154.2248339999901,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 184.83963193333466,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 183.56149400000277,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 181.88521400000468,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 212.8545598666657,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 217.13146199999755,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 199.90037799999527,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 130.8745831999886,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 129.8929579999708,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 112.38008300000502,
             "unit": "ms",
             "extra": "macos-latest-old-headless:e2e-perf-metric"
           }
