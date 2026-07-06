@@ -118,7 +118,9 @@ export class DigitalCredentialsProcessor {
     const behavior = config.digitalCredentialsBehavior;
 
     if (behavior === null || behavior === undefined) {
-      await this.#sendCdpCommand(target, {action: 'clear'});
+      await this.#sendCdpCommand(target, {
+        action: DigitalCredentials.VirtualWalletAction.Clear,
+      });
       return;
     }
 

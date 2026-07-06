@@ -20,6 +20,7 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {
+  DigitalCredentials,
   InvalidArgumentException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
@@ -48,7 +49,7 @@ describe('DigitalCredentialsProcessor', () => {
     it("should throw InvalidArgumentException when action is 'respond' but protocol or response is missing", async () => {
       try {
         await processor.setVirtualWalletBehavior({
-          action: 'respond',
+          action: DigitalCredentials.VirtualWalletAction.Respond,
         });
         assert.fail('Expected InvalidArgumentException to be thrown');
       } catch (error) {
@@ -61,7 +62,7 @@ describe('DigitalCredentialsProcessor', () => {
 
       try {
         await processor.setVirtualWalletBehavior({
-          action: 'respond',
+          action: DigitalCredentials.VirtualWalletAction.Respond,
           protocol: 'webauthn',
         });
         assert.fail('Expected InvalidArgumentException to be thrown');
@@ -75,7 +76,7 @@ describe('DigitalCredentialsProcessor', () => {
 
       try {
         await processor.setVirtualWalletBehavior({
-          action: 'respond',
+          action: DigitalCredentials.VirtualWalletAction.Respond,
           response: {},
         });
         assert.fail('Expected InvalidArgumentException to be thrown');
@@ -89,7 +90,11 @@ describe('DigitalCredentialsProcessor', () => {
     });
 
     it("should throw InvalidArgumentException when action is not 'respond' but protocol or response is present", async () => {
-      const actions = ['wait', 'decline', 'clear'] as const;
+      const actions = [
+        DigitalCredentials.VirtualWalletAction.Wait,
+        DigitalCredentials.VirtualWalletAction.Decline,
+        DigitalCredentials.VirtualWalletAction.Clear,
+      ] as const;
       for (const action of actions) {
         try {
           await processor.setVirtualWalletBehavior({
@@ -161,7 +166,7 @@ describe('DigitalCredentialsProcessor', () => {
 
       await processor.setVirtualWalletBehavior({
         context: 'context_id',
-        action: 'decline',
+        action: DigitalCredentials.VirtualWalletAction.Decline,
       });
 
       assert.isTrue(mockCdpClient.sendCommand.calledOnce);
@@ -169,8 +174,8 @@ describe('DigitalCredentialsProcessor', () => {
         mockCdpClient.sendCommand.calledWith(
           'DigitalCredentials.setVirtualWalletBehavior',
           {
-            action: 'decline',
-            behavior: 'decline',
+            action: DigitalCredentials.VirtualWalletAction.Decline,
+            behavior: DigitalCredentials.VirtualWalletAction.Decline,
             protocol: undefined,
             response: undefined,
           },
@@ -182,7 +187,7 @@ describe('DigitalCredentialsProcessor', () => {
         'default',
       );
       assert.deepEqual(config.digitalCredentialsBehavior, {
-        action: 'decline',
+        action: DigitalCredentials.VirtualWalletAction.Decline,
         protocol: undefined,
         response: undefined,
       });
@@ -201,7 +206,7 @@ describe('DigitalCredentialsProcessor', () => {
       try {
         await processor.setVirtualWalletBehavior({
           context: 'child_context_id',
-          action: 'decline',
+          action: DigitalCredentials.VirtualWalletAction.Decline,
         });
         assert.fail('Expected UnsupportedOperationException to be thrown');
       } catch (error) {
@@ -247,7 +252,7 @@ describe('DigitalCredentialsProcessor', () => {
       ]);
 
       await processor.setVirtualWalletBehavior({
-        action: 'respond',
+        action: DigitalCredentials.VirtualWalletAction.Respond,
         protocol: 'openid4vp',
         response: {token: 'abc'},
       });
@@ -256,8 +261,8 @@ describe('DigitalCredentialsProcessor', () => {
       assert.isTrue(mockCdpClient2.sendCommand.calledOnce);
 
       const expectedCdpParams = {
-        action: 'respond',
-        behavior: 'respond',
+        action: DigitalCredentials.VirtualWalletAction.Respond,
+        behavior: DigitalCredentials.VirtualWalletAction.Respond,
         protocol: 'openid4vp',
         response: {token: 'abc'},
       };
@@ -270,7 +275,7 @@ describe('DigitalCredentialsProcessor', () => {
 
       const config = contextConfigStorage.getGlobalConfig();
       assert.deepEqual(config.digitalCredentialsBehavior, {
-        action: 'respond',
+        action: DigitalCredentials.VirtualWalletAction.Respond,
         protocol: 'openid4vp',
         response: {token: 'abc'},
       });
@@ -293,13 +298,13 @@ describe('DigitalCredentialsProcessor', () => {
       browsingContextStorage.getAllContexts.returns([mockContext]);
 
       await processor.setVirtualWalletBehavior({
-        action: 'decline',
+        action: DigitalCredentials.VirtualWalletAction.Decline,
       });
 
       assert.isTrue(mockCdpClient.sendCommand.calledOnce);
 
       await processor.setVirtualWalletBehavior({
-        action: 'clear',
+        action: DigitalCredentials.VirtualWalletAction.Clear,
       });
 
       assert.isTrue(mockCdpClient.sendCommand.calledTwice);
@@ -307,8 +312,8 @@ describe('DigitalCredentialsProcessor', () => {
         mockCdpClient.sendCommand.secondCall.calledWith(
           'DigitalCredentials.setVirtualWalletBehavior',
           {
-            action: 'clear',
-            behavior: 'clear',
+            action: DigitalCredentials.VirtualWalletAction.Clear,
+            behavior: DigitalCredentials.VirtualWalletAction.Clear,
             protocol: undefined,
             response: undefined,
           },
@@ -361,7 +366,7 @@ describe('DigitalCredentialsProcessor', () => {
 
       await processor.setVirtualWalletBehavior({
         context: 'parent_id',
-        action: 'decline',
+        action: DigitalCredentials.VirtualWalletAction.Decline,
       });
 
       assert.isTrue(mockCdpClient1.sendCommand.calledOnce);

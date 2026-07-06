@@ -21,6 +21,11 @@
  * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
  */
 
+import type {EmptyResult} from './webdriver-bidi.js';
+
+export type DigitalCredentialsCommand =
+  DigitalCredentials.SetVirtualWalletBehavior;
+
 export namespace DigitalCredentials {
   export const enum VirtualWalletAction {
     Decline = 'decline',

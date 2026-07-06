@@ -701,7 +701,7 @@ export namespace DigitalCredentials {
       params,
       WebDriverBidiDigitalCredentials.DigitalCredentials
         .SetVirtualWalletBehaviorParametersSchema,
-    );
+    ) as Protocol.DigitalCredentials.SetVirtualWalletBehaviorParameters;
   }
 }
 
