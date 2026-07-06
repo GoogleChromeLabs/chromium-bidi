@@ -142,7 +142,7 @@ export type Command = (
   | ExternalSpecCommand<WebDriverBidiPermissions.PermissionsCommand>
   | ExternalSpecCommand<WebDriverBidiBluetooth.BluetoothCommand>
   | ExternalSpecCommand<WebDriverBidiUAClientHints.UserAgentClientHintsCommand>
-  | ExternalSpecCommand<WebDriverBidiDigitalCredentials.DigitalCredentialsCommand>
+  | ExternalSpecCommand<WebDriverBidiDigitalCredentials.DigitalCredentials.SetVirtualWalletBehavior>
 ) & {'goog:channel'?: GoogChannel};
 
 export type CommandResponse =

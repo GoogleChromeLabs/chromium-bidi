@@ -27,10 +27,6 @@
 import z from 'zod';
 import {EmptyResultSchema} from './webdriver-bidi.js';
 
-export const DigitalCredentialsCommandSchema = z.lazy(
-  () => DigitalCredentials.SetVirtualWalletBehaviorSchema,
-);
-
 export namespace DigitalCredentials {
   export const VirtualWalletActionSchema = z.lazy(() =>
     z.enum(['decline', 'respond', 'wait', 'clear']),
