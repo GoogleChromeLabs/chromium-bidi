@@ -115,6 +115,26 @@ async function getCddlconvVersion() {
 async function runCddlConv(file, options) {
   const cddlConv = await runCommand('cddlconv', options);
   let output = `${FILE_HEADER}${cddlConv}`;
+
+  if (!file.endsWith('webdriver-bidi.ts')) {
+    const isZod = options.includes('zod');
+    if (isZod) {
+      if (output.includes('EmptyResultSchema')) {
+        output = output.replace(
+          "import z from 'zod';",
+          "import z from 'zod';\nimport {EmptyResultSchema} from './webdriver-bidi.js';",
+        );
+      }
+    } else {
+      if (output.includes('EmptyResult')) {
+        output = output.replace(
+          FILE_HEADER,
+          `${FILE_HEADER}import type {EmptyResult} from './webdriver-bidi.js';\n\n`,
+        );
+      }
+    }
+  }
+
   await writeFile(file, output, 'utf8');
 }
 
