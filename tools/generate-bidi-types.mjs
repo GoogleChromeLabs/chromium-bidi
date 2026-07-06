@@ -53,9 +53,10 @@ process.chdir(ROOT_DIR);
 
 const TYPES_FILE = tsFile;
 const ZOD_FILE = zodFile;
+const CURRENT_YEAR = new Date().getFullYear();
 const FILE_HEADER = `
 /**
- * Copyright 2024 Google LLC.
+ * Copyright ${CURRENT_YEAR} Google LLC.
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
