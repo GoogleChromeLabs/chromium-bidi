@@ -143,39 +143,14 @@ export class MapperServerCdpConnection {
 
     const browserClient = await cdpConnection.createBrowserSession();
 
-    let mapperTargetId: string;
-    try {
-      const result = await browserClient.sendCommand('Target.createTarget', {
+    const {targetId: mapperTargetId} = await browserClient.sendCommand(
+      'Target.createTarget',
+      {
         url: 'about:blank#MAPPER_TARGET',
         hidden: true,
         background: true,
-      } as any);
-      mapperTargetId = result.targetId;
-    } catch (error: any) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'message' in error &&
-        typeof error.message === 'string' &&
-        error.message.includes(
-          'Hidden target can be created only when remote debugging is enabled',
-        )
-      ) {
-        debugInternal(
-          'Failed to create hidden target, retrying in 200ms...',
-          error,
-        );
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        const result = await browserClient.sendCommand('Target.createTarget', {
-          url: 'about:blank#MAPPER_TARGET',
-          hidden: true,
-          background: true,
-        } as any);
-        mapperTargetId = result.targetId;
-      } else {
-        throw error;
-      }
-    }
+      } as any,
+    );
 
     const {sessionId: mapperSessionId} = await browserClient.sendCommand(
       'Target.attachToTarget',
