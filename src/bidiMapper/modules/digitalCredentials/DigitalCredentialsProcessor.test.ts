@@ -22,7 +22,6 @@ import sinon from 'sinon';
 import {
   DigitalCredentials,
   InvalidArgumentException,
-  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
@@ -162,6 +161,9 @@ describe('DigitalCredentialsProcessor', () => {
       browsingContextStorage.getContext
         .withArgs('context_id')
         .returns(mockContext);
+      browsingContextStorage.findContext
+        .withArgs('context_id')
+        .returns(mockContext);
       browsingContextStorage.getAllContexts.returns([mockContext]);
 
       await processor.setVirtualWalletBehavior({
@@ -175,9 +177,9 @@ describe('DigitalCredentialsProcessor', () => {
           'DigitalCredentials.setVirtualWalletBehavior',
           {
             action: DigitalCredentials.VirtualWalletAction.Decline,
-            behavior: DigitalCredentials.VirtualWalletAction.Decline,
             protocol: undefined,
             response: undefined,
+            frameId: 'context_id',
           },
         ),
       );
@@ -193,29 +195,47 @@ describe('DigitalCredentialsProcessor', () => {
       });
     });
 
-    it('should throw UnsupportedOperationException if context is not top-level', async () => {
+    it('should allow configuring behavior for subframe contexts', async () => {
+      const mockCdpClient = {
+        sendCommand: sinon.stub().resolves({}),
+      };
+      const mockTarget = {
+        cdpClient: mockCdpClient,
+        id: 'child_context_id',
+        topLevelId: 'parent_context_id',
+        userContext: 'default',
+      } as unknown as CdpTarget;
       const mockContext = {
         id: 'child_context_id',
         parentId: 'parent_context_id',
+        cdpTarget: mockTarget,
       } as unknown as BrowsingContextImpl;
 
       browsingContextStorage.getContext
         .withArgs('child_context_id')
         .returns(mockContext);
+      browsingContextStorage.findContext
+        .withArgs('child_context_id')
+        .returns(mockContext);
+      browsingContextStorage.getAllContexts.returns([mockContext]);
 
-      try {
-        await processor.setVirtualWalletBehavior({
-          context: 'child_context_id',
-          action: DigitalCredentials.VirtualWalletAction.Decline,
-        });
-        assert.fail('Expected UnsupportedOperationException to be thrown');
-      } catch (error) {
-        assert.instanceOf(error, UnsupportedOperationException);
-        assert.strictEqual(
-          (error as Error).message,
-          'Only top-level contexts are supported',
-        );
-      }
+      await processor.setVirtualWalletBehavior({
+        context: 'child_context_id',
+        action: DigitalCredentials.VirtualWalletAction.Decline,
+      });
+
+      assert.isTrue(mockCdpClient.sendCommand.calledOnce);
+      assert.isTrue(
+        mockCdpClient.sendCommand.calledWith(
+          'DigitalCredentials.setVirtualWalletBehavior',
+          {
+            action: DigitalCredentials.VirtualWalletAction.Decline,
+            protocol: undefined,
+            response: undefined,
+            frameId: 'child_context_id',
+          },
+        ),
+      );
     });
   });
 
@@ -246,6 +266,12 @@ describe('DigitalCredentialsProcessor', () => {
         cdpTarget: mockTarget2,
       } as unknown as BrowsingContextImpl;
 
+      browsingContextStorage.findContext
+        .withArgs('context_1')
+        .returns(mockContext1);
+      browsingContextStorage.findContext
+        .withArgs('context_2')
+        .returns(mockContext2);
       browsingContextStorage.getAllContexts.returns([
         mockContext1,
         mockContext2,
@@ -262,14 +288,19 @@ describe('DigitalCredentialsProcessor', () => {
 
       const expectedCdpParams = {
         action: DigitalCredentials.VirtualWalletAction.Respond,
-        behavior: DigitalCredentials.VirtualWalletAction.Respond,
         protocol: 'openid4vp',
         response: {token: 'abc'},
       };
       assert.isTrue(
         mockCdpClient1.sendCommand.calledWith(
           'DigitalCredentials.setVirtualWalletBehavior',
-          expectedCdpParams,
+          {...expectedCdpParams, frameId: 'context_1'},
+        ),
+      );
+      assert.isTrue(
+        mockCdpClient2.sendCommand.calledWith(
+          'DigitalCredentials.setVirtualWalletBehavior',
+          {...expectedCdpParams, frameId: 'context_2'},
         ),
       );
 
@@ -295,6 +326,9 @@ describe('DigitalCredentialsProcessor', () => {
         cdpTarget: mockTarget,
       } as unknown as BrowsingContextImpl;
 
+      browsingContextStorage.findContext
+        .withArgs('context_1')
+        .returns(mockContext);
       browsingContextStorage.getAllContexts.returns([mockContext]);
 
       await processor.setVirtualWalletBehavior({
@@ -313,9 +347,9 @@ describe('DigitalCredentialsProcessor', () => {
           'DigitalCredentials.setVirtualWalletBehavior',
           {
             action: DigitalCredentials.VirtualWalletAction.Clear,
-            behavior: DigitalCredentials.VirtualWalletAction.Clear,
             protocol: undefined,
             response: undefined,
+            frameId: 'context_1',
           },
         ),
       );
@@ -324,7 +358,7 @@ describe('DigitalCredentialsProcessor', () => {
       assert.isUndefined(config.digitalCredentialsBehavior);
     });
 
-    it('should not inherit behavior from parent context if on different targets', async () => {
+    it('should not inherit behavior from parent context', async () => {
       const mockCdpClient1 = {sendCommand: sinon.stub().resolves({})};
       const mockCdpClient2 = {sendCommand: sinon.stub().resolves({})};
       const mockTarget1 = {
@@ -344,12 +378,14 @@ describe('DigitalCredentialsProcessor', () => {
         id: 'parent_id',
         parentId: null,
         cdpTarget: mockTarget1,
+        userContext: 'default',
       } as unknown as BrowsingContextImpl;
 
       const childContext = {
         id: 'child_id',
         parentId: 'parent_id',
         cdpTarget: mockTarget2,
+        userContext: 'default',
       } as unknown as BrowsingContextImpl;
 
       browsingContextStorage.getContext
@@ -358,6 +394,12 @@ describe('DigitalCredentialsProcessor', () => {
       browsingContextStorage.getContext
         .withArgs('child_id')
         .returns(childContext);
+      browsingContextStorage.findContext
+        .withArgs('child_id')
+        .returns(childContext);
+      browsingContextStorage.findContext
+        .withArgs('parent_id')
+        .returns(parentContext);
 
       browsingContextStorage.getAllContexts.returns([
         parentContext,
@@ -370,9 +412,30 @@ describe('DigitalCredentialsProcessor', () => {
       });
 
       assert.isTrue(mockCdpClient1.sendCommand.calledOnce);
-      // child_id has different target, and even though it is child of parent_id,
-      // #applyBehaviorToTarget should reject it because target.id !== target.topLevelId
-      assert.isFalse(mockCdpClient2.sendCommand.called);
+      assert.isTrue(
+        mockCdpClient1.sendCommand.calledWith(
+          'DigitalCredentials.setVirtualWalletBehavior',
+          {
+            action: DigitalCredentials.VirtualWalletAction.Decline,
+            protocol: undefined,
+            response: undefined,
+            frameId: 'parent_id',
+          },
+        ),
+      );
+
+      assert.isTrue(mockCdpClient2.sendCommand.calledOnce);
+      assert.isTrue(
+        mockCdpClient2.sendCommand.calledWith(
+          'DigitalCredentials.setVirtualWalletBehavior',
+          {
+            action: DigitalCredentials.VirtualWalletAction.Clear,
+            protocol: undefined,
+            response: undefined,
+            frameId: 'child_id',
+          },
+        ),
+      );
     });
   });
 });

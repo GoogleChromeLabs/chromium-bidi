@@ -80,6 +80,22 @@ export class ContextConfigStorage {
   }
 
   /**
+   * Returns the configuration for a specific browsing context.
+   */
+  getBrowsingContextConfig(
+    browsingContextId: string,
+  ): ContextConfig | undefined {
+    return this.#browsingContextConfigs.get(browsingContextId);
+  }
+
+  /**
+   * Returns the configuration for a specific user context.
+   */
+  getUserContextConfig(userContext: string): ContextConfig | undefined {
+    return this.#userContextConfigs.get(userContext);
+  }
+
+  /**
    * Extra headers is a special case. The headers from the different levels have to be
    * merged instead of being overridden.
    */
