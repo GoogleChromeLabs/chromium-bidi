@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 import {
   BrowsingContext,
   ChromiumBidi,
+  DigitalCredentials,
   type Emulation,
   InvalidArgumentException,
   InvalidSelectorException,
@@ -55,6 +56,11 @@ import {
   type NavigationState,
   NavigationTracker,
 } from './NavigationTracker.js';
+
+type DigitalCredentialsBehavior = Omit<
+  DigitalCredentials.SetVirtualWalletBehaviorParameters,
+  'context'
+>;
 
 export class BrowsingContextImpl {
   static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
@@ -166,31 +172,34 @@ export class BrowsingContextImpl {
     // as the parent of the context can be set later in case of reconnecting to an
     // existing browser instance + OOPiF.
     eventManager.registerPromiseEvent(
-      context.targetUnblockedOrThrow().then(
-        () => {
-          return {
-            kind: 'success',
-            value: {
-              type: 'event',
-              method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-              params: {
-                ...context.serializeToBidiValue(),
-                // Hack to provide the initial URL of the context, as it can be changed
-                // between the page target is attached and unblocked, as the page is not
-                // fully paused in MPArch session (https://crbug.com/372842894).
-                // TODO: remove once https://crbug.com/372842894 is addressed.
-                url,
+      context
+        .targetUnblockedOrThrow()
+        .then(() => context.applyDigitalCredentialsBehavior())
+        .then(
+          () => {
+            return {
+              kind: 'success',
+              value: {
+                type: 'event',
+                method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+                params: {
+                  ...context.serializeToBidiValue(),
+                  // Hack to provide the initial URL of the context, as it can be changed
+                  // between the page target is attached and unblocked, as the page is not
+                  // fully paused in MPArch session (https://crbug.com/372842894).
+                  // TODO: remove once https://crbug.com/372842894 is addressed.
+                  url,
+                },
               },
-            },
-          };
-        },
-        (error) => {
-          return {
-            kind: 'error',
-            error,
-          };
-        },
-      ),
+            };
+          },
+          (error) => {
+            return {
+              kind: 'error',
+              error,
+            };
+          },
+        ),
       context.id,
       ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
     );
@@ -339,6 +348,48 @@ export class BrowsingContextImpl {
     if (result.kind === 'error') {
       throw result.error;
     }
+  }
+
+  async applyDigitalCredentialsBehavior() {
+    const behavior = this.#resolveDigitalCredentialsBehavior();
+    const action =
+      behavior?.action ?? DigitalCredentials.VirtualWalletAction.Clear;
+    const protocol = behavior?.protocol;
+    const response = behavior?.response;
+
+    try {
+      await this.cdpTarget.cdpClient.sendCommand(
+        'DigitalCredentials.setVirtualWalletBehavior',
+        {
+          action,
+          protocol,
+          response,
+          frameId: this.id,
+        },
+      );
+    } catch {
+      // Ignore
+    }
+  }
+
+  #resolveDigitalCredentialsBehavior():
+    | DigitalCredentialsBehavior
+    | null
+    | undefined {
+    const config = this.#configStorage.getBrowsingContextConfig(this.id);
+    if (config?.digitalCredentialsBehavior !== undefined) {
+      return config.digitalCredentialsBehavior;
+    }
+
+    const userContextConfig = this.#configStorage.getUserContextConfig(
+      this.userContext,
+    );
+    if (userContextConfig?.digitalCredentialsBehavior !== undefined) {
+      return userContextConfig.digitalCredentialsBehavior;
+    }
+
+    const globalConfig = this.#configStorage.getGlobalConfig();
+    return globalConfig.digitalCredentialsBehavior;
   }
 
   /** Returns a sandbox for internal helper scripts which is not exposed to the user.*/

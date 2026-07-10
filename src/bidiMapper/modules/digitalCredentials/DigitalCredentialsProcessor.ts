@@ -17,13 +17,13 @@
 
 import {
   InvalidArgumentException,
-  UnsupportedOperationException,
   type EmptyResult,
   DigitalCredentials,
 } from '../../../protocol/protocol.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 
 type Behavior = Omit<
   DigitalCredentials.SetVirtualWalletBehaviorParameters,
@@ -72,12 +72,6 @@ export class DigitalCredentialsProcessor {
         });
       }
     } else {
-      const browsingContext = this.#browsingContextStorage.getContext(context);
-      if (browsingContext.parentId !== null) {
-        throw new UnsupportedOperationException(
-          'Only top-level contexts are supported',
-        );
-      }
       if (action === DigitalCredentials.VirtualWalletAction.Clear) {
         this.#contextConfigStorage.updateBrowsingContextConfig(context, {
           digitalCredentialsBehavior: null,
@@ -89,54 +83,66 @@ export class DigitalCredentialsProcessor {
       }
     }
 
-    await this.#applyToAllTargets();
+    await this.#applyBehavior();
 
     return {};
   }
 
-  async #applyToAllTargets() {
+  #resolveBehavior(contextId: string): Behavior | null | undefined {
+    const config =
+      this.#contextConfigStorage.getBrowsingContextConfig(contextId);
+    if (config?.digitalCredentialsBehavior !== undefined) {
+      return config.digitalCredentialsBehavior;
+    }
+
+    const context = this.#browsingContextStorage.findContext(contextId);
+    if (context) {
+      const userContextConfig = this.#contextConfigStorage.getUserContextConfig(
+        context.userContext,
+      );
+      if (userContextConfig?.digitalCredentialsBehavior !== undefined) {
+        return userContextConfig.digitalCredentialsBehavior;
+      }
+    }
+
+    const globalConfig = this.#contextConfigStorage.getGlobalConfig();
+    return globalConfig.digitalCredentialsBehavior;
+  }
+
+  async #applyBehavior() {
     const contexts = this.#browsingContextStorage.getAllContexts();
-    const targets = new Set<CdpTarget>();
-    for (const c of contexts) {
-      targets.add(c.cdpTarget);
-    }
-
     await Promise.all(
-      Array.from(targets).map((target) => this.#applyBehaviorToTarget(target)),
+      contexts.map((context) => this.#applyBehaviorToContext(context)),
     );
   }
 
-  async #applyBehaviorToTarget(target: CdpTarget) {
-    if (target.id !== target.topLevelId) {
-      return;
-    }
-    const config = this.#contextConfigStorage.getActiveConfig(
-      target.topLevelId,
-      target.userContext,
-    );
-
-    const behavior = config.digitalCredentialsBehavior;
-
-    if (behavior === null || behavior === undefined) {
-      await this.#sendCdpCommand(target, {
-        action: DigitalCredentials.VirtualWalletAction.Clear,
-      });
-      return;
-    }
-
-    await this.#sendCdpCommand(target, behavior);
+  async #applyBehaviorToContext(context: BrowsingContextImpl) {
+    const behavior = this.#resolveBehavior(context.id);
+    await this.#sendCdpCommand(context.cdpTarget, context.id, behavior);
   }
 
-  async #sendCdpCommand(cdpTarget: CdpTarget, behavior: Behavior) {
-    await cdpTarget.cdpClient.sendCommand(
-      'DigitalCredentials.setVirtualWalletBehavior',
-      {
-        // @ts-expect-error action is kept for backward compatibility with older Chromium CDP versions
-        action: behavior.action,
-        behavior: behavior.action,
-        protocol: behavior.protocol,
-        response: behavior.response,
-      },
-    );
+  async #sendCdpCommand(
+    cdpTarget: CdpTarget,
+    frameId: string,
+    behavior: Behavior | null | undefined,
+  ) {
+    const action =
+      behavior?.action ?? DigitalCredentials.VirtualWalletAction.Clear;
+    const protocol = behavior?.protocol;
+    const response = behavior?.response;
+
+    try {
+      await cdpTarget.cdpClient.sendCommand(
+        'DigitalCredentials.setVirtualWalletBehavior',
+        {
+          action,
+          protocol,
+          response,
+          frameId,
+        },
+      );
+    } catch {
+      // Ignore errors if the target is closed or command not supported
+    }
   }
 }
