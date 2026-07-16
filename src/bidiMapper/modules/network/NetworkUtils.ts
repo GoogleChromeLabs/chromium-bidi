@@ -243,7 +243,9 @@ export function bidiToCdpCookie(
     httpOnly: params.cookie.httpOnly ?? false,
     ...(partitionKey.sourceOrigin !== undefined && {
       partitionKey: {
-        hasCrossSiteAncestor: false,
+        hasCrossSiteAncestor: Boolean(
+          partitionKey['goog:hasCrossSiteAncestor'],
+        ),
         // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
         topLevelSite: partitionKey.sourceOrigin,
       },
