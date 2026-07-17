@@ -16,7 +16,7 @@
 import json
 
 import pytest
-from test_helpers import execute_command, goto_url
+from test_helpers import execute_command, get_tree, goto_url
 
 # The Digital Credentials API options used in the tests.
 CREDENTIAL_OPTIONS = """{
@@ -124,3 +124,142 @@ async def test_digital_credentials_respond(websocket, context_id, url_secure_con
     result = await trigger_credentials_get(websocket, context_id)
     assert result["status"] == "success"
     assert "mock_token_123" in str(result)
+
+
+@pytest.mark.asyncio
+async def test_digital_credentials_iframe_decline(
+    websocket, context_id, local_server_good_ssl
+):
+    # Set up same-origin iframe
+    iframe_url = local_server_good_ssl.url_200(content="<h1>Iframe</h1>")
+    iframe_tag = f'<iframe allow="identity-credentials-get" src="{iframe_url}" />'
+    main_url = local_server_good_ssl.url_200(content=f"<h1>Main</h1>{iframe_tag}")
+
+    await goto_url(websocket, context_id, main_url)
+
+    # Get iframe context ID
+    tree = await get_tree(websocket, context_id)
+    iframe_id = tree["contexts"][0]["children"][0]["context"]
+
+    # Set behavior to decline on iframe
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "digitalCredentials.setVirtualWalletBehavior",
+            "params": {
+                "context": iframe_id,
+                "action": "decline",
+            },
+        },
+    )
+    assert resp == {}
+
+    # Trigger request in iframe and verify it is declined
+    result = await trigger_credentials_get(websocket, iframe_id)
+    assert result["status"] == "error"
+    assert result["name"] == "NotAllowedError"
+
+
+@pytest.mark.asyncio
+async def test_digital_credentials_iframe_no_inheritance(
+    websocket, context_id, local_server_good_ssl
+):
+    # Set up same-origin iframe
+    iframe_url = local_server_good_ssl.url_200(content="<h1>Iframe</h1>")
+    iframe_tag = f'<iframe allow="identity-credentials-get" src="{iframe_url}" />'
+    main_url = local_server_good_ssl.url_200(content=f"<h1>Main</h1>{iframe_tag}")
+
+    await goto_url(websocket, context_id, main_url)
+
+    # Get iframe context ID
+    tree = await get_tree(websocket, context_id)
+    iframe_id = tree["contexts"][0]["children"][0]["context"]
+
+    # Set behavior globally to respond with global_token
+    await execute_command(
+        websocket,
+        {
+            "method": "digitalCredentials.setVirtualWalletBehavior",
+            "params": {
+                "action": "respond",
+                "protocol": "openid4vp",
+                "response": {"token": "global_token"},
+            },
+        },
+    )
+
+    # Set behavior on main frame to respond with main_token
+    await execute_command(
+        websocket,
+        {
+            "method": "digitalCredentials.setVirtualWalletBehavior",
+            "params": {
+                "context": context_id,
+                "action": "respond",
+                "protocol": "openid4vp",
+                "response": {"token": "main_token"},
+            },
+        },
+    )
+
+    # Trigger request in iframe and verify it gets global_token (no inheritance from main)
+    result = await trigger_credentials_get(websocket, iframe_id)
+    assert result["status"] == "success"
+    assert "global_token" in str(result)
+
+
+@pytest.mark.asyncio
+async def test_digital_credentials_iframe_override(
+    websocket, context_id, local_server_good_ssl
+):
+    # Set up same-origin iframe
+    iframe_url = local_server_good_ssl.url_200(content="<h1>Iframe</h1>")
+    iframe_tag = f'<iframe allow="identity-credentials-get" src="{iframe_url}" />'
+    main_url = local_server_good_ssl.url_200(content=f"<h1>Main</h1>{iframe_tag}")
+
+    await goto_url(websocket, context_id, main_url)
+
+    # Get iframe context ID
+    tree = await get_tree(websocket, context_id)
+    iframe_id = tree["contexts"][0]["children"][0]["context"]
+
+    # Set behavior to decline on main frame
+    await execute_command(
+        websocket,
+        {
+            "method": "digitalCredentials.setVirtualWalletBehavior",
+            "params": {
+                "context": context_id,
+                "action": "decline",
+            },
+        },
+    )
+
+    # Set behavior to respond on iframe
+    await execute_command(
+        websocket,
+        {
+            "method": "digitalCredentials.setVirtualWalletBehavior",
+            "params": {
+                "context": iframe_id,
+                "action": "respond",
+                "protocol": "openid4vp",
+                "response": {"token": "iframe_token"},
+            },
+        },
+    )
+
+    # Trigger request in main frame and verify it is declined (before iframe request)
+    result_main = await trigger_credentials_get(websocket, context_id)
+    assert result_main["status"] == "error"
+    assert result_main["name"] == "NotAllowedError"
+
+    # Trigger request in iframe and verify it succeeds with iframe's token (override)
+    result = await trigger_credentials_get(websocket, iframe_id)
+    assert result["status"] == "success"
+    assert "iframe_token" in str(result)
+
+    # Trigger request in main frame and verify it is still declined
+    result_main_2 = await trigger_credentials_get(websocket, context_id)
+    assert result_main_2["status"] == "error"
+    assert result_main_2["name"] == "NotAllowedError"

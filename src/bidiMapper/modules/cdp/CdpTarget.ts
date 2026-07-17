@@ -23,6 +23,7 @@ import {
   type Browser,
   type BrowsingContext,
   type ChromiumBidi,
+  DigitalCredentials,
   Emulation,
   Session,
   type UAClientHints,
@@ -719,22 +720,27 @@ export class CdpTarget {
       promises.push(this.setTouchOverride(config.maxTouchPoints));
     }
 
-    if (config.digitalCredentialsBehavior && this.id === this.topLevelId) {
-      promises.push(
-        this.cdpClient
-          .sendCommand('DigitalCredentials.setVirtualWalletBehavior', {
-            // @ts-expect-error action is kept for backward compatibility with older Chromium CDP versions
-            action: config.digitalCredentialsBehavior.action,
-            behavior: config.digitalCredentialsBehavior.action,
-            protocol: config.digitalCredentialsBehavior.protocol,
-            response: config.digitalCredentialsBehavior.response,
-          })
-          .catch(() => {
-            // Ignore CDP errors, as the command is not supported by iframe targets
-            // or older browser versions.
-          }),
-      );
-    }
+    const dcConfig = this.contextConfigStorage.getActiveConfig(
+      this.id,
+      this.userContext,
+    );
+    const dcBehavior = dcConfig.digitalCredentialsBehavior;
+    promises.push(
+      this.cdpClient
+        .sendCommand('DigitalCredentials.setVirtualWalletBehavior', {
+          action:
+            dcBehavior?.action ?? DigitalCredentials.VirtualWalletAction.Clear,
+          protocol: dcBehavior?.protocol,
+          response: dcBehavior?.response,
+          frameId: this.id,
+        })
+        .catch((error) => {
+          this.#logger?.(LogType.debugError)?.(
+            'Error setting virtual wallet behavior',
+            error,
+          );
+        }),
+    );
 
     await Promise.all(promises);
   }
