@@ -77,7 +77,10 @@ export class BrowsingContextStorage {
 
   getActiveContext(): BrowsingContextImpl | undefined {
     if (this.#activeContextId !== undefined) {
-      return this.#contexts.get(this.#activeContextId);
+      const context = this.#contexts.get(this.#activeContextId);
+      if (context) {
+        return context;
+      }
     }
     return this.getActiveTopLevelContext();
   }
@@ -90,6 +93,9 @@ export class BrowsingContextStorage {
   /** Deletes the context with the given ID. */
   deleteContextById(id: BrowsingContext.BrowsingContext) {
     this.#contexts.delete(id);
+    if (this.#activeContextId === id) {
+      this.#activeContextId = undefined;
+    }
   }
 
   /** Deletes the given context. */
