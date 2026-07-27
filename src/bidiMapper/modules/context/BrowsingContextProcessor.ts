@@ -1137,9 +1137,15 @@ export class BrowsingContextProcessor {
       case 'partial link text':
         return {type: 'innerText', value, matchType: 'partial'};
       case 'id':
-        return {type: 'css', value: `[id="${value.replace(/"/g, '\\"')}"]`};
+        return {
+          type: 'css',
+          value: `[id="${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"]`,
+        };
       case 'name':
-        return {type: 'css', value: `[name="${value.replace(/"/g, '\\"')}"]`};
+        return {
+          type: 'css',
+          value: `[name="${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"]`,
+        };
       case 'class name':
         return {type: 'css', value: `.${value.replace(/ /g, '.')}`};
       default:
