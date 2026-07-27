@@ -32,6 +32,8 @@ import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
+import type {ClassicResponse} from '../../ClassicTransport.js';
+
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 
@@ -186,6 +188,7 @@ export class BrowsingContextProcessor {
       );
     }
     await context.activate();
+    this.#browsingContextStorage.setActiveContextId(context.id);
     return {};
   }
 
@@ -410,6 +413,359 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.LocateNodesResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     return await context.locateNodes(params);
+  }
+
+  classicGetUrl(): ClassicResponse {
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    return {
+      status: 200,
+      body: {
+        value: context.url,
+      },
+    };
+  }
+
+  async classicNavigate(urlInput: unknown): Promise<ClassicResponse> {
+    if (typeof urlInput !== 'string') {
+      return {
+        status: 400,
+        body: {
+          value: {
+            error: 'invalid argument',
+            message: 'url parameter must be a string',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      await context.navigate(urlInput, 'complete' as BrowsingContext.ReadinessState);
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  classicGetWindowHandle(): ClassicResponse {
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    return {
+      status: 200,
+      body: {
+        value: context.id,
+      },
+    };
+  }
+
+  classicGetWindowHandles(): ClassicResponse {
+    return {
+      status: 200,
+      body: {
+        value: this.#browsingContextStorage.getTopLevelContexts().map((c) => c.id),
+      },
+    };
+  }
+
+  async classicNewWindow(typeHint: unknown): Promise<ClassicResponse> {
+    try {
+      const type = typeHint === 'window' ? BrowsingContext.CreateType.Window : BrowsingContext.CreateType.Tab;
+      const res = await this.create({type, referenceContext: undefined, userContext: 'default', background: false});
+      return {
+        status: 200,
+        body: {
+          value: {
+            handle: res.context,
+            type: typeHint === 'window' ? 'window' : 'tab',
+          },
+        },
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  async classicCloseWindow(): Promise<ClassicResponse> {
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      await this.close({context: context.id});
+      const remaining = this.#browsingContextStorage.getTopLevelContexts();
+      if (remaining.length > 0) {
+        this.#browsingContextStorage.setActiveContextId(remaining[0]?.id);
+      } else {
+        this.#browsingContextStorage.setActiveContextId(undefined);
+      }
+      return {
+        status: 200,
+        body: {
+          value: remaining.map((c) => c.id),
+        },
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  classicSwitchToWindow(handleInput: unknown): ClassicResponse {
+    if (typeof handleInput !== 'string') {
+      return {
+        status: 400,
+        body: {
+          value: {
+            error: 'invalid argument',
+            message: 'handle must be a string',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    const target = this.#browsingContextStorage.getTopLevelContexts().find(c => c.id === handleInput);
+    if (!target) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: `Window handle ${handleInput} not found`,
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    this.#browsingContextStorage.setActiveContextId(target.id);
+    return {
+      status: 200,
+      body: {value: null},
+    };
+  }
+
+  classicSwitchToFrame(frameInput: unknown): ClassicResponse {
+    const active =
+      this.#browsingContextStorage.getActiveContext() ??
+      this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!active) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    if (frameInput === null || frameInput === undefined) {
+      this.#browsingContextStorage.setActiveContextId(active.top.id);
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    }
+    const children = active.directChildren;
+    if (typeof frameInput === 'number') {
+      if (frameInput < 0 || frameInput >= children.length) {
+        return {
+          status: 404,
+          body: {
+            value: {
+              error: 'no such frame',
+              message: `Frame index ${frameInput} out of bounds`,
+              stacktrace: '',
+            },
+          },
+        };
+      }
+      this.#browsingContextStorage.setActiveContextId(children[frameInput]?.id);
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    }
+    if (typeof frameInput === 'object' && frameInput !== null && children.length === 1) {
+      this.#browsingContextStorage.setActiveContextId(children[0]?.id);
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    }
+    return {
+      status: 404,
+      body: {
+        value: {
+          error: 'no such frame',
+          message: `Frame ${JSON.stringify(frameInput)} not found`,
+          stacktrace: '',
+        },
+      },
+    };
+  }
+
+  classicSwitchToParentFrame(): ClassicResponse {
+    const active =
+      this.#browsingContextStorage.getActiveContext() ??
+      this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!active) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    if (active.parent) {
+      this.#browsingContextStorage.setActiveContextId(active.parent.id);
+    } else {
+      this.#browsingContextStorage.setActiveContextId(active.id);
+    }
+    return {
+      status: 200,
+      body: {value: null},
+    };
+  }
+
+  async classicHandleAlert(accept: boolean): Promise<ClassicResponse> {
+    const active =
+      this.#browsingContextStorage.getActiveContext() ??
+      this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!active) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      await active.handleUserPrompt(accept);
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    } catch {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such alert',
+            message: 'No user prompt is currently showing',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+  }
+
+  classicGetAlertText(): ClassicResponse {
+    const active =
+      this.#browsingContextStorage.getActiveContext() ??
+      this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!active || active.activeUserPromptMessage === undefined) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such alert',
+            message: 'No user prompt is currently showing',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    return {
+      status: 200,
+      body: {
+        value: active.activeUserPromptMessage,
+      },
+    };
   }
 
   #onContextCreatedSubscribeHook(

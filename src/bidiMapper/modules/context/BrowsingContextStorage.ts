@@ -42,12 +42,39 @@ export class BrowsingContextStorage {
   /** Event emitter for browsing context storage eventsis not expected to be exposed to
    * the outside world. */
   readonly #eventEmitter = new EventEmitter<BrowsingContextStorageEvent>();
+  #activeContextId?: BrowsingContext.BrowsingContext;
 
   /** Gets all top-level contexts, i.e. those with no parent. */
   getTopLevelContexts(): BrowsingContextImpl[] {
     return this.getAllContexts().filter((context) =>
       context.isTopLevelContext(),
     );
+  }
+
+  setActiveContextId(id?: BrowsingContext.BrowsingContext) {
+    this.#activeContextId = id;
+  }
+
+  getActiveTopLevelContext(): BrowsingContextImpl | undefined {
+    if (this.#activeContextId && this.#contexts.has(this.#activeContextId)) {
+      const context = this.#contexts.get(this.#activeContextId)!;
+      if (context.isTopLevelContext()) {
+        return context;
+      }
+    }
+    const topLevel = this.getTopLevelContexts();
+    if (topLevel.length > 0) {
+      this.setActiveContextId(topLevel[0]?.id);
+      return topLevel[0];
+    }
+    return undefined;
+  }
+
+  getActiveContext(): BrowsingContextImpl | undefined {
+    if (this.#activeContextId && this.#contexts.has(this.#activeContextId)) {
+      return this.#contexts.get(this.#activeContextId);
+    }
+    return this.getActiveTopLevelContext();
   }
 
   /** Gets all contexts. */
@@ -58,16 +85,23 @@ export class BrowsingContextStorage {
   /** Deletes the context with the given ID. */
   deleteContextById(id: BrowsingContext.BrowsingContext) {
     this.#contexts.delete(id);
+    if (this.#activeContextId === id) {
+      const topLevel = this.getTopLevelContexts();
+      this.setActiveContextId(topLevel[0]?.id);
+    }
   }
 
   /** Deletes the given context. */
   deleteContext(context: BrowsingContextImpl) {
-    this.#contexts.delete(context.id);
+    this.deleteContextById(context.id);
   }
 
   /** Tracks the given context. */
   addContext(context: BrowsingContextImpl) {
     this.#contexts.set(context.id, context);
+    if (context.isTopLevelContext() && !this.#activeContextId) {
+      this.setActiveContextId(context.id);
+    }
     this.#eventEmitter.emit(BrowsingContextStorageEvents.Added, {
       browsingContext: context,
     });

@@ -42,6 +42,7 @@ const getLogger = (type: LogPrefix) => {
 export class MapperServerCdpConnection {
   #cdpConnection: MapperCdpConnection;
   #bidiSession: SimpleTransport;
+  #classicSession: SimpleTransport;
 
   static async create(
     cdpConnection: MapperCdpConnection,
@@ -49,12 +50,16 @@ export class MapperServerCdpConnection {
     verbose: boolean,
   ): Promise<MapperServerCdpConnection> {
     try {
-      const bidiSession = await this.#initMapper(
+      const {bidiSession, classicSession} = await this.#initMapper(
         cdpConnection,
         mapperTabSource,
         verbose,
       );
-      return new MapperServerCdpConnection(cdpConnection, bidiSession);
+      return new MapperServerCdpConnection(
+        cdpConnection,
+        bidiSession,
+        classicSession,
+      );
     } catch (e) {
       cdpConnection.close();
       throw e;
@@ -64,9 +69,11 @@ export class MapperServerCdpConnection {
   private constructor(
     cdpConnection: MapperCdpConnection,
     bidiSession: SimpleTransport,
+    classicSession: SimpleTransport,
   ) {
     this.#cdpConnection = cdpConnection;
     this.#bidiSession = bidiSession;
+    this.#classicSession = classicSession;
   }
 
   static async #sendMessage(
@@ -82,6 +89,19 @@ export class MapperServerCdpConnection {
     }
   }
 
+  static async #sendClassicMessage(
+    mapperCdpClient: MapperCdpClient,
+    message: string,
+  ): Promise<void> {
+    try {
+      await mapperCdpClient.sendCommand('Runtime.evaluate', {
+        expression: `onClassicMessage(${JSON.stringify(message)})`,
+      });
+    } catch (error) {
+      debugInternal('Call to onClassicMessage failed', error);
+    }
+  }
+
   close() {
     this.#cdpConnection.close();
   }
@@ -90,12 +110,19 @@ export class MapperServerCdpConnection {
     return this.#bidiSession;
   }
 
+  classicSession(): SimpleTransport {
+    return this.#classicSession;
+  }
+
   static #onBindingCalled = (
     params: Protocol.Runtime.BindingCalledEvent,
     bidiSession: SimpleTransport,
+    classicSession: SimpleTransport,
   ) => {
     if (params.name === 'sendBidiResponse') {
       bidiSession.emit('message', params.payload);
+    } else if (params.name === 'sendClassicResponse') {
+      classicSession.emit('message', params.payload);
     } else if (params.name === 'sendDebugMessage') {
       this.#onDebugMessage(params.payload);
     }
@@ -138,7 +165,7 @@ export class MapperServerCdpConnection {
     cdpConnection: MapperCdpConnection,
     mapperTabSource: string,
     verbose: boolean,
-  ): Promise<SimpleTransport> {
+  ): Promise<{bidiSession: SimpleTransport; classicSession: SimpleTransport}> {
     debugInternal('Initializing Mapper.');
 
     const browserClient = await cdpConnection.createBrowserSession();
@@ -162,10 +189,14 @@ export class MapperServerCdpConnection {
     const bidiSession = new SimpleTransport(
       async (message) => await this.#sendMessage(mapperCdpClient, message),
     );
+    const classicSession = new SimpleTransport(
+      async (message) =>
+        await this.#sendClassicMessage(mapperCdpClient, message),
+    );
 
     // Process responses from the mapper tab.
     mapperCdpClient.on('Runtime.bindingCalled', (params) =>
-      this.#onBindingCalled(params, bidiSession),
+      this.#onBindingCalled(params, bidiSession, classicSession),
     );
     // Forward console messages from the mapper tab.
     mapperCdpClient.on('Runtime.consoleAPICalled', this.#onConsoleAPICalled);
@@ -185,6 +216,9 @@ export class MapperServerCdpConnection {
 
     await mapperCdpClient.sendCommand('Runtime.addBinding', {
       name: 'sendBidiResponse',
+    });
+    await mapperCdpClient.sendCommand('Runtime.addBinding', {
+      name: 'sendClassicResponse',
     });
 
     if (verbose) {
@@ -206,6 +240,6 @@ export class MapperServerCdpConnection {
     });
 
     debugInternal('Mapper is launched!');
-    return bidiSession;
+    return {bidiSession, classicSession};
   }
 }

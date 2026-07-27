@@ -19,8 +19,9 @@ import {debuglog} from 'node:util';
 
 import * as websocket from 'websocket';
 
-import {ErrorCode, type Session} from '../protocol/protocol.js';
+import {ErrorCode} from '../protocol/protocol.js';
 import {Deferred} from '../utils/Deferred.js';
+import {Mutex} from '../utils/Mutex.js';
 import {uuidv4} from '../utils/uuid.js';
 
 import {BrowserInstance, type ChromeOptions} from './BrowserInstance.js';
@@ -31,6 +32,7 @@ const debugSend = debuglog('bidi:server:SEND ▸');
 const debugRecv = debuglog('bidi:server:RECV ◂');
 
 interface Session {
+  readonly mutex: Mutex;
   sessionId: string;
   // Promise is used to decrease WebSocket handshake latency. If session is set via
   // WebDriver Classic, we need to launch Browser instance for each new WebSocket
@@ -133,11 +135,12 @@ export class WebSocketServer {
       // https://w3c.github.io/webdriver-bidi/#transport, step 3.
       const jsonBody = JSON.parse(body.toString());
       response.writeHead(200, {
-        'Content-Type': 'application/json;charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'no-cache',
       });
       const sessionId = uuidv4();
       const session: Session = {
+        mutex: new Mutex(),
         sessionId,
         // TODO: launch browser instance and set it to the session after WPT
         //  tests clean up is switched to pure BiDi.
@@ -166,27 +169,95 @@ export class WebSocketServer {
         }),
       );
       return response.end();
-    } else if (request.url.startsWith('/session')) {
-      debugInternal(
-        `Unknown session command ${
-          request.method ?? 'UNKNOWN METHOD'
-        } request for ${
-          request.url
-        } with payload ${await this.#getHttpRequestPayload(
-          request,
-        )}. 200 returned.`,
-      );
+    } else if (request.url.startsWith('/session/')) {
+      const urlParts = request.url.split('/');
+      const sessionId = urlParts[2];
+      const commandPath = `/${urlParts.slice(3).join('/')}`;
+      const session = this.#sessions.get(sessionId ?? '');
 
-      response.writeHead(200, {
-        'Content-Type': 'application/json;charset=utf-8',
-        'Cache-Control': 'no-cache',
+      if (!session) {
+        response.writeHead(404, {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-cache',
+        });
+        response.write(
+          JSON.stringify({
+            value: {
+              error: 'invalid session id',
+              message: `Session ${sessionId} not found`,
+              stacktrace: '',
+            },
+          }),
+        );
+        return response.end();
+      }
+
+      await session.mutex.run(async () => {
+        if (
+          (request.method ?? 'GET').toUpperCase() === 'DELETE' &&
+          (commandPath === '/' || commandPath === '')
+        ) {
+          await this.#closeBrowserInstanceIfLaunched(session);
+          this.#sessions.delete(session.sessionId);
+          response.writeHead(200, {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'no-cache',
+          });
+          response.write(JSON.stringify({value: null}));
+          response.end();
+          return;
+        }
+
+        if (session.browserInstancePromise === undefined) {
+          session.browserInstancePromise = this.#launchBrowserInstance(
+            undefined,
+            session.sessionOptions,
+          );
+        }
+        const browserInstance = await session.browserInstancePromise;
+
+        const payloadString = await this.#getHttpRequestPayload(request);
+        let body: unknown = undefined;
+        if (payloadString.trim()) {
+          try {
+            body = JSON.parse(payloadString);
+          } catch {}
+        }
+
+        const id = uuidv4();
+        const classicReq = {
+          id,
+          method: request.method ?? 'GET',
+          path: commandPath,
+          body,
+        };
+
+        const deferred = new Deferred<string>();
+        const listener = (msg: string) => {
+          try {
+            const parsed = JSON.parse(msg);
+            if (parsed.id === id) {
+              deferred.resolve(msg);
+            }
+          } catch {}
+        };
+
+        browserInstance.classicSession().on('message', listener);
+        await browserInstance
+          .classicSession()
+          .sendCommand(JSON.stringify(classicReq));
+        const resString = await deferred;
+        browserInstance.classicSession().off('message', listener);
+
+        const parsedRes = JSON.parse(resString);
+        response.writeHead(parsedRes.status ?? 200, {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-cache',
+        });
+        response.write(JSON.stringify(parsedRes.body ?? {value: null}));
+        response.end();
       });
-      response.write(
-        JSON.stringify({
-          value: {},
-        }),
-      );
-      return response.end();
+      return;
     }
 
     throw new Error(
@@ -226,24 +297,24 @@ export class WebSocketServer {
 
     session = this.#sessions.get(requestSessionId ?? '');
     if (session !== undefined) {
-      // BrowserInstance is created for each new WS connection, even for the
-      // same SessionId. This is because WPT uses a single session for all the
-      // tests, but cleans up tests using WebDriver Classic commands, which is
-      // not implemented in this Mapper runner.
-      // TODO: connect to an existing BrowserInstance instead.
       const sessionOptions = session.sessionOptions;
-      session.browserInstancePromise = this.#closeBrowserInstanceIfLaunched(
-        session,
-      )
-        .then(
-          async () =>
-            await this.#launchBrowserInstance(connection, sessionOptions),
-        )
-        .catch((e) => {
+      if (session.browserInstancePromise === undefined) {
+        session.browserInstancePromise = this.#launchBrowserInstance(
+          connection,
+          sessionOptions,
+        ).catch((e) => {
           debugInfo('Error while creating session', e);
           connection.close(500, 'cannot create browser instance');
           throw e;
         });
+      } else {
+        void session.browserInstancePromise.then((browserInstance) => {
+          browserInstance.bidiSession().on('message', (message) => {
+            this.#sendClientMessageString(message, connection);
+          });
+          return null;
+        });
+      }
     }
 
     connection.on('message', async (message) => {
@@ -313,6 +384,7 @@ export class WebSocketServer {
 
           const sessionId = uuidv4();
           session = {
+            mutex: new Mutex(),
             sessionId,
             browserInstancePromise: Promise.resolve(browserInstance),
             sessionOptions,
@@ -444,7 +516,7 @@ export class WebSocketServer {
   }
 
   async #launchBrowserInstance(
-    connection: websocket.connection,
+    connection: websocket.connection | undefined,
     sessionOptions: SessionOptions,
     passSessionNewThrough = false,
   ): Promise<BrowserInstance> {
@@ -462,7 +534,7 @@ export class WebSocketServer {
       if (jsonMessage['id'] === id) {
         debugInfo('Receiving session.new response from mapper', message);
         sessionCreated.resolve();
-        if (passSessionNewThrough) {
+        if (passSessionNewThrough && connection) {
           this.#sendClientMessageString(message, connection);
         }
       }
@@ -476,9 +548,11 @@ export class WebSocketServer {
     await sessionCreated;
     browserInstance.bidiSession().off('message', sessionResponseListener);
 
-    // Forward messages from BiDi Mapper to the client unconditionally.
+    // Forward messages from BiDi Mapper to the client unconditionally if connected.
     browserInstance.bidiSession().on('message', (message) => {
-      this.#sendClientMessageString(message, connection);
+      if (connection) {
+        this.#sendClientMessageString(message, connection);
+      }
     });
 
     debugInfo('Browser is launched!');
