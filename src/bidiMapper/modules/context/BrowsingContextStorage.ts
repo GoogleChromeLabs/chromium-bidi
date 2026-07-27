@@ -56,11 +56,16 @@ export class BrowsingContextStorage {
   }
 
   getActiveTopLevelContext(): BrowsingContextImpl | undefined {
-    if (this.#activeContextId && this.#contexts.has(this.#activeContextId)) {
-      const context = this.#contexts.get(this.#activeContextId)!;
-      if (context.isTopLevelContext()) {
-        return context;
+    if (this.#activeContextId !== undefined) {
+      const context = this.#contexts.get(this.#activeContextId);
+      if (context) {
+        if (context.isTopLevelContext()) {
+          return context;
+        }
+        const topId = this.findTopLevelContextId(context.id);
+        return topId ? this.findContext(topId) : undefined;
       }
+      return undefined;
     }
     const topLevel = this.getTopLevelContexts();
     if (topLevel.length > 0) {
@@ -71,7 +76,7 @@ export class BrowsingContextStorage {
   }
 
   getActiveContext(): BrowsingContextImpl | undefined {
-    if (this.#activeContextId && this.#contexts.has(this.#activeContextId)) {
+    if (this.#activeContextId !== undefined) {
       return this.#contexts.get(this.#activeContextId);
     }
     return this.getActiveTopLevelContext();
@@ -85,10 +90,6 @@ export class BrowsingContextStorage {
   /** Deletes the context with the given ID. */
   deleteContextById(id: BrowsingContext.BrowsingContext) {
     this.#contexts.delete(id);
-    if (this.#activeContextId === id) {
-      const topLevel = this.getTopLevelContexts();
-      this.setActiveContextId(topLevel[0]?.id);
-    }
   }
 
   /** Deletes the given context. */

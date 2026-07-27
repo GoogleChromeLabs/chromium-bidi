@@ -31,20 +31,28 @@ import type {ContextConfigStorage} from './modules/browser/ContextConfigStorage.
 import type {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
 import type {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
+import {InputProcessor} from './modules/input/InputProcessor.js';
 import type {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import type {RealmStorage} from './modules/script/RealmStorage.js';
 import {ScriptProcessor} from './modules/script/ScriptProcessor.js';
 import type {EventManager} from './modules/session/EventManager.js';
+import {StorageProcessor} from './modules/storage/StorageProcessor.js';
 
 export class ClassicCommandProcessor {
   readonly #mutex = new Mutex();
-  readonly #timeouts: {implicit: number; pageLoad: number; script: number | null} = {
+  readonly #timeouts: {
+    implicit: number;
+    pageLoad: number;
+    script: number | null;
+  } = {
     implicit: 0,
     pageLoad: 300000,
     script: 30000,
   };
   #scriptProcessor: ScriptProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
+  #storageProcessor: StorageProcessor;
+  #inputProcessor: InputProcessor;
   #transport: ClassicTransport;
   #logger?: LoggerFn;
 
@@ -85,6 +93,14 @@ export class ClassicCommandProcessor {
       userContextStorage,
       contextConfigStorage,
       eventManager,
+    );
+    this.#storageProcessor = new StorageProcessor(
+      browserCdpClient,
+      browsingContextStorage,
+      logger,
+    );
+    this.#inputProcessor = new InputProcessor(browsingContextStorage, () =>
+      this.#browsingContextProcessor.classicGetActiveContext(),
     );
     this.#transport.setOnMessage(
       (request) => void this.#handleMessage(request),
@@ -163,6 +179,42 @@ export class ClassicCommandProcessor {
     body: unknown,
   ): Promise<ClassicResponse> {
     switch (path) {
+      case '/status': {
+        if (method === 'GET') {
+          return {
+            status: 200,
+            body: {
+              value: {
+                ready: true,
+                message: 'ready',
+              },
+            },
+          };
+        }
+        break;
+      }
+      case '/session': {
+        switch (method) {
+          case 'POST':
+            return {
+              status: 200,
+              body: {
+                value: {
+                  sessionId: 'default',
+                  capabilities: {},
+                },
+              },
+            };
+          case 'DELETE':
+            return {
+              status: 200,
+              body: {value: null},
+            };
+          default:
+            break;
+        }
+        break;
+      }
       case '/timeouts': {
         switch (method) {
           case 'GET':
@@ -190,7 +242,7 @@ export class ClassicCommandProcessor {
               if (key in params) {
                 const val = params[key];
                 const isValid =
-                  (key === 'script' && val === null) ||
+                  ((key === 'script' || key === 'pageLoad') && val === null) ||
                   (typeof val === 'number' &&
                     val >= 0 &&
                     Number.isFinite(val) &&
@@ -289,13 +341,58 @@ export class ClassicCommandProcessor {
       case '/url': {
         switch (method) {
           case 'GET':
-            return this.#browsingContextProcessor.classicGetUrl();
+            return await this.#browsingContextProcessor.classicGetUrl();
           case 'POST': {
             const params = body as {url?: unknown} | undefined;
             return await this.#browsingContextProcessor.classicNavigate(
               params?.url,
             );
           }
+          default:
+            break;
+        }
+        break;
+      }
+      case '/back': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicBack();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/forward': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicForward();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/refresh': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicRefresh();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/title': {
+        switch (method) {
+          case 'GET':
+            return await this.#browsingContextProcessor.classicGetTitle();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/source': {
+        switch (method) {
+          case 'GET':
+            return await this.#browsingContextProcessor.classicGetPageSource();
           default:
             break;
         }
@@ -343,11 +440,51 @@ export class ClassicCommandProcessor {
         }
         break;
       }
+      case '/window/rect': {
+        switch (method) {
+          case 'GET':
+            return await this.#browsingContextProcessor.classicGetWindowRect();
+          case 'POST':
+            return await this.#browsingContextProcessor.classicSetWindowRect(
+              body,
+            );
+          default:
+            break;
+        }
+        break;
+      }
+      case '/window/maximize': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicMaximizeWindow();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/window/minimize': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicMinimizeWindow();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/window/fullscreen': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicFullscreenWindow();
+          default:
+            break;
+        }
+        break;
+      }
       case '/frame': {
         switch (method) {
           case 'POST': {
             const params = body as {id?: unknown} | undefined;
-            return this.#browsingContextProcessor.classicSwitchToFrame(
+            return await this.#browsingContextProcessor.classicSwitchToFrame(
               params ? (params.id === undefined ? null : params.id) : null,
             );
           }
@@ -391,6 +528,74 @@ export class ClassicCommandProcessor {
         switch (method) {
           case 'GET':
             return this.#browsingContextProcessor.classicGetAlertText();
+          case 'POST':
+            return await this.#browsingContextProcessor.classicSendAlertText(
+              body,
+            );
+          default:
+            break;
+        }
+        break;
+      }
+      case '/cookie': {
+        switch (method) {
+          case 'GET':
+            return await this.#storageProcessor.classicGetAllCookies();
+          case 'POST':
+            return await this.#storageProcessor.classicAddCookie(body);
+          case 'DELETE':
+            return await this.#storageProcessor.classicDeleteAllCookies();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/element': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicFindElement(
+              body,
+            );
+          default:
+            break;
+        }
+        break;
+      }
+      case '/elements': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicFindElements(
+              body,
+            );
+          default:
+            break;
+        }
+        break;
+      }
+      case '/element/active': {
+        switch (method) {
+          case 'GET':
+            return await this.#browsingContextProcessor.classicGetActiveElement();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/screenshot': {
+        switch (method) {
+          case 'GET':
+            return await this.#browsingContextProcessor.classicTakeScreenshot();
+          default:
+            break;
+        }
+        break;
+      }
+      case '/actions': {
+        switch (method) {
+          case 'POST':
+            return await this.#inputProcessor.classicPerformActions(body);
+          case 'DELETE':
+            return await this.#inputProcessor.classicReleaseActions();
           default:
             break;
         }
@@ -398,6 +603,177 @@ export class ClassicCommandProcessor {
       }
       default:
         break;
+    }
+    if (path.startsWith('/cookie/')) {
+      const cookieName = decodeURIComponent(path.substring('/cookie/'.length));
+      switch (method) {
+        case 'GET':
+          return await this.#storageProcessor.classicGetNamedCookie(cookieName);
+        case 'DELETE':
+          return await this.#storageProcessor.classicDeleteCookie(cookieName);
+        default:
+          break;
+      }
+    }
+
+    const elemMatch = path.match(
+      /^\/element\/([^/]+)\/(element|elements|shadow)$/,
+    );
+    if (elemMatch) {
+      const elementId = decodeURIComponent(elemMatch[1]!);
+      const subAction = elemMatch[2];
+      if (method === 'POST' && subAction === 'element') {
+        return await this.#browsingContextProcessor.classicFindElement(
+          body,
+          elementId,
+        );
+      }
+      if (method === 'POST' && subAction === 'elements') {
+        return await this.#browsingContextProcessor.classicFindElements(
+          body,
+          elementId,
+        );
+      }
+      if (method === 'GET' && subAction === 'shadow') {
+        return await this.#browsingContextProcessor.classicGetElementShadowRoot(
+          elementId,
+        );
+      }
+    }
+
+    const elemSubMatch = path.match(
+      /^\/element\/([^/]+)\/(selected|text|name|rect|enabled|computedlabel|computedrole|screenshot|click|clear|value)$/,
+    );
+    if (elemSubMatch) {
+      const elementId = decodeURIComponent(elemSubMatch[1]!);
+      const subAction = elemSubMatch[2];
+      if (method === 'GET') {
+        switch (subAction) {
+          case 'selected':
+            return await this.#browsingContextProcessor.classicIsElementSelected(
+              elementId,
+            );
+          case 'text':
+            return await this.#browsingContextProcessor.classicGetElementText(
+              elementId,
+            );
+          case 'name':
+            return await this.#browsingContextProcessor.classicGetElementTagName(
+              elementId,
+            );
+          case 'rect':
+            return await this.#browsingContextProcessor.classicGetElementRect(
+              elementId,
+            );
+          case 'enabled':
+            return await this.#browsingContextProcessor.classicIsElementEnabled(
+              elementId,
+            );
+          case 'computedlabel':
+            return await this.#browsingContextProcessor.classicGetComputedLabel(
+              elementId,
+            );
+          case 'computedrole':
+            return await this.#browsingContextProcessor.classicGetComputedRole(
+              elementId,
+            );
+          case 'screenshot':
+            return await this.#browsingContextProcessor.classicTakeElementScreenshot(
+              elementId,
+            );
+          default:
+            break;
+        }
+      } else if (method === 'POST') {
+        switch (subAction) {
+          case 'click':
+            return await this.#browsingContextProcessor.classicElementClick(
+              elementId,
+            );
+          case 'clear':
+            return await this.#browsingContextProcessor.classicElementClear(
+              elementId,
+            );
+          case 'value': {
+            const bodyObj =
+              typeof body === 'object' && body !== null
+                ? (body as Record<string, unknown>)
+                : undefined;
+            const textParam = bodyObj
+              ? (bodyObj['text'] ??
+                (Array.isArray(bodyObj['value'])
+                  ? (bodyObj['value'] as string[]).join('')
+                  : bodyObj['value']))
+              : undefined;
+            if (typeof textParam !== 'string') {
+              return {
+                status: 400,
+                body: {
+                  value: {
+                    error: 'invalid argument',
+                    message: 'text or value must be a string',
+                    stacktrace: '',
+                  },
+                },
+              };
+            }
+            return await this.#browsingContextProcessor.classicElementValue(
+              elementId,
+              textParam,
+            );
+          }
+          default:
+            break;
+        }
+      }
+    }
+
+    const elemParamMatch = path.match(
+      /^\/element\/([^/]+)\/(attribute|property|css)\/([^/]+)$/,
+    );
+    if (elemParamMatch && method === 'GET') {
+      const elementId = decodeURIComponent(elemParamMatch[1]!);
+      const subAction = elemParamMatch[2];
+      const paramName = decodeURIComponent(elemParamMatch[3]!);
+      switch (subAction) {
+        case 'attribute':
+          return await this.#browsingContextProcessor.classicGetElementAttribute(
+            elementId,
+            paramName,
+          );
+        case 'property':
+          return await this.#browsingContextProcessor.classicGetElementProperty(
+            elementId,
+            paramName,
+          );
+        case 'css':
+          return await this.#browsingContextProcessor.classicGetElementCSSValue(
+            elementId,
+            paramName,
+          );
+        default:
+          break;
+      }
+    }
+
+    const shadowMatch = path.match(/^\/shadow\/([^/]+)\/(element|elements)$/);
+    if (shadowMatch) {
+      const shadowId = decodeURIComponent(shadowMatch[1]!);
+      const subAction = shadowMatch[2];
+      if (method === 'POST' && subAction === 'element') {
+        return await this.#browsingContextProcessor.classicFindElement(
+          body,
+          shadowId,
+          true,
+        );
+      }
+      if (method === 'POST' && subAction === 'elements') {
+        return await this.#browsingContextProcessor.classicFindElements(
+          body,
+          shadowId,
+          true,
+        );
+      }
     }
     return {
       status: 404,

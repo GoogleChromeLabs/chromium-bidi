@@ -40,7 +40,7 @@ class MockClassicTransport implements ClassicTransport {
     this.onMessage = onMessage;
   }
 
-  async sendMessage(response: ClassicResponse): Promise<void> {
+  sendMessage(response: ClassicResponse): void {
     this.lastSentResponse = response;
   }
 
@@ -108,5 +108,127 @@ describe('ClassicCommandProcessor', () => {
     });
     assert.equal(res.status, 404);
     assert.equal((res.body.value as any).error, 'no such window');
+  });
+
+  it('should return 404 no such window for navigation endpoints when no active context', async () => {
+    for (const path of ['/back', '/forward', '/refresh']) {
+      const res = await processor.processCommand({
+        id: `test-${path}`,
+        method: 'POST',
+        path,
+      });
+      assert.equal(res.status, 404);
+      assert.equal((res.body.value as any).error, 'no such window');
+    }
+  });
+
+  it('should return 404 no such window for document endpoints when no active context', async () => {
+    for (const path of ['/title', '/source']) {
+      const res = await processor.processCommand({
+        id: `test-${path}`,
+        method: 'GET',
+        path,
+      });
+      assert.equal(res.status, 404);
+      assert.equal((res.body.value as any).error, 'no such window');
+    }
+  });
+
+  it('should return status ready on GET /status', async () => {
+    const res = await processor.processCommand({
+      id: 'test-status',
+      method: 'GET',
+      path: '/status',
+    });
+    assert.equal(res.status, 200);
+    assert.isTrue((res.body.value as any).ready);
+  });
+
+  it('should return session result on POST /session and DELETE /session', async () => {
+    const postRes = await processor.processCommand({
+      id: 'test-session-post',
+      method: 'POST',
+      path: '/session',
+    });
+    assert.equal(postRes.status, 200);
+    assert.equal((postRes.body.value as any).sessionId, 'default');
+
+    const delRes = await processor.processCommand({
+      id: 'test-session-del',
+      method: 'DELETE',
+      path: '/session',
+    });
+    assert.equal(delRes.status, 200);
+    assert.isNull(delRes.body.value);
+  });
+
+  it('should return 404 no such window for window rect/state endpoints when no active context', async () => {
+    for (const path of [
+      '/window/rect',
+      '/window/maximize',
+      '/window/minimize',
+      '/window/fullscreen',
+    ]) {
+      const method = path === '/window/rect' ? 'GET' : 'POST';
+      const res = await processor.processCommand({
+        id: `test-${path}`,
+        method,
+        path,
+      });
+      assert.equal(res.status, 404);
+      assert.equal((res.body.value as any).error, 'no such window');
+    }
+  });
+
+  it('should return 400 for POST /alert/text without a string text parameter', async () => {
+    const res = await processor.processCommand({
+      id: 'test-alert-text-invalid',
+      method: 'POST',
+      path: '/alert/text',
+      body: {},
+    });
+    assert.equal(res.status, 400);
+    assert.equal((res.body.value as any).error, 'invalid argument');
+  });
+
+  it('should return 404 no such window for cookie endpoints when no active context', async () => {
+    for (const {method, path} of [
+      {method: 'GET', path: '/cookie'},
+      {method: 'POST', path: '/cookie'},
+      {method: 'DELETE', path: '/cookie'},
+      {method: 'GET', path: '/cookie/testCookie'},
+      {method: 'DELETE', path: '/cookie/testCookie'},
+    ]) {
+      const res = await processor.processCommand({
+        id: `test-cookie-${method}-${path}`,
+        method,
+        path,
+        body: method === 'POST' ? {cookie: {name: 'test', value: 'val'}} : {},
+      });
+      assert.equal(res.status, 404);
+      assert.equal((res.body.value as any).error, 'no such window');
+    }
+  });
+
+  it('should return 404 no such window for element finding endpoints when no active context', async () => {
+    for (const {method, path} of [
+      {method: 'POST', path: '/element'},
+      {method: 'POST', path: '/elements'},
+      {method: 'GET', path: '/element/active'},
+      {method: 'POST', path: '/element/e123/element'},
+      {method: 'POST', path: '/element/e123/elements'},
+      {method: 'GET', path: '/element/e123/shadow'},
+      {method: 'POST', path: '/shadow/s123/element'},
+      {method: 'POST', path: '/shadow/s123/elements'},
+    ]) {
+      const res = await processor.processCommand({
+        id: `test-elem-${method}-${path}`,
+        method,
+        path,
+        body: method === 'POST' ? {using: 'css selector', value: 'div'} : {},
+      });
+      assert.equal(res.status, 404);
+      assert.equal((res.body.value as any).error, 'no such window');
+    }
   });
 });

@@ -24,6 +24,7 @@ import {
   NoSuchNodeException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {ActionDispatcher} from '../input/ActionDispatcher.js';
 import type {ActionOption} from '../input/ActionOption.js';
@@ -31,13 +32,20 @@ import {SourceType} from '../input/InputSource.js';
 import type {InputState} from '../input/InputState.js';
 import {InputStateManager} from '../input/InputStateManager.js';
 
+import type {ClassicResponse} from '../../ClassicTransport.js';
+
 export class InputProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #getActiveContext?: () => Promise<BrowsingContextImpl | undefined>;
 
   readonly #inputStateManager = new InputStateManager();
 
-  constructor(browsingContextStorage: BrowsingContextStorage) {
+  constructor(
+    browsingContextStorage: BrowsingContextStorage,
+    getActiveContext?: () => Promise<BrowsingContextImpl | undefined>,
+  ) {
     this.#browsingContextStorage = browsingContextStorage;
+    this.#getActiveContext = getActiveContext;
   }
 
   async performActions(
@@ -71,6 +79,116 @@ export class InputProcessor {
     await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
     this.#inputStateManager.delete(topContext);
     return {};
+  }
+
+  async classicPerformActions(body: unknown): Promise<ClassicResponse> {
+    const context = this.#getActiveContext
+      ? await this.#getActiveContext()
+      : this.#browsingContextStorage.getActiveContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    const params = body as {actions?: unknown} | undefined;
+    if (!params || !Array.isArray(params.actions)) {
+      return {
+        status: 400,
+        body: {
+          value: {
+            error: 'invalid argument',
+            message: 'actions must be an array',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      await this.performActions({
+        context: context.id,
+        actions: params.actions as any,
+      });
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    } catch (e: unknown) {
+      if (
+        e instanceof InvalidArgumentException ||
+        e instanceof NoSuchElementException ||
+        e instanceof NoSuchNodeException
+      ) {
+        return {
+          status:
+            e instanceof NoSuchElementException ||
+            e instanceof NoSuchNodeException
+              ? 404
+              : 400,
+          body: {
+            value: {
+              error: e.error,
+              message: e.message,
+              stacktrace: e.stack ?? '',
+            },
+          },
+        };
+      }
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  async classicReleaseActions(): Promise<ClassicResponse> {
+    const context = this.#getActiveContext
+      ? await this.#getActiveContext()
+      : this.#browsingContextStorage.getActiveContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      await this.releaseActions({context: context.id});
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
   }
 
   async setFiles(params: Input.SetFilesParameters): Promise<EmptyResult> {

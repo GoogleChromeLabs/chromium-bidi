@@ -26,7 +26,10 @@ import type {LoggerFn} from '../../../utils/log.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
-import {type EventManager, EventManagerEvents} from '../session/EventManager.js';
+import {
+  type EventManager,
+  EventManagerEvents,
+} from '../session/EventManager.js';
 
 import type {ClassicResponse} from '../../ClassicTransport.js';
 import {PreloadScript} from './PreloadScript.js';

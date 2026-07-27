@@ -189,6 +189,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       if (res.kind === 'success') {
         this.emit(EventManagerEvents.RegisteredEvent, res.value);
       }
+      return undefined;
     });
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedGoogChannels =
@@ -215,6 +216,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       if (res.kind === 'success') {
         this.emit(EventManagerEvents.RegisteredEvent, res.value);
       }
+      return undefined;
     });
     const eventWrapper = new EventWrapper(event, null);
     const sortedGoogChannels =
