@@ -443,6 +443,17 @@ export class StorageProcessor {
         const url = new URL(context.url);
         domain = url.hostname;
       }
+      let sameSite: Network.SameSite | undefined;
+      if (typeof cookie['sameSite'] === 'string') {
+        const ss = (cookie['sameSite'] as string).toLowerCase();
+        if (ss === 'lax') {
+          sameSite = Network.SameSite.Lax;
+        } else if (ss === 'strict') {
+          sameSite = Network.SameSite.Strict;
+        } else if (ss === 'none') {
+          sameSite = Network.SameSite.None;
+        }
+      }
       await this.setCookie({
         cookie: {
           name: cookie['name'] as string,
@@ -463,6 +474,7 @@ export class StorageProcessor {
           ...(typeof cookie['expiry'] === 'number'
             ? {expiry: cookie['expiry'] as number}
             : {}),
+          ...(sameSite ? {sameSite} : {}),
         },
         partition: {type: 'context', context: context.id},
       });

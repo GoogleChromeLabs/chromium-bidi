@@ -725,7 +725,7 @@ export class BrowsingContextProcessor {
   }
 
   async classicGetWindowRect(): Promise<ClassicResponse> {
-    const context = this.#browsingContextStorage.getActiveContext();
+    const context = await this.classicGetActiveContext();
     if (!context) {
       return {
         status: 404,
@@ -770,7 +770,7 @@ export class BrowsingContextProcessor {
   }
 
   async classicSetWindowRect(rectInput: unknown): Promise<ClassicResponse> {
-    const context = this.#browsingContextStorage.getActiveContext();
+    const context = await this.classicGetActiveContext();
     if (!context) {
       return {
         status: 404,
@@ -1887,6 +1887,48 @@ export class BrowsingContextProcessor {
       const result = await context.top.captureScreenshot({
         context: context.top.id,
         origin: 'viewport',
+      });
+      return {
+        status: 200,
+        body: {
+          value: result.data,
+        },
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  async classicPrintPage(params: unknown): Promise<ClassicResponse> {
+    const context = await this.classicGetActiveContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      const printParams =
+        (params as BrowsingContext.PrintParameters | undefined) ?? {};
+      const result = await context.top.print({
+        context: context.top.id,
+        ...printParams,
       });
       return {
         status: 200,

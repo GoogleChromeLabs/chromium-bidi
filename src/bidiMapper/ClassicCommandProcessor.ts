@@ -601,6 +601,15 @@ export class ClassicCommandProcessor {
         }
         break;
       }
+      case '/print': {
+        switch (method) {
+          case 'POST':
+            return await this.#browsingContextProcessor.classicPrintPage(body);
+          default:
+            break;
+        }
+        break;
+      }
       default:
         break;
     }
@@ -773,6 +782,17 @@ export class ClassicCommandProcessor {
           shadowId,
           true,
         );
+      }
+    }
+
+    const cookieMatch = path.match(/^\/cookie\/([^/]+)$/);
+    if (cookieMatch) {
+      const cookieName = decodeURIComponent(cookieMatch[1]!);
+      if (method === 'GET') {
+        return await this.#storageProcessor.classicGetNamedCookie(cookieName);
+      }
+      if (method === 'DELETE') {
+        return await this.#storageProcessor.classicDeleteCookie(cookieName);
       }
     }
     return {
