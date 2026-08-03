@@ -43,6 +43,7 @@ import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpToBiDiCookie,
   computeHeadersSize,
+  deserializeByteValue,
   getTiming,
   networkHeaderFromCookieHeaders,
   stringToBase64,
@@ -92,7 +93,6 @@ export class NetworkRequest {
     url?: string;
     method?: string;
     headers?: Network.Header[];
-    cookies?: Network.CookieHeader[];
     bodySize?: number;
   };
 
@@ -241,15 +241,35 @@ export class NetworkRequest {
   }
 
   get #cookies() {
-    let cookies: Network.Cookie[] = [];
-    if (this.#request.extraInfo) {
-      cookies = this.#request.extraInfo.associatedCookies
-        .filter(({blockedReasons}) => {
-          return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
-        })
-        .map(({cookie}) => cdpToBiDiCookie(cookie));
+    const associatedCookies =
+      this.#request.extraInfo?.associatedCookies.filter(({blockedReasons}) => {
+        return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
+      }) ?? [];
+    const overrideHeaders = this.#requestOverrides?.headers;
+    if (overrideHeaders === undefined) {
+      return associatedCookies.map(({cookie}) => cdpToBiDiCookie(cookie));
     }
-    return cookies;
+
+    const cookieNames = new Set<string>();
+    for (const header of overrideHeaders) {
+      if (
+        header.name.localeCompare('cookie', undefined, {
+          sensitivity: 'base',
+        }) !== 0
+      ) {
+        continue;
+      }
+      for (const cookie of deserializeByteValue(header.value).split(';')) {
+        const separatorIndex = cookie.indexOf('=');
+        if (separatorIndex !== -1) {
+          cookieNames.add(cookie.slice(0, separatorIndex).trim());
+        }
+      }
+    }
+
+    return associatedCookies
+      .filter(({cookie}) => cookieNames.has(cookie.name))
+      .map(({cookie}) => cdpToBiDiCookie(cookie));
   }
 
   #getBodySizeFromHeaders(
@@ -739,8 +759,7 @@ export class NetworkRequest {
     this.#requestOverrides = {
       url: overrides.url,
       method: overrides.method,
-      headers: overrides.headers,
-      cookies: overrides.cookies,
+      headers: overrideHeaders,
       bodySize: getSizeFromBiDiBytesValue(overrides.body),
     };
   }
@@ -1187,13 +1206,13 @@ export class NetworkRequest {
     if (!headers && !cookies) {
       return undefined;
     }
-    let overrideHeaders: Network.Header[] | undefined = headers;
+    let overrideHeaders = headers === undefined ? undefined : [...headers];
     const cookieHeader = networkHeaderFromCookieHeaders(cookies);
     if (cookieHeader && !overrideHeaders) {
-      overrideHeaders = this.#requestHeaders;
+      overrideHeaders = [...this.#requestHeaders];
     }
     if (cookieHeader && overrideHeaders) {
-      overrideHeaders.filter(
+      overrideHeaders = overrideHeaders.filter(
         (header) =>
           header.name.localeCompare('cookie', undefined, {
             sensitivity: 'base',

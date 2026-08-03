@@ -17,6 +17,7 @@
  */
 import {describe, it, beforeEach} from 'node:test';
 import {assert} from 'chai';
+import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {ChromiumBidi, Network} from '../../../protocol/protocol.js';
@@ -44,6 +45,29 @@ function logger(...args: any[]) {
     };
   }
   return;
+}
+
+function createAssociatedCookie(
+  name: string,
+  value: string,
+): Protocol.Network.AssociatedCookie {
+  return {
+    cookie: {
+      name,
+      value,
+      domain: '.google.com',
+      path: '/',
+      expires: -1,
+      size: name.length + value.length + 1,
+      httpOnly: false,
+      secure: false,
+      session: true,
+      priority: 'Medium',
+      sourceScheme: 'NonSecure',
+      sourcePort: 80,
+    },
+    blockedReasons: [],
+  };
 }
 
 describe('NetworkStorage', () => {
@@ -484,6 +508,144 @@ describe('NetworkStorage', () => {
   });
 
   describe('overrides', () => {
+    async function continueRequestAndGetResponse(
+      overrides: Omit<Network.ContinueRequestParameters, 'request'>,
+      associatedCookies: Protocol.Network.AssociatedCookie[] = [],
+    ) {
+      const request = new MockCdpNetworkEvents(cdpClient);
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      request.requestWillBeSent();
+      request.requestWillBeSentExtraInfo(associatedCookies);
+      request.requestPaused();
+
+      const networkRequest = networkStorage.getRequestById(request.requestId)!;
+      await networkRequest.continueRequest(overrides);
+
+      request.responseReceived();
+      request.responseReceivedExtraInfo();
+      request.loadingFinished();
+
+      const event = await getEvent('network.responseCompleted');
+      assert.exists(event);
+      return event as Network.ResponseCompletedParameters;
+    }
+
+    const storedCookies = [
+      createAssociatedCookie('a', 'from-store-a'),
+      createAssociatedCookie('b', 'from-store-b'),
+    ];
+
+    const cookieOverrideCases: {
+      name: string;
+      overrides: Omit<Network.ContinueRequestParameters, 'request'>;
+      expectedCookies: {name: string; value: string}[];
+    }[] = [
+      {
+        name: 'keeps associated cookies without header overrides',
+        overrides: {method: 'POST'},
+        expectedCookies: [
+          {name: 'a', value: 'from-store-a'},
+          {name: 'b', value: 'from-store-b'},
+        ],
+      },
+      {
+        name: 'removes associated cookies for an empty cookie override',
+        overrides: {cookies: []},
+        expectedCookies: [],
+      },
+      {
+        name: 'keeps metadata only for associated cookie names that remain',
+        overrides: {
+          cookies: [
+            {name: 'b', value: {type: 'string', value: 'from-command-b'}},
+            {name: 'c', value: {type: 'string', value: 'from-command-c'}},
+          ],
+        },
+        expectedCookies: [{name: 'b', value: 'from-store-b'}],
+      },
+      {
+        name: 'does not invent metadata for override-only cookies',
+        overrides: {
+          cookies: [
+            {name: 'c', value: {type: 'string', value: 'from-command-c'}},
+          ],
+        },
+        expectedCookies: [],
+      },
+      {
+        name: 'uses explicit Cookie headers to select associated cookies',
+        overrides: {
+          headers: [
+            {
+              name: 'Cookie',
+              value: {type: 'string', value: 'b=from-header;c=from-header'},
+            },
+          ],
+        },
+        expectedCookies: [{name: 'b', value: 'from-store-b'}],
+      },
+      {
+        name: 'removes associated cookies with an empty header override',
+        overrides: {headers: []},
+        expectedCookies: [],
+      },
+    ];
+
+    for (const {name, overrides, expectedCookies} of cookieOverrideCases) {
+      it(name, async () => {
+        const event = await continueRequestAndGetResponse(
+          overrides,
+          storedCookies,
+        );
+
+        assert.deepEqual(
+          event.request.cookies.map((cookie) => ({
+            name: cookie.name,
+            value: cookie.value.value,
+          })),
+          expectedCookies,
+        );
+      });
+    }
+
+    it('does not mutate caller-owned headers when overriding cookies', async () => {
+      const headers: Network.Header[] = [
+        {
+          name: 'Cookie',
+          value: {type: 'string', value: 'a=from-header'},
+        },
+        {
+          name: 'X-Test',
+          value: {type: 'string', value: 'original'},
+        },
+      ];
+      const originalHeaders = structuredClone(headers);
+
+      const event = await continueRequestAndGetResponse({
+        headers,
+        cookies: [{name: 'b', value: {type: 'string', value: 'from-command'}}],
+      });
+
+      assert.deepEqual(headers, originalHeaders);
+      assert.deepEqual(
+        event.request.headers.filter(
+          (header) => header.name.toLowerCase() === 'cookie',
+        ),
+        [
+          {
+            name: 'Cookie',
+            value: {type: 'string', value: 'b=from-command'},
+          },
+        ],
+      );
+    });
+
     it('should show correct URL for response', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
       const overrideUrl = `${request.url}/override`;
