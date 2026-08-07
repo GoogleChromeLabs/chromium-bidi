@@ -11,6 +11,7 @@ This file provides context for the Gemini AI code assistant.
 ## Git Workflow
 
 - Do not commit, pull, or push unless explicitly asked.
+- Always run `npm run format` (or `npm run format:prettier` if global tools like `keep-sorted` are missing) before committing to ensure all modified files (including documentation) are correctly formatted.
 
 ## Common Commands
 
@@ -92,3 +93,21 @@ WebDriver BiDi CDDL. Run the following steps to fix it:
 5.  **Run `npm run build` and `npm run format`** to verify the fix.
 6.  **Do not commit the changes.**
 7.  **Do not run e2e tests for this kind of fixes.**
+
+## Dependency Updates (node_modules & GCS)
+
+The project manages `node_modules` using `gclient` with archives stored in a GCS bucket (`chromium-nodejs`). Whenever you update dependencies (resulting in changes to `package.json` or `package-lock.json`):
+
+1.  Run `npm install` to update `package-lock.json` locally.
+2.  Run `tools/update_node_modules.mjs --force` to filter, upload the updated `node_modules` to GCS, and automatically update the `DEPS` file.
+3.  Commit both the dependency files (`package.json`, `package-lock.json`) and the updated `DEPS` file in your PR.
+4.  Run `./third_party/depot_tools/gclient sync` (adding `depot_tools` to your `PATH` if necessary) to ensure your local environment is synchronized.
+
+## Architecture & CDP Configuration
+
+To prevent race conditions where page scripts execute before target-level configurations are applied:
+
+- **Target Initialization:** Always apply initial target configurations (e.g., emulation overrides, setting virtual wallet behaviors) inside `CdpTarget.#unblock` (specifically within `#setUserContextConfig` or similar helper methods).
+- **Timing:** These configurations must be sent to the browser _before_ the `Runtime.runIfWaitingForDebugger` command is executed to ensure they are active when the page starts running.
+- **Avoid Async Post-Unblock Setup:** Do not apply initial target-wide configurations asynchronously in `BrowsingContextImpl` after `targetUnblockedOrThrow()` resolves, as this occurs after the target has already been resumed.
+- **Same-Process Subframes:** For same-process subframes (which do not trigger a new target unblocking), apply configurations immediately upon context creation in `BrowsingContextImpl.create` to set them as early as possible.

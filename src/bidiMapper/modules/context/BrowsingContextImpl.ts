@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 import {
   BrowsingContext,
   ChromiumBidi,
+  DigitalCredentials,
   type Emulation,
   InvalidArgumentException,
   InvalidSelectorException,
@@ -55,6 +56,11 @@ import {
   type NavigationState,
   NavigationTracker,
 } from './NavigationTracker.js';
+
+type DigitalCredentialsBehavior = Omit<
+  DigitalCredentials.SetVirtualWalletBehaviorParameters,
+  'context'
+>;
 
 export class BrowsingContextImpl {
   static readonly LOGGER_PREFIX = `${LogType.debug}:browsingContext` as const;
@@ -160,6 +166,9 @@ export class BrowsingContextImpl {
     browsingContextStorage.addContext(context);
     if (!context.isTopLevelContext()) {
       context.parent!.addChild(context.id);
+      if (context.cdpTarget === context.parent!.cdpTarget) {
+        void context.applyDigitalCredentialsBehavior();
+      }
     }
 
     // Hold on the `contextCreated` event until the target is unblocked. This is required,
@@ -339,6 +348,39 @@ export class BrowsingContextImpl {
     if (result.kind === 'error') {
       throw result.error;
     }
+  }
+
+  async applyDigitalCredentialsBehavior() {
+    const behavior = this.#resolveDigitalCredentialsBehavior();
+    const action =
+      behavior?.action ?? DigitalCredentials.VirtualWalletAction.Clear;
+    const protocol = behavior?.protocol;
+    const response = behavior?.response;
+
+    try {
+      await this.cdpTarget.cdpClient.sendCommand(
+        'DigitalCredentials.setVirtualWalletBehavior',
+        {
+          action,
+          protocol,
+          response,
+          frameId: this.id,
+        },
+      );
+    } catch {
+      // Ignore
+    }
+  }
+
+  #resolveDigitalCredentialsBehavior():
+    | DigitalCredentialsBehavior
+    | null
+    | undefined {
+    const config = this.#configStorage.getActiveConfig(
+      this.id,
+      this.userContext,
+    );
+    return config.digitalCredentialsBehavior;
   }
 
   /** Returns a sandbox for internal helper scripts which is not exposed to the user.*/
