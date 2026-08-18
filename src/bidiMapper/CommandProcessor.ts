@@ -364,6 +364,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#emulationProcessor.setLocaleOverride(
           this.#parser.parseSetLocaleOverrideParams(command.params),
         );
+      case 'emulation.setMediaFeaturesOverride':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'emulation.setNetworkConditions':
         return await this.#emulationProcessor.setNetworkConditions(
           this.#parser.parseSetNetworkConditionsParams(command.params),
@@ -395,6 +399,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'emulation.setUserAgentOverride':
         return await this.#emulationProcessor.setUserAgentOverrideParams(
           this.#parser.parseSetUserAgentOverrideParams(command.params),
+        );
+      case 'emulation.setViewportMetaOverride':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
         );
       case 'userAgentClientHints.setClientHintsOverride':
         return await this.#emulationProcessor.setClientHintsOverride(
