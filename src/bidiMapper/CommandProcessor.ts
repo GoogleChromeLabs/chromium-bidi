@@ -365,6 +365,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetLocaleOverrideParams(command.params),
         );
       case 'emulation.setMediaFeaturesOverride':
+        this.#parser.parseSetMediaFeaturesOverrideParams(command.params);
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );
@@ -401,6 +402,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetUserAgentOverrideParams(command.params),
         );
       case 'emulation.setViewportMetaOverride':
+        this.#parser.parseSetViewportMetaOverrideParams(command.params);
         throw new UnknownErrorException(
           `Method ${command.method} is not implemented.`,
         );
