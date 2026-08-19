@@ -117,8 +117,13 @@ async function runCddlConv(file, options) {
   const cddlConv = await runCommand('cddlconv', options);
   let output = `${FILE_HEADER}${cddlConv}`;
 
+  const isZod = options.includes('zod');
+  if (isZod) {
+    // Work around cddlconv bug: quoted map keys in CDDL are emitted as `[z.literal('key')]:` instead of `'key':`.
+    output = output.replaceAll(/\[z\.literal\((['"`].*?['"`])\)\]\s*:/g, '$1:');
+  }
+
   if (!file.endsWith('webdriver-bidi.ts')) {
-    const isZod = options.includes('zod');
     if (isZod) {
       if (output.includes('EmptyResultSchema')) {
         output = output.replace(
