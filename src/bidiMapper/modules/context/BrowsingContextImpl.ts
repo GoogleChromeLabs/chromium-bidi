@@ -1931,6 +1931,17 @@ export class BrowsingContextImpl {
     );
   }
 
+  async setMediaFeaturesOverride(
+    mediaFeatures: Emulation.MediaFeatures | null,
+  ): Promise<void> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) =>
+          await cdpTarget.setMediaFeaturesOverride(mediaFeatures),
+      ),
+    );
+  }
+
   async setGeolocationOverride(
     geolocation:
       | Emulation.GeolocationCoordinates

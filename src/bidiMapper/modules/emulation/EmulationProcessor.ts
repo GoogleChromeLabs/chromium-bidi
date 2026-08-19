@@ -168,6 +168,50 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setMediaFeaturesOverride(
+    params: Emulation.SetMediaFeaturesOverrideParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+      true,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          mediaFeatures: params.features,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        mediaFeatures: params.features,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        mediaFeatures: params.features,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setMediaFeaturesOverride(config.mediaFeatures ?? null);
+      }),
+    );
+    return {};
+  }
+
   async setScriptingEnabled(
     params: Emulation.SetScriptingEnabledParameters,
   ): Promise<EmptyResult> {

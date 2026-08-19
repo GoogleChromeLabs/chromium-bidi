@@ -675,6 +675,10 @@ export class CdpTarget {
       promises.push(this.setLocaleOverride(config.locale));
     }
 
+    if (config.mediaFeatures !== undefined) {
+      promises.push(this.setMediaFeaturesOverride(config.mediaFeatures));
+    }
+
     if (config.timezone !== undefined) {
       promises.push(this.setTimezoneOverride(config.timezone));
     }
@@ -893,6 +897,31 @@ export class CdpTarget {
         locale,
       });
     }
+  }
+
+  async setMediaFeaturesOverride(
+    mediaFeatures: Emulation.MediaFeatures | null,
+  ): Promise<void> {
+    if (mediaFeatures === null) {
+      await this.cdpClient.sendCommand('Emulation.setEmulatedMedia', {
+        features: [],
+      });
+      return;
+    }
+
+    const features: Protocol.Emulation.MediaFeature[] = [];
+    for (const [name, value] of Object.entries(mediaFeatures)) {
+      if (value !== null && value !== undefined) {
+        features.push({
+          name,
+          value: String(value),
+        });
+      }
+    }
+
+    await this.cdpClient.sendCommand('Emulation.setEmulatedMedia', {
+      features,
+    });
   }
 
   async setScriptingEnabled(scriptingEnabled: false | null): Promise<void> {

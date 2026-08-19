@@ -182,6 +182,8 @@ if (RUN_TESTS === 'true') {
     RETRY_UNEXPECTED,
     '--repeat',
     REPEAT_TESTS,
+    // Only run wdspec tests to avoid installing non-wdspec dependencies (e.g. accessibility/PyGObject).
+    '--test-types=wdspec',
   ];
 
   if (VERBOSE === 'true') {
