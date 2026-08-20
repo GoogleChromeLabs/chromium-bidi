@@ -56,10 +56,10 @@ deps = {
     'bucket': 'chromium-nodejs',
     'objects': [
       {
-        'object_name': 'chromium-bidi/526ef97431b66c282089062fdd341d18bb910ada6892357055fbc4af12ba16ff',
-        'sha256sum': '526ef97431b66c282089062fdd341d18bb910ada6892357055fbc4af12ba16ff',
-        'size_bytes': 18761659,
-        'generation': 1787135173870463,
+        'object_name': 'chromium-bidi/44feabc05241c62ee23b600a188abc73bb4d4b41e6b41232d69fdd2b06e0b9cb',
+        'sha256sum': '44feabc05241c62ee23b600a188abc73bb4d4b41e6b41232d69fdd2b06e0b9cb',
+        'size_bytes': 20035504,
+        'generation': 1787229891787070,
         'output_file': 'node_modules.tar.gz',
       },
     ],
