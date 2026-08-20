@@ -29,7 +29,7 @@ fi
 # Check cargo / cddlconv dependency
 if ! command -v cddlconv &> /dev/null; then
   echo "Error: 'cddlconv' is required but not installed." >&2
-  echo "Please install it using cargo: 'cargo install cddlconv@0.1.7'" >&2
+  echo "Please install it using cargo: 'cargo install cddlconv@0.1.9'" >&2
   exit 1
 fi
 
