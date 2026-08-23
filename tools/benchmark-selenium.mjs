@@ -31,8 +31,8 @@ import {
   BENCHMARK_HTML,
 } from './benchmark-utils.mjs';
 import {
-  getChromePath,
-  getChromeDriverPath,
+  installAndGetChromePath,
+  installAndGetChromeDriverPath,
   getBidiMapperPath,
 } from './path-getter/path-getter.mjs';
 
@@ -138,8 +138,8 @@ async function runBenchmarkRun(
 }
 
 async function main() {
-  const chromePath = getChromePath();
-  const chromeDriverPath = getChromeDriverPath();
+  const chromePath = installAndGetChromePath(true);
+  const chromeDriverPath = installAndGetChromeDriverPath();
   const bidiMapperPath = getBidiMapperPath();
 
   console.log(`Using Headless Shell: ${chromePath}`);

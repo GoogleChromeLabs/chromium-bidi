@@ -8,7 +8,6 @@ lib
 logs/
 node_modules/
 out/
-gen/
 wptreport*.json
 .vscode/*
 !.vscode/extensions.json
@@ -23,6 +22,7 @@ wptreport*.json
 MANIFEST.json
 coverage/
 *.cddl
+wpt-metadata/mapper/headful/webdriver/tests/bidi/
 *.tsbuildinfo
 **.code-workspace
 .agent/

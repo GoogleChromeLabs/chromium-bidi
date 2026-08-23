@@ -21,8 +21,8 @@ import {basename, join, resolve} from 'path';
 import {parseArgs} from 'node:util';
 
 import {
-  getChromeDriverPath,
-  getChromePath,
+  installAndGetChromeDriverPath,
+  installAndGetChromePath,
 } from './path-getter/path-getter.mjs';
 
 export function log(...message) {
@@ -52,13 +52,8 @@ export function createLogFile(suffix) {
 }
 
 export function parseCommandLineArgs() {
-  const args = process.argv.slice(2);
-  let parsedArgs = args;
-  while (parsedArgs.length > 0 && parsedArgs[0] === '--') {
-    parsedArgs = parsedArgs.slice(1);
-  }
   const {values, positionals} = parseArgs({
-    args: parsedArgs,
+    args: process.argv.slice(2),
     options: {
       k: {
         type: 'string',
@@ -74,19 +69,13 @@ export function parseCommandLineArgs() {
         type: 'string',
         default: String(process.env.RERUNS_TIMES || 0),
       },
-      'total-shards': {
+      'total-chunks': {
         type: 'string',
-        default: String(
-          process.env.GTEST_TOTAL_SHARDS ||
-            process.env.PYTEST_TOTAL_SHARDS ||
-            1,
-        ),
+        default: String(process.env.PYTEST_TOTAL_CHUNKS || 1),
       },
-      'shard-id': {
+      'this-chunk': {
         type: 'string',
-        default: String(
-          process.env.GTEST_SHARD_INDEX || process.env.PYTEST_SHARD_ID || 0,
-        ),
+        default: String(process.env.PYTEST_THIS_CHUNK || 0),
       },
       'gen-dir': {
         type: 'string',
@@ -96,14 +85,6 @@ export function parseCommandLineArgs() {
       },
       'python-spec': {
         type: 'string',
-      },
-      'browser-bin': {
-        type: 'string',
-        default: process.env.BROWSER_BIN,
-      },
-      'chromedriver-bin': {
-        type: 'string',
-        default: process.env.CHROMEDRIVER_BIN,
       },
     },
     allowPositionals: true,
@@ -116,13 +97,11 @@ export function parseCommandLineArgs() {
     s: values.s,
     'repeat-times': Number(values['repeat-times']),
     'reruns-times': Number(values['reruns-times']),
-    'total-shards': Number(values['total-shards']),
-    'shard-id': Number(values['shard-id']),
+    'total-chunks': Number(values['total-chunks']),
+    'this-chunk': Number(values['this-chunk']),
     'gen-dir': values['gen-dir'],
     'python-bin': values['python-bin'],
     'python-spec': values['python-spec'],
-    'browser-bin': values['browser-bin'],
-    'chromedriver-bin': values['chromedriver-bin'],
   };
 }
 
@@ -131,14 +110,7 @@ export function parseCommandLineArgs() {
  * @returns {child_process.ChildProcessWithoutNullStreams}
  */
 export function createBiDiServerProcess() {
-  const argv = parseCommandLineArgs();
-  if (argv['browser-bin']) {
-    process.env.BROWSER_BIN = argv['browser-bin'];
-  }
-  if (argv['chromedriver-bin']) {
-    process.env.CHROMEDRIVER_BIN = argv['chromedriver-bin'];
-  }
-  const BROWSER_BIN = getChromePath();
+  const BROWSER_BIN = installAndGetChromePath();
 
   const CHROMEDRIVER = process.env.CHROMEDRIVER === 'true';
 
@@ -151,12 +123,13 @@ export function createBiDiServerProcess() {
   const PORT = process.env.PORT || '8080';
   const VERBOSE = true;
 
+  const argv = parseCommandLineArgs();
   const GEN_DIR = argv['gen-dir'] || join('out', 'Default', 'gen');
 
   let runParams;
   if (CHROMEDRIVER) {
     runParams = {
-      file: getChromeDriverPath(),
+      file: installAndGetChromeDriverPath(),
       args: [
         `--port=${PORT}`,
         `--bidi-mapper-path=${resolve(join(GEN_DIR, 'src', 'mapperTab.js'))}`,
@@ -171,7 +144,7 @@ export function createBiDiServerProcess() {
     };
   } else {
     runParams = {
-      file: process.execPath,
+      file: 'node',
       args: [
         resolve(join(GEN_DIR, 'src', 'bidiServer', 'index.js')),
         ...process.argv.slice(2),

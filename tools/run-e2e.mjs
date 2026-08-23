@@ -29,22 +29,16 @@ import {
   log,
   getLogFileName,
 } from './bidi-server.mjs';
-import {getChromePath} from './path-getter/path-getter.mjs';
+import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 // Changing the current work directory to the package directory.
 process.chdir(join(import.meta.dirname, '..'));
 
 const argv = parseCommandLineArgs();
-if (argv['browser-bin']) {
-  process.env.BROWSER_BIN = argv['browser-bin'];
-}
-if (argv['chromedriver-bin']) {
-  process.env.CHROMEDRIVER_BIN = argv['chromedriver-bin'];
-}
 const LOG_FILE = createLogFile('e2e');
 const PYTEST_PREFIX = 'PyTest';
 
-const PYTEST_TOTAL_SHARDS = argv['total-shards'];
-const PYTEST_SHARD_ID = argv['shard-id'];
+const PYTEST_TOTAL_CHUNKS = argv['total-chunks'];
+const PYTEST_THIS_CHUNK = argv['this-chunk'];
 const UPDATE_SNAPSHOT = argv['update-snapshot'] === 'true';
 const REPEAT_TIMES = argv['repeat-times'];
 const RERUNS_TIMES = argv['reruns-times'];
@@ -142,16 +136,11 @@ const serverProcess = createBiDiServerProcess();
 
 if (serverProcess.stderr) {
   serverProcess.stderr.pipe(syncFileStreams);
-  if (process.env.VERBOSE === 'true') {
-    serverProcess.stderr.pipe(process.stderr);
-  }
 }
 
 if (serverProcess.stdout) {
   serverProcess.stdout.pipe(syncFileStreams);
-  if (process.env.VERBOSE === 'true') {
-    serverProcess.stdout.pipe(process.stdout);
-  }
+  serverProcess.stdout.pipe(process.stdout);
 }
 
 await matchLine(serverProcess).catch((error) => {
@@ -184,12 +173,12 @@ if (REPEAT_TIMES !== 1) {
 if (RERUNS_TIMES !== 0) {
   e2eArgs.push(`--reruns=${RERUNS_TIMES}`);
 }
-if (PYTEST_TOTAL_SHARDS > 1) {
+if (PYTEST_TOTAL_CHUNKS !== 1) {
   e2eArgs.push(
     '--num-shards',
-    String(PYTEST_TOTAL_SHARDS),
+    PYTEST_TOTAL_CHUNKS,
     '--shard-id',
-    String(PYTEST_SHARD_ID),
+    PYTEST_THIS_CHUNK,
   );
 }
 
@@ -221,8 +210,7 @@ const e2eProcess = child_process.spawn(pythonCommand, e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
   env: {
     ...process.env,
-    PYTHONUNBUFFERED: '1',
-    BROWSER_BIN: getChromePath(),
+    BROWSER_BIN: installAndGetChromePath(HEADLESS === 'old'),
     HEADLESS,
   },
 });

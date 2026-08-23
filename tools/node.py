@@ -28,20 +28,21 @@ def execute(cmd):
 
 
 def main():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    chromium_src = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
-    chromium_node_py = os.path.join(chromium_src, "third_party", "node",
-                                    "node.py")
+    node_bin = shutil.which("node")
 
-    if os.path.exists(chromium_node_py):
-        execute([sys.executable, chromium_node_py] + sys.argv[1:])
+    if node_bin:
+        execute([node_bin] + sys.argv[1:])
     else:
-        node_bin = shutil.which("node")
-        if node_bin:
-            execute([node_bin] + sys.argv[1:])
+        # Assuming this project is part of the chromium checkout at third_party/chromium-bidi
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        chromium_src = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
+        chromium_node_py = os.path.join(chromium_src, "third_party", "node", "node.py")
+
+        if os.path.exists(chromium_node_py):
+            execute([sys.executable, chromium_node_py] + sys.argv[1:])
         else:
             print(
-                f"Hermetic node not found at {chromium_node_py} and node not in PATH.",
+                f"node not found in PATH and {chromium_node_py} does not exist.",
                 file=sys.stderr,
             )
             sys.exit(1)

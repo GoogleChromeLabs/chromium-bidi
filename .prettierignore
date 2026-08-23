@@ -6,6 +6,7 @@ __pycache__
 .idea
 chromium-bidi-*
 chromium-bidi.iml
+*.py.ini
 lib/
 logs/
 node_modules/
@@ -13,6 +14,7 @@ wptreport*.json
 /tests/
 /wpt/
 /third_party/
+/wpt-metadata/*/
 
 # Prettier Specific
 CHANGELOG.md

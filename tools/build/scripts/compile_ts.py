@@ -41,24 +41,18 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(script_dir, "../../.."))
 
-    tsconfig_output_abs = os.path.abspath(args.tsconfig_output)
-    tsconfig_dir = os.path.dirname(tsconfig_output_abs)
-
-    # Convert all source files to relative paths
+    # Convert all source files to absolute paths
     sources = args.sources or []
-    rel_sources = [
-        os.path.relpath(os.path.abspath(src), tsconfig_dir) for src in sources
-    ]
+    abs_sources = [os.path.abspath(src) for src in sources]
 
     # Override configurations dynamically based on GN parameters
-    root_dir_abs = os.path.abspath(args.root_dir) if args.root_dir else repo_root
-    config["compilerOptions"]["outDir"] = os.path.relpath(
-        os.path.abspath(args.output_dir), tsconfig_dir
+    config["compilerOptions"]["outDir"] = os.path.abspath(args.output_dir)
+    config["compilerOptions"]["rootDir"] = (
+        os.path.abspath(args.root_dir) if args.root_dir else repo_root
     )
-    config["compilerOptions"]["rootDir"] = os.path.relpath(root_dir_abs, tsconfig_dir)
-    config["files"] = rel_sources
+    config["files"] = abs_sources
     config["compilerOptions"]["typeRoots"] = [
-        os.path.relpath(os.path.join(repo_root, "node_modules", "@types"), tsconfig_dir)
+        os.path.join(repo_root, "node_modules", "@types")
     ]
 
     if args.es_target:
@@ -72,20 +66,20 @@ def main():
         config["compilerOptions"].pop("composite", None)
         config.pop("references", None)
 
-    # Explicitly define the relative path for tsBuildInfoFile
+    # Explicitly define the flat absolute path for tsBuildInfoFile
+    tsconfig_output_abs = os.path.abspath(args.tsconfig_output)
     tsbuildinfo_name = os.path.basename(tsconfig_output_abs) + ".tsbuildinfo"
-    config["compilerOptions"]["tsBuildInfoFile"] = tsbuildinfo_name
+    config["compilerOptions"]["tsBuildInfoFile"] = os.path.join(
+        os.path.dirname(tsconfig_output_abs), tsbuildinfo_name
+    )
 
     # Map dependencies to tsconfig project references
     if args.deps:
         if not args.no_emit:
-            config["references"] = [
-                {"path": os.path.relpath(os.path.abspath(dep), tsconfig_dir)}
-                for dep in args.deps
-            ]
+            config["references"] = [{"path": os.path.abspath(dep)} for dep in args.deps]
 
     # Write target-specific generated tsconfig.json
-    os.makedirs(tsconfig_dir, exist_ok=True)
+    os.makedirs(os.path.dirname(args.tsconfig_output), exist_ok=True)
     with open(args.tsconfig_output, "w") as f:
         json.dump(config, f, indent=2)
 

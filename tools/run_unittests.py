@@ -48,16 +48,7 @@ def main():
             if os.path.isdir(src):
                 if os.path.exists(dst):
                     shutil.rmtree(dst)
-                # Skip .bin/ and broken symlinks to avoid permission errors
-                # on virtual/Cog filesystems. Runtime tests only need library
-                # packages, not CLI binaries.
-                shutil.copytree(
-                    src,
-                    dst,
-                    symlinks=False,
-                    ignore=shutil.ignore_patterns(".bin"),
-                    ignore_dangling_symlinks=True,
-                )
+                shutil.copytree(src, dst)
             else:
                 shutil.copy2(src, dst)
 
@@ -65,25 +56,7 @@ def main():
     if node_args and node_args[0] == "--":
         node_args = node_args[1:]
 
-    node_dir = os.path.dirname(os.path.abspath(args.node_py))
-    sys.path.insert(0, node_dir)
-    import glob
-    import node
-
-    node_bin = node.GetBinaryPath()
-
-    expanded_node_args = []
-    for arg in node_args:
-        if "*" in arg:
-            matches = glob.glob(arg, recursive=True)
-            if matches:
-                expanded_node_args.extend(matches)
-            else:
-                expanded_node_args.append(arg)
-        else:
-            expanded_node_args.append(arg)
-
-    cmd = [node_bin] + expanded_node_args
+    cmd = [sys.executable, args.node_py] + node_args
     return subprocess.call(cmd)
 
 
