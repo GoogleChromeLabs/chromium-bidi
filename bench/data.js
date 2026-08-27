@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1787843252649,
+  "lastUpdate": 1787843278453,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -60901,6 +60901,336 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
             "value": 134.00866300000303,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "distinct": true,
+          "id": "f3425c57b83e1ad763af02b78b25d4b16dca2320",
+          "message": "[chromium-bidi] Setup PRESUBMIT.py and adopt depot_tools Ruff\n\nSet up PRESUBMIT.py in third_party/chromium-bidi to run linters and\nformatters before upload and commit:\n- CheckRuff: runs depot_tools canned Ruff lint check on affected Python\n  files.\n- CheckRuffFormat: checks formatting of affected Python files with\n  ruff_chromium.\n- CheckESLint: runs ESLint on affected JS/TS files.\n- CheckPrettier: checks formatting of JS/TS/JSON/MD files with Prettier.\n- CheckKeepSorted: runs keep-sorted on affected files.\n- Added PRESUBMIT_test.py with unit tests covering all check functions.\n\nClean up custom Python formatting tools:\n- Drop ruff from Pipfile dev-packages.\n- Update package.json to call ruff_chromium for format:py and remove\n  obsolete flake8/yapf scripts.\n- Remove legacy .style.yapf so depot_tools ruff_chromium resolves to\n  pyproject.toml and formats with Ruff.\n- Update README.md formatting instructions.\n\nBug: 549529084\nChange-Id: I38826d5243f5e446dc127986ed5236b9c2fe3760\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/8274905\nReviewed-by: Alex Rudenko <alexrudenko@chromium.org>\nCommit-Queue: Maksim Sadym <sadym@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1685672}\nGitOrigin-RevId: 48307a8be134c5c50c777ff1fbbf3dcb6c698cab",
+          "timestamp": "2026-08-27T15:02:33Z",
+          "tree_id": "b4899e4122d238983ccade5b345361203a586e2c",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/f3425c57b83e1ad763af02b78b25d4b16dca2320"
+        },
+        "date": 1787843275488,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 166.72023193333416,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 166.90330700001255,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 164.37120899999513,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 356.2947616073059,
+            "range": "5.213565645653754",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 367.85078482423063,
+            "range": "2.268376206112927",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 374.9231994537333,
+            "range": "8.99934326351052",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 340.6372380395452,
+            "range": "6.9750036343405695",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 305.3190848247276,
+            "range": "1.8871759845567444",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 315.0781133759865,
+            "range": "2.2559188532933367",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_mean_rel",
+            "value": 386.3470462148441,
+            "range": "14.54496145983544",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_median_rel",
+            "value": 413.0802564537613,
+            "range": "14.965391606098072",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:classic_diff_p10_rel",
+            "value": 590.0377764483201,
+            "range": "33.18642700670358",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_mean_rel",
+            "value": 380.56960839218215,
+            "range": "15.446899624788433",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_median_rel",
+            "value": 383.2593128403154,
+            "range": "13.550944993132955",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:selenium-perf-metric:bidi_diff_p10_rel",
+            "value": 532.7457262394609,
+            "range": "29.443897608942958",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:selenium-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 203.2347580000078,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 205.83637500001828,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 175.00908300002038,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 186.52296720000737,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 183.86087300001464,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 180.96883200001912,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 1356.156158199991,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 1255.9911669999906,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 1226.4835829999754,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 884.7405418000051,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 905.7942499999854,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 743.3407500000158,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 54.46209747252,
+            "range": "0.398495228679157",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 55.84329427060567,
+            "range": "0.1312769077679564",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "ubuntu-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 55.10885234811435,
+            "range": "0.1316099425835561",
+            "unit": "Percent",
+            "extra": "ubuntu-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 1110.9272247999968,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 1046.1422500000026,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 884.1478749999965,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_mean_rel",
+            "value": 45.58913459145699,
+            "range": "3.6033279019660966",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_median_rel",
+            "value": 39.36585562029057,
+            "range": "2.8902801466294368",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-shell:puppeteer-perf-metric:diff_p10_rel",
+            "value": 49.33237729656706,
+            "range": "1.9677410860392024",
+            "unit": "Percent",
+            "extra": "macos-latest-shell:puppeteer-perf-metric:diff_rel"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_mean",
+            "value": 1460.1662500000032,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_median",
+            "value": 1555.0674579999963,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-node:test_performance_screenshot_p10",
+            "value": 1052.0918750000021,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 200.05880839999008,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 181.0145000000034,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 159.15150000000722,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_mean",
+            "value": 189.73998266666854,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_median",
+            "value": 187.48347299998613,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-node:test_performance_screenshot_p10",
+            "value": 181.60840199999484,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_mean",
+            "value": 156.67797646666486,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_median",
+            "value": 153.89052500000844,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-node:test_performance_screenshot_p10",
+            "value": 148.46884100001034,
             "unit": "ms",
             "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
           }
