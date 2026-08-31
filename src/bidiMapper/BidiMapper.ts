@@ -28,3 +28,9 @@ export {EventEmitter} from '../utils/EventEmitter.js';
 export type {BidiTransport} from './BidiTransport.js';
 export {OutgoingMessage} from './OutgoingMessage.js';
 export type {BidiCommandParameterParser} from './BidiParser.js';
+export {
+  type ClassicRequest,
+  type ClassicResponse,
+  type ClassicTransport,
+  ClassicException,
+} from './ClassicTransport.js';

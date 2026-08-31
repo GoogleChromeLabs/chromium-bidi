@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 import type {CdpClient} from '../../../cdp/CdpClient.js';
+import type {ClassicResponse} from '../../ClassicTransport.js';
+import type {Storage} from '../../../protocol/protocol.js';
 import {
+  Network,
   NoSuchUserContextException,
   UnableToSetCookieException,
 } from '../../../protocol/protocol.js';
-import type {Storage, Network} from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
@@ -30,6 +32,41 @@ import {
   cdpToBiDiCookie,
   deserializeByteValue,
 } from '../network/NetworkUtils.js';
+
+export interface ClassicCookie {
+  name: string;
+  value: string;
+  path?: string;
+  domain?: string;
+  secure?: boolean;
+  httpOnly?: boolean;
+  expiry?: number;
+  sameSite?: 'Lax' | 'Strict' | 'None';
+}
+
+function bidiToClassicCookie(c: Network.Cookie): ClassicCookie {
+  const result: ClassicCookie = {
+    name: c.name,
+    value: c.value.value,
+    domain: c.domain,
+    path: c.path,
+    secure: c.secure,
+    httpOnly: c.httpOnly,
+  };
+  if (c.expiry !== undefined) {
+    result.expiry = c.expiry;
+  }
+  if (c.sameSite !== undefined) {
+    if (c.sameSite === Network.SameSite.Lax) {
+      result.sameSite = 'Lax';
+    } else if (c.sameSite === Network.SameSite.Strict) {
+      result.sameSite = 'Strict';
+    } else if (c.sameSite === Network.SameSite.None) {
+      result.sameSite = 'None';
+    }
+  }
+  return result;
+}
 
 /**
  * Responsible for handling the `storage` module.
@@ -269,5 +306,269 @@ export class StorageProcessor {
       (filter.sameSite === undefined || filter.sameSite === cookie.sameSite) &&
       (filter.expiry === undefined || filter.expiry === cookie.expiry)
     );
+  }
+
+  async classicGetAllCookies(): Promise<ClassicResponse> {
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      const {cookies} = await this.getCookies({
+        partition: {type: 'context', context: context.id},
+      });
+      return {
+        status: 200,
+        body: {
+          value: cookies.map(bidiToClassicCookie),
+        },
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  async classicGetNamedCookie(name: string): Promise<ClassicResponse> {
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      const {cookies} = await this.getCookies({
+        partition: {type: 'context', context: context.id},
+        filter: {name},
+      });
+      const cookie = cookies.find((c) => c.name === name);
+      if (!cookie) {
+        return {
+          status: 404,
+          body: {
+            value: {
+              error: 'no such cookie',
+              message: `Cookie '${name}' not found`,
+              stacktrace: '',
+            },
+          },
+        };
+      }
+      return {
+        status: 200,
+        body: {
+          value: bidiToClassicCookie(cookie),
+        },
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  async classicAddCookie(cookieInput: unknown): Promise<ClassicResponse> {
+    const params = cookieInput as
+      | {cookie?: Record<string, unknown>}
+      | undefined;
+    const cookie = params?.cookie;
+    if (
+      !cookie ||
+      typeof cookie['name'] !== 'string' ||
+      typeof cookie['value'] !== 'string'
+    ) {
+      return {
+        status: 400,
+        body: {
+          value: {
+            error: 'invalid argument',
+            message: 'cookie parameters must specify name and value strings',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      let domain =
+        typeof cookie['domain'] === 'string'
+          ? (cookie['domain'] as string)
+          : undefined;
+      if (!domain) {
+        const url = new URL(context.url);
+        domain = url.hostname;
+      }
+      let sameSite: Network.SameSite | undefined;
+      if (typeof cookie['sameSite'] === 'string') {
+        const ss = (cookie['sameSite'] as string).toLowerCase();
+        if (ss === 'lax') {
+          sameSite = Network.SameSite.Lax;
+        } else if (ss === 'strict') {
+          sameSite = Network.SameSite.Strict;
+        } else if (ss === 'none') {
+          sameSite = Network.SameSite.None;
+        }
+      }
+      await this.setCookie({
+        cookie: {
+          name: cookie['name'] as string,
+          value: {type: 'string', value: cookie['value'] as string},
+          domain,
+          path:
+            typeof cookie['path'] === 'string'
+              ? (cookie['path'] as string)
+              : '/',
+          secure:
+            typeof cookie['secure'] === 'boolean'
+              ? (cookie['secure'] as boolean)
+              : false,
+          httpOnly:
+            typeof cookie['httpOnly'] === 'boolean'
+              ? (cookie['httpOnly'] as boolean)
+              : false,
+          ...(typeof cookie['expiry'] === 'number'
+            ? {expiry: cookie['expiry'] as number}
+            : {}),
+          ...(sameSite ? {sameSite} : {}),
+        },
+        partition: {type: 'context', context: context.id},
+      });
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unable to set cookie',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  async classicDeleteCookie(name: string): Promise<ClassicResponse> {
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      await this.deleteCookies({
+        partition: {type: 'context', context: context.id},
+        filter: {name},
+      });
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
+  }
+
+  async classicDeleteAllCookies(): Promise<ClassicResponse> {
+    const context = this.#browsingContextStorage.getActiveTopLevelContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    try {
+      await this.deleteCookies({
+        partition: {type: 'context', context: context.id},
+      });
+      return {
+        status: 200,
+        body: {value: null},
+      };
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'unknown error',
+            message: err.message,
+            stacktrace: err.stack ?? '',
+          },
+        },
+      };
+    }
   }
 }

@@ -26,8 +26,12 @@ import type {LoggerFn} from '../../../utils/log.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
-import type {EventManager} from '../session/EventManager.js';
+import {
+  type EventManager,
+  EventManagerEvents,
+} from '../session/EventManager.js';
 
+import type {ClassicResponse} from '../../ClassicTransport.js';
 import {PreloadScript} from './PreloadScript.js';
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
 import type {Realm} from './Realm.js';
@@ -210,5 +214,344 @@ export class ScriptProcessor {
       realmId: target.realm,
       isHidden: false,
     });
+  }
+
+  async classicExecuteScript(
+    script: string,
+    argsInput?: unknown[],
+  ): Promise<ClassicResponse> {
+    const context = this.#browsingContextStorage.getActiveContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    const realm = await context.getOrCreateUserSandbox(undefined);
+    const functionDeclaration = `function() {\n${script}\n}`;
+    const args = Array.isArray(argsInput)
+      ? argsInput.map((a) => this.#serializeLocalValue(a))
+      : [];
+
+    const result = await this.#raceWithUserPrompt(realm, [
+      functionDeclaration,
+      false, // awaitPromise
+      {type: 'undefined'},
+      args,
+      'none' as Script.ResultOwnership,
+      {},
+      true, // userActivation
+    ]);
+
+    if ('type' in result && result.type === 'promptOpened') {
+      return {
+        status: 200,
+        body: {
+          value: null,
+        },
+      };
+    }
+
+    if (result.type === 'exception') {
+      const exceptionDetails = result.exceptionDetails;
+      const exceptionVal = exceptionDetails.exception as any;
+      const message =
+        exceptionDetails.text ??
+        exceptionVal?.description ??
+        (exceptionVal?.value ? String(exceptionVal.value) : undefined) ??
+        'JavaScript Error in executeScript';
+      const stacktrace =
+        exceptionDetails.stackTrace?.callFrames
+          .map(
+            (f) =>
+              `${f.functionName}@${f.url}:${f.lineNumber}:${f.columnNumber}`,
+          )
+          .join('\n') ?? '';
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'javascript error',
+            message,
+            stacktrace,
+          },
+        },
+      };
+    }
+
+    return {
+      status: 200,
+      body: {
+        value: this.#deserializeRemoteValue(result.result),
+      },
+    };
+  }
+
+  async classicExecuteAsyncScript(
+    script: string,
+    argsInput?: unknown[],
+    timeoutMs?: number | null,
+  ): Promise<ClassicResponse> {
+    const context = this.#browsingContextStorage.getActiveContext();
+    if (!context) {
+      return {
+        status: 404,
+        body: {
+          value: {
+            error: 'no such window',
+            message: 'No active browsing context found',
+            stacktrace: '',
+          },
+        },
+      };
+    }
+    const realm = await context.getOrCreateUserSandbox(undefined);
+    const functionDeclaration = `function() {
+      return new Promise((resolve, reject) => {
+        let timer;
+        if (typeof ${timeoutMs ?? 'null'} === 'number' && ${timeoutMs ?? 'null'} >= 0) {
+          timer = setTimeout(() => {
+            reject(new Error('script timeout: Script evaluation timed out'));
+          }, ${timeoutMs ?? 0});
+        }
+        const callback = (res) => {
+          if (timer) clearTimeout(timer);
+          resolve(res);
+        };
+        try {
+          const func = function() {\n${script}\n};
+          func.apply(this, [...arguments, callback]);
+        } catch (e) {
+          if (timer) clearTimeout(timer);
+          reject(e);
+        }
+      });
+    }`;
+    const args = Array.isArray(argsInput)
+      ? argsInput.map((a) => this.#serializeLocalValue(a))
+      : [];
+
+    const result = await this.#raceWithUserPrompt(realm, [
+      functionDeclaration,
+      true, // awaitPromise
+      {type: 'undefined'},
+      args,
+      'none' as Script.ResultOwnership,
+      {},
+      true, // userActivation
+    ]);
+
+    if ('type' in result && result.type === 'promptOpened') {
+      return {
+        status: 200,
+        body: {
+          value: null,
+        },
+      };
+    }
+
+    if (result.type === 'exception') {
+      const exceptionDetails = result.exceptionDetails;
+      const exceptionVal = exceptionDetails.exception as any;
+      const message =
+        exceptionDetails.text ??
+        exceptionVal?.description ??
+        (exceptionVal?.value ? String(exceptionVal.value) : undefined) ??
+        'JavaScript Error in executeAsyncScript';
+      const stacktrace =
+        exceptionDetails.stackTrace?.callFrames
+          .map(
+            (f) =>
+              `${f.functionName}@${f.url}:${f.lineNumber}:${f.columnNumber}`,
+          )
+          .join('\n') ?? '';
+      if (String(message).includes('script timeout')) {
+        return {
+          status: 500,
+          body: {
+            value: {
+              error: 'script timeout',
+              message: 'Script evaluation timed out',
+              stacktrace,
+            },
+          },
+        };
+      }
+      return {
+        status: 500,
+        body: {
+          value: {
+            error: 'javascript error',
+            message,
+            stacktrace,
+          },
+        },
+      };
+    }
+
+    return {
+      status: 200,
+      body: {
+        value: this.#deserializeRemoteValue(result.result),
+      },
+    };
+  }
+
+  async #raceWithUserPrompt(
+    realm: Realm,
+    callFunctionArgs: Parameters<Realm['callFunction']>,
+  ): Promise<Script.EvaluateResult | {type: 'promptOpened'}> {
+    let removeListener: () => void = () => {};
+    const promptPromise = new Promise<{type: 'promptOpened'}>((resolve) => {
+      const listener = (event: any) => {
+        if (
+          event.method ===
+          ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened
+        ) {
+          resolve({type: 'promptOpened'});
+        }
+      };
+      this.#eventManager.on(EventManagerEvents.RegisteredEvent, listener);
+      removeListener = () => {
+        this.#eventManager.off(EventManagerEvents.RegisteredEvent, listener);
+      };
+    });
+
+    try {
+      return await Promise.race([
+        realm.callFunction(...callFunctionArgs),
+        promptPromise,
+      ]);
+    } finally {
+      removeListener();
+    }
+  }
+
+  #serializeLocalValue(val: unknown): Script.LocalValue {
+    if (val === null || val === undefined) {
+      return {type: 'null'};
+    }
+    if (typeof val === 'number') {
+      if (Number.isNaN(val)) {
+        return {type: 'number', value: 'NaN'};
+      }
+      if (!Number.isFinite(val)) {
+        return {type: 'number', value: val < 0 ? '-Infinity' : 'Infinity'};
+      }
+      return {type: 'number', value: val};
+    }
+    if (typeof val === 'string') {
+      return {type: 'string', value: val};
+    }
+    if (typeof val === 'boolean') {
+      return {type: 'boolean', value: val};
+    }
+    if (Array.isArray(val)) {
+      return {
+        type: 'array',
+        value: val.map((item) => this.#serializeLocalValue(item)),
+      };
+    }
+    if (typeof val === 'object') {
+      const rec = val as Record<string, unknown>;
+      const elementId =
+        rec['element-6066-11e4-a52e-4f735466cecf'] ??
+        rec['ELEMENT'] ??
+        rec['shadow-6066-11e4-a52e-4f735466cecf'];
+      if (typeof elementId === 'string') {
+        return {
+          sharedId: elementId,
+        };
+      }
+      const windowId =
+        rec['window-fcc6-11e5-b4f8-330a88ab9d7f'] ??
+        rec['frame-075b-4da1-b6ba-e579c2d3230a'];
+      if (typeof windowId === 'string') {
+        return {
+          handle: windowId,
+          sharedId: windowId,
+        } as unknown as Script.LocalValue;
+      }
+      const objValue: [string, Script.LocalValue][] = [];
+      for (const [k, v] of Object.entries(rec)) {
+        objValue.push([k, this.#serializeLocalValue(v)]);
+      }
+      return {type: 'object', value: objValue};
+    }
+    return {type: 'undefined'};
+  }
+
+  #deserializeRemoteValue(remote: Script.RemoteValue): unknown {
+    switch (remote.type) {
+      case 'number':
+      case 'string':
+      case 'boolean':
+        return remote.value;
+      case 'null':
+      case 'undefined':
+        return null;
+      case 'array':
+      case 'set':
+      case 'nodelist':
+      case 'htmlcollection':
+        return (remote.value ?? []).map((item: Script.RemoteValue) =>
+          this.#deserializeRemoteValue(item),
+        );
+      case 'node':
+        if ('sharedId' in remote && remote.sharedId) {
+          if (remote.value?.nodeType === 11) {
+            return {
+              'shadow-6066-11e4-a52e-4f735466cecf': remote.sharedId,
+            };
+          }
+          return {
+            'element-6066-11e4-a52e-4f735466cecf': remote.sharedId,
+            ELEMENT: remote.sharedId,
+          };
+        }
+        return null;
+      case 'window': {
+        const contextId = remote.value.context;
+        const ctx = this.#browsingContextStorage.findContext(contextId);
+        const id = remote.handle ?? (remote as any).sharedId ?? contextId;
+        if (!ctx || ctx.isTopLevelContext()) {
+          return {
+            'window-fcc6-11e5-b4f8-330a88ab9d7f': id,
+          };
+        }
+        return {
+          'frame-075b-4da1-b6ba-e579c2d3230a': id,
+        };
+      }
+      case 'object':
+      case 'map': {
+        const result: Record<string, unknown> = {};
+        for (const entry of remote.value ?? []) {
+          if (Array.isArray(entry) && entry.length === 2) {
+            const entryKey = entry[0] as any;
+            const key =
+              typeof entryKey === 'string'
+                ? entryKey
+                : 'value' in entryKey
+                  ? entryKey.value
+                  : String(entryKey.type);
+            if (key !== undefined && key !== null) {
+              result[String(key)] = this.#deserializeRemoteValue(
+                entry[1] as Script.RemoteValue,
+              );
+            }
+          }
+        }
+        return result;
+      }
+      default:
+        return ('value' in remote ? (remote as any).value : null) ?? null;
+    }
   }
 }

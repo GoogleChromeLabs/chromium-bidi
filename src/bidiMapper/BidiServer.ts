@@ -25,6 +25,8 @@ import type {Result} from '../utils/result.js';
 
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
+import {ClassicCommandProcessor} from './ClassicCommandProcessor.js';
+import type {ClassicTransport} from './ClassicTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
 import type {MapperOptions} from './MapperOptions.js';
 import {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
@@ -87,6 +89,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     defaultUserAgent: string,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
+    classicTransport?: ClassicTransport,
   ) {
     super();
     this.#logger = logger;
@@ -190,6 +193,19 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       },
       this.#logger,
     );
+    if (classicTransport) {
+      new ClassicCommandProcessor(
+        this.#eventManager,
+        this.#browsingContextStorage,
+        this.#realmStorage,
+        this.#preloadScriptStorage,
+        userContextStorage,
+        contextConfigStorage,
+        browserCdpClient,
+        classicTransport,
+        this.#logger,
+      );
+    }
     this.#eventManager.on(EventManagerEvents.Event, ({message, event}) => {
       this.emitOutgoingMessage(message, event);
     });
@@ -211,6 +227,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     selfTargetId: string,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
+    classicTransport?: ClassicTransport,
   ): Promise<BidiServer> {
     const [defaultUserContextId, version] = await Promise.all([
       this.#getDefaultUserContextId(browserCdpClient),
@@ -233,6 +250,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       version.userAgent,
       parser,
       logger,
+      classicTransport,
     );
 
     return server;

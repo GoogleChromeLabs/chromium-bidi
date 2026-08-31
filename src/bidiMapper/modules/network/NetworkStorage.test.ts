@@ -78,6 +78,7 @@ describe('NetworkStorage', () => {
     const browsingContext = {
       cdpTarget,
       id: MockCdpNetworkEvents.defaultFrameId,
+      isTopLevelContext: () => true,
     } as unknown as BrowsingContextImpl;
     cdpClient = cdpTarget.cdpClient;
     const userContextStorage = new UserContextStorage(cdpClient);

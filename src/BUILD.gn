@@ -87,6 +87,8 @@ bidi_foundation_module("bidi_mapper") {
     "bidiMapper/BidiParser.ts",
     "bidiMapper/BidiServer.ts",
     "bidiMapper/BidiTransport.ts",
+    "bidiMapper/ClassicCommandProcessor.ts",
+    "bidiMapper/ClassicTransport.ts",
     "bidiMapper/CommandProcessor.ts",
     "bidiMapper/MapperOptions.ts",
     "bidiMapper/OutgoingMessage.ts",
@@ -185,6 +187,7 @@ ts_library("unit_tests") {
     "es2023",
   ]
   sources = [
+    "bidiMapper/ClassicCommandProcessor.test.ts",
     "bidiMapper/modules/browser/BrowserProcessot.test.ts",
     "bidiMapper/modules/browser/ContextConfigStorage.test.ts",
     "bidiMapper/modules/context/BrowsingContextStorage.test.ts",
@@ -200,6 +203,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/script/SharedId.test.ts",
     "bidiMapper/modules/session/SubscriptionManager.test.ts",
     "bidiMapper/modules/session/events.test.ts",
+    "bidiTab/Transport.test.ts",
     "cdp/CdpClient.test.ts",
     "cdp/CdpConnection.test.ts",
     "protocol/ErrorResponse.test.ts",
