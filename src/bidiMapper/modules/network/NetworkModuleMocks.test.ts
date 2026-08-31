@@ -193,10 +193,12 @@ export class MockCdpNetworkEvents {
     });
   }
 
-  requestWillBeSentExtraInfo() {
+  requestWillBeSentExtraInfo(
+    associatedCookies: Protocol.Network.AssociatedCookie[] = [],
+  ) {
     this.cdpClient.emit('Network.requestWillBeSentExtraInfo', {
       requestId: this.requestId,
-      associatedCookies: [],
+      associatedCookies,
       headers: {
         Accept: '*/*',
         'Accept-Encoding': 'gzip, deflate, br, zstd',
