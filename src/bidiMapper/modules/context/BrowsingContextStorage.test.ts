@@ -30,6 +30,13 @@ describe('BrowsingContextStorage', () => {
   it('initial state', () => {
     assert.isEmpty(browsingContextStorage.getAllContexts());
     assert.isEmpty(browsingContextStorage.getTopLevelContexts());
+    assert.isUndefined(browsingContextStorage.getActiveTopLevelContext());
+  });
+
+  describe('active top-level context', () => {
+    it('returns undefined when no contexts exist', () => {
+      assert.isUndefined(browsingContextStorage.getActiveTopLevelContext());
+    });
   });
 
   describe('find top-level context ID', () => {

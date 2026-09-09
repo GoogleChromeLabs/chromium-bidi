@@ -14,7 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. *
  */
-import type {BidiTransport} from '../bidiMapper/BidiMapper.js';
+import type {
+  BidiTransport,
+  ClassicRequest,
+  ClassicResponse,
+  ClassicTransport,
+} from '../bidiMapper/BidiMapper.js';
 import type {GoogChannel} from '../protocol/chromium-bidi.js';
 import {
   type ChromiumBidi,
@@ -198,5 +203,46 @@ export class WindowCdpTransport implements Transport {
   close() {
     this.#onMessage = null;
     window.cdp.onmessage = null;
+  }
+}
+
+export class WindowClassicTransport implements ClassicTransport {
+  #onMessage: ((request: ClassicRequest) => void) | null = null;
+
+  constructor() {
+    (window as any).onClassicMessage = (message: string) => {
+      try {
+        const request = JSON.parse(message) as ClassicRequest;
+        this.#onMessage?.call(null, request);
+      } catch (e: unknown) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        (window as any).sendClassicResponse?.(
+          JSON.stringify({
+            id: '',
+            status: 500,
+            body: {
+              value: {
+                error: 'unknown error',
+                message: err.message,
+                stacktrace: err.stack ?? '',
+              },
+            },
+          }),
+        );
+      }
+    };
+  }
+
+  setOnMessage(onMessage: (request: ClassicRequest) => void) {
+    this.#onMessage = onMessage;
+  }
+
+  sendMessage(response: ClassicResponse) {
+    (window as any).sendClassicResponse?.(JSON.stringify(response));
+  }
+
+  close() {
+    this.#onMessage = null;
+    (window as any).onClassicMessage = null;
   }
 }

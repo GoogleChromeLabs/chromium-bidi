@@ -92,6 +92,7 @@ export class BrowsingContextImpl {
 
   // Set when the user prompt is opened. Required to provide the type in closing event.
   #lastUserPromptType?: BrowsingContext.UserPromptType;
+  #activeUserPromptMessage?: string;
 
   private constructor(
     id: BrowsingContext.BrowsingContext,
@@ -328,6 +329,10 @@ export class BrowsingContextImpl {
 
   get url(): string {
     return this.#navigationTracker.url;
+  }
+
+  get activeUserPromptMessage(): string | undefined {
+    return this.#activeUserPromptMessage;
   }
 
   async lifecycleLoaded() {
@@ -739,6 +744,7 @@ export class BrowsingContextImpl {
         this.id,
       );
       this.#lastUserPromptType = undefined;
+      this.#activeUserPromptMessage = undefined;
     });
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
@@ -764,6 +770,7 @@ export class BrowsingContextImpl {
       const promptType = BrowsingContextImpl.#getPromptType(params.type);
       // Set the last prompt type to provide it in closing event.
       this.#lastUserPromptType = promptType;
+      this.#activeUserPromptMessage = params.message;
       const promptHandler = this.#getPromptHandler(promptType);
       this.#eventManager.registerEvent(
         {

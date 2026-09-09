@@ -23,7 +23,11 @@ import {LogType} from '../utils/log.js';
 
 import {BidiParser} from './BidiParser.js';
 import {generatePage, log} from './mapperTabPage.js';
-import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
+import {
+  WindowBidiTransport,
+  WindowCdpTransport,
+  WindowClassicTransport,
+} from './Transport.js';
 
 declare global {
   interface Window {
@@ -41,9 +45,11 @@ declare global {
 
     // `window.sendBidiResponse` is exposed by `Runtime.addBinding` from the server side.
     sendBidiResponse: (response: string) => void;
+    sendClassicResponse?: (response: string) => void;
 
     // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
     onBidiMessage: ((message: string) => void) | null;
+    onClassicMessage?: ((message: string) => void) | null;
 
     // Set from the server side if verbose logging is required.
     sendDebugMessage?: ((message: string) => void) | null;
@@ -56,6 +62,7 @@ declare global {
 
 generatePage();
 const mapperTabToServerTransport = new WindowBidiTransport();
+const classicTransport = new WindowClassicTransport();
 const cdpTransport = new WindowCdpTransport();
 /**
  * A CdpTransport implementation that uses the window.cdp bindings
@@ -82,6 +89,7 @@ async function runMapperInstance(selfTargetId: string) {
     selfTargetId,
     new BidiParser(),
     log,
+    classicTransport,
   );
 
   log(LogType.debugInfo)?.('Mapper instance has been launched');

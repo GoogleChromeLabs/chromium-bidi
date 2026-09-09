@@ -137,6 +137,10 @@ export class BrowserInstance {
     return this.#mapperCdpConnection.bidiSession();
   }
 
+  classicSession(): SimpleTransport {
+    return this.#mapperCdpConnection.classicSession();
+  }
+
   static #establishPipeConnection(
     browserProcess: Process,
   ): MapperCdpConnection {

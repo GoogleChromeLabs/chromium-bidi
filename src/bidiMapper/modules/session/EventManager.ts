@@ -66,6 +66,7 @@ class EventWrapper {
 
 export const enum EventManagerEvents {
   Event = 'event',
+  RegisteredEvent = 'registeredEvent',
 }
 
 interface EventManagerEventsMap extends Record<string | symbol, unknown> {
@@ -73,6 +74,7 @@ interface EventManagerEventsMap extends Record<string | symbol, unknown> {
     message: Promise<Result<OutgoingMessage>>;
     event: string;
   };
+  [EventManagerEvents.RegisteredEvent]: ChromiumBidi.Event;
 }
 /**
  * Maps event name to a desired buffer length.
@@ -183,6 +185,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     contextId: BrowsingContext.BrowsingContext,
     eventName: ChromiumBidi.EventNames,
   ): void {
+    void event.then((res) => {
+      if (res.kind === 'success') {
+        this.emit(EventManagerEvents.RegisteredEvent, res.value);
+      }
+      return undefined;
+    });
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedGoogChannels =
       this.#subscriptionManager.getGoogChannelsSubscribedToEvent(
@@ -204,6 +212,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     event: Promise<Result<ChromiumBidi.Event>>,
     eventName: ChromiumBidi.EventNames,
   ): void {
+    void event.then((res) => {
+      if (res.kind === 'success') {
+        this.emit(EventManagerEvents.RegisteredEvent, res.value);
+      }
+      return undefined;
+    });
     const eventWrapper = new EventWrapper(event, null);
     const sortedGoogChannels =
       this.#subscriptionManager.getGoogChannelsSubscribedToEventGlobally(
