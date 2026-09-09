@@ -232,6 +232,17 @@ export class NetworkStorage {
         },
       ],
       [
+        'Network.loadingFailed',
+        (params: Protocol.Network.LoadingFailedEvent) => {
+          const request = this.#getOrCreateNetworkRequest(
+            params.requestId,
+            cdpTarget,
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onLoadingFailedEvent(params);
+        },
+      ],
+      [
         'Network.loadingFinished',
         (params: Protocol.Network.LoadingFinishedEvent) => {
           const request = this.getRequestById(params.requestId);
