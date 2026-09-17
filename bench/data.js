@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789649223490,
+  "lastUpdate": 1789649262704,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -65505,6 +65505,120 @@ window.BENCHMARK_DATA = {
             "value": 701.8340829999943,
             "unit": "ms",
             "extra": "macos-latest-new-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "alexrudenko@chromium.org",
+            "name": "Alex Rudenko",
+            "username": "OrKoN"
+          },
+          "committer": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "distinct": true,
+          "id": "6fa3b38114f51ca7a6beb9046ea6df005d25854d",
+          "message": "[chromium-bidi] Fix test_input_performActionsEmitsClickCountsByButton on Windows\n\nOn Windows, the MiddleClickAutoscroll feature is enabled by default.\nWhen middle-clicking (button: 1) on a page with a scrollable container\n(such as the 2000px height div in SCRIPT), Blink starts middle-click\nautoscroll and invalidates the click, resetting click_count_ to 0.\nAs a result, the subsequent mouseup event emits detail/clickCount of 0\ninstead of 1, causing test assertion failure on Windows bots.\n\nUse a dedicated CLICK_COUNTS_SCRIPT with hidden overflow so that\nmiddle-clicking does not trigger autoscroll, allowing click counts to be\ncorrectly recorded across all platforms.\n\nTAG=agy\nCONV=572a3591-9437-4787-83f8-eed69b3a14f0\n\nCq-Include-Trybots: luci.chromium.try:win-webdriver-bidi-rel,mac-webdriver-bidi-rel,linux-webdriver-bidi-rel\nChange-Id: Id8580186cc4bf533a3bcf8f50d8226c06f014429\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/8380221\nCommit-Queue: Alex Rudenko <alexrudenko@chromium.org>\nReviewed-by: Maksim Sadym <sadym@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1695279}\nGitOrigin-RevId: 3086cf648c3ef257deeb008868b4d4c4d381e200",
+          "timestamp": "2026-09-17T12:42:50Z",
+          "tree_id": "d938c9373c64e7186ae99c6f3bea55932fe6e320",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/6fa3b38114f51ca7a6beb9046ea6df005d25854d"
+        },
+        "date": 1789649258739,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 704.1891249999992,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 718.717125000012,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 654.660750000005,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 1213.4886165999887,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 1120.5575419999718,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 945.1275829999872,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 176.90733819999687,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 180.07670299999745,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 166.06042200001525,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 212.4196004000055,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 223.3670839999604,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 166.71779200004266,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 150.17196993333263,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 150.1182570000026,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 148.51513100001057,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
           }
         ]
       }
