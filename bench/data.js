@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789649262704,
+  "lastUpdate": 1789649323226,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -65617,6 +65617,120 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
             "value": 148.51513100001057,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "ovsienko@google.com",
+            "name": "Alex Ovsienko",
+            "username": "AlexOvsienko"
+          },
+          "committer": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "distinct": true,
+          "id": "df4b14cb88fe23d414df1a5e0b482f9ab3c46502",
+          "message": "VPython: migrate legacy vpython to UV across subdirectories\n\nConvert remaining legacy .vpython3 files and embedded script specs to\nvpython.toml and PEP 723 inline metadata with companion .uv.lock\nlockfiles across subdirectories (agents/, chrome/, infra/, ios/,\nthird_party/, tools/).\n\nUpdated references from .vpython3 to vpython.toml in build files,\nscripts, and documentation. Removed redundant CheckVPythonSpec from\nbuild/PRESUBMIT.py as it is already run repository-wide in root\nPRESUBMIT.py.\n\nLegacy Python 2 spec (third_party/agility-sdk/3pp/.vpython) and specs\nwith unresolvable CIPD binaries or upstream constraints\n(chrome/test/enterprise/e2e/.vpython3, tools/clang/scripts/get_tensorflow.py)\nare retained as legacy specs. Upstream-rolled repositories\n(third_party/crashpad/crashpad) are excluded to be updated and rolled\nfrom upstream.\n\nLSC: go/vpython-uv-config-lsc\nR=jwata@google.com\nBug: 491263752\nChange-Id: I069123a2e9a03134f238bb04b4f577266a6a6964\nTAG=agy\nCONV=b53bdf70-37e7-4696-be50-8ee6fc19b1f8\n\nChange-Id: I069123a2e9a03134f238bb04b4f577266a6a6964\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/8384839\nOwners-Override: Alex Ovsienko <ovsienko@google.com>\nReviewed-by: Takuto Ikuta <tikuta@chromium.org>\nCommit-Queue: Alex Ovsienko <ovsienko@google.com>\nCr-Commit-Position: refs/heads/main@{#1695324}\nGitOrigin-RevId: f21d858a43c65504e733ef87b8e1b5ced1142943",
+          "timestamp": "2026-09-17T12:44:35Z",
+          "tree_id": "ee7f2c702c7bf1fa637e79849eca43ce105b0390",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/df4b14cb88fe23d414df1a5e0b482f9ab3c46502"
+        },
+        "date": 1789649318886,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 1855.9134917999984,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 1669.7122909999962,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 1429.4805840000038,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 957.9643250000004,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 987.797124999986,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 842.0514580000145,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 134.33540846666574,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 132.38854899998387,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 121.5960609999911,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 201.8696834000025,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 204.5080419999863,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 171.51150000000825,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 136.91645693334445,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 133.76263899999685,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 132.4988100000155,
             "unit": "ms",
             "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
           }
