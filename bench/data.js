@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789649334138,
+  "lastUpdate": 1789649433963,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -65845,6 +65845,120 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
             "value": 147.51122100000202,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "distinct": true,
+          "id": "526a69f69eb759a71f20c516bbf195faba24ac00",
+          "message": "[chromium-bidi] Update dependencies and WebDriver BiDi types\n\n- Update `devtools-protocol`, `eslint`, and `typescript-eslint` in\n  `package.json` and `package-lock.json`.\n- Update the `node_modules.tar.gz` GCS object hash and metadata in\n  `DEPS`.\n- Regenerate WebDriver BiDi TypeScript and Zod schema definitions from\n  specifications (`tools/update_bidi_types.py`).\n- Add parameter parsing and stub command handling for\n  `emulation.setTextLayoutModeOverride`.\n\nTAG=agy\nCONV=18a13690-97dc-45f0-a2ac-fc01e0e984c4\n\nBug: None\nChange-Id: I8e38012c73b3665202c9d2fe10c3b601bfbff050\nCq-Include-Trybots: luci.chromium.try:linux-webdriver-bidi-rel\nInclude-Ci-Only-Tests: chromium.linux:Linux Tests|webdriver_wpt_tests\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/8419619\nAuto-Submit: Maksim Sadym <sadym@chromium.org>\nCommit-Queue: Nikolay Vitkov <nvitkov@chromium.org>\nCommit-Queue: Maksim Sadym <sadym@chromium.org>\nReviewed-by: Nikolay Vitkov <nvitkov@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1699279}\nGitOrigin-RevId: 2481921b44fe76151b4b5e813926079f83a64586",
+          "timestamp": "2026-09-17T12:45:40Z",
+          "tree_id": "f78d226b8dfcc85bf5c2ed179161335323d5f703",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/526a69f69eb759a71f20c516bbf195faba24ac00"
+        },
+        "date": 1789649430562,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 2265.5175751999877,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 2015.3317089999518,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 1682.608416999983,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 1172.7653916000008,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 1075.534459000039,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 798.3633329999975,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 131.5821888000149,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 131.50028300015038,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 121.30132700008289,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 169.57541660000288,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 151.71449999996867,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 134.6362500000282,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 103.8193624000011,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 99.92409800003088,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 99.1286380000247,
             "unit": "ms",
             "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
           }
