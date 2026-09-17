@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1788879183800,
+  "lastUpdate": 1789649174433,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -64653,6 +64653,120 @@ window.BENCHMARK_DATA = {
             "value": 859.8687909999967,
             "unit": "ms",
             "extra": "macos-latest-new-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "alexrudenko@chromium.org",
+            "name": "Alex Rudenko",
+            "username": "OrKoN"
+          },
+          "committer": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "distinct": true,
+          "id": "314cf35cfb3de63881fd735b0c3add327d2e2cb2",
+          "message": "[chromium-bidi] Remove Node.js BiDi server and use ChromeDriver only\n\n- Remove src/bidiServer/ and the :bidi_server GN target.\n- Remove websocket and @types/websocket dependencies.\n- Update tools (run_bidi_server.py, run_e2e.py) to run ChromeDriver exclusively.\n- Remove test_chromedriver_mode fixture and update tests for ChromeDriver-only execution.\n- Update documentation and CI workflow matrix.\n\nTAG=agy\nCONV=73227b25-90d5-4265-bed6-38ec01b9c86d\n\nCq-Include-Trybots: luci.chromium.try:linux-webdriver-bidi-rel\nBug: none\nChange-Id: I5a3ef38090514521aaec5427bd41cb4e399983b5\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/8379482\nReviewed-by: Maksim Sadym <sadym@chromium.org>\nCommit-Queue: Alex Rudenko <alexrudenko@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1694642}\nGitOrigin-RevId: 9aa51bc8c8c5518e4af49a44d34a0ad656ac5436",
+          "timestamp": "2026-09-17T12:42:17Z",
+          "tree_id": "df833b9b3eb7ceffc56a62d975a2dcc08841d252",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/314cf35cfb3de63881fd735b0c3add327d2e2cb2"
+        },
+        "date": 1789649172093,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 1151.4081998000051,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 1132.2865410000418,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 975.6539159999988,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 829.6177086000057,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 792.3784590000196,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 740.5109580000158,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 170.79015959999614,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 168.38691099999892,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 163.92797999998265,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 223.9593333999892,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 200.44754200000625,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 163.71395800001665,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 117.0800465999965,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 116.83099799998331,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 114.44341999998642,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
           }
         ]
       }
