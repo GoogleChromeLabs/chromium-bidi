@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789649323226,
+  "lastUpdate": 1789649334138,
   "repoUrl": "https://github.com/GoogleChromeLabs/chromium-bidi",
   "entries": {
     "Benchmark": [
@@ -65731,6 +65731,120 @@ window.BENCHMARK_DATA = {
           {
             "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
             "value": 132.4988100000155,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "committer": {
+            "email": "sadym@chromium.org",
+            "name": "Maksim Sadym",
+            "username": "sadym-chromium"
+          },
+          "distinct": true,
+          "id": "c372e57a6635747904a1909eefea8897cf04ea59",
+          "message": "[chromium-bidi] Support userContext in events, command results, and realms\n\n- Include `userContext` in `browsingContext.create` response.\n- Propagate `userContext` through `NavigationTracker` and emit it in all\n  navigation lifecycle events.\n- Attach `userContext` to user prompt, download, and file dialog event\n  payloads.\n- Include `userContext` in base network event parameters and\n  window/worker realm descriptors.\n- Update internal unit/e2e test assertions and clean up obsolete entries\n  in `TestExpectations`.\n\nTAG=agy\n\nBug: 526673507, 488362582, 484353698, 475000031, 469618144, 527713316, 540619916, 547617167\nChange-Id: I4f790ec99efe6e415060df7d74bc28b466077e63\nCq-Include-Trybots: luci.chromium.try:linux-webdriver-bidi-rel\nInclude-Ci-Only-Tests: chromium.linux:Linux Tests|webdriver_wpt_tests\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/8382397\nReviewed-by: Nikolay Vitkov <nvitkov@chromium.org>\nAuto-Submit: Maksim Sadym <sadym@chromium.org>\nCommit-Queue: Nikolay Vitkov <nvitkov@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1696978}\nGitOrigin-RevId: 4b1be7665562522440a10e2bced6c84fd188df8e",
+          "timestamp": "2026-09-17T12:45:06Z",
+          "tree_id": "ff40b5df3809ff3b970da1aee195e0d5ff084d1f",
+          "url": "https://github.com/GoogleChromeLabs/chromium-bidi/commit/c372e57a6635747904a1909eefea8897cf04ea59"
+        },
+        "date": 1789649331036,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_mean",
+            "value": 1335.3647167999839,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_median",
+            "value": 1236.230624999962,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-headful-cd:test_performance_screenshot_p10",
+            "value": 970.7941249999976,
+            "unit": "ms",
+            "extra": "macos-latest-headful:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 1388.5775913999964,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 1305.173916000001,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 1292.7678749999814,
+            "unit": "ms",
+            "extra": "macos-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 180.7517925999965,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 181.27035500000943,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 173.5161390000144,
+            "unit": "ms",
+            "extra": "ubuntu-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_mean",
+            "value": 209.56087500000535,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_median",
+            "value": 213.96975000001817,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "macos-latest-old-headless-cd:test_performance_screenshot_p10",
+            "value": 159.0262500000108,
+            "unit": "ms",
+            "extra": "macos-latest-old-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_mean",
+            "value": 158.89936753333512,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_median",
+            "value": 161.63372999994863,
+            "unit": "ms",
+            "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
+          },
+          {
+            "name": "ubuntu-latest-new-headless-cd:test_performance_screenshot_p10",
+            "value": 147.51122100000202,
             "unit": "ms",
             "extra": "ubuntu-latest-new-headless:e2e-perf-metric"
           }
