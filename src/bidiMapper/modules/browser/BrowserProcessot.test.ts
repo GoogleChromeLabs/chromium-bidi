@@ -27,6 +27,32 @@ import {
 
 import {getProxyStr} from './BrowserProcessor.js';
 
+const invalidProxyEndpoints = [
+  'http://foo',
+  'foo:-1',
+  'foo:bar',
+  'foo:65536',
+  'foo/test',
+  'foo#42',
+  'foo?foo=bar',
+  '2001:db8::1',
+  '',
+  'foo:',
+];
+
+type ProxyEndpointKey = 'httpProxy' | 'sslProxy' | 'socksProxy';
+
+function manualProxyConfig(
+  key: ProxyEndpointKey,
+  value: unknown,
+): Session.ProxyConfiguration {
+  return {
+    proxyType: 'manual',
+    [key]: value,
+    ...(key === 'socksProxy' ? {socksVersion: 5} : {}),
+  } as Session.ProxyConfiguration;
+}
+
 describe('BrowserProcessor:getProxyStr', () => {
   it('should return undefined for "direct" proxyType', () => {
     const proxyConfig: Session.ProxyConfiguration = {proxyType: 'direct'};
@@ -77,6 +103,49 @@ describe('BrowserProcessor:getProxyStr', () => {
         sslProxy: 'secure.proxy:443',
       };
       assert.equal(getProxyStr(proxyConfig), 'https=secure.proxy:443');
+    });
+
+    describe('proxy endpoint validation', () => {
+      for (const [endpoint, expected] of [
+        ['proxy.example', 'http=proxy.example'],
+        ['proxy.example:0', 'http=proxy.example:0'],
+        ['proxy.example:65535', 'http=proxy.example:65535'],
+        ['127.0.0.1:8080', 'http=127.0.0.1:8080'],
+        [
+          'user:password@proxy.example:8080',
+          'http=user:password@proxy.example:8080',
+        ],
+        ['[2001:db8::1]:8080', 'http=[2001:db8::1]:8080'],
+      ]) {
+        it(`should preserve valid endpoint ${JSON.stringify(endpoint)}`, () => {
+          assert.equal(
+            getProxyStr(manualProxyConfig('httpProxy', endpoint)),
+            expected,
+          );
+        });
+      }
+
+      for (const key of ['httpProxy', 'sslProxy', 'socksProxy'] as const) {
+        describe(key, () => {
+          for (const endpoint of invalidProxyEndpoints) {
+            it(`should reject ${JSON.stringify(endpoint)}`, () => {
+              assert.throws(
+                () => getProxyStr(manualProxyConfig(key, endpoint)),
+                InvalidArgumentException,
+              );
+            });
+          }
+        });
+      }
+
+      for (const value of [42, true, [], {}]) {
+        it(`should reject non-string socksProxy ${JSON.stringify(value)}`, () => {
+          assert.throws(
+            () => getProxyStr(manualProxyConfig('socksProxy', value)),
+            InvalidArgumentException,
+          );
+        });
+      }
     });
 
     describe('socksProxy', () => {

@@ -336,6 +336,34 @@ export class BrowserProcessor {
   }
 }
 
+function validateProxyEndpoint(
+  endpoint: unknown,
+  property: 'httpProxy' | 'sslProxy' | 'socksProxy',
+): string {
+  if (
+    typeof endpoint !== 'string' ||
+    endpoint.length === 0 ||
+    endpoint.endsWith(':') ||
+    /[\s/?#\\]/u.test(endpoint)
+  ) {
+    throw new InvalidArgumentException(
+      `'${property}' must be a valid host and optional port`,
+    );
+  }
+
+  try {
+    // The synthetic scheme provides URL Standard host and port parsing. Keep
+    // the caller's endpoint unchanged when constructing the CDP proxy string.
+    new URL(`http://${endpoint}`);
+  } catch {
+    throw new InvalidArgumentException(
+      `'${property}' must be a valid host and optional port`,
+    );
+  }
+
+  return endpoint;
+}
+
 /**
  * Proxy config parse implementation:
  * https://source.chromium.org/chromium/chromium/src/+/main:net/proxy_resolution/proxy_config.h;drc=743a82d08e59d803c94ee1b8564b8b11dd7b462f;l=107
@@ -370,14 +398,16 @@ export function getProxyStr(
 
     // HTTP Proxy
     if (proxyConfig.httpProxy !== undefined) {
-      // servers.push(proxyConfig.httpProxy);
-      servers.push(`http=${proxyConfig.httpProxy}`);
+      servers.push(
+        `http=${validateProxyEndpoint(proxyConfig.httpProxy, 'httpProxy')}`,
+      );
     }
 
     // SSL Proxy (uses 'https' scheme)
     if (proxyConfig.sslProxy !== undefined) {
-      // servers.push(proxyConfig.sslProxy);
-      servers.push(`https=${proxyConfig.sslProxy}`);
+      servers.push(
+        `https=${validateProxyEndpoint(proxyConfig.sslProxy, 'sslProxy')}`,
+      );
     }
 
     // SOCKS Proxy
@@ -404,7 +434,7 @@ export function getProxyStr(
         );
       }
       servers.push(
-        `socks=socks${proxyConfig.socksVersion}://${proxyConfig.socksProxy}`,
+        `socks=socks${proxyConfig.socksVersion}://${validateProxyEndpoint(proxyConfig.socksProxy, 'socksProxy')}`,
       );
     }
 
